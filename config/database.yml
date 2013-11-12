@@ -17,7 +17,7 @@
 development:
   adapter: mysql
   encoding: utf8
-  database: msdn_develop
+  database: msdn_develop_test
   pool: 5
   username: msdn
   password: msdnpass
@@ -38,7 +38,7 @@ test:
 production:
   adapter: mysql
   encoding: utf8
-  database: msdn_product
+  database: msdn_production_test
   pool: 5
   username: msdn
   password: msdnpass

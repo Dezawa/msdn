@@ -1,18 +1,51 @@
+# -*- coding: utf-8 -*-
 ActionController::Routing::Routes.draw do |map|
-
+  # 全体
   map.connect '/:controller/:action',:action => /[^0-9]+/
-  map.resources :labels
-  map.resources  :yakushima
 
+  # UBR
+#  map.connect '/ubr/倉庫状況.pdf'  ,:url => '/public/ubr/倉庫状況.pdf'
+  map.connect '/ubr/:controller/:action'  ,:path_prefix => 'ubr'#,:action => /[^0-9]+/
+
+  # 病院
+  map.connect '/hospital/:controller/:action'  ,:path_prefix => 'hospital'
+  map.connect '/hospital/:controller'  ,:path_prefix => 'hospital'
+
+  map.resources :holyday
+  map.resources :hospital_nurces ,:controller => "hospital/nurces"
+  map.resources :hospital_role ,:controller => "hospital/role"
+  map.resources :hospital_need ,:controller => "hospital/need"
+  map.resources :hospital_meeting,:controller => "hospital/meeting"
+  map.resources :hospital_kinmucode,:controller => "hospital/kinmucode"
+  map.resources :hospital_shokui,:hospital_shokushu,:hospital_kinmukubun
+  map.resources :hospital_limit ,:hospital_busho  , :hospital_monthly
+  map.resources :labels
+
+  # 簿記
+  map.connect '/book/:controller/:action'  ,:path_prefix => 'book'
+  map.connect '/book/:controller'  ,:path_prefix => 'book'
+
+  map.resources :book_main       ,:controller => 'book/main'
+  map.resources :book_permission ,:controller => 'book/permission'
+  map.resources :book_kamoku     ,:controller => 'book/kamoku'
+
+
+  # ん～～～と
   map.top    '/'      ,:controller => 'top',        :action => 'msdn'
+
+  # ユーザ管理
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
   map.login '/login', :controller => 'sessions', :action => 'new'
   map.register '/register', :controller => 'users', :action => 'create'
   map.signup '/signup', :controller => 'users', :action => 'new'
   map.change_password '/change_password', :controller => 'users', :action => 'change_password'
-  map.lips   '/LinierPlanGeneral', :controller => 'top_pages', :action => 'linier_plan_general'
   map.resources :users
   map.resources :user_options
+  map.resource :session
+
+  # LiPS
+  map.lips   '/LinierPlanGeneral', :controller => 'top_pages', :action => 'linier_plan_general'
+
   #map.connect   '/ube_skd/lips_load',:controller => 'ube_skd',:action=>:lips_load
   map.select    '/ube_skd/select' ,:controller => 'ube_skd', :action => 'select'
   map.connect   '/ube_skd/input_result',:controller => 'ube_skd',:action=>:input_result
@@ -29,7 +62,6 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :ube_product
   map.resources :ube_operation
   #map.resources :ube_operations
-  map.resource :session
   map.resources :Top
   map.connect   '/ubeboard/:action',:controller => 'ubeboard'
   map.connect   '/ubeboard/lips_load',:controller => 'ubeboard',:action=>:lips_load
@@ -43,14 +75,6 @@ ActionController::Routing::Routes.draw do |map|
 #
 #
 
-  map.resources :book_main,:book_permission
-  map.resources :book_kamoku
-  map.connect   '/book_keisan/:action',:controller => 'book_main'
-  #map.connect   '/book_main/:action',:controller => 'book_main'
-  map.connect   '/book_main/csv_out_print',:controller => 'book_main',:action => "csv_out_print"
-  #map.connect   '/book_main/:act',:controller => 'book_main',:act => /[^\d]+/,:action => :act
-  #map.resources :book_main
-  #map.resources :book_keeping
 #
   # The priority is based upon order of creation: first created -> highest priority.
 

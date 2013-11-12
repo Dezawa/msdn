@@ -6,7 +6,12 @@
 <table border=1><%= @TableHeader ? send(@TableHeader) : label_line %>
 <% id = @model.id -%>
 <%= "<tr id='pro_#{id}'>" %><% @labels.each{|html_cell| -%>
- <td><%= html_cell.edit_field @Domain,@model,controller %></td> <% } -%>
+<%- if  html_cell.class==HtmlHidden -%>
+   <%= html_cell.edit_field(@Domain,@model,controller) -%>
+     <%- else -%>
+ <td><%= html_cell.edit_field @Domain,@model,controller %></td> 
+<% end %>
+<% } -%>
 </tr>
 </table>
 <%= hidden_field_tag(:back,@back) if @back %>

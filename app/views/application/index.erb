@@ -10,9 +10,9 @@
  when Array ; action_buttoms @TableEdit 
  end %>
 <%= will_page = pagenation @models %>
-<table border=1><%= @TableHeader ? send(@TableHeader) : label_line_option %>
+<table border=1 id="IndexTable"><%= @TableHeader ? send(@TableHeader) : label_line_option %>
 <% @models.each do |obj|  -%>
-  <tr><% @labels.each{|html_cell| 
+  <tr id='<%= obj.id %>'><% @labels.each{|html_cell| 
         next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
   <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
   <% if @Show %>
@@ -28,3 +28,6 @@
 </table>
 <%= will_page %>
 <br />
+<%= send(@AfterIndex,:show) if @AfterIndex %>
+<%= on_cell_edit() if @on_cell_edit%>
+<token name ='<%= form_authenticity_token %>'></token>

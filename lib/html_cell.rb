@@ -19,7 +19,7 @@ class HtmlCell
   include ActionView::Helpers::FormOptionsHelper
   delegate :logger, :to=>"ActiveRecord::Base"
   Attr_names = [:type,:correction,:display,:size,:align,:comment,:help,
-                :tform,:include_blank,:link]
+                :tform,:include_blank,:link,:event]
   attr_writer :field_disable,:ro
   attr_accessor :symbol,:label
   attr_accessor *Attr_names
@@ -42,7 +42,7 @@ class HtmlCell
     end
   end
 
-  def ro(controller)
+  def ro(controller=nil)
     case @ro
     when nil,false  ; nil
     when Symbol     ; controller.send  @ro
@@ -58,6 +58,7 @@ class HtmlCell
 
   def disp_field(object,htmlopt="")
     htmlopt += align ? "align=#{align}" : ""
+    #(event ?  "<script>$('td').click(function () { alert('DDDDD');});</script>" : "" )+
     disp(object).to_s
   end
   def edit_field(domain,object,controller,opt={},htmlopt="")

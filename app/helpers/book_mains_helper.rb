@@ -18,7 +18,7 @@ module BookMainsHelper
       if Book::Kamoku.kamokus.assoc(kamoku)
       kamoku_id = Book::Kamoku.kamokus.assoc(kamoku)[1]
       link_to(kamoku,
-              :controller=> :book_main,:action => :book_make,
+              :controller=> "book/main",:action => :book_make,
               :kamoku_id=>kamoku_id,:kamoku => kamoku
               ) 
       else

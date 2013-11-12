@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class Book::Permission < ActiveRecord::Base
   set_table_name 'book_permissions'
   belongs_to     :user
@@ -56,4 +57,11 @@ class Book::Permission < ActiveRecord::Base
     objects = self.class.all(:conditions => ["not id = ? and login = ? and owner = ?",
                                              id,login,owner]).size > 0
   end
+
+  def editable?(login)
+    login == owner || owner == "guest" ||
+      (bp = Book::Permission.find_by_login_and_owner(login,owner)) &&
+      bp.permission == Book::Permission::EDIT
+  end
+
 end

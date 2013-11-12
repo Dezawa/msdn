@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 # csvrow(1行)にlabelにリストされた項目があればその位置を返す
 # return は [ {label => index},[labelのおのおのがある位置]

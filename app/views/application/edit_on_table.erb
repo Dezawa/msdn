@@ -17,5 +17,7 @@
 </tr>
 <% end -%>
 </table>
-</form>
 <br />
+
+<%= send(@AfterIndex,:edit) if @AfterIndex %>
+</form>

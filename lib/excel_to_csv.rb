@@ -10,7 +10,8 @@ module ExcelToCsv
                while result=file.read;tempfile.write result;end
                tempfile.rewind
                tempfile
-             when File,ActionController::UploadedTempfile
+             when File,ActionController::UploadedTempfile #
+               logger.debug("ExcelToCsv:original_filename #{file.original_filename}")
                file
              when String
                open(file,"r")

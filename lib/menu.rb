@@ -15,7 +15,9 @@
 #
 # メニュー一覧の外観はいまオプションなし。
 class Menu < ActionView::Base
-  Attr_names = [:disable,:model,:label,:action,:enable_csv_upload,:csv_upload_action,:csv_download_url,:comment,:help]
+  Attr_names = [:disable,:model,:label,:action,
+                :enable_csv_upload,:csv_upload_action,:buttonlabel,
+                :csv_download_url,:comment,:help]
   attr_accessor *Attr_names
   attr_accessor :controller,:option
 
@@ -26,9 +28,10 @@ class Menu < ActionView::Base
     Attr_names.each do | attr_name|
       instance_variable_set "@#{attr_name}",data.delete(attr_name)
     end
-    @model = arg_model
-    @label = arg_label
-    @option=data
+    @model  = arg_model
+    @label  = arg_label
+    @option = data # || { }
+    @buttonlabel ||= "CSVで登録"
       #@action= arg_action
   end
 #  end
@@ -62,9 +65,10 @@ class Menu < ActionView::Base
                        when nil,false ; false
                        else enable_csv_upload
                        end
+    size = (@option[:size] rescue 30)
     view.form_tag( "/#{model}/#{csv_upload_action}", :multipart => true,:method => :post) +
-       " <td><input name='commit' type='submit' value='CSVで登録' />\n"+
-      " <input size=30 name='csvfile' type='file'></td></form>"
+       " <td><input name='commit' type='submit' value='#{buttonlabel}' />\n"+
+      " <input size=#{size} name='csvfile' type='file'></td></form>"
     #"<form action='/#{model}/#{csv_upload_action}' enctype='multipart/form-data' method='post'>\n" + 
     #      " <td><input name='commit' type='submit' value='CSVで登録' />\n"+
     #      " <input size=30 name='csvfile' type='file'></td></form>"

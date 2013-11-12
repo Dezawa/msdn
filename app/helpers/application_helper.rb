@@ -223,11 +223,11 @@ module ApplicationHelper
     labels ||= @labels
     labels.map{|label| 
       unless label.class == HtmlHidden || label.class == HtmlPasswd || label.field_disable(controller)
-         if label.link
-           "<td><nobr><a href='#{label.link}'>#{label.label}</a></nobr></td>" 
-         else
-           "<td><nobr>#{label.label}</nobr></td>" 
-         end
+        if label.link
+          "<td><nobr><a href='#{label.link}'>#{label.label}</a></nobr></td>" 
+        else
+          "<td><nobr>#{label.label}</nobr></td>" 
+        end
       end
     }.compact.join
   end
@@ -420,6 +420,89 @@ module ApplicationHelper
     I18n.t sym
   end
 
+  def periodically_call_remote_with_timerID(options = {})
+    frequency = options[:frequency] || 10 # every ten seconds by default
+    timerid= "timerID_#{options.delete(:update)}".classify
+    code = "#{timerid} = new PeriodicalExecuter(function() {#{remote_function(options)}}, #{frequency});
+"
+   javascript_tag(code)
+  end
+
+  OnCellEdit = "
+<script language=\"javascript\">
+  myTR2 = document.getElementById('%s');
+function getCELL2() {
+  for (var i=0; i<myTR2.rows.length; i++) {
+    for (var j=0; j<myTR2.rows[i].cells.length; j++) { 
+     var Cell2=myTR2.rows[i].cells[j];
+     　Cell2.onclick =function(){Mclk2(this);}
+    }
+  }
+}
+
+
+function Mclk2(Cell2){
+   org = Cell2.textContent;
+   if(org.match(/Edit|削除|表示/) != null || Cell2.parentNode.rowIndex == 0) return ;
+   if([%s][Cell2.cellIndex] == null) return ;
+     str = prompt(\"\",org);
+   //if(str == null) return ;
+     id = Cell2.parentNode.id
+     cellINX = Cell2.cellIndex;
+     rowINX = '行位置：'+Cell2.parentNode.rowIndex +': id=' + id;
+     cellVal = 'セルの内容：'+Cell2.innerHTML;
+     res2=rowINX + '<br/> '+  cellINX + '<br/>' + cellVal;
+     //if (org != str && str != null) { //Cell2.innerHTML =  str ; 
+       tokun = jQuery('token').attr('name')
+       jQuery.ajax({ 'url' : '/%s/cell_edit','type' : 'PUT','dataType' : 'json',
+                     'data' : { 'authenticity_token' : tokun, 'id' : id ,
+                                'row' : Cell2.parentNode.rowIndex,
+                                'column' : Cell2.cellIndex },
+                      'success' : disp
+            });
+    //  Cell2.innerHTML = item ;
+   // } else {
+ 
+    //   Cell2.innerHTML = org + 'O' ;
+   //}
+}
+function disp(data,dataType){ rowIdx= this.row; clmIdx = this.column;
+                              Cell2=myTR2.rows[2].cells[0];
+                              Cell2.innerHTML = 'data';
+}
+try{
+	window.addEventListener(\"load\",getCELL2,false);
+}catch(e){
+	window.attachEvent(\"onload\",getCELL2);
+}
+-->
+</script>
+"
+
+  def on_cell_edit(option={ })
+    code = "cell_editor = new EditCell(\"/hospital/role/on_cell_edit\",\"IndexTable\",[1],
+                 function(){ },                 function(){ }
+                 ); "
+   javascript_tag(code)
+  end
+  def on_cell_edit3(option={ })
+    script = File
+  end
+
+  def on_cell_edit2(option={ })
+    table_id = option.delete(:table_id) || "IndexTable"
+    labels   = option.delete(:labels)   || @labels
+    rows     = labels.map{ |label|
+      case [label.class,!label.ro]
+      when [HtmlText,true] ; '"text"'
+      when [HtmlSelect,true];'"select"'
+      else                 ; "null"
+      end
+    }.join(",")
+    items = labels.map{ |label| '"'+label.symbol.to_s+'"' }
+    OnCellEdit%[table_id,rows,@Domain,@Domain]
+  end
+
   # Login 前  Lips(デモ) Login
   # Login　後 Lips(デモ) LiPS(会員版) ユーザ固有  パスワード変更　Logout
   Login = [[["LiPS(無償版)","/lips/free"],["ログイン","/login"]],
@@ -430,4 +513,4 @@ module ApplicationHelper
 end
 
 __END__
-$Id: application_helper.rb,v 2.52 2013-06-29 14:38:33 dezawa Exp $
+$Id: application_helper.rb,v 2.51.2.11 2013-09-12 04:41:13 dezawa Exp $

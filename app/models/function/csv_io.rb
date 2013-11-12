@@ -151,9 +151,11 @@ module CsvIo
     lbl_idxes = labels.map{|lbl| 
       [lbl,csv0.index(lbl)] if csv0.index(lbl)
     }.compact
+#logger.debug("label2idx:lbl_idxes #{lbl_idxes} ")
     # Hashし、Hash と indexのArrayを返す
     lbl2idx = Hash[*lbl_idxes.flatten]
     idxes   = lbl_idxes.map{|l,i| i}
+#logger.debug("idxes #{idxes} ")
     lbl2idx.size ==0 ? nil : [lbl2idx,idxes]
   end
 
@@ -164,10 +166,13 @@ module CsvIo
   # 副作用
   #    csvrows はヘッダー行まで削除されている
   def serchLabelLine(csvrows,label)
+#logger.debug("label: #{label.join(', ')}")
+#logger.debug("csvrows: #{csvrows.first.join(', ')}")
     #pp ["serchLabelLine",label,csv]
     while c=csvrows.shift
      # pp c[0..10]
       l2i,idxes=label2idx(c,label)
+#      logger.debug("CSV l2i #{l2i.to_a.join(', ')},#{l2i.size} idxes #{idxes.join(', ')},  #{idxes.size}, label #{label.size}")
       next  unless l2i
       return l2i.size == label.size ? [l2i,idxes] : [nil,*(label-l2i.keys)]
     end

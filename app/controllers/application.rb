@@ -239,6 +239,23 @@ class ApplicationController < ActionController::Base
     render  :file => 'application/edit_on_table',:layout => 'application'
   end
 
+  def cell_update
+    @model = @Model.find(params[:id])
+      logger.debug("#{@Domain}:cell_update #{@Domain},data #{params[@Domain]}")
+    if @model.update_attributes(params[@Domain]) 
+      render :text => "success"
+    else
+      logger.debug("#{@Domain}:cell_update faile #{@model.error}")
+    end
+  end
+
+  def cell_edit
+    @model =  @Model.find(params[:id])
+    @html_cell = @labels[params[:column].to_i]
+logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{params[:column]}")
+    render  :file => 'application/cell_edit'
+  end
+
   def update_on_table
     @page = params[:page] || 1 
     @models= @PagenatTbl ? find_and : find #@Model.all(@conditions)#@PagenatTbl

@@ -20,7 +20,7 @@ class Book::Main < ActiveRecord::Base
   belongs_to :kasi_kamoku,:class_name => "Book::Kamoku",:foreign_key => :kasikata
 
   def self.new(*args)
-    args.first[:amount].gsub!(/,/,"")
+    args.first[:amount].gsub!(/,/,"") if args.first[:amount].class == String
     super
   end
 

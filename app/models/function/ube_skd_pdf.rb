@@ -272,7 +272,7 @@ module Function
     end
 
     def operation(plan,stime,etime,no) #,lot_shift=0)
-      @color = (plan.ube_product ? plan.ube_product.color : "c08080") || "c08080" #if color.blank?
+      @color = (plan.ube_product ? plan.ube_product.color : "c08080") #if color.blank?
       x0 = @X0+(plan[stime]-@sdate)*Sec*@scale
       y0 = @Y0-no*@ObjSkip #-@ObjSkip
       #x9 = @X0+(edate-@sdate)*Sec-3*Hr

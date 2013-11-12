@@ -69,3 +69,18 @@ No10:
   order: '0'
   authorized: 複式簿記メンテ
   comment: 複式簿記 科目編集
+No11:
+  id: '11'
+  label: 勤務割付
+  url: /hospital_nurces
+  order: '1000'
+  authorized: 勤務割付
+  comment: 勤務割付
+No12:
+  id: '12'
+  label: 倉庫管理
+  url: /hospital_nurces
+  order: '1000'
+  authorized: UBR
+  comment: 倉庫管理
+

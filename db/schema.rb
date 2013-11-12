@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130418134127) do
+ActiveRecord::Schema.define(:version => 20131011205611) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -43,10 +43,32 @@ ActiveRecord::Schema.define(:version => 20130418134127) do
     t.string "name"
   end
 
+  create_table "delayed_jobs", :force => true do |t|
+    t.integer  "priority",   :default => 0
+    t.integer  "attempts",   :default => 0
+    t.text     "handler"
+    t.text     "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string   "locked_by"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
+
   create_table "holydays", :force => true do |t|
     t.integer "year"
     t.date    "day"
     t.string  "name"
+  end
+
+  create_table "hospital_defines", :force => true do |t|
+    t.string "name"
+    t.string "attri"
+    t.string "value"
+    t.string "comment"
   end
 
   create_table "hospital_kinmucodes", :force => true do |t|
@@ -63,13 +85,15 @@ ActiveRecord::Schema.define(:version => 20130418134127) do
     t.string  "finish"
     t.float   "main_next"
     t.float   "sub_next"
-    t.float   "daytime"
-    t.float   "night"
-    t.float   "midnight"
-    t.float   "daytime2"
-    t.float   "night2"
-    t.float   "midnight2"
+    t.float   "am",              :default => 0.0
+    t.float   "night",           :default => 0.0
+    t.float   "midnight",        :default => 0.0
+    t.float   "am2",             :default => 0.0
+    t.float   "night2",          :default => 0.0
+    t.float   "midnight2",       :default => 0.0
     t.float   "nenkyuu"
+    t.float   "pm",              :default => 0.0
+    t.float   "pm2",             :default => 0.0
   end
 
   create_table "hospital_limits", :force => true do |t|
