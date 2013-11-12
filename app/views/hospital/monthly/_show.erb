@@ -1,0 +1,16 @@
+ <table border=1><tr><td></td><td>日</td>
+ <% (1..@month.end_of_month.day).each{|day|  %> <td <%= day_bgcolor(day)%>><%= day %> </td> <% } %>
+ <%= %w(日勤 深夜 準夜 公休 年休).map{|lbl| "<td rowspan=2><nobr>#{lbl}</td>"}.join %>
+ </tr>
+ <tr><td></td><td>曜日</td>
+ <% (1..@month.end_of_month.day).each{|day|  %> <td <%= day_bgcolor(day)%>><%= (@month+(day-1).day).weekday %> </td> <% } %>
+ </tr>
+ <% @nurces.each{|nurce| monthly= nurce.monthly(@month);id=monthly.id %>
+
+ <tr><td><%= nurce.id %></td></td><td><nobr><%= nurce.name %></nobr></td>
+   <% (1..@month.end_of_month.day).each{|day| day_column = "day%02d"%day %>
+    <td width='25' <%= monthly.days[day].color%>><nobr><%= monthly.days[day].kinmucode_code %></td><% } -%>
+ <%= nurce_total(nurce) %>
+ </tr><%}%>
+ <%= day_total %>
+ </table>

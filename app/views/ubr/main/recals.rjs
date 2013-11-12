@@ -1,0 +1,2 @@
+# -*- coding: utf-8 -*-
+send_file(@pdffile+".pdf", :filename =>@filename+".pdf")

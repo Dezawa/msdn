@@ -1,0 +1,100 @@
+set terminal gif enhanced size 800,800 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+set out 'tmp/ubr/SoukoInfo.gif'
+set multiplot layout 3,2
+set style line 9 lw 2 lt rgb "black" 
+
+set title "倉庫:穴数、通路置き量_1_～_3" font ",14"
+set label "空き枠数" at graph -0.17,0.5 center rotate 
+set label "通路置/ton" at graph  1.18,0.5 center rotate 
+#set origin 0,0
+#set size 1,0.8
+set key autotitle columnheader
+set y2range [0:500]
+set y2tics  
+set yrange [0:100]
+set ytics nomirror
+set ytics
+set auto x
+set xtics nomirror rotate by -90 scale 0 
+plot 'tmp/ubr/SCM在庫一覧.ave'\
+        using 5:xtic(1)  with line ,\
+     '' using 6 with line, \
+     '' using 7 with line, \
+     '' using 24 with line ls 9 axes x1y2
+####
+set title "倉庫:穴数、通路置き量_4_～_6" font ",14"
+set y2range [0:200]
+plot 'tmp/ubr/SCM在庫一覧.ave' using 8:xtic(1)  with line ,\
+     '' using 9 with line,\
+     '' using 10 with line, \
+     '' using 26 with line ls 9 axes x1y2 
+
+####
+set title "倉庫:穴数、通路置き量_2_-_2_F_5_-_2_F" font ",14"
+plot 'tmp/ubr/SCM在庫一覧.ave' using 11:xtic(1)  with line ,\
+     '' using 12 with line,\
+     '' using 13 with line, \
+     '' using 28 with line ls 9 axes x1y2 
+####
+set title "倉庫:穴数、通路置き量_総_合_0_A_-_G_J" font ",14"
+plot 'tmp/ubr/SCM在庫一覧.ave' using 14:xtic(1)  with line ,\
+     '' using 15 with line,\
+     '' using 16 with line, \
+     '' using 30 with line ls 9 axes x1y2 
+
+
+set title "倉庫エリア別在庫量推移" font ",14"
+unset label
+set label "総在庫/千ton" at graph -0.13,0.5 center rotate 
+set label "倉庫別在庫/千ton" at graph  1.12,0.5 center rotate 
+unset y2tics
+unset ytics
+set yrange [0:30   ]
+set y2range [0:6  ]
+set ytics
+set y2tics
+plot 'tmp/ubr/SCM在庫一覧.ave' using 17:xtic(1)  with line ,\
+     '' using 18 with line axes x1y2,\
+     '' using 19 with line axes x1y2, \
+     '' using 20 with line axes x1y2, \
+     '' using 21 with line axes x1y2
+
+
+set title "原料・再処理・長期在庫 在庫量推移" font ",14"
+set yrange [0:2500]
+unset label
+set label "在庫/ton" at graph -0.17,0.5 center rotate 
+
+unset y2range
+unset y2tics
+unset ytics
+set ytics
+plot 'tmp/ubr/SCM在庫一覧.ave' using 32:xtic(1)  with line ,\
+     '' using 33 with line,\
+     '' using 34 with line
+
+
+
+
+set title "倉庫:穴数、通路置き量_1_～_6" font ",14"
+unset label
+set y2range [0:600]
+set y2tics  
+set yrange [0:150]
+set ytics nomirror
+set label "空き枠数" at graph -0.17,0.5 center rotate 
+set label "通路置/ton" at graph  1.18,0.5 center rotate 
+plot 'tmp/ubr/SCM在庫一覧.ave' using 19:xtic(1)  with line ,\
+     '' using 20 with line, \
+     '' using 21 with line,\
+     '' using 25 with line ls 9 axes x1y2 
+
+
+set title "倉庫:穴数、通路置き量_0_A_～_G_J" font ",14"
+#set origin 0,0
+#set size 1,0.8
+set y2range [0:100]
+plot 'tmp/ubr/SCM在庫一覧.ave' using 23:xtic(1) with line,\
+      '' using 24 with line, \
+      '' using 24 with line,\
+     '' using 27 with line ls 9 axes x1y2 

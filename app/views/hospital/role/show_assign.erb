@@ -1,0 +1,21 @@
+<% if @Links %> <%= links @Links  %><% end %>
+<h3>グループメンバー割り当て<%= @TYTLE_post %></h3>
+
+<%#=    form_tag(:action => :assign)+submit_tag('編集') %>
+<%= table_edit %>
+<table border=1><tr><td></td><td></td><td colspan=<%= @roles.size %>>役割・グループ</td>
+<td colspan=<%= @labels.size %>>割振り標準・上限 </td></tr>
+<tr><td></td><td></td>
+<% @roles.each{|role|  %> <td width=20><%= role.name %></td> <% } %>
+<%=  label_line_no_tr  %>
+</tr>
+<% @nurces.each{|nurce| roles= nurce.roles_by_id %>
+
+<tr><td><%= nurce.id %></td><td><nobr><%= nurce.name %></td>
+   <% @roles.each{|role|  %> <td><%= roles[role.id] ? "○" : "&nbsp;" %> <%}%>
+   <% @labels.each{|html_cell| -%>
+  <%= html_cell.td %><%= html_cell.disp_field nurce.limits %></td><% }%>
+</tr><%}%>
+</table>
+
+</form>

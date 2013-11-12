@@ -1,0 +1,21 @@
+<h3>希望割り当て　優先度 <%= @TYTLE_post_edit %></h3>
+
+<%=    form_tag(:action => :hope_update)+submit_tag('更新') %>
+<%= hidden_field(:must,:val,:value => @must) %>
+<table border=1><tr><td>日</td>
+<% (1..@month.end_of_month.day).each{|day|  %> <td><%= day %> </td> <% } %>
+</tr>
+<tr><td>曜日</td>
+<% (0..@month.end_of_month.day-1).each{|day|  %> <td><%= (@month+day.day).weekday %> </td> <% } %>
+</tr>
+<% @nurces.each{|nurce| monthly= nurce.monthly(@month);id=monthly.id %>
+
+<tr><td><nobr><%= nurce.name %></nobr></td>
+   <% (1..@month.end_of_month.day).each{|day|  %>
+    <td <%= monthly.days[day].color %>>
+    <%= kinmucode_selector_for_hope(@Domain,day,nurce,monthly) %>
+    <%}%>
+</tr><%}%>
+</table>
+
+</form>

@@ -1,0 +1,20 @@
+<%- if @mult %>
+  <%= periodically_call_remote_with_timerID( :update => "assign_links",
+  :url => {:action => "assign_links" }, :frequency => 10.0)
+   %>
+<%- end %>
+<h3>割り当て<%= @TYTLE_post_edit %></h3>
+<% if @errors %><div style="color:red"><%= @errors %></div><% end %>
+<table><tr><td><%= form_tag(:action => :assign)+submit_tag('自動割付') -%></form></td>
+<td><%= form_tag(:action => :clear_assign)+submit_tag('自動割付分クリア') -%></form></td>
+<td><%= form_tag(:action => :hope_regist)+submit_tag('希望入力　優先度強') -%>
+               <%= hidden_field(:must,:val, :value => 1) %></form></td>
+<td><%= form_tag(:action => :hope_regist)+submit_tag('希望入力　優先度弱') -%>
+               <%= hidden_field(:must,:val,:value => 0) %></form></td>
+<td>  </td>
+<td><%= action_buttom([:form,:set_busho_month,"部署・年月変更",:input_busho_month]) %></td>
+<td><%= form_tag({:action => :error_disp},:target => ["_checkblank"])+submit_tag('チェック結果表示') -%>
+</form></td>
+</tr></table>
+<form id='assign_links_tag'><%= assign_links %></form>
+<div id='show'> <%= render :partial => 'show' %></div>

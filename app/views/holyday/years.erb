@@ -1,0 +1,16 @@
+
+<h3><%= @TYTLE  %> 一覧 <%= @TYTLE_post %></h3>
+<%= flash[:message] %>
+<%= @errors.call if @errors -%>
+<%= input_and_action(:edit_on_table,"新しい年作成",
+    {:size => 4,:value => Time.now.year,:name => "new_year"}) %>
+<table border=1><tr><td>年</td><td></td></tr>
+<% @models.each do |year|  -%>
+  <tr><td><%= year %></td>
+    <td><%= link_to '表示', :action => :index,:id =>year %></td>
+    <td><%= link_to 'Edit', :action => :edit ,:page => @page,:id => year %>
+    </td>
+  <%= delete_if_accepted :action => :destroy,:id => "year:#{year}" %></tr>
+<% end -%>
+</table>
+<br />

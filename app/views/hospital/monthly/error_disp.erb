@@ -1,0 +1,16 @@
+<h3>チェック結果</h3>
+
+<% if @error_days.size >0 -%>
+役割の不足<br>
+<table>
+<%= @error_days.map{|error| "<tr><td>#{error}</td></tr>" }.join("\n") %> 
+</table>
+<% end %>
+
+<% if @error_nurces.size >0 -%>
+勤務上の問題<br>
+<table border=1>
+<%= @error_nurces.map{|errors| errors.map{|name,msg,day,patern|
+    "<tr><td>#{name}</td><td>#{day}日</td><td>#{msg}</td></tr>" }}.join("\n") %> 
+</table>
+<% end %>

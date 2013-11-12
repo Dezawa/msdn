@@ -1,0 +1,79 @@
+==MSDN Railsアプリケーション
+
+このシステムは 現時点で3系統のアプリが仕込まれている。
+* Lips	       線型計画解法(Linier Plan Solver)で無償汎用と会員制汎用の二つが有る:
+   /lips/free   無償10x10サイズのもの
+   /lips/member 会員制。サイズの変更、CSVのIOなどある。
+      ログインユーザによりオプション機能もつく
+* ウベボード生産計画立案補助　LiPSの結果を月度の生産計画に落とすのを助ける
+* 複式簿記  
+
+==入り口
+1. 全体の入り口　"/" は "/top/msdn" に dispach される。これはメニューラインと msdn.html を表示する。
+2. メニューラインからloginすると、ユーザに応じた「会員用LiPS とユーザごとのオプションシステム」なメニューに変わる。
+
+==メニュー
+メニューは、layout/applidation がコントロールする。
+これが、UserOption を参照してユーザ固有のアプリ用のメニューも表示する
+1 無償版LiPS   :: 全員。
+2 会員版LiPS   :: ログインすると。
+3 ログイン     :: ログアウト時
+4 ログアウト   :: ログイン時
+5 パスワード変更 :: ログイン時
+6 宇部病院向けLiPS      :: 工程、製品が 検査項目、コースになる
+7 ウベボードトップ      :: ウベボードのユーザのとき
+8 ユーザメンテ           :: 
+9 ユーザオプションメンテ :: 
+10 記名切り替えメンテ    :: UbeNamedChange の保守。これはユーザからは隠す。
+
+==各システム
+===ウベボード生産計画立案
+====Model & Class
+0 製造計画メイン Ubeboard :: メイン画面。ARではない。ドキュメント作成用にModelは作った
+1 製造条件　　　 UbeProduct :: 品種ごとに工程条件、標準ロットサイズなどを定義。作業指示書上の色の定義も行う。
+                               保守や記名切替もここで定義する。
+2 銘柄　　　　　 UbeMeigara ::
+3 工程速度　　　 UbeOperation:: 品種の登録とその工程速度を定義。保守の所要時間もここで定義。
+3 切り替え時間　 UbeChangeTime :: 品種切り替えの時間を定義
+4 休日計画　　　 UbeHolyday :: 歴月単位で休日、過労働日を定義
+5 休転計画　　　 UbeMaintain :: 自動割付できない保守や、ラインの停止を定義する。
+6 スケジュール　 UbeSkd :: 指定期間のスケジュールとその間の時間統計を取る。 各工程の累積時間・枚数もここで管理する。UbePlanを habm する。
+7 ロットデータ　 UbePlan :: 製造単位毎に予定時間、実績時間を管理する。
+8 養生庫　　　　 UbeYojo :: 養生庫の時間管理。ARではない。
+10 記名切替　　　 UbeNamedChange :: 長い切り替えは作業指示書に明示する。その時の名称と前後両方の記名が必要な場合の優先度定義
+9 ユーザーオプション UserOption :: ログインユーザに固有のオプションアプリを定義。User に has_many される
+
+====モジュール
+Function::UbeSkdHelp :: 割付作業のルーチン
+Function::UbeSkdPdf  :: 月度割付概観、作業指示書を作成する
+Function::UbeOptimize:: 割付の最適化のために、次に割り付けるべき製品群を選ぶ
+Function::UbeSkdFreelist:: 割付のための空き時間管理
+Function::UbeSkdCsv::
+Function::CsvIo   :: モデルの内容をCSVで、Up/Down Loadするルーチン
+
+===複式簿記
+10:: 複式簿記メイン :: BookKeeping :: ARではなく、modelでもない。Controllerのみ
+11:: 振替伝票       :: BookMain    :: 
+12:: 勘定科目       :: BookKamoku  ::
+==To build the guides:
+
+==変更についてのメモ
+* Install source-highlighter (http://www.gnu.org/software/src-highlite/source-highlight.html)
+* Install the mizuho gem (http://github.com/FooBarWidget/mizuho/tree/master)
+* Run `rake guides` from the railties directory
+
+#$Id: README_FOR_APP,v 2.2 2012-03-29 11:02:03 dezawa Exp $
+#$Log: README_FOR_APP,v $
+#Revision 2.2  2012-03-29 11:02:03  dezawa
+#RDocに対応するための修正
+#
+#Revision 2.1  2012-03-18 08:04:43  dezawa
+#*** empty log message ***
+#
+#Revision 2.0  2012-01-29 23:31:43  dezawa
+#リリース版：最適化一旦ここまで。
+#BUG出しに移る
+#
+#Revision 1.2  2011-08-25 12:19:14  dezawa
+#RDoc化進行中
+#

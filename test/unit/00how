@@ -1,0 +1,11 @@
+unit test の順
+function/ube_skd_freelist_test.rb                    # 空き時間管理を確認する
+function/maintain_test.rb                            # メンテナンスが正しく入るか
+function/ube_skd_help_transfer_test.rb               # 移動時間が正しいか
+ube_plan_test.tb                                     # 切り替え時間が正しいか
+function/ube_opelength_test.rb                       # 工程時間は正しいか
+function/ube_skd_help_temp_assign_maint_test.rb      # 保守、切り替えの選択が正しいか
+function/ube_skd_preprocces_test.rb                  # 前処理は正しいか
+
+
+error
