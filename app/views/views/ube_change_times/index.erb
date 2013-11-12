@@ -1,0 +1,12 @@
+<h3><%= @TYTLE %></h3>
+<%= disp_errors @models %>
+<%= @errorse %>
+<table><tr><td>
+<%= form_tag :action=>:edit_on_table %><input type='submit' value='編集'></form></td>
+<td>　切り替えに必要な時間(分)。12高級、15高級はサラン替を含む。</td></tr></tabel>
+</form>
+<% @ope.each{|lbl,sym| %>
+<p><%= lbl %>
+<table border=1><%= chtime_write @names,@chtimes[sym] %>
+</table>
+<% } %>

@@ -1,0 +1,44 @@
+<h2><%= @TYTLE %></h2>
+<%= error_messages(@model.errors) %>
+
+<table><tr><td valain=top>
+  <table><tr><TD  style='font-size:140%;' colspan=2 >立案番号　<%=@model.id %> </td></tr>
+    <%= table_of_buttom %>
+  <% if @model.ube_plans.size==0 %>
+  <tr><td>LiPS CSV読み込み<br><input size=25 id='csvfile' name='csvfile' type='file'></td></tr>
+<% end -%>
+   </table>
+</td><td>
+<%# 各工程の稼働時間などの表 -%>
+<%= timeline %>
+</td>
+<%# 各工程の累積稼働時間の表 -%>
+<td>
+<%= runtimeline %>
+</td>
+</tr></table>
+<%# form_for(@model) do |f| %>
+<%= form_tag :action =>:makeplan %>
+<%= hidden_field_tag :id,value = @model.id %>
+  <%= hidden_field_tag :sort,value = @sortkey %>
+<%# 個別製造計画の表を描く -%> 
+<table><tr>
+<td style='font-size:120%;'>優先順で立案<%= my_check_box(@model,:ube_skd,:jun_only) %></td>
+<td>立案開始日 <%= edit_md_date(:ube_skd,:replan_from,@model,:size => 3) %></td>
+<td> <%= submit_tag '立案実行' %></form></td>
+<%# end %>
+<td><%= link_to '編集',:action=>:edit,:id=>@model.id ,:sort=>@sortkey%> </td>
+<td><%= link_to '実績入力・追加・削除 ',:action=>:edit_only,:id=>@model.id ,:sort=>@sortkey%> </td>
+<% @sort.each{|sort| -%>
+<%= "<td>"+button_to( @Sort[sort],:action => :sort,:sort => sort,:id=>@model.id)+"</td>" %>
+<% } -%><%= "<input id='sort' name='sort' value='#{@sortkey}' type='hidden' />" %>
+</tr></table>
+<%= render :partial => "disp_plans" %>
+<%# end %>
+
+
+<%#
+立案実行
+LiPS読み込み
+
+%>

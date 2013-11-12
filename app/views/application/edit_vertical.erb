@@ -1,0 +1,20 @@
+<h3><%= @TYTLE %> 編集</h3>
+<% form_for(@model) do |f| %>
+<%= hidden_field_tag "page",@page %>
+  <%= f.error_messages %>
+  <%= f.submit '更新' %>
+<table border=1>
+<% id = @model.id -%>
+<% @labels.each{|html_cell| -%>
+<tr><td><%= html_cell.label + help(html_cell.help) %></td>
+ <td><%= html_cell.edit_field @Domain,@model,controller %></td>
+ <td><%= html_cell.comment %></td>
+</tr><% } -%>
+</table>
+<%= hidden_field_tag(:back,@back) if @back %>
+<%= hidden_field_tag(:back_params,@back_params) if @back_params %>
+<% end %>
+<br />
+<hr>
+<%= @PostMessage %>
+ 

@@ -1,0 +1,19 @@
+ユーザ別設定表
+<% form_for(@user) do |f| -%>
+  <%= f.error_messages %> 
+<% end %>
+<%= link_to '修正', edit_user_path(@user) %> 
+<%= link_to '一覧', users_path %>
+<table><tr><td valign=top>
+<table border=1><tr><td>項目</td><td>コメント</td><td>値</td></tr>
+<% @labels.each_with_index{|html_cell,i| next if html_cell.class == HtmlPasswd%>
+<%= "<tr><td>#{html_cell.symbol}</td><td>#{html_cell.label}</td><td>" +
+    "#{html_cell.disp( @user)}</td></tr>" %>
+<% } %>
+</table></td>
+<td>
+<table border=1><tr><td colspan=2>オプション</td></tr>
+<% @options.each{|opt| -%> <tr><td><%= opt.label %></td><td> <% -%>
+ <%= (@arrowed_options.include?(opt.id) ? "有効" : "無効")%></td></tr> <%  } %>
+</table>
+</td></tr></table>

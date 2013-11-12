@@ -1,0 +1,18 @@
+<% @user=current_user ;@promax=@lips.promax.to_i; @opemax=@lips.opemax.to_i %>
+<font size=5 ><b>LiPS(<%=I18n.t "lips"%>版)</b></font>
+<div align=right>UserName:<%= @user.login %></font></div>
+<%# -------- #%>
+<font size = 2>
+  <%= error_messages(@lips.errors) -%>
+<div align=right>
+  <%= cvsupdate_form %> 
+  <%= change_disp_form %>
+</div>
+<form method="POST" action="./member"><input type="submit" value="実行">
+  <% %w(promax opemax vertical).each{|item| %>
+  <%= hidden_field(:lips,item) %>
+  <% } -%>
+  <%= download_cvs_form %>
+<font size = 2>最大化/最小化　
+  <%= radioBottom(:lips,:minmax,[["maximize","最大"],["minimize","最小"]],@lips.minmax) %>
+<%= vertical_or_landscape %>

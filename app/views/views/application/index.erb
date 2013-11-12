@@ -1,0 +1,34 @@
+<% if @Links %> <%= links  @Links %>
+　　ユーザ：<%= current_user.login %><hr>
+<% end %>
+<h3><%= @TYTLE %> 一覧 <%= @TYTLE_post %></h3>
+<%= flash[:message] %>
+<%= @errors.call if @errors -%>
+<%= case @TableEdit
+ when TrueClass ; add_edit_buttoms(@Domain) 
+ when String; @TableEdit 
+ when Array ; action_buttoms @TableEdit 
+ end %>
+<% will_page = @Pagenation ? will_paginate(@models, :previous_label=>'前へ', :next_label=>'次へ'
+   )  : "" %>
+<%= will_page %>
+<table border=1><%= label_line %>
+<% @models.each do |obj| -%>
+<tr><% @labels.each{|html_cell| -%>
+<%= html_cell.disp_field obj %><% } %>
+<% if @Show %>
+    <td><%= link_to '表示', obj %></td>
+<% end %>
+<% if @Edit %>
+    <td><%= link_to 'Edit', :action => :edit ,:page => @page,:id => obj.id %>
+    </td>
+<% end %>
+<% if @Delete %>
+  <td><%= link_to '削除',obj , :confirm => 'Are you sure?', :method => :delete %></td>
+<% end %>
+</tr>
+<% end -%>
+</table>
+<%= will_page %>
+<%#= "ページ当たり行数"+text_field_tag(:perpage,@Pagenation,:size=>2) if @Pagenation %>
+<br />

@@ -1,0 +1,16 @@
+# LiPSの項目名書き換えオプション
+en:
+  lips:      "汎用会員版"
+  pro_name:   "製品名"
+  pro_max:    "製品数"
+  ope_max:    "工程数"
+  pro_direct: "製品の並び"
+  operation: "工程"
+  profit:    "利益"
+  runtime:   "稼働時間"
+  min:       "最小製造数"
+  max:       "最大製造数"
+  coment:    "製品を一単位作るのに必要な稼働時間"
+  number:    "製造数"
+  pro_gain:  "製品当り利益"
+  message:   ""

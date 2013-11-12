@@ -1,0 +1,225 @@
+--- 
+one: 
+  jun: "1"
+  pre_condition_id: "7"
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A10
+two: 
+  jun: "1"
+  pre_condition_id: 
+  post_condition_id: "7"
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A10
+No3: 
+  jun: "2"
+  pre_condition_id: "2"
+  post_condition_id: "3"
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A09 A12
+No4: 
+  jun: "2"
+  pre_condition_id: "2"
+  post_condition_id: "12"
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A12 A09
+No5: 
+  jun: "2"
+  pre_condition_id: "2"
+  post_condition_id: "13"
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A12 A09
+No6: 
+  jun: "2"
+  pre_condition_id: "5"
+  post_condition_id: "3"
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A12 A09
+No7: 
+  jun: "2"
+  pre_condition_id: "5"
+  post_condition_id: "12"
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A12 A09
+No8: 
+  jun: "2"
+  pre_condition_id: "5"
+  post_condition_id: "13"
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A12 A09
+No9: 
+  jun: "3"
+  pre_condition_id: "2"
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A09
+No10: 
+  jun: "3"
+  pre_condition_id: "5"
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A09
+No11: 
+  jun: "4"
+  pre_condition_id: 
+  post_condition_id: "3"
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A12
+No12: 
+  jun: "4"
+  pre_condition_id: 
+  post_condition_id: "12"
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A12
+No13: 
+  jun: "4"
+  pre_condition_id: 
+  post_condition_id: "13"
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A12
+No14: 
+  jun: "4"
+  pre_condition_id: "3"
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A12
+No15: 
+  jun: "4"
+  pre_condition_id: "12"
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A12
+No16: 
+  jun: "4"
+  pre_condition_id: "13"
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A12
+No17: 
+  jun: "4"
+  pre_condition_id: 
+  post_condition_id: "3"
+  ope_name: !binary |
+    5Lm+54el
+
+  display: A12
+No18: 
+  jun: "4"
+  pre_condition_id: 
+  post_condition_id: "12"
+  ope_name: !binary |
+    5Lm+54el
+
+  display: A12
+No19: 
+  jun: "4"
+  pre_condition_id: 
+  post_condition_id: "13"
+  ope_name: !binary |
+    5Lm+54el
+
+  display: A12
+No20: 
+  jun: "4"
+  pre_condition_id: "3"
+  post_condition_id: 
+  ope_name: !binary |
+    5Lm+54el
+
+  display: A12
+No21: 
+  jun: "4"
+  pre_condition_id: "12"
+  post_condition_id: 
+  ope_name: !binary |
+    5Lm+54el
+
+  display: A12
+No22: 
+  jun: "4"
+  pre_condition_id: "13"
+  post_condition_id: 
+  ope_name: !binary |
+    5Lm+54el
+
+  display: A12
+No23: 
+  jun: "5"
+  pre_condition_id: "14"
+  post_condition_id: 
+  ope_name: !binary |
+    5Lm+54el
+
+  display: A05
+No24: 
+  jun: "5"
+  pre_condition_id: 
+  post_condition_id: "14"
+  ope_name: !binary |
+    5Lm+54el
+
+  display: A04
+No25: 
+  jun: "5"
+  pre_condition_id: "14"
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A05
+No26: 
+  jun: "5"
+  pre_condition_id: 
+  post_condition_id: "14"
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A04
+No27: 
+  jun: "6"
+  pre_condition_id: "15"
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A14
+No28: 
+  jun: "6"
+  pre_condition_id: 
+  post_condition_id: "15"
+  ope_name: !binary |
+    5oqE6YCg
+
+  display: A14

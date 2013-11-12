@@ -1,0 +1,58 @@
+# LiPSの項目名書き換えオプション
+guest:
+  lips:      "無償"
+  pro_name:   "製品名"
+  pro_max:    "製品数"
+  ope_max:    "工程数"
+  pro_direct: "製品の並び"
+  operation: "工程"
+  profit:    "利益"
+  runtime:   "稼働時間"
+  min:       "最小製造数"
+  max:       "最大製造数"
+  coment:    "製品を一単位作るのに必要な稼働時間"
+  number:    "製造数"
+  pro_gain:  "製品当り利益"
+  message:   "<table border=1> <td>
+線型計画といえば製造計画、ということでそれをイメージした項目名になっていますが、
+それに拘らずあなたの課題にあった使い方をしてください。<br>
+「製品名」の行の各欄には製品名を入れてください。空欄が有ったらそこから右は無視します。<br>
+「工程」欄の各行には工程名を入れてください。空欄が有ったらそこから下は無視します。<br>
+
+<br>
+「利益」の行は、各製品１単位毎に得られる利益を入れてください。<br>
+「工程」に工程名を入れた行は、各製品を１単位作る場合に必要な稼働時間を入れてください。<br>
+工程名が入っている行は、この「必要な稼働時間」がどこかに入っている必要があります。すべて 0 だとエラーになります。<br>
+<br>
+「稼働時間」の右隣の「以上/以下」は通常は「以下」だと思います。
+しかし[この工程は必ず動かす必要が有る]、というような場合もあるでしょう。その時は「以上」を選んでください。<br>
+以上も以下も制約がある場合は、2行に分けて書いてください。<br>
+<strong>数値[利益、数、時間]は半角(漢字、ひらがなモードでない）の数字、ピリオド、ハイフンを使ってください</strong><br>
+最大化/最小化:「利益」なら最大化でしょうが、場合によっては最小化を狙う課題もあるかもしれません。
+    </td>
+</tr></table>
+
+<div><align=right>
+<table><tr><td colspan=4><font size = 1>よろしければ、お名前等おしらせください</td></tr>
+  <tr><td><font size = 1>ご氏名</td>
+    <td><fontsize =1><input type='text' size=20 name='name' value=''</td>
+    <td><font size = 2>会社名</td>
+    <td><fontsize =1><input type='text' size=20 name='company' value=''</td>
+  </tr>
+  <tr><td><font size = 2>e-mail address</td>
+
+    <td><fontsize =1><input type='text' size=20 name='mail' value=''</td>
+    <td><font size = 1>御連絡先</td>
+    <td><fontsize =1><input type='text' size=20 name='addr' value=''</td>
+  </tr>
+</table></div><p>
+"
+
+
+  activerecord:
+    errors:
+      template:
+            body: 下記のフィールドで問題がでました
+            header: 
+                one: 1 error prohibited this {{model}} from being saved
+                other: "{{count}} errors prohibited this {{model}} from being saved" 

@@ -1,0 +1,27 @@
+# LiPSの項目名書き換えオプション
+default:
+  lips:      "汎用会員"
+  pro_name:   "製品名"
+  pro_max:    "製品数"
+  ope_max:    "工程数"
+  pro_direct: "製品の並び"
+  operation: "工程"
+  profit:    "利益"
+  runtime:   "稼働時間"
+  min:       "最小製造数"
+  max:       "最大製造数"
+  coment:    "製品を一単位作るのに必要な稼働時間"
+  number:    "製造数"
+  pro_gain:  "製品当り利益"
+  message:   ""
+  plan_shozo_from: "抄造開始時間"
+
+
+  activerecord:
+    errors:
+      template:
+            body: 下記のフィールドで問題がでました
+            header: 
+                one: 1 error prohibited this {{model}} from being saved
+                other: "{{count}} errors prohibited this {{model}} from being saved" 
+

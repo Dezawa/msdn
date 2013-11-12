@@ -1,0 +1,260 @@
+<HTML>
+<META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
+<!-- $Id: LinierPlanGeneral.html,v 2.1 2012-08-09 11:02:28 dezawa Exp $ -->
+<HEAD><TITLE>線型計画法計算</TITLE>
+</HEAD>
+<BODY bgcolor="#F8FfFA">
+<H3>線型計画法計算</H3>
+
+<form method="POST" action="/cgi-bin/LinierPlanGeneralAction.cgi">
+      <input type="submit" value="実行"><br>
+  <font size = 2>最大化/最小化　　
+          <input type="radio" name="minmax" value="maximize" >最大
+          <input type="radio" name="minmax" value="minimize">最小<br>
+<table border=1 cellspacing=0>
+<tr><td  colspan=5 width="120"><font size = 2>製品名</td>
+<td width="120"><font size = 2><input type="text" size=5 name="pro01"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="pro02"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="pro03"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="pro04"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="pro05"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="pro06"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="pro07"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="pro08"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="pro09"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="pro10"</td>
+</tr>
+<tr><td  width="120"><font size = 2>利益</td><td colspan=4></td>
+<td width="120"><font size = 2><input type="text" size=5 name="gain01"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="gain02"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="gain03"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="gain04"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="gain05"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="gain06"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="gain07"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="gain08"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="gain09"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="gain10"</td>
+</tr>
+<tr><td  width="120"><font size = 2>最小製造数</td><td colspan=4></td>
+<td width="120"><font size = 2><input type="text" size=5 name="min01"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="min02"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="min03"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="min04"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="min05"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="min06"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="min07"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="min08"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="min09"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="min10"</td>
+</tr>
+<tr><td  width="120"><font size = 2>最大製造数</td><td colspan=4></td>
+<td width="120"><font size = 2><input type="text" size=5 name="max01"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="max02"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="max03"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="max04"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="max05"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="max06"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="max07"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="max08"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="max09"</td>
+<td width="120"><font size = 2><input type="text" size=5 name="max10"</td>
+</tr>
+<tr><td  width="120"><font size = 2>製造数</td><td colspan=4></td>
+<td width="120"><font size = 2></td>
+<td width="120"><font size = 2></td>
+<td width="120"><font size = 2></td>
+<td width="120"><font size = 2></td>
+<td width="120"><font size = 2></td>
+<td width="120"><font size = 2></td>
+<td width="120"><font size = 2></td>
+<td width="120"><font size = 2></td>
+<td width="120"><font size = 2></td>
+<td width="120"><font size = 2></td>
+</tr>
+<tr><td width="120"><font size = 2>工程</td>
+      <td width=120><font size = 2>稼働時間</td>
+      <td width=120><font size = 2>≦≧</td>
+      <td width=120><font size = 2>実稼働</td>
+      <td width="120"><font size = 2>稼働率</td> </tr>
+<tr>
+         <td><font size = 2><input type="text" size=5 name="ope01"</td>
+         <td><font size = 2><input type="text" size=5 name="time01"</td>
+　　　　<td ><font size = 2>  <select name="gele01">
+	     <option value="<=">≦
+	     <option value=">=">≧
+	    </select>
+　　　　<td width=120><br></td><td width=120><br></td><td width=120><input type="text" size=5 name="rate0101"</td>
+<td width=120><input type="text" size=5 name="rate0201"</td>
+<td width=120><input type="text" size=5 name="rate0301"</td>
+<td width=120><input type="text" size=5 name="rate0401"</td>
+<td width=120><input type="text" size=5 name="rate0501"</td>
+<td width=120><input type="text" size=5 name="rate0601"</td>
+<td width=120><input type="text" size=5 name="rate0701"</td>
+<td width=120><input type="text" size=5 name="rate0801"</td>
+<td width=120><input type="text" size=5 name="rate0901"</td>
+<td width=120><input type="text" size=5 name="rate1001"</td>
+</tr>
+<tr>
+         <td><font size = 2><input type="text" size=5 name="ope02"</td>
+         <td><font size = 2><input type="text" size=5 name="time02"</td>
+　　　　<td ><font size = 2>  <select name="gele02">
+	     <option value="<=">≦
+	     <option value=">=">≧
+	    </select>
+　　　　<td width=120><br></td><td width=120><br></td><td width=120><input type="text" size=5 name="rate0102"</td>
+<td width=120><input type="text" size=5 name="rate0202"</td>
+<td width=120><input type="text" size=5 name="rate0302"</td>
+<td width=120><input type="text" size=5 name="rate0402"</td>
+<td width=120><input type="text" size=5 name="rate0502"</td>
+<td width=120><input type="text" size=5 name="rate0602"</td>
+<td width=120><input type="text" size=5 name="rate0702"</td>
+<td width=120><input type="text" size=5 name="rate0802"</td>
+<td width=120><input type="text" size=5 name="rate0902"</td>
+<td width=120><input type="text" size=5 name="rate1002"</td>
+</tr>
+<tr>
+         <td><font size = 2><input type="text" size=5 name="ope03"</td>
+         <td><font size = 2><input type="text" size=5 name="time03"</td>
+　　　　<td ><font size = 2>  <select name="gele03">
+	     <option value="<=">≦
+	     <option value=">=">≧
+	    </select>
+　　　　<td width=120><br></td><td width=120><br></td><td width=120><input type="text" size=5 name="rate0103"</td>
+<td width=120><input type="text" size=5 name="rate0203"</td>
+<td width=120><input type="text" size=5 name="rate0303"</td>
+<td width=120><input type="text" size=5 name="rate0403"</td>
+<td width=120><input type="text" size=5 name="rate0503"</td>
+<td width=120><input type="text" size=5 name="rate0603"</td>
+<td width=120><input type="text" size=5 name="rate0703"</td>
+<td width=120><input type="text" size=5 name="rate0803"</td>
+<td width=120><input type="text" size=5 name="rate0903"</td>
+<td width=120><input type="text" size=5 name="rate1003"</td>
+</tr>
+<tr>
+         <td><font size = 2><input type="text" size=5 name="ope04"</td>
+         <td><font size = 2><input type="text" size=5 name="time04"</td>
+　　　　<td ><font size = 2>  <select name="gele04">
+	     <option value="<=">≦
+	     <option value=">=">≧
+	    </select>
+　　　　<td width=120><br></td><td width=120><br></td><td width=120><input type="text" size=5 name="rate0104"</td>
+<td width=120><input type="text" size=5 name="rate0204"</td>
+<td width=120><input type="text" size=5 name="rate0304"</td>
+<td width=120><input type="text" size=5 name="rate0404"</td>
+<td width=120><input type="text" size=5 name="rate0504"</td>
+<td width=120><input type="text" size=5 name="rate0604"</td>
+<td width=120><input type="text" size=5 name="rate0704"</td>
+<td width=120><input type="text" size=5 name="rate0804"</td>
+<td width=120><input type="text" size=5 name="rate0904"</td>
+<td width=120><input type="text" size=5 name="rate1004"</td>
+</tr>
+<tr>
+         <td><font size = 2><input type="text" size=5 name="ope05"</td>
+         <td><font size = 2><input type="text" size=5 name="time05"</td>
+　　　　<td ><font size = 2>  <select name="gele05">
+	     <option value="<=">≦
+	     <option value=">=">≧
+	    </select>
+　　　　<td width=120><br></td><td width=120><br></td><td width=120><input type="text" size=5 name="rate0105"</td>
+<td width=120><input type="text" size=5 name="rate0205"</td>
+<td width=120><input type="text" size=5 name="rate0305"</td>
+<td width=120><input type="text" size=5 name="rate0405"</td>
+<td width=120><input type="text" size=5 name="rate0505"</td>
+<td width=120><input type="text" size=5 name="rate0605"</td>
+<td width=120><input type="text" size=5 name="rate0705"</td>
+<td width=120><input type="text" size=5 name="rate0805"</td>
+<td width=120><input type="text" size=5 name="rate0905"</td>
+<td width=120><input type="text" size=5 name="rate1005"</td>
+</tr>
+<tr>
+         <td><font size = 2><input type="text" size=5 name="ope06"</td>
+         <td><font size = 2><input type="text" size=5 name="time06"</td>
+　　　　<td ><font size = 2>  <select name="gele06">
+	     <option value="<=">≦
+	     <option value=">=">≧
+	    </select>
+　　　　<td width=120><br></td><td width=120><br></td><td width=120><input type="text" size=5 name="rate0106"</td>
+<td width=120><input type="text" size=5 name="rate0206"</td>
+<td width=120><input type="text" size=5 name="rate0306"</td>
+<td width=120><input type="text" size=5 name="rate0406"</td>
+<td width=120><input type="text" size=5 name="rate0506"</td>
+<td width=120><input type="text" size=5 name="rate0606"</td>
+<td width=120><input type="text" size=5 name="rate0706"</td>
+<td width=120><input type="text" size=5 name="rate0806"</td>
+<td width=120><input type="text" size=5 name="rate0906"</td>
+<td width=120><input type="text" size=5 name="rate1006"</td>
+</tr>
+<tr>
+         <td><font size = 2><input type="text" size=5 name="ope07"</td>
+         <td><font size = 2><input type="text" size=5 name="time07"</td>
+　　　　<td ><font size = 2>  <select name="gele07">
+	     <option value="<=">≦
+	     <option value=">=">≧
+	    </select>
+　　　　<td width=120><br></td><td width=120><br></td><td width=120><input type="text" size=5 name="rate0107"</td>
+<td width=120><input type="text" size=5 name="rate0207"</td>
+<td width=120><input type="text" size=5 name="rate0307"</td>
+<td width=120><input type="text" size=5 name="rate0407"</td>
+<td width=120><input type="text" size=5 name="rate0507"</td>
+<td width=120><input type="text" size=5 name="rate0607"</td>
+<td width=120><input type="text" size=5 name="rate0707"</td>
+<td width=120><input type="text" size=5 name="rate0807"</td>
+<td width=120><input type="text" size=5 name="rate0907"</td>
+<td width=120><input type="text" size=5 name="rate1007"</td>
+</tr>
+<tr>
+         <td><font size = 2><input type="text" size=5 name="ope08"</td>
+         <td><font size = 2><input type="text" size=5 name="time08"</td>
+　　　　<td ><font size = 2>  <select name="gele08">
+	     <option value="<=">≦
+	     <option value=">=">≧
+	    </select>
+　　　　<td width=120><br></td><td width=120><br></td><td width=120><input type="text" size=5 name="rate0108"</td>
+<td width=120><input type="text" size=5 name="rate0208"</td>
+<td width=120><input type="text" size=5 name="rate0308"</td>
+<td width=120><input type="text" size=5 name="rate0408"</td>
+<td width=120><input type="text" size=5 name="rate0508"</td>
+<td width=120><input type="text" size=5 name="rate0608"</td>
+<td width=120><input type="text" size=5 name="rate0708"</td>
+<td width=120><input type="text" size=5 name="rate0808"</td>
+<td width=120><input type="text" size=5 name="rate0908"</td>
+<td width=120><input type="text" size=5 name="rate1008"</td>
+</tr>
+<tr>
+         <td><font size = 2><input type="text" size=5 name="ope09"</td>
+         <td><font size = 2><input type="text" size=5 name="time09"</td>
+　　　　<td ><font size = 2>  <select name="gele09">
+	     <option value="<=">≦
+	     <option value=">=">≧
+	    </select>
+　　　　<td width=120><br></td><td width=120><br></td><td width=120><input type="text" size=5 name="rate0109"</td>
+<td width=120><input type="text" size=5 name="rate0209"</td>
+<td width=120><input type="text" size=5 name="rate0309"</td>
+<td width=120><input type="text" size=5 name="rate0409"</td>
+<td width=120><input type="text" size=5 name="rate0509"</td>
+<td width=120><input type="text" size=5 name="rate0609"</td>
+<td width=120><input type="text" size=5 name="rate0709"</td>
+<td width=120><input type="text" size=5 name="rate0809"</td>
+<td width=120><input type="text" size=5 name="rate0909"</td>
+<td width=120><input type="text" size=5 name="rate1009"</td>
+</tr>
+<tr>
+         <td><font size = 2><input type="text" size=5 name="ope10"</td>
+         <td><font size = 2><input type="text" size=5 name="time10"</td>
+　　　　<td ><font size = 2>  <select name="gele10">
+	     <option value="<=">≦
+	     <option value=">=">≧
+	    </select>
+　　　　<td width=120><br></td><td width=120><br></td><td width=120><input type="text" size=5 name="rate0110"</td>
+<td width=120><input type="text" size=5 name="rate0210"</td>
+<td width=120><input type="text" size=5 name="rate0310"</td>
+<td width=120><input type="text" size=5 name="rate0410"</td>
+<td width=120><input type="text" size=5 name="rate0510"</td>
+<td width=120><input type="text" size=5 name="rate0610"</td>
+<td width=120><input type="text" size=5 name="rate0710"</td>
+<td width=120><input type="text" size=5 name="rate0810"</td>
+<td width=120><input type="text" size=5 name="rate0910"</td>
+<td width=120><input type="text" size=5 name="rate1010"</td>
+</tr>
+</table></form>

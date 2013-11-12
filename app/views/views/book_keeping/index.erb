@@ -1,0 +1,18 @@
+<div align=center><H2>複式簿記メイン</H2>
+     <%= form_tag  :action => :year %>
+     <%#= text_field :year,:year,:size=>2,:value => @year.year %>年度
+     <%= text_field_tag :year,@year.year,:size=>2  %>年度
+　　ユーザ：<%= current_user.login %><hr>
+     </form>
+<%= flash[:message] %>
+<%= Menu.menue_table(self,@labels) %>
+ <%= link_to("振替伝票一覧 印刷用CSV","/book_main/csv_out_print")%>
+<p>
+<hr>
+勘定科目で不足がある時は、管理者に連絡してください。
+<p>
+<h4>年度初めに</h4>
+資産、負債、資本の残高のある各勘定課目について、<br>
+相手方勘定「開始残高」で振替伝票を作成して下さい。<br>
+日付は年度の最初の日付にしてください<br>
+</div>

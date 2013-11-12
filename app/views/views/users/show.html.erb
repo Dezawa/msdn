@@ -1,0 +1,21 @@
+ユーザ別設定表
+<% form_for(@user) do |f| -%>
+  <%= f.error_messages %> 
+<% end %>
+<%= link_to '修正', edit_user_path(@user) %> 
+<%= link_to '一覧', users_path %>
+<table border=1><tr><td>項目</td><td>コメント</td><td>値</td></tr>
+<% @Labels.each_with_index{|lbl,i|
+   val = case @InputType[i]
+   when :bool     ; @user[lbl] ? "可" : "否"
+   when :password ; next
+   else           ; @user[lbl]
+   end
+ %>
+<%= "<tr><td>#{lbl}</td><td>#{@HelpMsg[i]}</td><td>#{val}</td></tr>" %><% } %>
+</table>
+オプション
+<table border=1><tr><td>オプション</td></tr>
+<% @options.each{|opt| -%> <tr><td><%= opt.label %></td><td> <% -%>
+ <%= (@arrowed_options.include?(opt.id) ? "有効" : "無効")%></td></tr> <%  } %>
+</table>

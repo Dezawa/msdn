@@ -1,0 +1,15 @@
+<div align=center>
+<H2>複式簿記：利用簿記変更</H2>
+あなたは複数の利用者の簿記を閲覧もしくは編集することが出来ます。<br>
+どなたの簿記をみるのか選んでください。<br>
+<font color=RED><%= flash[:error] %></font>
+<table border=1><%= label_line_option %>
+<% @arrowed.each do |obj|  -%>
+  <tr><% @labels.each{|html_cell| -%>
+  <%= html_cell.td %><%= html_cell.disp_field obj -%></td>  <%- } -%>
+
+  <td><%= "<a href=\"owner_change?owner=#{obj.owner}\">選択</a>" if @owner.owner != obj.owner %></td>
+  </tr>
+<% end -%>
+</table>
+</div>

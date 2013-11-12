@@ -1,0 +1,17 @@
+<%#=    form_tag(:action => :update_on_table)+submit_tag('更新') %>
+<table border=1>
+<tr><% %w(削除 ID 優先順 製造番号 製造数 製品名 銘柄 養生庫 実績コピー).each{|lbl| -%>
+<td rowspan=2 align=center><%= lbl %></td><% } -%>
+<td colspan=8 align=center><nobr>予定/開始,終了</td><td rowspan=2 align=center>製造番号</td>
+<td colspan=8 align=center><nobr>実績/開始,終了</td></tr>
+<% (0..1).each{|i| 
+   %w(抄造 養生 乾燥 加工).each{|l| %><td colspan=2 align=center><nobr> <%= l %></td> 
+<% }} %></tr>
+<% @plans.each do |plan| next if !plan.hozen? && plan.done_before(@model.skd_from) ;@plan=plan;id = plan.id -%>
+<tr id='pro_<%= id %>'><% @plabels.each{|html_cell| -%>
+ <nobr><%= html_cell.td -%><%= html_cell.edit_field_with_id :ube_plan,@plan,controller %></td><% } -%></td> 
+</tr>
+<% end -%>
+</table>
+<%#</form>%>
+<br />

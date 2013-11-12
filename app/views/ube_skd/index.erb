@@ -1,0 +1,19 @@
+<h3>製造計画 一覧</h3>
+<%= flash[:message] %>
+<%= @errorse -%>
+<%= button_to( '新製造計画', :action => :new )%>
+<table border=1><tr><td rowspan=2>立案No</td><td colspan=2 align=center>立案期間</td>
+<td colspan=5 align=center>稼働時間/時間</td>
+<td colspan=5 align=center>予定実稼働時間/時間</td><td rowspan=2 colspan=4>　</td></tr>
+<tr><td>開始日</td><td>終了日</td>
+<% 2.times{|i| %> <td>抄造西</td><td>抄造東</td><td>原乾燥</td><td>新乾燥</td><td>加工</td><% } %></tr>
+<% @models.each do |obj| id = obj.id -%>
+<tr><% @labels.each{|html_cell| -%> <%= raw html_cell.td -%><%= html_cell.disp(obj) -%></td><% } %>
+    <td><%= link_to '表示・立案', obj %></td>
+    <td><%= link_to '編集・実績', edit_ube_skd_path(obj) %></td>
+    <td><%= link_to '実績入力', :id => id,:action => :input_result %></td>
+    <td><%= link_to '削除', obj, :confirm => 'Are you sure?', :method => :delete %></td>
+ </tr>
+<% end -%>
+</table>
+<br />

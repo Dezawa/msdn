@@ -1,0 +1,82 @@
+--- 
+dezawa:
+  id:   "1"
+  login: dezawa
+  name: 出沢
+  email: dezawa@aliadne.net
+  crypted_password: 254c557a9120cb5a5c02a63521463d4fb1d087e7
+  salt: 8b7ed3c791618f1d1c3206b296f943f80585995b
+  lipscsvio: "1"
+  lipssizeoption: "1"
+  lipssizepro: "100"
+  lipssizeope: "100"
+  lipslabelcode: default
+  lipsoptlink: to_ube_product
+quentin:
+  id:                        2
+  name:                      クォンテイン
+  login:                     quentin
+  email:                     quentin@example.com
+  salt:                      356a192b7913b04c54574d18c28d46e6395428ab # SHA1('0')
+  crypted_password:          5d110a078c494f7abc467685383b37b11f2db1ed # 'monkey'
+  created_at:                <%= 5.days.ago.to_s :db  %>
+  remember_token_expires_at: <%= 1.days.from_now.to_s %>
+  remember_token:            77de68daecd823babbb58edb1c8e14d7106e83bb
+      
+aaron:
+  id:                        3
+  login:                     aaron
+  email:                     aaron@example.com
+  salt:                      da4b9237bacccdf19c0760cab7aec4a8359010b0 # SHA1('1')
+  crypted_password:          90aa0f4d1aeab782ba0711294f23798e946c57c2 # 'monkey'
+  created_at:                <%= 1.days.ago.to_s :db %>
+  remember_token_expires_at: 
+  remember_token:            
+
+
+old_password_holder:
+  id:                        4
+  login:                     old_password_holder
+  email:                     salty_dog@example.com
+  salt:                      7e3041ebc2fc05a40c60028e2c4901a81035d3cd
+  crypted_password:          00742970dc9e6319f8019fd54864d3ea740f04b1 # test
+  created_at:                <%= 1.days.ago.to_s :db %>
+guest:
+  id:                        5
+  login:                     guest
+  name:                      ゲスト
+  email:                     guest@example.com
+  salt:                      f4d2f283e274ab16ff90d45721e53ca1a72a6d69
+  crypted_password:          f899f52fce0661e934a4978b0bd18a4c09223006 # guestpass
+  created_at:                <%= 1.days.ago.to_s :db %>
+ 
+
+ubeboard:
+  id:   "6"
+  login: ubeboard
+  name: 宇部ボード
+  email: ubeboard@aliadne.net
+  crypted_password: 254c557a9120cb5a5c02a63521463d4fb1d087e7
+  salt: 8b7ed3c791618f1d1c3206b296f943f80585995b
+  lipscsvio: "1"
+  lipssizeoption: "1"
+  lipssizepro: "100"
+  lipssizeope: "100"
+  lipslabelcode: default
+  lipsoptlink: to_ube_product
+
+
+testuser:
+  id:   "7"
+  login: testuser
+  name: テストユーザ
+  email: ubeboard@aliadne.net
+  crypted_password: 254c557a9120cb5a5c02a63521463d4fb1d087e7
+  salt: 8b7ed3c791618f1d1c3206b296f943f80585995b
+  lipscsvio: "1"
+  lipssizeoption: "1"
+  lipssizepro: "100"
+  lipssizeope: "100"
+  lipslabelcode: default
+  lipsoptlink: to_ube_product
+

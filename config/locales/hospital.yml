@@ -1,0 +1,16 @@
+# LiPSの項目名書き換えオプション
+hospital:
+  lips:      "病院"
+  pro_name:   "コース"
+  operation: "検査項目"
+  profit:    "利益"
+  runtime:   "稼働時間"
+  min:       "最小受入数"
+  max:       "最大受入数"
+  number:    "受入数"
+  coment:    "検査を一回行うのに必要な時間"
+  pro_gain:  "検査当り利益"
+  pro_max:    "コース数"
+  ope_max:    "検査数"
+  pro_direct: "コースの並び"
+  message:   ""

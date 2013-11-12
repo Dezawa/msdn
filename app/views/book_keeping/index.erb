@@ -1,0 +1,36 @@
+<%# if @Links %> <%#= links  @Links if @Links %>
+<div align=center><H2>複式簿記：メイン</H2>
+ <div id='year_change' >
+   <%= my_select(:year_owner,:year,[2000]+(2012..Time.now.next_year.year).to_a,:value => @year.year) %>年度
+   <%= observe_field 'year_owner_year',{ :on => 'click', :with => "value" ,:url =>{:action => :year_change}} %>
+　　ログインユーザ：<%= current_user.login %>
+　<%= @owner.owner %>の簿記(<%= @owner.permission_string %>)
+ <% if   @owner_choices.size>1 %>
+  <%= link_to( '変更', :action => :owner_change_win ,:popup => true) %> 
+  <% end %>
+</div>
+<hr>
+<%= flash[:message] %>
+<table border=1 cellspacing=0>
+<% @labels[0..-2].map{|menu| -%>
+<%=  menu.show self %>
+<% }.join -%>
+<div id='menu'>
+<%= @labels[-1].show self %>
+</div>
+</table>
+<div align=center>
+ <%= link_to("振替伝票一覧 印刷用CSV","/book_main/csv_out_print")%><br>
+ <%= link_to("勘定元帳一覧 CSV","/book_keeping/csv_motocho")%><br>
+ 　　各科目の元帳の表示は、勘定科目、貸借対照表、清算表 の画面で科目名からリンクしています。
+</div>
+<p></p>
+<hr>
+勘定科目で不足がある時は、管理者に連絡してください。
+<p></p>
+<h4>年度初めに</h4>
+資産、負債、資本の残高のある各勘定課目について、<br>
+相手方勘定「開始残高」で振替伝票を作成して下さい。<br>
+日付は年度の最初の日付にしてください<br>
+</div>
+</div>

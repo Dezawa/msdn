@@ -1,0 +1,41 @@
+<h2>ウベボード休日予定 一覧</h2>
+<%  -%>
+<% month0 = (Time.now+1.month).beginning_of_month ;month9 = month0 + 2.month %>
+<%#
+年月|工程| 1| 2|.......|31|
+　　|　　|金|土|日|...
+　　|　　|　|休|休|...
+　　|　　|□|□|□|　　　
+-%>
+<%= flash[:message] %>
+<%= @errorse %>
+<table><tr><td>
+<%= form_tag(:action => :add_on_table) + submit_tag("追加") -%>
+<%= "年月"+text_field( :holyday, :month0,:size=>5, :value => month0.strftime("%Y/%m") ) %>～
+<%= "年月"+text_field( :holyday, :month9,:size=>5, :value => month9.strftime("%Y/%m") ) %>
+
+</form></td>
+<td><%= form_tag :action=>:edit_on_table %>
+<input id="page" name="page" type="hidden" value="<%= @page %>">
+<input type='submit' value='編集'></td></tr></table>
+<%= (will_paginate @models, :prev_label=>'前へ', :next_label=>'次へ'
+       ).gsub(/.update_on_table/,"") %></p>
+<% @models.each{|model| month=Time.parse(model.month);lastday = month.end_of_month -%><%# 月毎に表　-%>
+ <table border=1>
+  <tr><td rowspan=2><nobr>年 月</td><td rowspan=2>工程</td>
+   <td><%= (1..31).map{|day| day}.join("</td><td>") %></td></tr>
+  <tr><td><%= (0..lastday.day-1).map{|d|  @wday[(month+d.day).wday]
+		}.join("</td><td>") %>
+</td></tr>
+<tr><td rowspan=5><%= month.strftime("%y年<br>%m月") -%><br>
+<%= link_to '削除',model , :confirm => 'Are you sure?', :method => :delete %>
+<%hidden_field(:ube_holyday,:month,{:index=>model.id ,:value=>model.month})%></td>
+<% @labels.each{|lbl,sym| holyday = model[sym] -%>
+<td><nobr><%= lbl %></td>
+<% (0..month.end_of_month.day-1).each{|d|  val=holyday[d] %> 
+<td bgcolor="<%= @color[val] %>"><%= @holy[holyday[d]] %></td><% } -%></tr>
+<% } %><% } %>
+</table>
+
+<p><%= (will_paginate @models, :prev_label=>'前へ', :next_label=>'次へ'
+       ).gsub(/.update_on_table/,"") %></p>

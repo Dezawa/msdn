@@ -1,0 +1,30 @@
+<%# if @Links %> <%#= links  @Links %>
+<%#　　ユーザ：%><%#= current_user.login %><hr>
+<%# end %>
+<h3><%= @TYTLE  %> 一覧 <%= @TYTLE_post %></h3>
+<%= flash[:message] %>
+<%= @errors.call if @errors -%>
+<%= case @TableEdit
+ when TrueClass ; add_edit_buttoms(@Domain) 
+ when String; @TableEdit 
+ when Array ; action_buttoms @TableEdit 
+ end %>
+<%= will_page = pagenation @models %>
+<table border=1><%= @TableHeader ? send(@TableHeader) : label_line_option %>
+<% @models.each do |obj|  -%>
+  <tr><% @labels.each{|html_cell| 
+        next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
+  <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
+  <% if @Show %>
+    <td><%= link_to '表示', obj %></td>
+  <% end %>
+  <% if @Edit %>
+    <td><%= link_to 'Edit', :action => :edit ,:page => @page,:id => obj.id %>
+    </td>
+  <% end %>
+  <%= delete_if_accepted obj %>
+  </tr>
+<% end -%>
+</table>
+<%= will_page %>
+<br />

@@ -1,0 +1,19 @@
+<BODY bgcolor="#F8FfFA">
+<% user=current_user %>
+<font size=5 ><b>LiPS(汎用会員版 )</b></font>
+<div align=right>UserName:<%= current_user.login %></font></div>
+<!--"lipscsvio", "lipssizeoption", "lipssizepro", "lipssizeope", "lipslabelcode", "lipsoptlink" -->
+<%= @lips.send(:pronames)[2] %>
+ <table><tr><td> <font size = 2>
+
+   <form enctype="multipart/form-data" action="./LinierPlanMemberUpload.cgi" method="post">
+    <input type="submit" value="条件設定CSV Upload"><input size=35 name="csvfile" type="file">
+    <a href="/MSDN/Members/LiPS-CSV100.xls">縦フォーム</a>
+    <a href="/MSDN/Members/LiPS-CSV100H.xls">横フォーム</a>
+    <%- [:promax,:opemax,:vertical,:minmax,:download].each{|sym|  
+    -%><%= if @lips.send(sym);hidden_field( :lips,sym);end %> <%-  } 
+        [:pronames,:optnames].each{|sym| next unless val=@lips.send(sym)
+          val.each_with_index{|v,i| next if v.blank?  
+            -%><%= hidden_field(:lips,"pronames[2]") %><%- }}
+    -%>
+</form></td></tr></table>

@@ -1,0 +1,13 @@
+<h3><%= @TYTLE %></h3>
+<%= error_messages_for :model %>
+<%=    form_tag(:action => :create)+submit_tag('作成') %>
+<table border=1><%= label_line %>
+<% id = @model.id -%>
+<%= "<tr id='pro_#{id}'>" %><% @labels.each{|html_cell| -%>
+ <%= html_cell.edit_field @Domain,@model %><% } -%>
+</tr>
+</table>
+</form>
+<br />
+<hr>
+<%= BookMainController::Comment %>

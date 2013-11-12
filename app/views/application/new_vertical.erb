@@ -1,0 +1,15 @@
+<h3><%= @TYTLE %></h3>
+<%= error_messages_for :model %>
+<%=    form_tag(:action => :create)+submit_tag('作成') %>
+<table border=1>
+<% id = @model.id -%>
+<% @labels.each{|html_cell| %>
+<tr><td><%= html_cell.label+ help(html_cell.help) %></td>
+ <td><%= html_cell.edit_field @Domain,@model,controller %></td>
+ <td><%= html_cell.comment %></td>
+</tr><% } -%>
+</table>
+</form>
+<br />
+<hr>
+<%= @PostMessage %>

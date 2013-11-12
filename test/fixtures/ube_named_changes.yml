@@ -1,0 +1,280 @@
+
+1: 
+  id: 29
+  display: A10
+  jun: 1
+  pre_condition_id: 7
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+
+2: 
+  id: 30
+  display: A10
+  jun: 1
+  pre_condition_id: 
+  post_condition_id: 7
+  ope_name: !binary |
+    5oqE6YCg
+
+
+3: 
+  id: 31
+  display: A09 A12
+  jun: 2
+  pre_condition_id: 2
+  post_condition_id: 3
+  ope_name: !binary |
+    5oqE6YCg
+
+
+4: 
+  id: 32
+  display: A12 A09
+  jun: 2
+  pre_condition_id: 2
+  post_condition_id: 12
+  ope_name: !binary |
+    5oqE6YCg
+
+
+5: 
+  id: 33
+  display: A12 A09
+  jun: 2
+  pre_condition_id: 2
+  post_condition_id: 13
+  ope_name: !binary |
+    5oqE6YCg
+
+
+6: 
+  id: 34
+  display: A12 A09
+  jun: 2
+  pre_condition_id: 5
+  post_condition_id: 3
+  ope_name: !binary |
+    5oqE6YCg
+
+
+7: 
+  id: 35
+  display: A12 A09
+  jun: 2
+  pre_condition_id: 5
+  post_condition_id: 12
+  ope_name: !binary |
+    5oqE6YCg
+
+
+8: 
+  id: 36
+  display: A12 A09
+  jun: 2
+  pre_condition_id: 5
+  post_condition_id: 13
+  ope_name: !binary |
+    5oqE6YCg
+
+
+9: 
+  id: 37
+  display: A09
+  jun: 3
+  pre_condition_id: 2
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+
+10: 
+  id: 38
+  display: A09
+  jun: 3
+  pre_condition_id: 5
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+
+11: 
+  id: 39
+  display: A12
+  jun: 4
+  pre_condition_id: 
+  post_condition_id: 3
+  ope_name: !binary |
+    5oqE6YCg
+
+
+12: 
+  id: 40
+  display: A12
+  jun: 4
+  pre_condition_id: 
+  post_condition_id: 12
+  ope_name: !binary |
+    5oqE6YCg
+
+
+13: 
+  id: 41
+  display: A12
+  jun: 4
+  pre_condition_id: 
+  post_condition_id: 13
+  ope_name: !binary |
+    5oqE6YCg
+
+
+14: 
+  id: 42
+  display: A12
+  jun: 4
+  pre_condition_id: 3
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+
+15: 
+  id: 43
+  display: A12
+  jun: 4
+  pre_condition_id: 12
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+
+16: 
+  id: 44
+  display: A12
+  jun: 4
+  pre_condition_id: 13
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+
+17: 
+  id: 45
+  display: A12
+  jun: 4
+  pre_condition_id: 
+  post_condition_id: 3
+  ope_name: !binary |
+    5Lm+54el
+
+
+18: 
+  id: 46
+  display: A12
+  jun: 4
+  pre_condition_id: 
+  post_condition_id: 12
+  ope_name: !binary |
+    5Lm+54el
+
+
+19: 
+  id: 47
+  display: A12
+  jun: 4
+  pre_condition_id: 
+  post_condition_id: 13
+  ope_name: !binary |
+    5Lm+54el
+
+
+20: 
+  id: 48
+  display: A12
+  jun: 4
+  pre_condition_id: 3
+  post_condition_id: 
+  ope_name: !binary |
+    5Lm+54el
+
+
+21: 
+  id: 49
+  display: A12
+  jun: 4
+  pre_condition_id: 12
+  post_condition_id: 
+  ope_name: !binary |
+    5Lm+54el
+
+
+22: 
+  id: 50
+  display: A12
+  jun: 4
+  pre_condition_id: 13
+  post_condition_id: 
+  ope_name: !binary |
+    5Lm+54el
+
+
+23: 
+  id: 51
+  display: A05
+  jun: 5
+  pre_condition_id: 14
+  post_condition_id: 
+  ope_name: !binary |
+    5Lm+54el
+
+
+24: 
+  id: 52
+  display: A04
+  jun: 5
+  pre_condition_id: 
+  post_condition_id: 14
+  ope_name: !binary |
+    5Lm+54el
+
+
+25: 
+  id: 53
+  display: A05
+  jun: 5
+  pre_condition_id: 14
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+
+26: 
+  id: 54
+  display: A04
+  jun: 5
+  pre_condition_id: 
+  post_condition_id: 14
+  ope_name: !binary |
+    5oqE6YCg
+
+
+27: 
+  id: 55
+  display: A14
+  jun: 6
+  pre_condition_id: 15
+  post_condition_id: 
+  ope_name: !binary |
+    5oqE6YCg
+
+
+28: 
+  id: 56
+  display: A14
+  jun: 6
+  pre_condition_id: 
+  post_condition_id: 15
+  ope_name: !binary |
+    5oqE6YCg
+

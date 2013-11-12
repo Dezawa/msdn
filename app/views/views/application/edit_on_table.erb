@@ -1,0 +1,15 @@
+<% if @Links %> <%= links @Links  %>
+　　ユーザ：<%= current_user.login %><hr>
+<% end %>
+<h3><%= @TYTLE %> 編集</h3>
+<%= disp_errors @models %>
+<%=    form_tag(:action => :update_on_table)+submit_tag('更新') %>
+<table border=1><%= label_line %>
+<% @models.each do |model| id = model.id -%>
+<%= "<tr id='pro_#{id}'>" %><% @labels.each{|html_cell| -%>
+ <%= html_cell.edit_field_with_id @Domain,model %><% } -%>
+</tr>
+<% end -%>
+</table>
+</form>
+<br />

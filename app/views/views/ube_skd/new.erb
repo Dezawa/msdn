@@ -1,0 +1,16 @@
+<h2>新規製造計画立案</h2>
+<%= error_messages(@model.errors) %>
+<% if @plans.size == 0 %>
+<form enctype='multipart/form-data' action='./create' method='post'>
+<% else %>
+<%= form_tag '/ube_skd/create' -%>
+<% end %>
+<table><tr><td valain=top> <%= submit_tag '先月度仕掛り取り込み' %></td></tr>
+<tr><td>立案期間　
+     <%= @skd_from_label.edit_field(:ube_skd,@model,:no_td=>true)+"～"+
+     @skd_to_label.edit_field(:ube_skd,@model,:no_td=>true) %> </td></tr>
+<%= "<tr><td>LiPS CSV読み込み　<input size=25 id='csvfile' name='csvfile' type='file'></td></tr>" if @plans.size==0 %>
+</table>
+<%= render :partial => "edit_plans" %>
+<%# end %>
+

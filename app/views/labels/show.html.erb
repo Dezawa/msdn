@@ -1,0 +1,17 @@
+<% form_for(@label) do |f| -%>
+  <%= f.error_messages %> 
+<% end %>
+<%= link_to '修正', edit_label_path(@label) %> 
+<%= link_to '一覧', labels_path %>
+<table border=1><tr><td>項目</td><td>コメント</td><td>値</td></tr>
+<% @Columns.each_with_index{|lbl,i|
+   val = case @InputType[i]
+   when :bool     ; @label[lbl] ? "可" : "否"
+   when :password ; next
+   else           ; @label[lbl]
+   end
+ %>
+<%= "<tr><td>#{lbl}</td><td>#{@HelpMsg[i]}</td><td>#{val}</td></tr>" %><% } %>
+</table>
+
+<%= @klass %><br><%= @label.class %>
