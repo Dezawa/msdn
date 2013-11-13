@@ -33,7 +33,7 @@ module Function
   #
   # 月度計画、作業指示書はそれぞれ PSファイルが書き出される。それを /usr/bin/ps2pdf にてPDFとする。
   module UbeSkdPdf
-    Goth = "/GothicBBB-Medium-EUC-H"
+    Goth = "/GothicBBB-Medium-UniJIS-UTF8-H"
     #一日最低行数
     MinLine = 3
 
