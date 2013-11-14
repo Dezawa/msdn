@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class  ActionView::Base
   def self.memu_line
     names_free     = [["線形計画法","/lips/member"],["複式簿記","/book_keeping"]]
