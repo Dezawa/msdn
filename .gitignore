@@ -1,0 +1,8 @@
+log
+public/restart.txt
+test/csv/
+tmp/cache/
+tmp/hospital/
+tmp/pids/
+tmp/tags
+tmp/ubr/
