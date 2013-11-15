@@ -16,8 +16,8 @@ require 'nkf'
 require 'csv'
   #validates_presence_of :proname ,:shozo ,:dry,:lot_size,:ope_condition,:defect_rate
   #validates_inclusion_of :lot_size, :in =>(500..3000), :message=>"lot sizeが範囲外です"
-  attr_accessible :id,:proname ,:shozo ,:dryer,:lot_size,:defect_rate,:ope_condition,:color,:hozen
-  attr_accessible :roundsize
+  #attr_accessible :id,:proname ,:shozo ,:dryer,:lot_size,:defect_rate,:ope_condition,:color,:hozen
+  #attr_accessible :roundsize
   CSVlabels =  ["ID","製品名","抄造機","乾燥機","lot size","ラウンド最大製造数","不良率","製造条件","表示色","保全"]
   CSVatrs   = [:id,:proname ,:shozo ,:dryer,:lot_size,:roundsize,:defect_rate,:ope_condition,:color,:hozen]
 

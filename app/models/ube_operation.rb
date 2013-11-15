@@ -27,7 +27,7 @@
 #UbeChangeTime に登録されており、それを参照しているので不要であった。
 class UbeOperation < ActiveRecord::Base
   extend Function::CsvIo
-  attr_accessible :id ,:ope_name ,:west ,:east ,:old ,:new ,:kakou
+  #attr_accessible :id ,:ope_name ,:west ,:east ,:old ,:new ,:kakou
 
   # DB column名のリスト
   Fields = ["west", "east", "old", "new", "kakou"]

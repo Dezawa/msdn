@@ -62,18 +62,18 @@ class UbeSkd < ActiveRecord::Base
   validates_presence_of :skd_from, :message =>"立案期間開始が未入力です"
   validates_presence_of :skd_to,  :message =>"立案期間終了が未入力です"
 
-  attr_accessible :message
-  attr_accessible :runtime_shozo_w ,:plantime_shozo_w,:donetime_shozo_w 
-  attr_accessible :runtime_shozo_e ,:plantime_shozo_e,:donetime_shozo_e 
-  attr_accessible :runtime_dry_o   ,:plantime_dry_o  ,:donetime_dry_o   
-  attr_accessible :runtime_dry_n   ,:plantime_dry_n  ,:donetime_dry_n   
-  attr_accessible :runtime_kakou   ,:plantime_kakou  ,:donetime_kakou   
-  attr_accessible :skd_from, :skd_to,:replan_from, :free_list
-  attr_accessible :skd_f, :skd_t, :holydays
-  attr_accessible :running_wf_shozow,:running_wf_shozoe,:running_pf_shozow,:running_pf_shozoe,
-  :running_dryo,:running_dryn,:limit_wf_shozow,:limit_wf_shozoe
-  attr_accessible :runned_wf_shozow,:runned_wf_shozoe,     :runned_pf_shozow,:runned_pf_shozoe,
-  :runned_dryero,:runned_dryern
+  #attr_accessible :message
+  #attr_accessible :runtime_shozo_w ,:plantime_shozo_w,:donetime_shozo_w 
+  #attr_accessible :runtime_shozo_e ,:plantime_shozo_e,:donetime_shozo_e 
+  #attr_accessible :runtime_dry_o   ,:plantime_dry_o  ,:donetime_dry_o   
+  #attr_accessible :runtime_dry_n   ,:plantime_dry_n  ,:donetime_dry_n   
+  #attr_accessible :runtime_kakou   ,:plantime_kakou  ,:donetime_kakou   
+  #attr_accessible :skd_from, :skd_to,:replan_from, :free_list
+  #attr_accessible :skd_f, :skd_t, :holydays
+  #attr_accessible :running_wf_shozow,:running_wf_shozoe,:running_pf_shozow,:running_pf_shozoe,
+  #:running_dryo,:running_dryn,:limit_wf_shozow,:limit_wf_shozoe
+  #attr_accessible :runned_wf_shozow,:runned_wf_shozoe,     :runned_pf_shozow,:runned_pf_shozoe,
+  #:runned_dryero,:runned_dryern
 
   Running = [:running_pf_shozow,:running_pf_shozoe,:running_wf_shozow,:running_wf_shozoe,
              :running_dryo,:running_dryn

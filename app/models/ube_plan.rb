@@ -39,13 +39,13 @@ class UbePlan < ActiveRecord::Base
   has_and_belongs_to_many  :ube_skd
 
 
-  attr_accessible :jun               ,:lot_no            ,:ube_product_id    ,:mass
-  attr_accessible :plan_shozo_from   ,:plan_shozo_to     ,:plan_yojo_from    ,:plan_yojo_to     
-  attr_accessible :plan_dry_from     ,:plan_dry_to       ,:plan_dry_out      ,:plan_dry_end
-  attr_accessible :plan_kakou_from   ,:plan_kakou_to    
-  attr_accessible :result_shozo_from ,:result_shozo_to   ,:result_yojo_from  ,:result_yojo_to   
-  attr_accessible :result_dry_from   ,:result_dry_to     ,:result_kakou_from ,:result_kakou_to  
-  attr_accessible :meigara,:yojoko
+  #attr_accessible :jun               ,:lot_no            ,:ube_product_id    ,:mass
+  #attr_accessible :plan_shozo_from   ,:plan_shozo_to     ,:plan_yojo_from    ,:plan_yojo_to     
+  #attr_accessible :plan_dry_from     ,:plan_dry_to       ,:plan_dry_out      ,:plan_dry_end
+  #attr_accessible :plan_kakou_from   ,:plan_kakou_to    
+  #attr_accessible :result_shozo_from ,:result_shozo_to   ,:result_yojo_from  ,:result_yojo_to   
+  #attr_accessible :result_dry_from   ,:result_dry_to     ,:result_kakou_from ,:result_kakou_to  
+  #attr_accessible :meigara,:yojoko
 
   attr_reader     :yojoKo
 
