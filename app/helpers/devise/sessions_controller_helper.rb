@@ -1,0 +1,2 @@
+module Devise::SessionsControllerHelper
+end
