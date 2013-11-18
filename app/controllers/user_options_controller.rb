@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class UserOptionsController < ApplicationController
-  before_filter :login_required 
-  before_filter {|ctrl| ctrl.require_permit_label "ユーザメンテ"}
+ # before_filter :login_required 
+  #before_filter {|ctrl| ctrl.require_permit_label "ユーザメンテ"}
   before_filter :set_instanse_variable
   #View 表示すべき項目の定義
   # 第4フィールド type については、 ApplicationHelper#edit_field 参照
