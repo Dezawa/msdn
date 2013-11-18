@@ -251,9 +251,3 @@ class HtmlRadio  < HtmlSelect
   
 end
 
-class String
-  #include ERB::Util
-  def html_safe
-     self
-  end
-end
