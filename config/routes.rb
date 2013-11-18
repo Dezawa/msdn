@@ -1,4 +1,17 @@
-Msdn4::Application.routes.draw do
+Msdn::Application.routes.draw do
+  devise_for :users
+  root :to => "top#msdn"
+
+  resources :user_options,:users
+  
+  %w(user_options users).
+    each{|controller| 
+    %w(add_on_table edit_on_table update_on_table csv_out).
+    each{|action|
+      post "#{controller}/#{action}" => "#{controller}##{action}"
+    }}
+    
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
