@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-require 'html_cell'
-require 'menu'
+#require 'html_cell'
+#require 'menu'
 # 一覧表示系のヘルプメソッドを多く追加した
 # menue_table  Ubeboard や BookKeeping のメイン画面にあるような
 # メニュー一覧表を書き出す
@@ -58,9 +58,9 @@ module ApplicationHelper
   #          [Array] => [Symbol,permission] permission による。OKなら　Symbolがアクション。
   # [csv_down url]  csvダウンロードのURL
   #
-  def raw(str);str;end
+  #def raw(str);str;end
 
-  def help(url_name) # LiPS#cvsupdate_form => LiPS.html#cvsupdate_form
+  def ddhelp(url_name) # LiPS#cvsupdate_form => LiPS.html#cvsupdate_form
     return "" if url_name.blank?
     url,name = url_name.split("#")
     "<a href='/Help/#{url}.html" + (name ? "##{name}" : "") +
@@ -133,11 +133,13 @@ module ApplicationHelper
   def edit_buttoms(dom)
     add_buttom(dom)+edit_bottom
   end
+
   def add_buttom(dom)
     form_tag(:action => :add_on_table) + 
-      "<input type='hidden' name='page' value='#{@page}'>"+
+      "<input type='hidden' name='page' value='#{@page}'>".html_safe+
       submit_tag("追加")+
-      text_field( dom, :add_no,:size=>2, :value => 1 ) +  "</form></td><td>"
+      text_field( dom, :add_no,:size=>2, :value => 1 ) + 
+      "</form></td><td>".html_safe
   end
 
   def edit_bottom
@@ -162,31 +164,34 @@ module ApplicationHelper
   def form_buttom(action,label,opt={})
     hidden = opt.delete(:hidden) if opt.class==Hash
     hidden_value = opt.delete(:hidden_value) if opt.class==Hash
-    form_tag(:action => action)+ 
-      (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
+    form_tag(:action => action). 
+      safe_concat((if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
        else;"";end
-       )+
-      "<input type='hidden' name='page' value='#{@page}'>"+
-      (opt.class==Symbol ? send(opt) : "") +
-      submit_tag(label)+"</form>"
+       )).
+      safe_concat("<input type='hidden' name='page' value='#{@page}'>").
+      safe_concat( 
+                  (opt.class==Symbol ? send(opt) : "") +
+                  submit_tag(label)+"</form>"
+                  )
   end
   def input_and_action(action,label,opt)
     hidden = opt.delete(:hidden)
     hidden_value = opt.delete(:hidden_value)
-    form_tag(:action => action) + 
-      "<input type='hidden' name='page' value='#{@page}'>"+
+    form_tag(:action => action). 
+      safe_concat(  "<input type='hidden' name='page' value='#{@page}'>") +
       (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
-       else;"";end
+       else;"".html_safe;end
        )+
-      submit_tag(label)+
-      text_field( @Domain,action,opt ) +  "</form>"
+      submit_tag(label)+ 
+      text_field( @Domain,action,opt ) + "</form>".html_safe
   end
 
   def action_buttoms(buttoms)
-    "<table><tr>"+
-      buttoms.map{|buttom|
-      "<td>"+action_buttom(buttom) + "</td>"
-    }.join("\n") + "</tr></table>"
+    "<table><tr>".html_safe.
+      safe_concat(
+                  buttoms.map{|buttom| "<td>"+action_buttom(buttom) + "</td>"}.
+                  join("\n")
+                  ).safe_concat("</tr></table>")
   end
   def ddaction_buttoms(buttoms)
     "<table><tr>"+
@@ -217,19 +222,21 @@ module ApplicationHelper
     label_line_comcom(0,nil)
   end
   def label_line_comm(size,labels)
-    "<tr>"+label_line_comcom(size,labels)
+    "<tr>".html_safe+label_line_comcom(size,labels)
   end
   def label_line_comcom(size,labels)
     labels ||= @labels
-    labels.map{|label| 
+    safe_join(
+              labels.map{|label| 
       unless label.class == HtmlHidden || label.class == HtmlPasswd || label.field_disable(controller)
         if label.link
-          "<td><nobr><a href='#{label.link}'>#{label.label}</a></nobr></td>" 
+          "<td><nobr><a href='#{label.link}'>#{label.label}</a></nobr></td>".html_safe
         else
-          "<td><nobr>#{label.label}</nobr></td>" 
+          "<td><nobr>#{label.label}</nobr></td>".html_safe
         end
       end
-    }.compact.join
+    }.compact
+              )
   end
 
   def delete_if_accepted(obj)
@@ -247,7 +254,7 @@ module ApplicationHelper
       when 2; "<td>　</td><td>　</td></tr>"
       when 1; "<td>　</td></tr>"
       else  ; "</tr>"
-      end
+      end.html_safe
   end
 
   def label_line(size=2,labels=nil)
