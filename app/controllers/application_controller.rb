@@ -3,7 +3,7 @@
 #  Filters added to this controller apply to all controllers in the application.
 #  Likewise, all the methods added will be available for all controllers.
 # ++
-#require 'html_cell'
+require 'html_cell'
 
 # アクセス権管理のための権限フラグ @configure,@editor,@permitの設定と
 # 基本的なコントローラーのmethodを定義する。
