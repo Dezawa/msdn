@@ -3,4 +3,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-Msdn4::Application.load_tasks
+Msdn::Application.load_tasks

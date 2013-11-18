@@ -14,13 +14,17 @@
 # Ignore all logfiles and tempfiles.
 /log
 
-public/restart.txt
-test/csv/
-tmp/cache/
-tmp/hospital/
-tmp/pids/
-tmp/tags
-tmp/ubr/
+Public/restart.txt
+Test/csv/
+Tmp/cache/
+Tmp/hospital/
+Tmp/pids/
+Tmp/tags
+Tmp/ubr/
 
 *.old
+*~
 
+Gemfile.lock
+tmp/cache
+tmp/pids
