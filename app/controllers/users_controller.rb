@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 class UsersController < ApplicationController
-  before_filter :login_required 
-  before_filter {|ctrl| ctrl.require_permit_label "ユーザメンテ"}
+  #before_filter :login_required 
+  #before_filter {|ctrl| ctrl.require_permit_label "ユーザメンテ"}
   before_filter :set_instanse_variable
   # Be sure to include AuthenticationSystem in Application Controller instead
-  include AuthenticatedSystem
+  #include AuthenticatedSystem
   
   #Viewにて表示すべき項目の定義。
   Labels0 = [
