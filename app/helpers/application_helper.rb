@@ -211,9 +211,9 @@ module ApplicationHelper
   end
 
   def option_tags(tags)
-    tags.map{|tag,domain,action,opt|
-      send(tag,domain,action,opt)
-    }.join
+    safe_join(tags.map{|tag,domain,action,opt|
+                send(tag,domain,action,opt)
+              })
   end
   # ラベル定義のArryを元に、一覧表の表題行を出す
   # * (普通は) index.erb から呼ばれる。
@@ -258,7 +258,7 @@ module ApplicationHelper
   end
 
   def label_line(size=2,labels=nil)
-    label_line_comm(size,labels) + "</tr>"
+    label_line_comm(size,labels) + "</tr>".html_safe
   end
 
   def deletable
@@ -413,13 +413,13 @@ module ApplicationHelper
 
   def disp_errors(objects)
     # [ AR.Error, AR.Error ,,,]
-    
-    msg=objects.map{|obj|
+    msg=safe_join(objects.map{|obj|
       next if obj.errors.size == 0
       id=obj.id
-      obj.errors.map{|er| "ID=#{id}:#{er[0]} #{er[1]}" }.compact.join("<br>\n")
-    }.compact.join("<br>\n")
-    "<font color=Red>#{msg}</font>"
+      safe_join(obj.errors.map{|er| "ID=#{id}:#{er[0]} #{er[1]}" }.
+                compact,"<br>\n")
+    }.compact,"<br>\n")
+    "<font color=Red>#{msg}</font>".html_safe
   end
 
   def t(sym,lang=nil)
