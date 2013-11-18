@@ -241,9 +241,9 @@ module ApplicationHelper
 
   def delete_if_accepted(obj)
     if deletable
-        "<td>" + link_to('削除',obj , :confirm => 'Are you sure?', :method => :delete) + "</td>"
+        "<td>".html_safe + link_to('削除',obj , :confirm => 'Are you sure?', :method => :delete) + "</td>".html_safe
     else
-      ""
+      "".html_safe
     end
   end
 
@@ -271,8 +271,8 @@ module ApplicationHelper
 
   def add_links_update_delete(obj,maxid)
     delete = (obj.id and obj.id < maxid) ? 
-    link_to( '<nobr>削除</nobr>',obj , :confirm => 'Are you sure?', :method => :delete) : ""
-    "<td>#{delete}<td>"
+    link_to( '<nobr>削除</nobr>',obj , :confirm => 'Are you sure?', :method => :delete) : "".html_safe
+    "<td>#{delete}<td>".html_safe
   end
 
   def pagenation(models)
