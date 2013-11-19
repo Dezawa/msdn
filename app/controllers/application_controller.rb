@@ -347,4 +347,11 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     page=1 unless page.to_i >0
     @Model.paginate((@FindOption||{}).merge({ :page => page,:per_page => @Pagenation}))
   end
+  def attr_list
+    @labels.map{|html_cell| html_cell.symbol}
+  end
+
+  def permit_attr
+    params.require(@Domain).permit(attr_list)
+  end
 end
