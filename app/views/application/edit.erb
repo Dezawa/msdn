@@ -7,9 +7,9 @@
 <% id = @model.id -%>
 <%= "<tr id='pro_#{id}'>" %><% @labels.each{|html_cell| -%>
 <%- if  html_cell.class==HtmlHidden -%>
-   <%= html_cell.edit_field(@Domain,@model,controller) -%>
+   <%= html_cell.edit_field(@Domain,@model,controller).html_safe -%>
      <%- else -%>
- <td><%= html_cell.edit_field @Domain,@model,controller %></td> 
+ <td><%= html_cell.edit_field(@Domain,@model,controller).html_safe %></td> 
 <% end %>
 <% } -%>
 </tr>
