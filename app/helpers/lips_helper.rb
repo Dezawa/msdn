@@ -10,7 +10,7 @@ module LipsHelper
      nobr = opt[:nobr] ? "<nobr>" : "" 
     "<td #{clr}#{spn}><font size = #{size}>#{nobr}" 
   end
-  def label(str,opt = {})
+  def clmn_label(str,opt = {})
     option = {:size => 2 ,:span =>1}.merge(opt)
     color = option.delete(:color)
     opt_help  = option.delete(:help)
@@ -111,23 +111,23 @@ module LipsHelper
   def landscape
     html = "<br>\n<table border=1 cellspacing=0>
   <tr>"
-    html << label(t(:pro_name),:span =>5,:help =>:pro_name) + text_fiels(:proname,(1..@promax),true,"size=5")
+    html << clmn_label(t(:pro_name),:span =>5,:help =>:pro_name) + text_fiels(:proname,(1..@promax),true,"size=5")
     html << "</tr>\n"
-    html << "   <tr>" << label(t(:profit),:color =>"#D0FFFF",:help => :profit) 
+    html << "   <tr>" << clmn_label(t(:profit),:color =>"#D0FFFF",:help => :profit) 
     html << "<td  bgcolor=#D0FFFF colspan=2>" +   blank_if_zero(:profit) << "</td>"
-    html << label(t(:pro_gain),:span => 2,:size => 1, :help => :pro_gain )
+    html << clmn_label(t(:pro_gain),:span => 2,:size => 1, :help => :pro_gain )
     html <<  text_fiels(:gain,(1..@promax),true,"size=5") << "</tr>\n"
-    html << "  <tr>" << label(t(:min),:span =>5,:help => :min_mass) << text_fiels(:min,(1..@promax),true,"size=5") << "</tr>\n"
-    html << "  <tr>" << label(t(:max),:span =>5,:help => :max_mass) << text_fiels(:max,(1..@promax),true,"size=5") << "</tr>\n"
-    html << "  <tr>" << label(t(:number),:span =>5,:color =>"#D0FFFF") 
+    html << "  <tr>" << clmn_label(t(:min),:span =>5,:help => :min_mass) << text_fiels(:min,(1..@promax),true,"size=5") << "</tr>\n"
+    html << "  <tr>" << clmn_label(t(:max),:span =>5,:help => :max_mass) << text_fiels(:max,(1..@promax),true,"size=5") << "</tr>\n"
+    html << "  <tr>" << clmn_label(t(:number),:span =>5,:color =>"#D0FFFF") 
     (1..@promax).each{|pro|  html << td_color_size(2,:color =>"#D0FFFF") << blank_if_zero(@lips.pro[pro]) }
     html << "</tr>\n"
     html << "  <tr>"
-    html << label(t(:operation)+"",:help => :operation) << 
-      label(t(:runtime),:size => 1,:help =>:runtime ) << label("≦≧",:help => :min_max) 
+    html << clmn_label(t(:operation)+"",:help => :operation) << 
+      clmn_label(t(:runtime),:size => 1,:help =>:runtime ) << clmn_label("≦≧",:help => :min_max) 
     html << "<td bgcolor=#D0FFFF><font size = 2><nobr>実稼働</nobr>"
     html << "<td bgcolor=#D0FFFF><font size = 2><nobr>稼働率</nobr>" <
-      html << label(t(:coment),:span =>@promax,:help => :comment)
+      html << clmn_label(t(:coment),:span =>@promax,:help => :comment)
     (1..@opemax).each{|ope| 
       html << "  <tr><td><font size = 2>" << text_field_for_array(:opename,ope,false,"size=5")<< "</td>"
       html << "<td><font size = 2>"       << text_field_for_array(:time   ,ope,true,"size=5") << "</td>"
@@ -147,19 +147,19 @@ module LipsHelper
 
   def vertical
     html = "<br>\n<table border=1 cellspacing=0>"
-    html << "\n   <tr><td  colspan=4>　</td>"+ label(t(:operation)+"",:help => :operation)
+    html << "\n   <tr><td  colspan=4>　</td>"+ clmn_label(t(:operation)+"",:help => :operation)
     (1..@opemax).each{|ope| 
       html << "<td><font size = 2>" << text_field_for_array(:opename,ope,false,"size=5")<< "</td>"
     }
     html << "</tr>\n"
-    html << "  <tr><td  colspan=4>　</td>" + label(t(:runtime),:size => 1,:help =>:runtime,:nobr=>true )
+    html << "  <tr><td  colspan=4>　</td>" + clmn_label(t(:runtime),:size => 1,:help =>:runtime,:nobr=>true )
     (1..@opemax).each{|ope| 
       html << "<td><font size = 2>" << text_field_for_array(:time,ope,true,"size=5")<< "</td>"
     }
     html << "</tr>\n"
-    html << "   <tr>"+label(t(:profit),:color =>"#D0FFFF",:help => :profit)+
+    html << "   <tr>"+clmn_label(t(:profit),:color =>"#D0FFFF",:help => :profit)+
       "<td  colspan=3 bgcolor=#D0FFFF>" << @lips.profit.to_s
-    html << "</td>"+label("≦≧",:help => :min_max)
+    html << "</td>"+clmn_label("≦≧",:help => :min_max)
     (1..@opemax).each{|ope| html << "<td><font size = 2>"       << select_gele(ope) << "</td>" }
     html << "</tr>\n"
     html << "  <tr><td colspan=4></td><td bgcolor=#D0FFFF>実稼働</td>"
@@ -174,10 +174,10 @@ module LipsHelper
       html << "<td bgcolor=#D0FFFF><font size = 2>" << val.to_s << "</td>"
     }
     html << "</tr>\n<tr>"
-    html << label(t(:pro_name),:help =>:pro_name ) + label(t(:pro_gain),:help => :pro_gain )
-    html << label(t(:min),:help => :min_mass) <<
-      label(t(:max),:help => :max_mass) << label(t(:number))
-    html <<  label(t(:coment),:span =>@opemax,:help => :comment) +"</tr>\n"
+    html << clmn_label(t(:pro_name),:help =>:pro_name ) + clmn_label(t(:pro_gain),:help => :pro_gain )
+    html << clmn_label(t(:min),:help => :min_mass) <<
+      clmn_label(t(:max),:help => :max_mass) << clmn_label(t(:number))
+    html <<  clmn_label(t(:coment),:span =>@opemax,:help => :comment) +"</tr>\n"
     (1..@promax).each{|pro| 
       html << "  <tr><td><font size = 2>" << text_field_for_array(:proname,pro,false,"size=5")<< "</td>"
       [:gain,:min,:max].each{|sym| 
@@ -245,11 +245,11 @@ module LipsHelper
   end
 
   def to_ube_product
-      label = "製造計画立案へ"
+      clmn_label = "製造計画立案へ"
       if @prefix && @csvfile && (file=File.exist?(@prefix+@csvfile)) 
-        link_to(label,"/ube_skd/lips_load?csvfile=#{@csvfile}")
+        link_to(clmn_label,"/ube_skd/lips_load?csvfile=#{@csvfile}")
       else
-        label
+        clmn_label
       end
   end
 end
