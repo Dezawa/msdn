@@ -13,7 +13,7 @@
 # order  :: メニューでの表示順
 # comment  :: 
 class UserOption < ActiveRecord::Base
-  extend Function::CsvIo
+  #extend Function::CsvIo
   has_and_belongs_to_many :users
   #attr_accessible :label, :url ,:order,:comment,:authorized
 end
