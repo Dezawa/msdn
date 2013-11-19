@@ -11,7 +11,7 @@
 development:
   adapter: mysql2
   encoding: utf8
-  database: msdn4_development
+  database: msdn_development
   pool: 5
   username: root
   password: eh245eed
@@ -23,7 +23,7 @@ development:
 test:
   adapter: mysql2
   encoding: utf8
-  database: msdn4_test
+  database: msdn_test
   pool: 5
   username: root
   password: eh245eed
@@ -32,7 +32,7 @@ test:
 production:
   adapter: mysql2
   encoding: utf8
-  database: msdn4_production
+  database: msdn_production
   pool: 5
   username: root
   password: eh245eed
