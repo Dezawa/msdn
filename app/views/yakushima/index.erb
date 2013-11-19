@@ -1,6 +1,0 @@
-<h3>屋久島</h3>
-<table>
-<% (0..@thims.size).step(4).each{|idx| %><tr><%(idx..[idx+3,@thims.size-1].min).each{|i| %>
-<td><a href='<%= @dir + @jpegs[i] %>'><img src="<%= @dir + @thims[i]  %>" height=200</td>
-<% } %></tr><% } %>
-</table>
