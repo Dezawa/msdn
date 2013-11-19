@@ -1,26 +1,25 @@
 ユーザ別設定表
 <%= link_to '表示', @user %> | <%= link_to '一覧', users_path %>
-<% form_for(@user) do |f| %>
+<%= form_for(@user) do |f| %>
   <p>
-    <%= f.submit 'Update' %><% end %>
+    <%= f.submit 'Update' %>
   </p>
 <table><tr><td valign=top>
 <table border=1><tr><td>項目</td><td>コメント</td><td>値</td></tr>
 <% @labels.each_with_index{|html_cell,i| %>
 <tr><td><%= html_cell.symbol %></td><td><%= html_cell.label -%>
-</td><td><%= html_cell.edit_field( @Domain,@user,controller).html_safe %></td></tr>
+</td><td><%= html_cell.edit_field( @Domain,@user,controller,:size=> 10).html_safe %></td></tr>
 <% } %>
 </table></td>
 <td>
-<table border=1><tr><td colspan=2>オプション</td></tr>
+<table border=1><tr><td colspan=2>オプション　　　　　　　　　　　　 </td></tr>
 <% @options.each{|opt| -%> <tr><td><%= opt.label %></td><td> <% -%>
- <%= "<input type='radio' id=user_options_ok_#{opt.id}' name='user_options[#{opt.id}]' value='1'" +
-  (@arrowed_options.include?(opt.id) ? "checked" : "" )%>>有効　
- <%= "<input type='radio' id=user_options_ng_#{opt.id}' name='user_options[#{opt.id}]' value='0'" +
-  (@arrowed_options.include?(opt.id) ?  "":"checked")  %>>無効</td></tr> <%  } %>
+ <%= ("<input type='radio' id=user_options_ok_#{opt.id}' name='user_options[#{opt.id}]' value='1'" +
+  (@arrowed_options.include?(opt.id) ? "checked" : "" )).html_safe %>>有効<%= ("<input type='radio' id=user_options_ng_#{opt.id}' name='user_options[#{opt.id}]' value='0'" +
+  (@arrowed_options.include?(opt.id) ?  "":"checked")).html_safe  %>>無効</td></tr> <%  } %>
 </table>
 </td></tr></table>
-
+<% end %>
 
 
 
