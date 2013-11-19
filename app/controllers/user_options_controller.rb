@@ -9,7 +9,7 @@ class UserOptionsController < ApplicationController
   # MSDNの画面の上にメニューを並べる
   #           sym,  lbl,   hlpnsg,type,width
   #          column label   memo  type size action                          
-  Labels = [HtmlText.new( :order,"順",:comment=>"表示順",:type =>:text),
+  Labels = [HtmlText.new( :order,"順",:comment=>"表示順",:type =>:text,:size=>2),
             HtmlText.new( :label,"ラベル",:type =>:text,:size =>10),
             HtmlText.new( :url,"URL",:type =>:text,:size =>15),
             HtmlText.new( :authorized,"許可",:type =>:text,:size =>15),
