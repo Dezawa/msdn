@@ -1,138 +1,22 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-dezawa:
-    lipssizepro: "100"
-    salt: 8b7ed3c791618f1d1c3206b296f943f80585995b
-    id: "1"
-    lipslabelcode: default
-    crypted_password: 254c557a9120cb5a5c02a63521463d4fb1d087e7
-    lipssizeope: "100"
-    login: dezawa
-    lipscsvio: "1"
-    updated_at: 2013-10-21 12:35:50
-    email: dezawa@aliadne.net
-    name: 出沢
-    lipsoptlink: to_ube_product
-    lipssizeoption: "1"
-    deleted_at: 
-    created_at: 2013-10-20 14:10:56
-
-quentin:
-    state: passive
-    lipssizepro: "10"
-    salt: 356a192b7913b04c54574d18c28d46e6395428ab
-    id: "2"
-    lipslabelcode: default
-    crypted_password: 5d110a078c494f7abc467685383b37b11f2db1ed
-    lipssizeope: "10"
-    login: quentin
-    lipscsvio: "0"
-    updated_at: 2013-10-20 14:10:56
-    email: quentin@example.com
-    name: !binary |
-      44Kv44Kp44Oz44OG44Kk44Oz
-
-    lipsoptlink: 
-    lipssizeoption: "0"
-    deleted_at: 
-    created_at: 2013-10-15 14:10:56
-
-aaron:
-    state: passive
-    lipssizepro: "10"
-    salt: da4b9237bacccdf19c0760cab7aec4a8359010b0
-    id: "3"
-    lipslabelcode: default
-    crypted_password: 90aa0f4d1aeab782ba0711294f23798e946c57c2
-    lipssizeope: "10"
-    login: aaron
-    lipscsvio: "0"
-    updated_at: 2013-10-20 14:10:56
-    email: aaron@example.com
-    name: ""
-    lipsoptlink: 
-    lipssizeoption: "0"
-    deleted_at: 
-    created_at: 2013-10-19 14:10:56
-
-
-old_password_holder:
-    state: passive
-    lipssizepro: "10"
-    salt: 7e3041ebc2fc05a40c60028e2c4901a81035d3cd
-    id: "4"
-    lipslabelcode: default
-    crypted_password: 00742970dc9e6319f8019fd54864d3ea740f04b1
-    lipssizeope: "10"
-    login: old_password_holder
-    lipscsvio: "0"
-    updated_at: 2013-10-20 14:10:56
-    email: salty_dog@example.com
-    name: ""
-    lipsoptlink: 
-    lipssizeoption: "0"
-    deleted_at: 
-    created_at: 2013-10-19 14:10:56
-
-
-guest:
-    state: passive
-    lipssizepro: "10"
-    salt: f4d2f283e274ab16ff90d45721e53ca1a72a6d69
-    id: "5"
-    lipslabelcode: default
-    crypted_password: f899f52fce0661e934a4978b0bd18a4c09223006
-    lipssizeope: "10"
-    login: guest
-    lipscsvio: "0"
-    updated_at: 2013-10-20 14:10:56
-    email: guest@example.com
-    name: !binary |
-      44Ky44K544OI
-
-    lipsoptlink: 
-    lipssizeoption: "0"
-    deleted_at: 
-    created_at: 2013-10-19 14:10:56
-
-
-ubeboard:
-    state: passive
-    lipssizepro: "100"
-    salt: 8b7ed3c791618f1d1c3206b296f943f80585995b
-    id: "6"
-    lipslabelcode: default
-    crypted_password: 254c557a9120cb5a5c02a63521463d4fb1d087e7
-    lipssizeope: "100"
-    login: ubeboard
-    lipscsvio: "1"
-    updated_at: 2013-10-20 14:10:56
-    email: ubeboard@aliadne.net
-    name: !binary |
-      5a6H6YOo44Oc44O844OJ
-
-    lipsoptlink: to_ube_product
-    lipssizeoption: "1"
-    deleted_at: 
-    created_at: 2013-10-20 14:10:56
-
-
-testuser:
-    state: passive
-    lipssizepro: "100"
-    salt: 8b7ed3c791618f1d1c3206b296f943f80585995b
-    id: "7"
-    lipslabelcode: default
-    crypted_password: 254c557a9120cb5a5c02a63521463d4fb1d087e7
-    lipssizeope: "100"
-    login: testuser
-    lipscsvio: "1"
-    updated_at: 2013-10-20 14:10:56
-    email: ubeboard@aliadne.net
-    name: !binary |
-      44OG44K544OI44Om44O844K2
-
-    lipsoptlink: to_ube_product
-    lipssizeoption: "1"
-    deleted_at: 
-    created_at: 2013-10-20 14:10:56
-
+# This model initially had no columns defined.  If you add columns to the
+# model remove the '{}' from the fixture names and add the columns immediately
+# below each fixture, per the syntax in the comments below
+#
+one:
+ id: 1,
+ email: dezawa@aliadne.net
+ encrypted_password: $2a$10$EU6Ws6VmVfAn8nQ8rdrG.uNe6e5OQElbMJxJ4VUfGoJV...
+ created_at: 2013-11-17 13:17:24
+ updated_at: 2013-11-17 13:17:25
+ login: dezawa 
+ name: 出沢
+ lipscsvio: false
+ lipssizeoption: false
+ lipssizepro: 10
+ lipssizeope: 10
+ lipslabelcode: default
+ state: "passive"
+two: {}
+#  column: value
