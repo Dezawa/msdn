@@ -29,9 +29,4 @@ Gemfile.lock
 tmp/cache
 tmp/pids
 
-/tmp/ubr/save
-/tmp/ubr/psave
-tmp/ubr/save
-tmp/ubr/psave
-tmp/ubr/pssave
-tmp/ubr/pssave tmp/ubr/倉庫状況.pdf tmp/ubr/枠詰まり具合.pdf tmp/ubr/枠詰まり具合.ps
+/tmp/ubr
