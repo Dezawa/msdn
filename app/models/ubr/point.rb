@@ -47,12 +47,18 @@ class Ubr::Point
     #total_weight = weights.inject(0){ |s,v| s+v}
 
     tuuro  = SoukoSort.map{ |name_reg| Ubr::Waku.tuuro_weight_wakusuu(name_reg[1])}
-    # 原料、再処理、長期 
+
+    # 原料 SCP スネーク、再処理、長期 
     #       G123B028-----S--F7
     #       01234567890123
+    genryou_lot = Ubr::LotList.lotlist.select{ |id,lot| /Z/ =~ lot.grade }
+    genryou = genryou_lot.inject(0){ |s,l| s+l[1].weight}
+    scp     = genryou_lot.select{|id,l| /^G123SCP/ =~ l.meigara_code  }.inject(0){ |s,l| s+l[1].weight}
+    snake   =  genryou_lot.select{|id,l| /^G123(ZM085|J3159|Z670)/ =~ l.meigara_code  }.
+      inject(0){ |s,l| s+l[1].weight}
     weights_not_product = 
       [
-       Ubr::LotList.lotlist.select{ |id,lot| /Z/ =~ lot.grade }.inject(0){ |s,l| s+l[1].weight},
+       genryou-snake-scp,scp,snake,
        Ubr::LotList.lotlist.select{ |id,lot| lot.meigara_code[13,1] == "S" }.inject(0){ |s,l| s+l[1].weight},
        Ubr::LotList.lotlist.select{ |id,lot| today - lot.packed > 2.year}.inject(0){ |s,l| s+l[1].weight}
       ].map{ |w| (w*0.001).to_i}
@@ -80,21 +86,13 @@ class Ubr::Point
       lines = lines.push(@point).sort_by{ |l| l[0] }
     end
 
-      label = "年月日"+
-      " 穴" + SoukoSort.map{ |name_reg| "10桝以上穴数 5-9桝穴数 1-4桝穴数"}.join(" ") +
-      " 重量"+ SoukoSort.map{ |name_reg| name_reg[0]}.join(" ") +
-      " 通路" + SoukoSort.map{ |name_reg| %w(通路置き量 通路置き枠数)}.flatten.join(" ") +
-      " 原料 再処理 長期"
+      label = "年月日"+   #1
+      " 穴" + SoukoSort.map{ |name_reg| "10桝以上穴数 5-9桝穴数 1-4桝穴数"}.join(" ") + # 2～,5～ ,8～,11～,14～16
+      " 重量"+ SoukoSort.map{ |name_reg| name_reg[0]}.join(" ") +               # 17,18,19,20,21
+      " 通路" + SoukoSort.map{ |name_reg| %w(通路置き量 通路置き枠数)}.flatten.join(" ") + # 23,25,27,29,31
+      " 原料 SCP スネーク 再処理 長期"  # 32 33 34 35 36
               
     open(path,"w"){ |fp|
-      #fp.puts "年月日 通路総量 通路置枠数 "+   # 1,2,3
-      #"全穴数 10桝以下穴 4桝以下穴 10桝以上穴数 5-9桝穴数 1-4桝穴数 "+  # 4 - 9
-      #"総量 1-6 0A-0F,J 789 0GH  その他 " +                             # 10 - 15, 16-18
-      #"原料 再処理 長期 "+ # 1-6        0A-G,J                            1-6        0A-G,J
-      #"10桝以上穴数 5-9桝穴数 1-4桝穴数 10桝以上穴数 5-9桝穴数 1-4桝穴数  通路総量 枠数  通路総量 枠数"
-          # 19 -24                                                         25 - 28
-      #fp.puts lines.map{ |l| l.join(" ")}.join("\n")
-
       fp.puts(label)
       fp.puts lines.map{ |l| l.join(" ")}.join("\n")
     }

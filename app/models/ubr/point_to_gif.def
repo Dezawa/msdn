@@ -71,7 +71,9 @@ unset ytics
 set ytics
 plot 'tmp/ubr/SCM在庫一覧.ave' using 32:xtic(1)  with line ,\
      '' using 33 with line,\
-     '' using 34 with line
+     '' using 34 with line,\
+     '' using 35 with line,\
+     '' using 36 with line
 
 
 
