@@ -3,7 +3,8 @@ dezawa:
   id:  1
   email: dzw@aliadne.net
   name: 出沢
-  login: dezawa
+  subdomain: aliadne.net
+  username: dezawa
   encrypted_password: $2a$10$hY.yCFZ3RxSbPQgy8gzN0.NTvIL3LTIIyoyjzaCJSE76s.krf92By
   sign_in_count: 4
   current_sign_in_at: 2013-12-01 11:56:53.000000000 Z
@@ -22,6 +23,8 @@ quentin:
   id: 2
   email: dezawa@aliadne.net
   name: quentin
+  subdomain: aliadne.net
+  username: quentin
   encrypted_password: $2a$10$hJ0EXdKUZOJypIDLcsjUjulgIZ2LhLzEABW.vBtshnA99woLw4VgS
   sign_in_count: 2
   current_sign_in_at: 2013-12-01 11:58:23.000000000 Z
@@ -40,7 +43,8 @@ quentin:
 aaron:
   id: 3
   email: aaron@aliadne.net
-  login: aaron
+  subdomain: aliadne.net
+  username: aaron
   name: A Aron
   encrypted_password: $2a$10$hY.yCFZ3RxSbPQgy8gzN0.NTvIL3LTIIyoyjzaCJSE76s.krf92By
   sign_in_count: 4
@@ -60,7 +64,8 @@ aaron:
 old_password_holder:
   id: 4
   email: old_password_holder@aliadne.net
-  login: old_password_holder
+  subdomain: aliadne.net
+  username: old_password_holder
   name: old_password_holder
   encrypted_password: $2a$10$hJ0EXdKUZOJypIDLcsjUjulgIZ2LhLzEABW.vBtshnA99woLw4VgS
   sign_in_count: 1
@@ -81,7 +86,8 @@ guest:
   id: 5
   email: guest@aliadne.net
   name: guest
-  login: guest
+  subdomain: aliadne.net
+  username: guest
   encrypted_password: $2a$10$hY.yCFZ3RxSbPQgy8gzN0.NTvIL3LTIIyoyjzaCJSE76s.krf92By
   sign_in_count: 4
   current_sign_in_at: 2013-12-01 11:56:53.000000000 Z
@@ -101,7 +107,8 @@ ubeboard:
   id: 6
   email: ubeboard@aliadne.net
   name: ubeboard
-  login: ubeboard
+  subdomain: aliadne.net
+  username: ubeboard
   encrypted_password: $2a$10$hY.yCFZ3RxSbPQgy8gzN0.NTvIL3LTIIyoyjzaCJSE76s.krf92By
   sign_in_count: 4
   current_sign_in_at: 2013-12-01 11:56:53.000000000 Z
@@ -121,7 +128,8 @@ testuser:
   id: 7
   email: testuser@aliadne.net
   name: testuser
-  login: testuser
+  subdomain: aliadne.net
+  username: testuser
   encrypted_password: $2a$10$hY.yCFZ3RxSbPQgy8gzN0.NTvIL3LTIIyoyjzaCJSE76s.krf92By
   sign_in_count: 4
   current_sign_in_at: 2013-12-01 11:56:53.000000000 Z
