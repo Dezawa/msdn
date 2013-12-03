@@ -19,9 +19,9 @@ class User < ActiveRecord::Base
 
   has_and_belongs_to_many :user_options
 
-  validates_presence_of     :login
-  validates_length_of       :login,    :within => 3..40
-  validates_uniqueness_of   :login
+  #validates_presence_of     :login
+  #validates_length_of       :login,    :within => 3..40
+  #validates_uniqueness_of   :login
   #validates_format_of       :login,    :with => Authentication.login_regex, :message => Authentication.bad_login_message
 
   #validates_format_of       :name,     :with => Authentication.name_regex,  :message => Authentication.bad_name_message, :allow_nil => true
@@ -61,6 +61,7 @@ class User < ActiveRecord::Base
     u && u.authenticated?(password) ? u : nil
   end
 
+  def login ; username ;end
   def login=(value)
     write_attribute :login, (value ? value.downcase : nil)
   end
