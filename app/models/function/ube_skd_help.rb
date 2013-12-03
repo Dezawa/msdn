@@ -975,8 +975,7 @@ module UbeSkdHelp
       ube_plans.select{|plan| plan[plan_from] 
       }.sort_by{|plan| plan[plan_from] 
       }.each{|plan| 
-        if  plan.hozen? #plan.lot_no == "A01" || plan.lot_no == "A01-1" ||
-            #plan.lot_no == UbeProduct.find_by_proname("休転").ope_condition
+        if  plan.hozen? 
           plan.jun = jun + 5
         else
           #logger.debug(" #{plan.lot_no}(#{plan.id})=#{plan.jun}")

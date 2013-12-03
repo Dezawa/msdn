@@ -77,7 +77,7 @@ module ApplicationHelper
     urls  = %w(/lips/free /lips/member /login /logout /change_password)
     names = %w(線形計画法(無償版) 線形計画法(会員版) ログイン ログアウト パスワード変更).
       zip(urls)
-    if @login && @login.login != "guest"
+    if @login && @login.username != "guest"
       if option=@login.user_options.sort_by{|o| o.order
 	}.select{|opt| opt.order>0}.map{|opt| [opt.label,opt.url]}
         names = names_free + names_loggedin + option + names_logout

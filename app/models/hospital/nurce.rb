@@ -436,7 +436,7 @@ def roles_by_id
 end
 
   def role?(rolename)
-    roles[hospital_roles.find_by_name(rolename).id]
+    roles[hospital_roles.find_by(name: rolename).id]
   end
 
   def role_id?(role_id);role_ids.include?(role_id) #.to_i);

@@ -1,7 +1,7 @@
 <BODY bgcolor="#F8FfFA">
 <% user=current_user %>
 <font size=5 ><b>LiPS(汎用会員版 )</b></font>
-<div align=right>UserName:<%= current_user.login %></font></div>
+<div align=right>UserName:<%= current_user.username %></font></div>
 <!--"lipscsvio", "lipssizeoption", "lipssizepro", "lipssizeope", "lipslabelcode", "lipsoptlink" -->
 <%= @lips.send(:pronames)[2] %>
  <table><tr><td> <font size = 2>

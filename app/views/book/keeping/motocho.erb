@@ -1,6 +1,6 @@
 <%  s={ -1 => 0,0=>0,1=>0} %>
 <%#= links Book::KeepingController::Links.select{|l| l.action != :new } %>
-　　ユーザ：<%= current_user.login %><hr>
+　　ユーザ：<%= current_user.username %><hr>
 <h3>清算表<%= @year.year %>年度 <%= @owner.owner_name %>の簿記</h3>
 <table border=1>
 <tr><td></td><td>課目</td><td>借方</td><td>貸方</td></tr>

@@ -53,7 +53,7 @@ module Function::LipsToUbePlan
     pro.each{|proname,mass|
       # proname正規化
       proname.tr!("０-９（）Ａ-Ｚａ-ｚｱ-ﾝ","0-9()A-Za-zア-ン")
-      product = UbeProduct.find_by_proname(proname)
+      product = UbeProduct.find_by(proname: proname)
       if product.nil?
         errors << "製品 '#{proname}'は製造条件一覧にありません"
         next

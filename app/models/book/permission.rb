@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 class Book::Permission < ActiveRecord::Base
-  set_table_name 'book_permissions'
+  self.table_name = 'book_permissions'
   belongs_to     :user
   EDIT = 2
   SHOW = 1
@@ -38,11 +38,11 @@ class Book::Permission < ActiveRecord::Base
   end
 
   def set_user
-    self.user = User.find_by_login(login)
+    self.user = User.find_by(login: login)
   end
   
   def owner_name
-    User.find_by_login(owner).name || owner
+    User.find_by(login: owner).name || owner
   end
 
   def permission_string
@@ -60,7 +60,7 @@ class Book::Permission < ActiveRecord::Base
 
   def editable?(login)
     login == owner || owner == "guest" ||
-      (bp = Book::Permission.find_by_login_and_owner(login,owner)) &&
+      (bp = Book::Permission.find_by(login: login, owner: owner)) &&
       bp.permission == Book::Permission::EDIT
   end
 

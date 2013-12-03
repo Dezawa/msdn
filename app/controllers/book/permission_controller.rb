@@ -28,14 +28,14 @@ class Book::PermissionController < Book::Controller
     @labels = Labels
     @TYTLEpost = "#{@year.year}年度"
     #@#Links=BookKeepingController::Labels
-    @FindOption = {:conditions => ["owner = ? ",current_user.login]  }
+    @FindOption = {:conditions => ["owner = ? ",current_user.username]  }
     @TableEdit =  editable ? [[:form,:new,"新ユーザ"]] : false
     @edit_vertical = true
-    @New = { :owner => current_user.login }
+    @New = { :owner => current_user.username }
     @Edit = editable
     @Delete=editable
-    @Create = {:owner => current_user.login}
-    #@conditions = { :conditions => "owner = '#{current_user.login}'" }
+    @Create = {:owner => current_user.username}
+    #@conditions = { :conditions => "owner = '#{current_user.username}'" }
     #@SortBy   = :bunrui
     @CSVatrs = CSVatrs; @CSVlabels = CSVlabels
     #@Pagenation = 10

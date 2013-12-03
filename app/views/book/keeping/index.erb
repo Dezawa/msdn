@@ -3,7 +3,7 @@
  <div id='year_change' >
    <%= my_select(:year_owner,:year,[2000]+(2012..Time.now.next_year.year).to_a,:value => @year.year) %>年度
    <%= observe_field 'year_owner_year',{ :on => 'click', :with => "value" ,:url =>{:action => :year_change}} %>
-　　ログインユーザ：<%= current_user.login %>
+　　ログインユーザ：<%= current_user.username %>
 　<%= @owner.owner %>の簿記(<%= @owner.permission_string %>)
  <% if   @owner_choices.size>1 %>
   <%= link_to( '変更', :action => :owner_change_win ,:popup => true) %> 

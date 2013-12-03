@@ -4,9 +4,9 @@ require 'pp'
 # 複式簿記 Book::Keeping の勘定科目のModel
 #
 class Book::Kamoku < ActiveRecord::Base
-  extend Function::CsvIo
-  set_table_name 'book_kamokus'
-  attr_accessible :id ,:kamoku ,:bunrui ,:code
+  #extend Function::CsvIo
+  self.table_name = 'book_kamokus'
+  #attr_accessible :id ,:kamoku ,:bunrui ,:code
   attr_accessor   :no,:book_id,:book
   @@kamokus=nil
   #work = self.find_by_kamoku("開始残高")
@@ -14,7 +14,7 @@ class Book::Kamoku < ActiveRecord::Base
 
   # 開始残高の id を返す
   def self.kaisizandaka 
-    @@Kaisizandaka ||= self.find_by_kamoku("開始残高").id
+    @@Kaisizandaka ||= self.find_by(kamoku: "開始残高").id
   end
 
   def self.find_with_main(login)

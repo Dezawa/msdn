@@ -8,7 +8,7 @@
 # また、それらを印刷用CSVに書き出すclassメソッドがある。
 class Book::Main < ActiveRecord::Base
   extend Function::CsvIo
-  set_table_name 'book_mains'
+  self.table_name = 'book_mains'
    validates_presence_of :no, :date ,:message=> "は必須項目です"
    validates_presence_of :karikata ,:message=> "借方勘定科目は必須項目です"
    validates_presence_of :kasikata ,:message=> "貸方勘定科目は必須項目です"
@@ -96,7 +96,7 @@ class Book::Main < ActiveRecord::Base
 
   def self.recalc_motoirekin(table)
     bunrui_motoire,bunrui_kari,bunrui_kasi = %w(元入金 事業主借 事業主貸).
-      map{|kamoku| Book::Kamoku.find_by_kamoku(kamoku).bunrui}
+      map{|kamoku| Book::Kamoku.find_by(kamoku: kamoku).pluck(:bunrui)}
     table[bunrui_motoire] = 0 #+= table[bunrui_kari] - table[bunrui_kasi]
     table[bunrui_kari] = table[bunrui_kasi] = 0
     table
@@ -110,7 +110,7 @@ class Book::Main < ActiveRecord::Base
       next if bunrui > 399 || bunrui < 1 || mount == 0
       #pp [bunrui,mount,Book::Kamoku.find_by_bunrui(bunrui)]
       if bunrui < 199  # 資産
-        create!( :karikata => Book::Kamoku.find_by_bunrui(bunrui).id,
+        create!( :karikata => Book::Kamoku.findA_by(bunrui: bunrui).id,
                  :kasikata => Book::Kamoku.kaisizandaka,
                  :owner => login,
                  :amount   => mount,
@@ -120,7 +120,7 @@ class Book::Main < ActiveRecord::Base
         sisan += mount
       else #負債 資本
         create!( :karikata => Book::Kamoku.kaisizandaka,
-                 :kasikata => Book::Kamoku.find_by_bunrui(bunrui).id,
+                 :kasikata => Book::Kamoku.find_by(bunrui: bunrui).id,
                  :owner => login,
                  :amount   => mount,
                  :date     => year.beginning_of_year,
@@ -130,7 +130,7 @@ class Book::Main < ActiveRecord::Base
       end
     }
     create!( :karikata => Book::Kamoku.kaisizandaka,
-                 :kasikata => Book::Kamoku.find_by_kamoku("元入金").id,
+                 :kasikata => Book::Kamoku.find_by(kamoku: "元入金").id,
                  :owner => login,
                  :amount   => sisan-sihon,
                  :date     => year.beginning_of_year,
@@ -303,13 +303,13 @@ true
 
   def editable?(login)
     login == owner || owner == "guest" ||
-      (bp = Book::Permission.find_by_login_and_owner(login,owner)) &&
+      (bp = Book::Permission.find_by(login: login,owner: owner)) &&
       bp.permission == Book::Permission::EDIT
   end
 
   def readable?(login)
     login == owner ||
-      (bp = Book::Permission.find_by_login_and_owner(login,owner)) &&
+
       bp.permission > Book::Permission::NON
   end
 end

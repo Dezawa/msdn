@@ -153,7 +153,7 @@ class UbeSkd < ActiveRecord::Base
   #最低製造数。休日前に半端な製造数量となるとき、最低この数量にならないときはやめる。
   MassLimit = 300
   def masslimit
-    @masslimit ||=  UbeConstant.find_by_keyword("minimum_mass").value rescue MassLimit
+    @masslimit ||=  UbeConstant.find_by(keyword: "minimum_mass").value rescue MassLimit
   end
 
   #過労働日の残業時間

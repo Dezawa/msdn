@@ -133,7 +133,7 @@ class Book::MainController < Book::Controller
   end
 
   def destroy
-    unless @Model.find(params[:id]).editable?(current_user.login)
+    unless @Model.find(params[:id]).editable?(current_user.username)
       redirect_to "/msg_book_permit.html"
     else
       super
@@ -142,7 +142,7 @@ class Book::MainController < Book::Controller
 
   # 一覧からの「整列」のアクション。日付順に並べ替える
   def renumber
-    Book::Main.renumber(current_user.login,@year)
+    Book::Main.renumber(current_user.username,@year)
     redirect_to :action => :index ,:page => @page
   end
 
@@ -152,14 +152,14 @@ class Book::MainController < Book::Controller
     #kamoku    = params[:kamoku]
     @TYTLE = Book::Kamoku.find(@kamoku_id).kamoku
     @labels= LabelsBookMake
-    @models = Book::Main.book_make(@kamoku_id,current_user.login,@year)
+    @models = Book::Main.book_make(@kamoku_id,current_user.username,@year)
   end
 
   def sort_by_tytle
     @kamoku_id = session[:book_kamoku_id]
     @TYTLE = Book::Kamoku.find(@kamoku_id).kamoku
     @labels= LabelsBookMake
-    @models = Book::Main.book_make(@kamoku_id,current_user.login,@year).
+    @models = Book::Main.book_make(@kamoku_id,current_user.username,@year).
       sort{ |booka,bookb| ((booka.tytle<=>bookb.tytle) << 2) + ((booka.date <=> bookb.date) << 1) + (booka.no <=> bookb.no)}
     render :action => :book_make
   end
@@ -172,7 +172,7 @@ class Book::MainController < Book::Controller
   end
 
   def csv_out_print
-    tmpfile = Book::Main.csv_out_print(current_user.login,@year)
+    tmpfile = Book::Main.csv_out_print(current_user.username,@year)
     send_file(tmpfile,:filename => (@owner.owner + "_book.csv"))
   end
 

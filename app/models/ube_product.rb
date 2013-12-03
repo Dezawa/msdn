@@ -55,18 +55,19 @@ require 'csv'
     unless @hozen_code[[hozen,real_ope]]
       case hozen
       when "酸洗"
-        up = UbeProduct.find_by_ope_condition(real_ope==:shozow ? "A02":"A03")
+        up = UbeProduct.find_by(ope_condition: real_ope==:shozow ? "A02":"A03")
         #when :yobouhozen,"予防保全"
-        #  UbeProduct.find_by_condition("A06").id rescue nil
       else
         if [:shozow,:shozoe].include?(real_ope)
-          up = UbeProduct.find_by_proname_and_shozo(hozen,UbeSkd::Id2RealName[real_ope])
+          up = UbeProduct.find_by(proname: hozen,
+                                  shozo: UbeSkd::Id2RealName[real_ope])
         elsif [:dryo,:dryn].include?(real_ope)
-          up = UbeProduct.find_by_proname_and_dryer(hozen,UbeSkd::Id2RealName[real_ope])
+          up = UbeProduct.find_by(proname: hozen,
+                                  dryer: UbeSkd::Id2RealName[real_ope])
         end
         
         if up.nil? # || up.size==0
-          up = UbeProduct.find_by_proname(hozen)
+          up = UbeProduct.find_by(proname: hozen)
         end
       end
       @hozen_code[[hozen,real_ope]] =  up ? [up.id,up.ope_condition,real_ope] : nil
@@ -174,6 +175,6 @@ require 'csv'
   end
 
   def ope_condition_id
-    UbeOperation.find_by_ope_name(ope_condition).id
+    UbeOperation.find_by(ope_name: ope_condition).id
   end
 end

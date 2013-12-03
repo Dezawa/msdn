@@ -94,7 +94,7 @@ Items =
   end
 
   def hospital_monthly(args={ })
-    night_from =  Time.local(2013,1,1,*Hospital::Kinmucode.find_by_code(2).start.split(/[^\d]+/))
+    night_from =  Time.local(2013,1,1,*Hospital::Kinmucode.`find_by(code: 2).start.split(/[^\d]+/))
     night_stop = night_from + 16.hour
     arg = { 
       :night_stop => [night_stop.hour,night_stop.min],

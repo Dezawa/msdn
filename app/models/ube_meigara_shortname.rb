@@ -5,7 +5,7 @@ class UbeMeigaraShortname < ActiveRecord::Base
   belongs_to   :ube_meigara
 
   def self.meigara(short)
-    shortname=self.find_by_short_name(short)
+    shortname=self.find_by(short_name: short)
     shortname ? shortname.meigara : short
   end
 

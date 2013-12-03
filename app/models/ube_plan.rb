@@ -114,7 +114,7 @@ class UbePlan < ActiveRecord::Base
 
    # このロットの製造速度(を表すUbeOperation)を返す。
   def rate
-    @rate ||= UbeOperation.find_by_ope_name(condition)
+    @rate ||= UbeOperation.find_by(ope_name: condition)
   end
   def lot_size;  @lot_size ||=  ube_product.lot_size ;end
   def copy; @copy ||= nil ; end
@@ -431,9 +431,7 @@ class UbePlan < ActiveRecord::Base
     @change_time ||= Hash.new
     unless @change_time[[ope,before]]
       ub_change = 
-      UbeChangeTime.find_by_ope_name_and_ope_from_and_ope_to(
-               OpeTable[ope],before,self.condition                                  
-        )
+      UbeChangeTime.find_by(ope_name: OpeTable[ope],from: before,ope_to: self.condition)
       @change_time[[ope,before]] = 
         if ub_change && ub_change[:change_time]
           ub_change[:change_time].minute 
@@ -483,7 +481,7 @@ class UbePlan < ActiveRecord::Base
   def unit_time
     unless @unit_time
       @unit_time = Hash.new
-      uo = UbeOperation.find_by_ope_name(condition)
+      uo = UbeOperation.find_by(ope_name: condition)
 
       if uo
         @unit_time[:shozo] = shozo_w? ? uo[:west] : uo[:east]

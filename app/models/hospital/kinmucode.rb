@@ -39,7 +39,7 @@ class Hospital::Kinmucode < ActiveRecord::Base
   } 
   @@Code = { }
   def self.code(sym)
-    @@Code[sym] ||= self.find_by_code(CodeSym[sym]).id rescue SymVal[sym]
+    @@Code[sym] ||= self.find_by(code: CodeSym[sym]).id rescue SymVal[sym]
   end
 
   Kubun=  Hash[*[:nikkin,:sankoutai,:part,:touseki,:l_kin,:gairai,:kyoutuu].
@@ -93,11 +93,12 @@ class Hospital::Kinmucode < ActiveRecord::Base
       when "2","3" ; return shift.to_i
       when "0"     ; return code(:Koukyu)
       when "L","M" ; 
-        return Hospital::Kinmucode.find_by_code_and_kinmukubun_id({"L"=>"L2","M"=>"L3"}[shift],2).id
+        return Hospital::Kinmucode.
+          find_by(code: {"L"=>"L2","M"=>"L3"}[shift],kinmukubun_id: 2).id
       when "N","O" ; 
         code = {"N"=>"夜","O"=>"明"}[shift]
         #puts code
-        return Hospital::Kinmucode.find_by_code(code).id
+        return Hospital::Kinmucode.find_by(code: code).id
       when "1","5"
         value = From0123[shift] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         logger.debug("Kinmucode shift=#{shift} kinmukubun_id = #{kinmukubun_id}")

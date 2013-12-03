@@ -51,7 +51,7 @@ class UbeOperation < ActiveRecord::Base
   end
   def self.hozen_periad  # k = hozen_code == [28, "A02", :shozow]
     @hozen_periad ||= Hash.new{|h,k|
-      uo = UbeOperation.find_by_ope_name(k[1])
+      uo = UbeOperation.find_by(ope_name: k[1])
       h[k] = uo[UbeOperation::Real2Field[k[2]]].minute rescue 0
     }
   end

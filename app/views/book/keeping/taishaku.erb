@@ -1,5 +1,5 @@
 <%#= links Book::KeepingController::Links.select{|l| l.action != :new } %>
-　　ユーザ：<%= current_user.login %><hr>
+　　ユーザ：<%= current_user.username %><hr>
 <div align=center><h3>貸借対照表  <%= @year.year %>年度 <%= @owner.owner_name %>の簿記</h3><br>
 <div align=right><%= Time.now.strftime("(%Y年%m月%d日現在)") %></div>
 <table border=1>

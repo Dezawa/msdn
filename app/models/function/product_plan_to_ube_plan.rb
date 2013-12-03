@@ -43,7 +43,7 @@ class Function::ProductPlanToUbePlan
   def create_plan(pro) # [1, "UB(東原)", 6.5]
     mass    = pro[2]*1000
     proname = pro[1].strip.tr_s("（）Ａ-Ｚａ-ｚ０-９","()A-ZA-Z0-9")
-    product = UbeProduct.find_by_proname(pro[1])
+    product = UbeProduct.find_by(proname: pro[1])
     if product.nil?
       @errors << "製品 '#{pro[1]}'は製造条件一覧にありません"
       return nil

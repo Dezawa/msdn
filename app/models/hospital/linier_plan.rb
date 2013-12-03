@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'pp'
 class Hospital::LinierPlan
 
@@ -49,7 +50,7 @@ class Hospital::LinierPlan
     "\n/* 各日が平日か土日祝日か */\n"+
       "param daytype :=\n" +
       (1..@lastday).map{|day| date = @month +(day-1).day
-      what_day = (date.wday%6 == 0 || Holyday.find_by_day(date)) ? 2 : 1
+      what_day = (date.wday%6 == 0 || Holyday.find_by(day: date)) ? 2 : 1
       "%d %d\n"%[day,what_day]
     }.join+";\n"
   end
