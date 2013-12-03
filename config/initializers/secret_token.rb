@@ -9,4 +9,4 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Msdn::Application.config.secret_key_base = 'af693b3aa5e74ff40dbc484245f577839db4716526103d9902491e9068d22998bb3cc93184edad50fa9160c8ca5281ad3f6237008388a761c9694d88bdb16970'
+Msdn::Application.config.secret_key_base = '1d9a24708b84824e66a3e9a871155e25d39069c3b6401a1cd72cb7aa05aec3fa35a23b025f3614514c1eedc8a6911e4d2da852b223884c6a0f0acc33735c235c'
