@@ -63,7 +63,7 @@ class User < ActiveRecord::Base
 
   def login ; username ;end
   def login=(value)
-    write_attribute :login, (value ? value.downcase : nil)
+    write_attribute :username, (value ? value.downcase : nil)
   end
 
   def email=(value)
