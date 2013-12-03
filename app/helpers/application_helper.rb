@@ -107,6 +107,7 @@ module ApplicationHelper
   end
 
   def links_table(menus)
+    return "" unless menus
     td="<td width=\"90\" align=\"center\" bgcolor=\"#c0f0f0\">"
     "<tr>" + td +
     menus.map{|menu| 
