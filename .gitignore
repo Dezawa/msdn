@@ -28,3 +28,4 @@ Tmp/ubr/
 Gemfile.lock
 tmp/cache
 tmp/pids
+public/lips/tmp/*csv
