@@ -1,7 +1,7 @@
-<%# if @Links %> <%#= links  @Links if @Links %>
 <div align=center><H2>複式簿記：メイン</H2>
  <div id='year_change' >
-   <%= my_select(:year_owner,:year,[2000]+(2012..Time.now.next_year.year).to_a,:value => @year.year) %>年度
+   <%= select_year( @year.year, {start_year: 2012, end_year: Time.now.next_year.year},
+                                id: 'year_owner_year' ,name: 'year_owner[year]' ) %>年度
    <!-- %= observe_field 'year_owner_year',{ :on => 'click', :with => "value" ,:url =>{:action => :year_change}} % -->
 　　ログインユーザ：<%= current_user.username %>
 　<%= @owner.owner %>の簿記(<%= @owner.permission_string %>)
@@ -12,9 +12,9 @@
 <hr>
 <%= flash[:message] %>
 <table border=1 cellspacing=0>
-<% @labels[0..-2].map{|menu| -%>
-<%=  menu.show self %>
-<% }.join -%>
+<% @labels[0..-2].each{|menu| %>
+   <%=  menu.show self %> 
+<% } %>
 <div id='menu'>
 <%= @labels[-1].show self %>
 </div>

@@ -45,13 +45,17 @@ class Menu < ActionView::Base
 
   def show( view )
     @controller = view.controller
-    return "" if disable && !view.controller.send(disable)
-    "<tr id='#{model}'><td>"+ label_and_link(view) + 
-      (help ? view.help(help) : "") +
-      "</td>"+
-       csv_upload_link(view) + 
-      "<td>"+ csv_dwonload_link(view) +
-      "</td></tr>\n"
+    return "".html_safe if disable && !view.controller.send(disable)
+    safe_join([
+              tag(:tr,id: model), tag(:td),
+              label_and_link(view) ,
+              (help ? view.help(help) : "".html_safe) ,
+               tag("/td") ,
+               csv_upload_link(view) ,
+               tag(:td),
+               csv_dwonload_link(view) ,
+              "</td></tr>\n".html_safe
+              ])
   end
 
   def label_and_link(view)
@@ -60,18 +64,17 @@ class Menu < ActionView::Base
   end
 
   def csv_upload_link(view)
-    return "<td>　</td>" unless case enable_csv_upload
+    return "<td>　</td>".html_safe unless case enable_csv_upload
                        when Proc ; controller.send enable_csv_upload
                        when nil,false ; false
                        else enable_csv_upload
                        end
     size = (@option[:size] rescue 30)
-    view.form_tag( "/#{model}/#{csv_upload_action}", :multipart => true,:method => :post) +
-       " <td><input name='commit' type='submit' value='#{buttonlabel}' />\n"+
-      " <input size=#{size} name='csvfile' type='file'></td></form>"
-    #"<form action='/#{model}/#{csv_upload_action}' enctype='multipart/form-data' method='post'>\n" + 
-    #      " <td><input name='commit' type='submit' value='CSVで登録' />\n"+
-    #      " <input size=30 name='csvfile' type='file'></td></form>"
+    safe_join( [view.form_tag( "/#{model}/#{csv_upload_action}", 
+                              :multipart => true,:method => :post),
+               " <td><input name='commit' type='submit' value='#{buttonlabel}' />\n".html_safe ,
+               " <input size=#{size} name='csvfile' type='file'></td></form>".html_safe
+              ])
   end
 
   def csv_dwonload_link(view)
@@ -80,7 +83,7 @@ class Menu < ActionView::Base
     when String ;   "<a href='#{csv_download_url}'>CSVダウンロード</a>"
     when Symbol ;   view.link_to("CSVダウンロード",:controller=>model,:action=> csv_download_url)
     else "　"
-    end
+    end.html_safe
   end
 end
 

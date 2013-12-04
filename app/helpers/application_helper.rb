@@ -60,11 +60,12 @@ module ApplicationHelper
   #
   #def raw(str);str;end
 
-  def ddhelp(url_name) # LiPS#cvsupdate_form => LiPS.html#cvsupdate_form
-    return "" if url_name.blank?
+  def help(url_name) # LiPS#cvsupdate_form => LiPS.html#cvsupdate_form
+    return "".html_safe if url_name.blank?
     url,name = url_name.split("#")
-    "<a href='/Help/#{url}.html" + (name ? "##{name}" : "") +
+    ("<a href='/Help/#{url}.html"+ (name ? "##{name}" : "") +
       "'><img src='/images/help.png' width=10 height=12 ></a>"
+     ).html_safe
   end
 
   def memu_line
@@ -100,21 +101,24 @@ module ApplicationHelper
   #   labels :: [[ラベル、model、アクション],[ ],[ ],[  ] ]
   def links(menus)
     #labels = BookKeepingController::Labels.select{|l| l[2] != :new }
-    menus.map{|menu| 
-      next if menu.disable && !controller.send(menu.disable)
-      link_to_unless_current(menu.label,:controller => menu.model,:action => menu.action)
-    }.join("　")
+   safe_join( menus.map{|menu| 
+                next if menu.disable && !controller.send(menu.disable)
+                link_to_unless_current(menu.label,:controller => menu.model,:action => menu.action)
+              }
+              )
   end
 
   def links_table(menus)
     return "" unless menus
     td="<td width=\"90\" align=\"center\" bgcolor=\"#c0f0f0\">"
-    "<tr>" + td +
-    menus.map{|menu| 
+    table = 
+      "<tr>" + td +
+      menus.map{|menu| 
       next if menu.disable && !controller.send(menu.disable)
       "<font size=1>"+
       link_to_unless_current(menu.label,{:controller => menu.model,:action => menu.action}.merge(menu.option||{}))
     }.compact.join("</td>" + td )+"</td></tr>"
+    table.html_safe
   end
 
   def table_edit
