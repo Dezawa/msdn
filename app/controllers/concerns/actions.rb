@@ -312,7 +312,7 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
   end
 
   def csv_out_comm(models,filename)    
-    filename ||= @CSVfile || (current_user.login+@Model.name.underscore+".csv")
+    filename ||= @CSVfile || (current_user.username+@Model.name.underscore+".csv")
     tmpfile = @Model.csv_out(models,:columns => @CSVatrs,:labels => @CSVlabels)
     send_file(tmpfile,:filename =>  filename)
   end
