@@ -108,8 +108,19 @@ end
 
 class HtmlLink   < HtmlCell
   def disp(object,htmlopt="")
-    #logger.debug("HtmlLink: #{object.send(symbol)},#{link[:url]},#{link[:key]}, #{object.send(link[:key_val])}")
-    "<a href='#{link[:url]}?#{link[:key]}=#{object.send(link[:key_val])}'>#{object.send(symbol)}</a>"
+    #safe_join(
+    "<a href='".html_safe+
+              link[:url].html_safe+
+              "?".html_safe+
+              link[:key].to_s.html_safe+
+              "=".html_safe+
+              object.send(link[:key_val]).to_s.html_safe+
+              "'>".html_safe+
+              object.send(symbol).html_safe+
+              "</a>G".html_safe
+
+    ("<a href='K#{link[:url]}?#{link[:key]}=#{object.send(link[:key_val])}"+
+     "'>#{object.send(symbol)}</a>").html_safe
   end  
 end
 
