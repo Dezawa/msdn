@@ -116,7 +116,7 @@ module Actions
     end
   end
   def create
-    @model = @Model.new(params[@Domain])
+    @model = @Model.new( permit_attr )#params[@Domain])
     if @Create 
       @Create.each{|k,v| @model[k] = v }
     end
