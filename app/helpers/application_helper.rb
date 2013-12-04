@@ -403,7 +403,16 @@ module ApplicationHelper
     arg[0]+arg[1..-1].map{|a| "[#{a}]"}.join
   end
 
-  
+  def error_messages_for model
+    return "".html_safe if model.errors.size == 0
+    safe_join(
+              [tag(:ul),              
+               model.errors.full_messages.map{ |msg| 
+                 tag(:li) + msg + tag("/li")
+               }.join("\n"),
+               tag("/ul")
+              ])
+  end
 
   def error_messages(errors)
     return "" if errors.size == 0

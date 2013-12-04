@@ -1,5 +1,5 @@
 <h3><%= @TYTLE %></h3>
-<%= error_messages_for :model %>
+<%= error_messages_for @model %>
 <%=    form_tag(:action => :create)+submit_tag('作成') %>
 <table border=1><%= label_line %>
 <% id = @model.id -%>
