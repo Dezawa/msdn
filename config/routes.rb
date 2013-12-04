@@ -21,7 +21,7 @@ Msdn::Application.routes.draw do
     #get  ":controller/csv_out"             => ":controller#csv_out"
   
   controller = "book/keeping"
-  %w(taishaku csv_taishaku motocho).
+  %w(taishaku csv_taishaku motocho help).
     each{|action|
       post "#{controller}/#{action}" => "#{controller}##{action}"
     }
