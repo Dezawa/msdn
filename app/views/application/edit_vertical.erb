@@ -6,7 +6,7 @@
 <table border=1>
 <% id = @model.id -%>
 <% @labels.each{|html_cell| -%>
-<tr><td><%= html_cell.label + help(html_cell.help) %></td>
+<tr><td><%= html_cell.label %><%= help(html_cell.help) %></td>
  <td><%= html_cell.edit_field @Domain,@model,controller %></td>
  <td><%= html_cell.comment %></td>
 </tr><% } -%>
