@@ -67,7 +67,7 @@ class Book::MainController < Book::Controller
   def set_const
     @Model= Book::Main
 
-    @year = (year = session[:book_keeping_year] || Time.now) #.year
+    @year = (year = session[:BK_year] || Time.now) #.year
     @year_beginning =  @year.beginning_of_year
     @year_end       =  @year.end_of_year
     @year_full = year
@@ -96,7 +96,7 @@ class Book::MainController < Book::Controller
     #@SortBy   = :bunrui
     @CSVatrs = CSVatrs; @CSVlabels = CSVlabels
     @CSVfile = @owner.owner+"_#{@Domain}.csv"
-    @Pagenation = session["BookMainController_per_page"] || (session["BookMainController_per_page"] = 10)
+    @Pagenation = session["BKMain_per_page"] || (session["BKMain_per_page"] = 10)
     #@page = params[:page] || :lastpage
     @PagenatTbl = true
     maxNo = Book::Main.maximum(:no,:conditions =>  ["owner = ? and date >= ? and date <= ?",
@@ -148,7 +148,7 @@ class Book::MainController < Book::Controller
 
   # 勘定元帳を表示する
   def book_make
-    @kamoku_id = session[:book_kamoku_id] = params[:kamoku_id]
+    @kamoku_id = session[:BK_kamoku_id] = params[:kamoku_id]
     #kamoku    = params[:kamoku]
     @TYTLE = Book::Kamoku.find(@kamoku_id).kamoku
     @labels= LabelsBookMake
@@ -156,7 +156,7 @@ class Book::MainController < Book::Controller
   end
 
   def sort_by_tytle
-    @kamoku_id = session[:book_kamoku_id]
+    @kamoku_id = session[:BK_kamoku_id]
     @TYTLE = Book::Kamoku.find(@kamoku_id).kamoku
     @labels= LabelsBookMake
     @models = Book::Main.book_make(@kamoku_id,current_user.username,@year).

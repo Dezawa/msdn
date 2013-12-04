@@ -26,8 +26,8 @@ class Book::KeepingController <  Book::Controller
     ]
   # メニューを出す
   def index
-    session[:book_keeping_year]  ||= @year
-    session[:book_keeping_owner] ||= @owner
+    session[:BK_year]  ||= @year
+    session[:BK_owner] ||= @owner.id
     @owner_choices = @arrowed.map{|a| ["#{a.owner} #{a.permission_string}",a.owner]}
     #@year_owner= {"param_owner" => @owner[1]}
     @labels = Labels 
@@ -46,7 +46,7 @@ class Book::KeepingController <  Book::Controller
   def owner_change
     unless params[:owner].blank?
       if owner = @arrowed.find{|arrw| arrw.owner == params[:owner]}
-        @owner = session[:book_keeping_owner] = owner
+        @owner = owner; session[:BK_owner] = owner.id
         @labels = Labels
         logger.debug("CHANGE_OWNER new owner = #{@owner}, @year=#{@year}")
         redirect_to  :action => :index
@@ -62,7 +62,7 @@ class Book::KeepingController <  Book::Controller
 
   def year_change
     unless params[:value].blank?
-      @year = session[:book_keeping_year] = Time.parse(params[:value]+"/1/1 JST") 
+      @year = session[:BK_year] = Time.parse(params[:value]+"/1/1 JST") 
     end
     redirect_to :action => :index
   end

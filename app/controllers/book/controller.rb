@@ -10,7 +10,7 @@ class Book::Controller <  ApplicationController
   before_filter(:except => :error) {|ctrl|  ctrl.require_allowed "/book_keeping/error" }
  
   def set_instanse_variable
-    @year = session[:book_keeping_year] || Time.now.beginning_of_year
+    @year = session[:BK_year] || Time.now.beginning_of_year
     @arrowed = []
     if current_user
       myself = Book::Permission.create_myself(current_user)      if @editor
@@ -19,9 +19,9 @@ class Book::Controller <  ApplicationController
     end
     @arrowed.sort!{|a,b|  (b.permission <=> a.permission)*2 + (a.username <=> b.username)}
     @arrowed.unshift(myself) if myself
-    logger.debug "BookCtrl SET_INSTANSE_VARIABLE : @arrowed.first=#{@arrowed.first.inspect},session[:book_keeping_owner] =#{session[:book_keeping_owner].inspect}"
-    @owner = (session[:book_keeping_owner] ? session[:book_keeping_owner] : @arrowed.first) ||
-      Book::Permission.create_nobody #owner
+    logger.debug "BookCtrl SET_INSTANSE_VARIABLE : @arrowed.first=#{@arrowed.first.inspect},session[:BK_owner] =#{session[:BK_owner].inspect}"
+    permittion_id = session[:BK_owner] 
+    @owner =  (permittion_id ? Book::Permission.find(permittion_id) : @arrowed.first) #|| Book::Permission.create_nobody #owner
     @Links=Book::KeepingController::Links
     #@optionDisplay = "誰の簿記か #{@owner[1]}"
   end
