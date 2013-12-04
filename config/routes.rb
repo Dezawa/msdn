@@ -11,6 +11,25 @@ Msdn::Application.routes.draw do
       post "#{controller}/#{action}" => "#{controller}##{action}"
     }}
     
+  ["book/kamoku", "book/main"].
+    each{|controller| 
+    %w(csv_out).
+    each{|action|
+      post "#{controller}/#{action}" => "#{controller}##{action}"
+    }}
+    
+    #get  ":controller/csv_out"             => ":controller#csv_out"
+  
+  controller = "book/keeping"
+  %w(taishaku csv_taishaku motocho).
+    each{|action|
+      post "#{controller}/#{action}" => "#{controller}##{action}"
+    }
+
+  namespace :book do
+    resources :keeping, :kamoku, :main, :permission
+    post "book/keeping/owner_change_win" => "keeping#owner_change_win"
+  end
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
