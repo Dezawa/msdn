@@ -42,7 +42,7 @@ class Hospital::NurcesController <  Hospital::Controller
     #@CSVlabels = Labels.map{|html| html.label}
     #@Pagenation = 20
     #@New = {:no => no, :date => Time.now}
-    #@Create = {:owner => current_user.login }
+    #@Create = {:owner => current_user.username }
     #@on_cell_edit = true
   end
   def csv_out(filename=nil)
