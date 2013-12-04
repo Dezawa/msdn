@@ -407,9 +407,9 @@ module ApplicationHelper
     return "".html_safe if model.errors.size == 0
     safe_join(
               [tag(:ul),              
-               model.errors.full_messages.map{ |msg| 
-                 tag(:li) + msg + tag("/li")
-               }.join("\n"),
+               sanitize(model.errors.full_messages.map{ |msg| 
+                          "<li>#{msg}</li>"
+               }.join("\n")),
                tag("/ul")
               ])
   end
