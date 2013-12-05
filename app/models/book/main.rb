@@ -15,6 +15,7 @@ class Book::Main < ActiveRecord::Base
    validates_presence_of :amount   ,:message => "金額は必須項目です"
    validates_presence_of :tytle,:message => "摘要は必須項目です"
 
+  attr_accessor :kasi, :kari
   #validates :tytle   ,:presence => true,:message => "摘要は必須項目です"
   belongs_to :kari_kamoku,:class_name => "Book::Kamoku",:foreign_key => :karikata
   belongs_to :kasi_kamoku,:class_name => "Book::Kamoku",:foreign_key => :kasikata
@@ -81,7 +82,7 @@ class Book::Main < ActiveRecord::Base
       book[:kari]=book[:kasi] = nil
       if kamoku_id.to_i == book.karikata
         aite = book.kasikata
-        book[:kasi] = book.amount
+        book.kasi = book.amount
         sum -= book.amount
       else
         book[:kari] = book.amount
