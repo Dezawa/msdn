@@ -1,34 +1,43 @@
 Msdn::Application.routes.draw do
+  def set_routes(controller,actions)
+    actions[0].each{|action|
+      get "#{controller}/#{action}" => "#{controller}##{action}"
+    }
+    actions[1].each{|action|
+      post "#{controller}/#{action}" => "#{controller}##{action}"
+    }
+  end
+
   devise_for :users
   root :to => "top#msdn"
 
   resources :user_options,:users
   
-  %w(user_options users).
+  %w(user_options users book/main book/kamoku).
     each{|controller| 
     %w(add_on_table edit_on_table update_on_table csv_out).
     each{|action|
       post "#{controller}/#{action}" => "#{controller}##{action}"
     }}
     
-  ["book/kamoku", "book/main"].
-    each{|controller| 
-    %w(csv_out).
-    each{|action|
-      post "#{controller}/#{action}" => "#{controller}##{action}"
-    }}
-    
-    #get  ":controller/csv_out"             => ":controller#csv_out"
-  
   controller = "book/keeping"
-  %w(taishaku csv_taishaku motocho help).
-    each{|action|
-      post "#{controller}/#{action}" => "#{controller}##{action}"
-    }
+  actions    = [%w(taishaku motocho),%w(csv_taishaku help owner_change_win)]
+  set_routes(controller,actions)
+
+  controller = "book/main"
+  actions    = [%w( book_make),
+                %w(set_const count kaisizandaka_count renumber sort_by_tytle make_new_year
+                   csv_out_print csv_upload csv_out)
+               ]
+  set_routes(controller,actions)
+
+  controller = "book/kamoku"
+  actions = [[],%w(edit_on_table_all_column csv_out)]
+  set_routes(controller,actions)
 
   namespace :book do
     resources :keeping, :kamoku, :main, :permission
-    post "book/keeping/owner_change_win" => "keeping#owner_change_win"
+    #post "book/keeping/owner_change_win" => "keeping#owner_change_win"
   end
 
   # The priority is based upon order of creation: first created -> highest priority.
