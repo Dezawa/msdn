@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 class Book::KamokuController  <  Book::Controller
-  before_filter :login_required 
   before_filter {|ctrl| ctrl.set_permit %w(複式簿記試用 複式簿記利用 複式簿記メンテ)}
   before_filter {|ctrl| ctrl.require_allowed}
   #before_filter(:except => [:index,:csv_out,:edit_on_table,:update_on_table]){|ctrl| ctrl.require_editor}
