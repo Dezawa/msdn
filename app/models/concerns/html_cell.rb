@@ -119,7 +119,7 @@ class HtmlLink   < HtmlCell
               object.send(symbol).html_safe+
               "</a>G".html_safe
 
-    ("<a href='K#{link[:url]}?#{link[:key]}=#{object.send(link[:key_val])}"+
+    ("<a href='#{link[:url]}?#{link[:key]}=#{object.send(link[:key_val])}"+
      "'>#{object.send(symbol)}</a>").html_safe
   end  
 end
@@ -236,9 +236,10 @@ class HtmlSelectWithBlank < HtmlSelect
 end
 class HtmlRadio  < HtmlSelect
   def edit(domain,obj,controller,options)
-   return  choices(obj).map{|choice|
-      radio_button(domain,symbol,choice[-1] ,options.merge(checked obj,symbol,choice))+"#{choice[0]}"
-    }.join
+    return  choices(obj).map{|choice|
+      radio_button(domain,symbol,choice[-1] ,
+                   options.merge(checked obj,symbol,choice))+"#{choice[0]}"
+    }.join.html_safe
 
     html_options={}
     if options[:index]
