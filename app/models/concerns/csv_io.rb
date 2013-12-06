@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'csv'
 require 'nkf'
-module Function
+#module Function
 
 #CSVでUpload、Download するためのhelper 
 #* Uploadは総とっかえ csv_upload と 有るなら更新無ければ作成 csv_update とがある
@@ -185,4 +185,4 @@ module CsvIo
 
 
 end
-end
+#end
