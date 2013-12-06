@@ -28,7 +28,7 @@ class UsersController < CommonController
     @options   = UserOption.all.sort{|a,b| (a.order <=> b.order)*1000 + (a.label <=> b.label)}
    @TYTLE = "ユーザ"
    @labels=Labels0
-   @TableEdit = [[:form,:new,"新規登録"]]
+   @TableEdit = [[:form,:new,"新規登録",:method => :get]]
    @tmplate  = true
    @Show = true
    @Edit = true
@@ -70,10 +70,10 @@ class UsersController < CommonController
   end
  
   def create
-    @user = User.new(params[:user])
+    @user = User.new(permit_attr)
     success = @user && @user.save
     logger.debug("UserCreate success? #{success}")
-    logger.debug("UsetCreate #{@user.errors.on(:email)}")
+    #logger.debug("UsetCreate #{@user.errors.on(:email)}")
     if success && @user.errors.empty?
         redirect_to :action => :index
       flash[:notice] = "Thanks for signing up!  We're sending you an email with your activation code."
