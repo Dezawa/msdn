@@ -5,11 +5,12 @@ class Book::Controller <  ApplicationController
   include Actions
   #include BookPermit
   #before_filter :login_required 
-  before_filter {|ctrl| ctrl.set_permit %w(複式簿記試用 複式簿記利用 複式簿記メンテ)}
-  before_filter :set_instanse_variable
-  before_filter(:except => :error) {|ctrl|  ctrl.require_allowed "/book_keeping/error" }
+  before_action {|ctrl| ctrl.set_permit %w(複式簿記試用 複式簿記利用 複式簿記メンテ)}
+  #before_action :set_instanse_variable
+  before_action(:except => :error) {|ctrl|  ctrl.require_allowed "/book/keeping/error" }
  
   def set_instanse_variable
+    logger.debug "BookCtrl SET_INSTANSE_VARIABLE "
     @year = session[:BK_year] || Time.now.beginning_of_year
     @arrowed = []
     if current_user
@@ -21,19 +22,18 @@ class Book::Controller <  ApplicationController
     @arrowed.unshift(myself) if myself
     logger.debug "BookCtrl SET_INSTANSE_VARIABLE : @arrowed.first=#{@arrowed.first.inspect},session[:BK_owner] =#{session[:BK_owner].inspect}"
     permittion_id = session[:BK_owner] 
-    @owner =  (permittion_id ? Book::Permission.find(permittion_id) : @arrowed.first) #|| Book::Permission.create_nobody #owner
+    @owner =  (permittion_id ? Book::Permission.find(permittion_id) : @arrowed.first) || 
+      Book::Permission.create_nobody #owner
     @Links=Book::KeepingController::Links
-    #@optionDisplay = "誰の簿記か #{@owner[1]}"
   end
 
   def require_allowed(url="/404.html") 
-    redirect_to url unless @permit || @arrowed.size>0
-    @permit || @arrowed.size>0
+    set_instanse_variable
+    @permit || (@arrowed && @arrowed.size>0) || redirect_to( url )
   end
 
   def require_book_editor(url="/404.html") 
-    redirect_to url unless book_editor?
-    book_editor?
+    book_editor? || redirect_to(url)
   end
 
   def book_editor? ; @owner.permission == 2 ; end
