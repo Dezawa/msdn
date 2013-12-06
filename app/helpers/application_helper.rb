@@ -167,10 +167,12 @@ module ApplicationHelper
     end
   end
   def form_buttom(action,label,opt={})
+    opt ||= {}
     hidden = opt.delete(:hidden) if opt.class==Hash
     hidden_value = opt.delete(:hidden_value) if opt.class==Hash
-    form_tag({:action => action},opt). 
-      safe_concat((if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
+    logger.debug("FORM_BUTTOM: #{action}  #{opt.class}")
+    ft=form_tag({:action => action},opt)
+      ft.safe_concat((if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
        else;"";end
        )).
       safe_concat("<input type='hidden' name='page' value='#{@page}'>").
