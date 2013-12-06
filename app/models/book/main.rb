@@ -97,7 +97,7 @@ class Book::Main < ActiveRecord::Base
 
   def self.recalc_motoirekin(table)
     bunrui_motoire,bunrui_kari,bunrui_kasi = %w(元入金 事業主借 事業主貸).
-      map{|kamoku| Book::Kamoku.find_by(kamoku: kamoku).pluck(:bunrui)}
+      map{|kamoku| Book::Kamoku.find_by(kamoku: kamoku).bunrui}
     table[bunrui_motoire] = 0 #+= table[bunrui_kari] - table[bunrui_kasi]
     table[bunrui_kari] = table[bunrui_kasi] = 0
     table
