@@ -8,7 +8,7 @@
   s[kamoku.taishaku] += @sum[kamoku.bunrui]
 %>
 <% if @sum[kamoku.bunrui] != 0 %>
-<%= "<tr><td>#{kamoku.bunrui}</td>" %>
+<tr><td><%= kamoku.bunrui %></td>
 <td><%= link_to(kamoku.kamoku,
     :controller=> "book/main",:action => :book_make,
     :kamoku_id=>kamoku.id)
