@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 class LipsController < ApplicationController
+  include Actions
   include LipsHelper
   include CsvIo
   #before_filter :login_required , :except => [:free,:calc,:error]
