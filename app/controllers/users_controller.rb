@@ -88,8 +88,12 @@ class UsersController < CommonController
     @params = params
     @user = User.find(params[:id],:include => :user_options)
     #@user[:valtype] = @user[:lips_size_pro].class
-    @user_option_ids = params[:user_options].map{|id,ok_ng| id if ok_ng == "1" }.compact
-    @user.user_options = UserOption.find(@user_option_ids)
+    @user_option_ids = params[:user_options] ?
+    params[:user_options].map{|id,ok_ng| id if ok_ng == "1" }.compact : []
+    unless  @user.user_options.map(&:id).sort ==  @user_option_ids.sort
+      @user.user_options = UserOption.find(@user_option_ids)
+      @user.save
+    end
     respond_to do |format|
       if @user.update_attributes(permit_attr)
         flash[:notice] = 'User was successfully updated.'
