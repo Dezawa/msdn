@@ -23,7 +23,7 @@ class Book::Permission < ActiveRecord::Base
   end
   
   def self.arrowed_owner(login)
-    ret = find(:all,:conditions=>["login = ? and permission > ?",login,NON]).
+    ret = where(["login = ? and permission > ?",login,NON]).
       sort{|a,b|  (b.permission <=> a.permission)*2 + (a.login <=> b.login)}
   end
 
@@ -42,7 +42,7 @@ class Book::Permission < ActiveRecord::Base
   end
   
   def owner_name
-    User.find_by(login: owner).name || owner
+    User.find_by(username: owner).name || owner
   end
 
   def permission_string
