@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class Lips #< ActiveRecord::Base
   #include 'Error/error'
-  require 'jcode'
+  #require 'jcode'
   require 'csv'
   require 'nkf'
   require 'pp'
