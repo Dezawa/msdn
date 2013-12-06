@@ -1,22 +1,19 @@
 <h1>Sign up as a new user</h1>
 <% @user.password = @user.password_confirmation = nil %>
 
-<%= error_messages_for :user %>
-<% form_for :user, :url => "/register"  do |f| -%>
+<%= form_for :user  do |f| -%>
 <table><tr><td valign=top>
 <table border=1><tr><td>項目</td><td>コメント</td><td>値</td></tr>
 <% @labels.each_with_index{|html_cell,i| %>
-<%= "<tr><td>#{html_cell.symbol}</td><td>#{html_cell.label}</td><td>" +
-    "#{html_cell.edit_field( @Domain,@user,controller)}</td></tr>" %>
+<tr><td><%= html_cell.symbol %></td><td><%= html_cell.label %></td><td>
+  <%= html_cell.edit_field( @Domain,@user,controller) %></td></tr>
 <% } %>
 </table></td><td>
 
 <table border=1><tr><td colspan=2>オプション</td></tr>
 <% @options.each{|opt| -%> <tr><td><%= opt.label %></td><td> <% -%>
- <%= "<input type='radio' id=user_options_ok_#{opt.id}' name='user_options[#{opt.id}]' value='1'" +
-  (@arrowed_options.include?(opt.id) ? "checked" : "" )%>>有効
- <%= "<input type='radio' id=user_options_ng_#{opt.id}' name='user_options[#{opt.id}]' value='0'" +
-  (@arrowed_options.include?(opt.id) ?  "":"checked")  %>>無効</td></tr> <%  } %>
+ <%= radio_button(:user_options,opt.id,1) %>有効
+ <%= radio_button(:user_options,opt.id,0) %>無効</td></tr> <%  } %>
 </table>
 </td></tr></table>
 

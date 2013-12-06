@@ -8,15 +8,14 @@
 <table border=1><tr><td>項目</td><td>コメント</td><td>値</td></tr>
 <% @labels.each_with_index{|html_cell,i| %>
 <tr><td><%= html_cell.symbol %></td><td><%= html_cell.label -%>
-</td><td><%= html_cell.edit_field( @Domain,@user,controller,:size=> 10).html_safe %></td></tr>
+</td><td><%= html_cell.edit_field( @Domain,@user,controller,:size=> 10) %></td></tr>
 <% } %>
 </table></td>
 <td>
 <table border=1><tr><td colspan=2>オプション　　　　　　　　　　　　 </td></tr>
-<% @options.each{|opt| -%> <tr><td><%= opt.label %></td><td> <% -%>
- <%= ("<input type='radio' id=user_options_ok_#{opt.id}' name='user_options[#{opt.id}]' value='1'" +
-  (@arrowed_options.include?(opt.id) ? "checked" : "" )).html_safe %>>有効<%= ("<input type='radio' id=user_options_ng_#{opt.id}' name='user_options[#{opt.id}]' value='0'" +
-  (@arrowed_options.include?(opt.id) ?  "":"checked")).html_safe  %>>無効</td></tr> <%  } %>
+<% @options.each{|opt| -%> <tr><td><%= opt.label %></td><td>
+ <%= radioBottom_pair_if_sain(:user_options,opt.id,[0,1],%w(無効 有効), @arrowed_options.include?(opt.id)) %>
+</td></tr><%-  } -%>
 </table>
 </td></tr></table>
 <% end %>
