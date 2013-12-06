@@ -169,7 +169,7 @@ module ApplicationHelper
   def form_buttom(action,label,opt={})
     hidden = opt.delete(:hidden) if opt.class==Hash
     hidden_value = opt.delete(:hidden_value) if opt.class==Hash
-    form_tag(:action => action). 
+    form_tag({:action => action},opt). 
       safe_concat((if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
        else;"";end
        )).
@@ -356,6 +356,13 @@ module ApplicationHelper
       cc.map{|ch| 
       "<option value='#{ch[0]}'  #{ch[0]==val ? 'selected':''}>#{ch[-1]} </option>"
     }.join
+  end
+
+  def radioBottom_pair_if_sain(domain,method,values,labels,value)
+    ("<input type='radio' id='#{domain}_#{method}_#{values[1]}' name='#{domain}[#{method}]' "+
+     "value='#{values[1]}' #{value ? 'checked' : ''}>#{labels[1]}\n").html_safe +
+      ("<input type='radio' id='#{domain}_#{method}_#{values[0]}' name='#{domain}[#{method}]' "+
+       "value='#{values[0]}' #{value ? '' : 'checked'}>#{labels[0]}").html_safe
   end
 
   def radioBottom(domain,method,values,value=nil,option=nil)
