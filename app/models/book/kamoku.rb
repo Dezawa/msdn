@@ -4,7 +4,7 @@ require 'pp'
 # 複式簿記 Book::Keeping の勘定科目のModel
 #
 class Book::Kamoku < ActiveRecord::Base
-  #extend Function::CsvIo
+  extend CsvIo
   self.table_name = 'book_kamokus'
   #attr_accessible :id ,:kamoku ,:bunrui ,:code
   attr_accessor   :no,:book_id,:book
