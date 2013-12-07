@@ -8,6 +8,19 @@ class LipsController < ApplicationController
   before_filter(:only => [:csv_upload,:csv_download,:change_form]){|ctrl| ctrl.require_permit "/msg_lips_login"} 
   skip_before_filter :verify_authenticity_token
 
+  Permit = ["promax", "opemax", "vertical", "minmax", 
+            "opename"=>("1".."100").to_a ,
+            "time"   =>("1".."100").to_a ,
+            "gele"   => ("1".."100").to_a ,
+            "proname"=> ("1".."100").to_a ,
+            "gain"   => ("1".."100").to_a ,
+            "min"    =>("1".."100").to_a ,
+            "max"    =>("1".."100").to_a ,
+            "rate"   =>[ {"1" => ("1".."100").to_a} ,{"2" => ("1".."100").to_a} ]
+#Hash[*("1".."100").map{|i| [i,("1".."100").to_a]}.flatten(1)]
+           ]
+
+
   def free
     @title = "線形計画法"
     I18n.locale = :guest
@@ -38,7 +51,8 @@ class LipsController < ApplicationController
       @user  = current_user ? current_user : User.find_by_login("guest")
     @login = @user ? @user.login : "guest"
     set_filename
-      @lips=Lips.new(params[:lips])
+      @lips=Lips.new(params.require(:lips).permit!)
+
       @lips.calc(@prefix,@filebase,@csvfile) if params[:lips]
   end
 
@@ -80,7 +94,7 @@ protected
   def set_filename
     user = @user ? @user.login : "guest" 
     @filebase ="#{user}-#{Time.now.to_i.to_s(16)}"
-    @csvfile = "/lips/tmp/#{@filebase}.csv"
-    @prefix = Rails.root+"/public"
+    @csvfile = "lips/tmp/#{@filebase}.csv"
+    @prefix = Rails.root+"public"
   end
 end

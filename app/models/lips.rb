@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 class Lips #< ActiveRecord::Base
-  #include 'Error/error'
+  extend ActiveModel::Translation
+  #include ActiveModel::Model
+  #include ActiveModel::Errors
+  include  Errors
   #require 'jcode'
   require 'csv'
   require 'nkf'
@@ -10,7 +13,7 @@ class Lips #< ActiveRecord::Base
 
   def initialize(params=nil)
     #defaulte value:
-    @errors = Error::Errors.new(self)
+    @errors = ActiveModel::Errors.new(self)
    if params
       @promax = params[:promax] ?  params[:promax].to_i : 10
       @opemax = params[:opemax] ?  params[:opemax].to_i : 10
@@ -22,40 +25,41 @@ class Lips #< ActiveRecord::Base
     @time,@pro,@ope,@gain,@min,@max = 
      [@time,@pro,@ope,@gain,@min,@max].map{|i| Array.new(@opemax+1,0.0) }
     @rate = (0..@promax).map{|pro| (0..@opemax).map{|ope| 0.0 }}
+pp params
     if params
       [:proname,:opename,:gele].each{|sym|
         if params[sym]
           #self.send(:pronameset,%(ff hh ll))
-          klass =  params[sym].class
-          if klass == HashWithIndifferentAccess or klass == Hash
-            params[sym].each_pair{|i,v| self.send(sym.to_s+"set",v,i.to_i)
+          case params[sym]
+          when HashWithIndifferentAccess ,Hash, ActionController::Parameters
+            params[sym].each_pair{|i,v| self.send("#{sym}set".to_sym,v,i.to_i)
             }
-          elsif klass== Array ;self.send(sym.to_s+"set",params[sym])
+          when Array ;self.send(sym,params[sym])
           end
         end
       }
      [:gain,:time,:pro,:ope,:min,:max].each{|sym|
         if params[sym]
           #self.send(:pronameset,%(ff hh ll))
-          klass =  params[sym].class
-          if klass == HashWithIndifferentAccess or klass == Hash
+          case params[sym]
+          when HashWithIndifferentAccess ,Hash, ActionController::Parameters
             params[sym].each_pair{|i,v| self.send(sym.to_s+"set",v.to_f,i.to_i)
             }
-          elsif klass== Array ;self.send(sym.to_s+"set",params[sym].map{|v| v.to_f})
+          when Array ;self.send(sym.to_s+"set",params[sym].map{|v| v.to_f})
           end
         end
       }
       if rate=params[:rate]
-        klass = rate.class
-        if klass == HashWithIndifferentAccess or klass == Hash
-          #pp rate
-          rate.each_pair{|i,v|
-            if (kklass = v.class)==HashWithIndifferentAccess or kklass == Hash
+        case rate
+        when HashWithIndifferentAccess ,Hash, ActionController::Parameters
+            rate.each_pair{|i,v|
+            case v
+            when HashWithIndifferentAccess,Hash, ActionController::Parameters
               v.each_pair{|j,vv| self.rateset(vv.to_f,i.to_i,j.to_i)
               }
             end
           }
-        elsif klass== Array ;self.rateset(params[sym])
+        when Array ;self.rateset(params[sym])
         end
       end
       [:vertical,:minmax,:download].each{|sym|
@@ -155,7 +159,7 @@ class Lips #< ActiveRecord::Base
     begin
       sol = File.read("#{filepath}.sol")
     rescue  
-      @errors.add_to_base("計算に失敗しました") 
+      @errors.add(:nil,"計算に失敗しました") 
       return
     end
     para = {}
@@ -263,6 +267,7 @@ class Lips #< ActiveRecord::Base
         csv << "\n"
       }
     end
+pp csvfile
     fp=open(csvfile,"w")
     fp.print NKF.nkf("-s",csv)
     fp.close
@@ -270,7 +275,7 @@ class Lips #< ActiveRecord::Base
 
   A1=["LiPS-CSV","LiPS-CSV-H"]
   B1=["Ver1.00","Ver1.10"]
-  D9D11=   [t(:operation),t(:runtime),"以上・以下"]
+  D9D11=   [I18n.translate(:operation),I18n.translate(:runtime),"以上・以下"]
 
   def csv_upload(csvfile)
 
@@ -281,21 +286,21 @@ class Lips #< ActiveRecord::Base
       #end
       strs = NKF.nkf("-w",csvfile.read)
     rescue
-      @errors.add_to_base("ファイルが指定されて居ません")
+      @errors.add(:nil,"ファイルが指定されて居ません")
       return
     end
     if strs.size == 0
-      @errors.add_to_base "ファイルが空です"
+      @errors.add :nil,"ファイルが空です"
       return 
     elsif strs[0,10] =~ /[^ -~]/
-      @errors.add_to_base "CSV形式ではないようです。もしくはLiPSの書式ではないようです。"
+      @errors.add :nil,"CSV形式ではないようです。もしくはLiPSの書式ではないようです。"
       return
     end
     rows = CSV.parse( strs)
     a1,b1 =rows.shift
     
     unless A1.include?(a1) and B1.include?(b1)
-      @errors.add_to_base "LiPSの書式ではないようです"   
+      @errors.add :nil,"LiPSの書式ではないようです"   
       return
     end
     # of = open("/tmp/LiPSupload_#{cgi.remote_user}.csv","w")
@@ -320,7 +325,7 @@ class Lips #< ActiveRecord::Base
     idx = f.index{|v| v.nil? or v == "" }
     f = f[0,idx] if idx
     if f.size > @opemax
-      @errors.add_to_base "#{t :operation}数が多すぎます。#{@opemax+1}以上を切り捨てます"
+      @errors.add :nil,"#{t :operation}数が多すぎます。#{@opemax+1}以上を切り捨てます"
       f = f[0,@opemax]
     end
     @opemax = f.size
@@ -345,7 +350,7 @@ class Lips #< ActiveRecord::Base
       if value =~ /^(以上)|(以下)$/
         @gele[ope]  = (value=="以上" ? ">=" : "<=")
       else
-        @errors.add_to_base "#{@opename[ope]}の「以上・以下」が未入力です"
+        @errors.add :nil,"#{@opename[ope]}の「以上・以下」が未入力です"
       end
     }
     
@@ -359,7 +364,7 @@ class Lips #< ActiveRecord::Base
     
     #while str=csv.gets ; break if $_ =~ /^("")?,/
     if csvs.size > @promax
-      @errors.add_to_base "#{t(:product)}数が多すぎます。#{@promax+1}以降を切り捨てます"
+      @errors.add :nil,"#{t(:product)}数が多すぎます。#{@promax+1}以降を切り捨てます"
       csvs = csvs[0,@promax]
     end
     @promax = csvs.size
@@ -380,7 +385,7 @@ class Lips #< ActiveRecord::Base
         rate = true if  @rate[pro][ope] != 0.0
       }
       unless rate
-        @errors.add_to_base "#{@proname[pro]}の「#{t :coment}」が一つも入って居ません"
+        @errors.add(:rate, "#{@proname[pro]}の「#{t :coment}」が一つも入って居ません")
       end 
       }  
   end
@@ -394,7 +399,7 @@ puts  f.join("|")
     idx = f.index{|v| v.nil? or v == ""}
     f = f[0,idx] if idx
     if f.size > @promax
-      @errors.add_to_base "#{t(:pro_name)}数が多すぎます。#{@promax+1}以上を切り捨てます"
+      @errors.add :nil,"#{t(:pro_name)}数が多すぎます。#{@promax+1}以上を切り捨てます"
       f = f[0,@promax]
     end
     @promax  = f.size
@@ -406,7 +411,7 @@ puts  f.join("|")
     (1..@promax).each{|pro|
       @gain[pro] = f.shift.to_f
       if @gain[pro] == 0.0
-        @errors.add_to_base "#{@proname[pro]}の#{t(:pro_gain)}が未入力です"
+        @errors.add :nil,"#{@proname[pro]}の#{t(:pro_gain)}が未入力です"
       end
     }
     #最小製造数
@@ -426,7 +431,7 @@ puts  f.join("|")
     while f[0,3] != [t(:operation),t(:runtime),"≦≧"];f = rows.shift ;end
     csvs = rows.delete_if{|f| f[0].nil? or f[0]==""}
     if csvs.size > @opemax
-      @errors.add_to_base "#{t(:operation)}数が多すぎます。#{@opemax+1}以降を切り捨てます"
+      @errors.add :nil,"#{t(:operation)}数が多すぎます。#{@opemax+1}以降を切り捨てます"
       csvs = csvs[0,@opemax]
     end
     @opemax = csvs.size
@@ -436,14 +441,14 @@ puts  f.join("|")
       
       @time[ope]  = f.shift.to_f
       if @time[ope] == 0.0
-        @errors.add_to_base "#{@opename[ope]}の#{t :runtime}が未入力です"
+        @errors.add :nil,"#{@opename[ope]}の#{t :runtime}が未入力です"
       end 
       
       gele = f.shift
       if gele =~ /^(以上)|(以下)$/
         @gele[ope] = (gele=="以上" ? ">=" : "<=")
       else
-        @errors.add_to_base "#{@opename[ope]}の「以上・以下」が未入力です"
+        @errors.add :nil,"#{@opename[ope]}の「以上・以下」が未入力です"
       end
       
       rate = nil
@@ -455,7 +460,7 @@ puts  f.join("|")
         end
       }
       unless rate
-        @errors.add_to_base "#{@opename[ope]}の「#{t :comnt}」が一つも入って居ません"
+        @errors.add :nil,"#{@opename[ope]}の「#{t :comnt}」が一つも入って居ません"
       end 
     }
   end  # of cvs_up_land(rows)
