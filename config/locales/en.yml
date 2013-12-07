@@ -1,23 +1,16 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t 'hello'
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t('hello') %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more, please read the Rails Internationalization guide
-# available at http://guides.rubyonrails.org/i18n.html.
-
+# LiPSの項目名書き換えオプション
 en:
-  hello: "Hello world"
+  lips:      "汎用会員版"
+  pro_name:   "製品名"
+  pro_max:    "製品数"
+  ope_max:    "工程数"
+  pro_direct: "製品の並び"
+  operation: "工程"
+  profit:    "利益"
+  runtime:   "稼働時間"
+  min:       "最小製造数"
+  max:       "最大製造数"
+  coment:    "製品を一単位作るのに必要な稼働時間"
+  number:    "製造数"
+  pro_gain:  "製品当り利益"
+  message:   ""
