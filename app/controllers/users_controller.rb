@@ -7,6 +7,14 @@ class UsersController < CommonController
   #include AuthenticatedSystem
   
   #Viewにて表示すべき項目の定義。
+
+  LabelsChangePass = [
+             HtmlText.new(:name         ,"氏名",          :size => 20, :ro => true),
+             HtmlText.new(:login         ,"ユーザ名",          :size => 20, :ro => true),
+             HtmlPasswd.new(:password    ,"パスワード",        :size => 20),
+             HtmlPasswd.new(:password_confirmation,"確認パスワード",:size => 20)
+            ]
+
   Labels0 = [
              HtmlText.new(:name         ,"氏名",          :size => 20),
              HtmlText.new(:login         ,"ユーザ名",          :size => 20),
@@ -39,14 +47,13 @@ class UsersController < CommonController
 
   def change_password
     flash[:return_to] = request.env["HTTP_REFERER"]
-    @labels = Labels0[2..3]
+    @labels = LabelsChangePass
     @user = User.find(current_user.id)  
   end
 
   def password_update
     @user = User.find(current_user.id)  
-
-      if @user.update_attributes(params[:user])
+      if @user.update_attributes(params.require(@Domain).permit(:password,:password_confirmation))
         flash[:notice] = 'パスワード変更しました'
         redirect_to( flash[:return_to] || "/top")
       else
