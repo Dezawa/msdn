@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+
+require 'csv'
+require 'yaml'
+require 'pp'
+
+arr_of_arrs = CSV.read(ARGV.shift)
+
+headers = arr_of_arrs.shift
+
+def make_key(int)
+  case int.to_i
+  when 0 ; "one"
+  when 1 ; "two"
+  else   ; "No#{int+1}"
+  end
+end
+
+def true_false(arry_arry)
+  arry_arry.each{|arry| arry.each{|cell| 
+      cell = true   if cell == "true"
+      cell = false  if cell == "false" 
+    }} 
+  arry_arry
+end
+
+yaml_hash = {}
+arr_of_arrs.each_with_index{|arr,idx|
+  yaml_hash[make_key(idx)] = Hash[*headers.zip(arr).flatten]
+}
+
+puts YAML.dump(yaml_hash).gsub(/"true"/,"true").gsub(/"false"/,"false")
