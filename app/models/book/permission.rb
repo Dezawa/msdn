@@ -9,10 +9,10 @@ class Book::Permission < ActiveRecord::Base
   
   def validate
     set_user
-    errors.add_to_base("協働ユーザ #{login}は未登録です") if !login.blank? && user_id.blank?
-    errors.add_to_base("協働ユーザ が未入力です") if login.blank?
-    errors.add_to_base("協働ユーザ に自分自身を登録できません") if login == owner
-    errors.add_to_base("協働ユーザ は既に登録されています") if login_dupe?
+    errors.add(:nil,"協働ユーザ #{login}は未登録です") if !login.blank? && user_id.blank?
+    errors.add(:nil,"協働ユーザ が未入力です") if login.blank?
+    errors.add(:nil,"協働ユーザ に自分自身を登録できません") if login == owner
+    errors.add(:nil,"協働ユーザ は既に登録されています") if login_dupe?
   end
   
   def self.arrowed_owner_and_permission(login)
