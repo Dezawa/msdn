@@ -7,7 +7,7 @@
 # 勘定元帳、貸借対照表(と損益計算書)総勘定元帳を作る classメソッドがある
 # また、それらを印刷用CSVに書き出すclassメソッドがある。
 class Book::Main < ActiveRecord::Base
-  extend Function::CsvIo
+  extend CsvIo
   self.table_name = 'book_mains'
    validates_presence_of :no, :date ,:message=> "は必須項目です"
    validates_presence_of :karikata ,:message=> "借方勘定科目は必須項目です"
@@ -15,7 +15,7 @@ class Book::Main < ActiveRecord::Base
    validates_presence_of :amount   ,:message => "金額は必須項目です"
    validates_presence_of :tytle,:message => "摘要は必須項目です"
 
-  attr_accessor :kasi, :kari
+  attr_accessor :kasi, :kari, :aite, :kasikari, :sum
   #validates :tytle   ,:presence => true,:message => "摘要は必須項目です"
   belongs_to :kari_kamoku,:class_name => "Book::Kamoku",:foreign_key => :karikata
   belongs_to :kasi_kamoku,:class_name => "Book::Kamoku",:foreign_key => :kasikata
@@ -79,19 +79,19 @@ class Book::Main < ActiveRecord::Base
     books.each{|book| 
       next unless book.amount
       aite =  book.karikata
-      book[:kari]=book[:kasi] = nil
+      book.kari=book.kasi = nil
       if kamoku_id.to_i == book.karikata
         aite = book.kasikata
         book.kasi = book.amount
         sum -= book.amount
       else
-        book[:kari] = book.amount
+        book.kari = book.amount
         sum += book.amount
       end
       aite = Book::Kamoku.kamokus.rassoc(aite)[0]
-      book[:aite]=aite
-      book[:kasikari]= sum >0 ? "貸" : "借"
-      book[:sum] = sum.abs
+      book.aite     =aite
+      book.kasikari = sum >0 ? "貸" : "借"
+      book.sum      = sum.abs
     }
   end
 
