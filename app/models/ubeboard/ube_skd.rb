@@ -115,12 +115,12 @@ class UbeSkd < ActiveRecord::Base
   ###
   def after_find2
     err =ube_plans.map{|plan| plan.errors.on(:plan_dry_from)}.compact
-    errors.add_to_base("次の製品の乾燥工程が開きすぎています　" + err.sort.join("  ") ) if err.size>0
+    errors.add(:nil,"次の製品の乾燥工程が開きすぎています　" + err.sort.join("  ") ) if err.size>0
     err= ube_plans.map{|plan| er=plan.errors.on(:plan_shozo_from)}.compact
-    errors.add_to_base("次の製品は製造開始しませんでした　" + err.sort.join("  ") ) if err.size>0
+    errors.add(:nil,"次の製品は製造開始しませんでした　" + err.sort.join("  ") ) if err.size>0
     err = ube_plans.map{|plan| plan.errors.on(:plan_kakou_from)}.compact
-    errors.add_to_base("次の製品は期間内に完了しませんでした　" + err.sort.join("  ")) if err.size>0
-    message.split("\n").each{|msg| errors.add_to_base(msg) } unless message.blank?  
+    errors.add(:nil,"次の製品は期間内に完了しませんでした　" + err.sort.join("  ")) if err.size>0
+    message.split("\n").each{|msg| errors.add(:nil,msg) } unless message.blank?  
   end
 
   #稼動累積による保全のための上限値を設定する。
@@ -711,7 +711,7 @@ class UbeSkd < ActiveRecord::Base
         #この工程に実績があればそれを用いる。
         #無いときは予定を用いる。
         ope_length=plan.ope_length(ope)
-        errors.add_to_base(ope_length[2]) if ope_length[2]
+        errors.add(:nil,ope_length[2]) if ope_length[2]
         to = ope_to_time(plan,real_ope)
 
         #乾燥の場合は養生の空き時間設定
@@ -830,7 +830,7 @@ class UbeSkd < ActiveRecord::Base
     plans.each_with_index{|plan,idx|
       logger.info("==== #{plan.lot_no} #{plan.meigara}====")
       unless (msg=plan.ube_product_error?)==""
-          errors.add_to_base(msg)
+          errors.add(:nil,msg)
           logger.info("ERROR: #{Time.now.strftime('%Y/%m/%d-%H:%M')}:#{msg}")
         next
       end
@@ -860,7 +860,7 @@ class UbeSkd < ActiveRecord::Base
           "｢#{pre_condition[plan.shozo?].lot_no}｣で打ち切り。～#{pre_condition[plan.shozo?].plan_shozo_to.mdHM  rescue ''}"
 
         logger.info msg
-        errors.add_to_base(msg)
+        errors.add(:nil,msg)
 
         clear_jun_renumber_lot_when_passed(plans[(ret>0 ? idx+1 : idx)..-1])
         return nil
@@ -996,7 +996,7 @@ end
       msg += "抄造をやめ、次のラウンドに移ります。ラウンド終了 #{pre_condition[plan.shozo?].plan_shozo_to.mdHM}"
 
       logger.info msg
-      errors.add_to_base(msg)
+      errors.add(:nil,msg)
       return  nil
     end
       # 抄造開始が前のロットのあと休日を挟んだかどうかみる

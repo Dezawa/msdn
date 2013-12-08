@@ -1130,7 +1130,7 @@ module UbeSkdHelp
 
   def if_error(err)
     return unless err
-    errors.add_to_base(err)
+    errors.add(:nil,err)
     logger.info(err)
   end
 

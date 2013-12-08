@@ -462,7 +462,7 @@ class UbePlan < ActiveRecord::Base
     else
       change,err = change_time(real_ope,pre_plan)
       if err
-        skd.errors.add_to_base(err)
+        skd.errors.add(:nil,err)
         logger.info(err)
       end
       pro_ids = if change > UbeSkd::ChangeTimeLimit
@@ -547,7 +547,7 @@ class UbePlan < ActiveRecord::Base
   end
   def if_error(err)
     return unless err
-    errors.add_to_base(err)
+    errors.add(:nil,err)
     logger.info(err)
   end
 
@@ -590,7 +590,7 @@ class UbePlan < ActiveRecord::Base
      @hozen ||= begin
                   self.ube_product.hozen 
                 rescue 
-                  errors.add_to_base("${id}:#{lot_no} の製品データがおかしい")
+                  errors.add(:nil,"${id}:#{lot_no} の製品データがおかしい")
                   logger.info("UbePlan:No ube_product error:#{id}:#{lot_no} の製品データがおかしい")
                   true
                 end

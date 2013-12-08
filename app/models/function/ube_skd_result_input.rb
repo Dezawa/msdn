@@ -81,7 +81,7 @@ module Function
           lines = File.read(csv_file)
           real_ope = extruct_real_ope lines
           unless real_ope
-            errors.add_to_base("実績コピペ : 添付番号 #{k+1}、シート#{idx+1}:工程が判定できません");
+            errors.add(:nil,"実績コピペ : 添付番号 #{k+1}、シート#{idx+1}:工程が判定できません");
 
           end
 
@@ -90,7 +90,7 @@ module Function
           when :shozoe,:shozow,:dryo,:dryn,:kakou
             y,m,d = date = extract_ymd(lines)
             unless date
-              errors.add_to_base("実績コピペ : 添付番号 #{k+1}、シート#{idx+1}:#{UbeSkd::Id2RealName[real_ope]} のデータに日付が有りません")
+              errors.add(:nil,"実績コピペ : 添付番号 #{k+1}、シート#{idx+1}:#{UbeSkd::Id2RealName[real_ope]} のデータに日付が有りません")
               next
             end
             set_result(real_ope,date,lines)
@@ -152,7 +152,7 @@ module Function
     return nil unless /^\d[MW]\d{4}$/ =~ lot
     plan = ube_plans.select{|p| p.lot_no == lot }[0]
     logger.info("＊＊==ERROR: #search_plan: #{lot}がube_plansにない。")
-    errors.add_to_base("ロット #{lot} が一覧にありません") unless plan
+    errors.add(:nil,"ロット #{lot} が一覧にありません") unless plan
     plan
   end
 
@@ -374,7 +374,7 @@ module Function
                                Time.parse row[yojo_idx]
                              rescue
                                msg = $!.message + ": #{lot_no} 養生開始時刻[#{row[yojo_idx]}]"
-                               errors.add_to_base("＊＊＊ #{lot_no} の養生開始時刻がありえない日時に思われるので無視します[#{row[yojo_idx]}]")
+                               errors.add(:nil,"＊＊＊ #{lot_no} の養生開始時刻がありえない日時に思われるので無視します[#{row[yojo_idx]}]")
                                logger.info("== ERROR == extract_data_nomal:"+msg +"\n"+$!.backtrace.join("\n"))
                                nil
                              end

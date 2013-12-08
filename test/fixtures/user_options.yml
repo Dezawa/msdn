@@ -78,7 +78,7 @@ opt7:
 
 
 opt8:
-    url: /book_keeping
+    url: /book/keeping
     id: "8"
     authorized: !binary |
       6KSH5byP57C/6KiY5Yip55So
@@ -115,7 +115,7 @@ opt10:
 
 
 opt11:
-    url: /hospital_nurces
+    url: /hospital/nurces
     id: "11"
     authorized: !binary |
       5Yuk5YuZ5Ymy5LuY

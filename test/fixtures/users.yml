@@ -88,7 +88,7 @@ guest:
   name: guest
   subdomain: aliadne.net
   username: guest
-  encrypted_password: $2a$10$hY.yCFZ3RxSbPQgy8gzN0.NTvIL3LTIIyoyjzaCJSE76s.krf92By
+  encrypted_password: $2a$10$IiDa85Qz/KZnnywbNKO4QuyyhP9jNicEdpmviYUXsP1hDctrMZbGa
   sign_in_count: 4
   current_sign_in_at: 2013-12-01 11:56:53.000000000 Z
   last_sign_in_at: 2013-12-01 11:53:46.000000000 Z

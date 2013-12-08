@@ -158,7 +158,7 @@ INFO:#{Time.now.strftime '%Y/%m/%d-%H:%M'}:OPTIMIZE start")
       if  grouped_plan_shzdry[shzdry] && grouped_plan_shzdry[shzdry][0]
         plan        = grouped_plan_shzdry[shzdry][0][0] # 最初のraundの最初のplan
         unless (msg=plan.ube_product_error?)==""
-          errors.add_to_base(msg)
+          errors.add(:nil,msg)
           logger.info("ERROR: #{Time.now.strftime('%Y/%m/%d-%H:%M')}:#{msg}")
           [nil,time_to+1.month,100000]
         else
@@ -233,7 +233,7 @@ INFO:#{Time.now.strftime '%Y/%m/%d-%H:%M'}:OPTIMIZE start")
         #	    cmp_plan.map(&:lot_no).join(' ') +"の前に["+
         #	    plans.map(&:lot_no).join(' ')    +"]を製造。"
         #  logger.debug("### #{msg}")
-        #  errors.add_to_base(msg)
+        #  errors.add(:nil,msg)
         #end
     plans    
   end
@@ -276,7 +276,7 @@ INFO:#{Time.now.strftime '%Y/%m/%d-%H:%M'}:OPTIMIZE start")
         #	    cmp_plan.map(&:lot_no).join(' ') +"の前に["+
         #	    plans.map(&:lot_no).join(' ')    +"]を製造。"
         #  logger.debug("### #{msg}")
-        #  errors.add_to_base(msg)
+        #  errors.add(:nil,msg)
         #end
     plans    
   end
@@ -323,7 +323,7 @@ INFO:#{Time.now.strftime '%Y/%m/%d-%H:%M'}:OPTIMIZE start")
 	    cmp_plan.map(&:lot_no).join(' ') +"の前に["+
 	    plans.map(&:lot_no).join(' ')    +"]を製造。"
           logger.debug("### #{msg}")
-          errors.add_to_base(msg)
+          errors.add(:nil,msg)
         end
     plans    
   end

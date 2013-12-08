@@ -11,7 +11,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131117224243) do
+ActiveRecord::Schema.define(version: 20131203144557) do
+
+  create_table "book_kamokus", force: true do |t|
+    t.text    "kamoku"
+    t.integer "bunrui"
+    t.integer "code"
+  end
+
+  create_table "book_mains", force: true do |t|
+    t.integer "no"
+    t.date    "date"
+    t.integer "kasikata"
+    t.integer "karikata"
+    t.text    "tytle"
+    t.text    "memo"
+    t.integer "amount"
+    t.text    "owner"
+  end
+
+  create_table "book_permissions", force: true do |t|
+    t.string   "login"
+    t.string   "owner"
+    t.boolean  "show"
+    t.boolean  "edit"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "permission"
+    t.integer  "user_id"
+  end
 
   create_table "user_options", force: true do |t|
     t.text    "label"
@@ -39,7 +67,7 @@ ActiveRecord::Schema.define(version: 20131117224243) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "login",                  limit: 40
+    t.string   "username",               limit: 40
     t.string   "name",                   limit: 100, default: ""
     t.boolean  "lipscsvio",                          default: false
     t.boolean  "lipssizeoption",                     default: false
@@ -49,6 +77,7 @@ ActiveRecord::Schema.define(version: 20131117224243) do
     t.string   "lipsoptlink"
     t.string   "state",                              default: "passive"
     t.datetime "deleted_at"
+    t.string   "subdomain"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
