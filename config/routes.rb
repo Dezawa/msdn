@@ -16,8 +16,9 @@ Msdn::Application.routes.draw do
   post    "password_update" => "users#password_update"
   put "users/new" => "users#create"
 
-  get "ubr/main" => "ubr/main#index"
-
+  get  "ubr/main" => "ubr/main#index"
+  get  "ubeboard/top" => "ubeboard/top#top"
+  get  "ubeboard/lips/member" => "lips#member"
   #### EditTable #########
 
   actions = [%w(add_on_table edit_on_table csv_out),%w(add_on_table edit_on_table update_on_table)]
@@ -44,6 +45,9 @@ Msdn::Application.routes.draw do
     ["ubr/main"   , 
      [%w(index occupy_pdf reculc show_pdf),
       %w( csv_upload)]
+    ],
+    ["ubeboard/lips",
+     [%w(member),[]]
     ]
   ].
     each{|controller,actions| set_routes(controller,actions) }
@@ -57,7 +61,14 @@ Msdn::Application.routes.draw do
     #post "book/keeping/owner_change_win" => "keeping#owner_change_win"
   end
   
+  ubeboard_resources = [:ube_skd,:ube_maintain,:ube_holyday,:ube_product,:ube_operation,
+                        :ube_change_times,:ube_meigara,:ube_meigara_shortname,:ube_constant,
+                        :ube_named_changes,:ube_plan]
   namespace :ubeboard do
+    resources *ubeboard_resources
+    ubeboard_resources.each{|ctrl| post "#{ctrl}/csv_out" => "#{ctrl}#csv_out"}
+  end
+  
     
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
