@@ -51,9 +51,12 @@ class LipsController < ApplicationController
       @user  = current_user ? current_user : User.find_by_login("guest")
     @login = @user ? @user.login : "guest"
     set_filename
+    if params[:lips]
       @lips=Lips.new(params.require(:lips).permit!)
-
-      @lips.calc(@prefix,@filebase,@csvfile) if params[:lips]
+    else
+      @lips=Lips.new
+    end
+    @lips.calc(@prefix,@filebase,@csvfile)
   end
 
 
