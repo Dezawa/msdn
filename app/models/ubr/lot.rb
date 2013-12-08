@@ -21,10 +21,10 @@ Converter = [:str,:str,:str,:str,:int,:int,:str,:str,:str,:str,:str,:str]
   Name2Attr = Hash[*Names.zip(Attrs).flatten]
 
 class Lot
-  include Function::CsvIo
+  include CsvIo
   delegate :logger, :to=>"ActiveRecord::Base"
    RAILS_ROOT = "/opt/www/msdntestold" unless defined?(RAILS_ROOT)
-  SCMFILEBASE = File.join(RAILS_ROOT,"tmp","ubr","SCM在庫一覧")
+  SCMFILEBASE = File.join(Rails.root,"tmp","ubr","SCM在庫一覧")
   SCMFILE     =  SCMFILEBASE+".csv"
   attr_accessor :grade,:meigara_code,:meigara,:lot_no,:count,:unit,:packed_date,:qa,:paret
   attr_accessor :hasuukubun

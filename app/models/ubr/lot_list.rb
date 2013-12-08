@@ -22,7 +22,7 @@ module Ubr
 #  Name2Attr = Hash[*Names.zip(Attrs).flatten]
 
 class LotList
-  include Function::CsvIo
+  include CsvIo
   delegate :logger, :to=>"ActiveRecord::Base"
   attr_writer :list , :list_by_id
   @@lotlist = nil
