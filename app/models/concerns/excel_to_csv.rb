@@ -4,13 +4,7 @@ module ExcelToCsv
     # Excel(mgic no 208 207 17 224 -> xsl,80 75 3 -> xlsx) のときは、CSVへの変換を行う
     # 物理ファイルでないとできないので、書き出す。
     infile = case file
-             when ActionController::UploadedStringIO
-               # Temp ファイルに書き出す
-               tempfile = Tempfile.new("result_update")
-               while result=file.read;tempfile.write result;end
-               tempfile.rewind
-               tempfile
-             when File,ActionController::UploadedTempfile #
+             when File,ActionDispatch::Http::UploadedFile #
                logger.debug("ExcelToCsv:original_filename #{file.original_filename}")
                file
              when String
@@ -27,7 +21,8 @@ module ExcelToCsv
     # CSV fileのファイルpathの配列を返す
     # 判定はマジックナンバーで調べる
     def ssconvert_if_excel(infile)
-      magic = [infile.getc,infile.getc]
+      magic = infile.read(2)
+      #magic = [infile.getc,infile.getc]
       case magic
         #   xsl       xslx
       when [208,207],[80,75] ; ssconvert infile.path
