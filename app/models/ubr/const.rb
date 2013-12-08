@@ -3,7 +3,7 @@ StatFont = [[Postscript::Gothic,1.4],[Postscript::Bold,1.8],[Postscript::Gothic,
 module Ubr::Const
 
   @dir= File.dirname(__FILE__)
-  if /www/ =~ @dir
+  if Rails
     $LOAD_PATH << @dir
     MasterDir =  @dir
   else
