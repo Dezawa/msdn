@@ -14,7 +14,7 @@ class Hospital::MonthlyController < Hospital::Controller
              ]
     super
     @TYTLE_post_edit = @month.strftime('%Y年%m月')
-    @basename = File.join( RAILS_ROOT,"tmp","hospital",
+    @basename = File.join( Rails.root,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@current_busho_id,@month.month])
   end
   
