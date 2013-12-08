@@ -83,7 +83,7 @@ module Ubr
       @date = @filename || LotList.lotlist.list.map{ |id,lot| lot.packed_date}.max
       date_of_file = /201\d{5}/.match(@filename)[0]
       Ubr::Point.new(@waku_waku ,date_of_file ).save
-      `(cd #{Rails.root};/usr/local/bin/gnuplot app/models/ubr/point_to_gif.def)`
+      `(cd #{Rails.root};/usr/bin/gnuplot app/models/ubr/point_to_gif.def)`
     end
 
     def pages_out
