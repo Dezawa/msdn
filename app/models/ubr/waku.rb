@@ -100,7 +100,7 @@ class Waku
   end
 
   def self.load_from_master(file = nil)
-    file ||= File.join(Const::MasterDir,"倉庫マスタ一覧-2.csv")
+    file ||= File.join(Const::MasterDir,"SoukoMaster.csv")
     # 倉庫ブロック,枠,   ,容量/kg
     # 0A,01,00:通常,30000
     $Waku = {} 
