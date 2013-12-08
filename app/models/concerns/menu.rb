@@ -39,8 +39,10 @@ class Menu < ActionView::Base
 
   def self.menue_table(view,menus)
     @@controller = view.controller
-    "<table border=1 cellspacing=0>" +
-      menus.map{|menu|  menu.show view }.join + "</table>"
+    html = "<table border=1 cellspacing=0>".html_safe
+    menus.inject( "<table border=1 cellspacing=0>".html_safe){|html,menu|
+      html + menu.show(view) } +
+     "</table>".html_safe
   end
 
   def show( view )
