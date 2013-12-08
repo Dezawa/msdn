@@ -88,6 +88,6 @@ pp params[:csvfile].class
   end
 
   def show_pdf
-    send_file Rails.root+"/tmp/ubr/SoukoInfo.gif", :type => 'image/gif', :disposition => 'inline'
+    send_file Rails.root+"tmp/ubr/SoukoInfo.gif", :type => 'image/gif', :disposition => 'inline'
   end
 end
