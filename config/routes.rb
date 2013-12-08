@@ -48,7 +48,7 @@ Msdn::Application.routes.draw do
   set_routes(controller,actions)
 
   controller = "ubr/main"
-  actions    = [%w(index occupy_pdf reculc),%w( csv_upload)]
+  actions    = [%w(index occupy_pdf reculc show_pdf),%w( csv_upload)]
   set_routes(controller,actions)
   get "ubr/main" => "ubr/main#index"
 
