@@ -7,5 +7,5 @@
 #  2012/6/20現在の定義::休日前製造最小数 終業作業 始業作業 
 class Ubeboard::Constant < ActiveRecord::Base
   extend CsvIo
-  self.table_name = 'ubeboard_constants'
+  self.table_name = 'ube_constants'
 end

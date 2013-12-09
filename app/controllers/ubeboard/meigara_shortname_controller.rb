@@ -9,14 +9,14 @@ class Ubeboard::MeigaraShortnameController < ApplicationController
   delegate :logger, :to=>"ActiveRecord::Base"
 
   Labels = [ HtmlSelect.new( :ube_meigara_id , "銘柄",:display => :meigara,
-                          :correction => Proc.new{UbeMeigara.all_meigara}),
+                          :correction => Proc.new{Ubeboard::Meigara.all_meigara}),
             HtmlText.new(  :short_name  , "略称",:size => 30)
            ]
   CSVlabels =  ["ID","略称","銘柄"]
   CSVatrs   =  [:id,:short_name,:ube_meigara_id]
 
  def set_instanse_variable
-    @Model= UbeMeigaraShortname
+    @Model= Ubeboard::MeigaraShortname
     @TYTLE = "銘柄略称"
     @labels=Labels
     @TableEdit = true

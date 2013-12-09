@@ -55,7 +55,7 @@ class Ubeboard::Skd < ActiveRecord::Base
   include Ubeboard::Function::SkdPdf
   include Ubeboard::Function::SkdResultInput
 
-  self.table_name = 'ubeboard_skds'
+  self.table_name = 'ube_skds'
   delegate :logger, :to=>"ActiveRecord::Base"
 
   #has_many      :ube_plans ,:dependent => :delete_all

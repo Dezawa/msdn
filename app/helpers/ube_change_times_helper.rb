@@ -1,22 +1,44 @@
 # -*- coding: utf-8 -*-
 module UbeChangeTimesHelper
 
-  def chtime_write(ope_names,chtimes)
+  def chtime_table(ope_names,chtimes,&block)
+    html = "<tr><td></td>".html_safe
+    ope_names.each{|ope_to| html += "<td>#{ope_to}</td>\n".safe }
+    ope_names.each{|ope_from|
+      html += "<tr><td>#{ope_from}</td>".safe
+      ope_names.each{|ope_to| chtime,id = chtimes[[ope_from,ope_to]]
+        html += (yeald chtime).html_safe
+      }
+      html += "</tr>\n".html_safe
+    }
     
-    #end
-    #def chtime_row_write(ope_from,ope_names,chtimes)
-    "<tr><td></td>"+
-      ope_names.map{|ope_to| "<td>#{ope_to}</td>" }.join+"\n"+
-      ope_names.map{|ope_from|
-      "<tr><td>#{ope_from}</td>"+
-      ope_names.map{|ope_to| chtime,id = chtimes[[ope_from,ope_to]]
-        "<td align=right>#{chtime}</td>"
-      }.join+"</tr>\n"
-    }.join
+  end
+
+  def chtime_write(ope_names,chtimes)
+    chtime_table(ope_names,chtimes){|chtime|
+      "<td align=right>#{chtime}</td>"
+    }
   end
   def chtime_edit(ope_names,chtimes)
-     "<tr><td></td>"+
-      ope_names.map{|ope_to| "<td>#{ope_to}</td>" }.join+"\n"+
+    chtime_table(ope_names,chtimes){|chtime|
+       chtime ? text_field(:changetime,:change_time,{:index => id,:value=> chtime,:size=>3 }) : ""
+    }
+  end
+
+  def chtime_writed(ope_names,chtimes)
+    html = "<tr><td></td>".html_safe
+    ope_names.each{|ope_to| html += "<td>#{ope_to}</td>\n".safe }
+    ope_names.each{|ope_from|
+      html += "<tr><td>#{ope_from}</td>".safe
+      ope_names.each{|ope_to| chtime,id = chtimes[[ope_from,ope_to]]
+        html += "<td align=right>#{chtime}</td>".html_safe
+      }
+      html += "</tr>\n".html_safe
+    }
+  end
+  def chtime_editd(ope_names,chtimes)
+     html = "<tr><td></td>".html_safe
+      ope_names.each{|ope_to| "<td>#{ope_to}</td>" }.join+"\n"+
       ope_names.map{|ope_from|
       "<tr><td>#{ope_from}</td><td>"+
       ope_names.map{|ope_to| chtime,id = chtimes[[ope_from,ope_to]]

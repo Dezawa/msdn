@@ -5,7 +5,7 @@
 #  proname ::
 class Ubeboard::Meigara < ActiveRecord::Base
   extend CsvIo
-  self.table_name = 'ubeboard_meigaras'
+  self.table_name = 'ube_meigaras'
   # 選択肢入力のための choise を返す。
   # UbeMeigara datqawabseの変更にダイナミックに追随するために、
   # UbeMeigaraController にてnew, update, csv_upload のときに

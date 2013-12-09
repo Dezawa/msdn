@@ -59,7 +59,7 @@ class Ubeboard::PlanController < ApplicationController
            ]
 
   def set_instanse_variable
-    @Model= UbePlan
+    @Model= Ubeboard::Plan
     @TYTLE = "製造計画"
     #@TYTLEpost = "#{@year}年度"
     @labels=Labels
@@ -91,14 +91,14 @@ class Ubeboard::PlanController < ApplicationController
 
   def ddindex
     @labels = Labels
-    @models = UbePlan.all(:include => :ube_product,:order => :jun)
+    @models = Ubeboard::Plan.all(:include => :ube_product,:order => :jun)
     #render :action => "test"
   end
 
   def ddedit_on_table
     @title = "製造計画 編集"
     @labels    = Labels
-    @models   =  UbePlan.all(:include => :ube_product,:order => :jun)
+    @models   =  Ubeboard::Plan.all(:include => :ube_product,:order => :jun)
     #render :action => :test
   end
 end
@@ -110,7 +110,7 @@ Revision 2.8  2013-04-01 22:25:27  dezawa
 *** empty log message ***
 
 Revision 2.7  2012-11-01 13:59:59  dezawa
-UbePlanのCSV IOをconfigureにつけた
+Ubeboard::PlanのCSV IOをconfigureにつけた
 
 Revision 2.6  2012-10-07 00:21:23  dezawa
 set_permitをlabel -> authoneicat

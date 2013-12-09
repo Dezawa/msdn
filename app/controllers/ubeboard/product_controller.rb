@@ -24,7 +24,7 @@ require 'csv'
            ]
 
   def set_instanse_variable
-    @Model= UbeProduct
+    @Model= Ubeboard::Product
     @TYTLE = "製造条件"
     #@TYTLEpost = "#{@year}年度"
     @labels=Labels
@@ -37,7 +37,7 @@ require 'csv'
     @Domain= @Model.name.underscore
     #@Refresh = :kamokus
     #@SortBy   = :bunrui
-    @CSVatrs = UbeProduct::CSVatrs; @CSVlabels = UbeProduct::CSVlabels
+    @CSVatrs = Ubeboard::Product::CSVatrs; @CSVlabels = Ubeboard::Product::CSVlabels
     @Pagenation = 20
     #@New = {:no => no, :date => Time.now}
     #@Create = {:owner => current_user.login }
@@ -45,14 +45,14 @@ require 'csv'
   end
 
   def destroy
-    if UbePlan.find_by_ube_product_id(params[:id])
+    if Ubeboard::Plan.find_by_ube_product_id(params[:id])
       flash[:message] = "この製品は使われているので削除できません"
       redirect_to :action => :index 
     else
-      @product = UbeProduct.find(params[:id])
+      @product = Ubeboard::Product.find(params[:id])
       @product.destroy
       
-      UbeProduct.products true
+      Ubeboard::Product.products true
       
       respond_to do |format|
         format.html { redirect_to :action => :index }

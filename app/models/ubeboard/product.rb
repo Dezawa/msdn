@@ -11,7 +11,7 @@
 class Ubeboard::Product < ActiveRecord::Base
  # extend ApplicationHelper
   extend CsvIo
-  self.table_name = 'ubeboard_products'
+  self.table_name = 'ube_products'
 require 'nkf'
 require 'csv'
   #validates_presence_of :proname ,:shozo ,:dry,:lot_size,:ope_condition,:defect_rate
@@ -25,11 +25,11 @@ require 'csv'
 
   @@holycode = {}
   # selectのときのchoiseに使う配列を返す。
-  # DBの変更にダイナミックに追随するために、UbeProductControllerのcreate、update, csv_upload
+  # DBの変更にダイナミックに追随するために、Ubeboard::ProductControllerのcreate、update, csv_upload
   # のときに再読み込みされる
   def self.products(read=nil)
     if !@pronames || read
-      @pronames ||= UbeProduct.all(:conditions => "hozen = false or hozen is null",
+      @pronames ||= self.all(:conditions => "hozen = false or hozen is null",
                                  :select => "proname,id"
                                  ).map{ |p| [p.proname,p.id]}
     end
@@ -55,19 +55,19 @@ require 'csv'
     unless @hozen_code[[hozen,real_ope]]
       case hozen
       when "酸洗"
-        up = UbeProduct.find_by(ope_condition: real_ope==:shozow ? "A02":"A03")
+        up = self.find_by(ope_condition: real_ope==:shozow ? "A02":"A03")
         #when :yobouhozen,"予防保全"
       else
         if [:shozow,:shozoe].include?(real_ope)
-          up = UbeProduct.find_by(proname: hozen,
-                                  shozo: UbeSkd::Id2RealName[real_ope])
+          up = self.find_by(proname: hozen,
+                                  shozo: Ubeboard::Skd::Id2RealName[real_ope])
         elsif [:dryo,:dryn].include?(real_ope)
-          up = UbeProduct.find_by(proname: hozen,
-                                  dryer: UbeSkd::Id2RealName[real_ope])
+          up = self.find_by(proname: hozen,
+                                  dryer: Ubeboard::Skd::Id2RealName[real_ope])
         end
         
         if up.nil? # || up.size==0
-          up = UbeProduct.find_by(proname: hozen)
+          up = self.find_by(proname: hozen)
         end
       end
       @hozen_code[[hozen,real_ope]] =  up ? [up.id,up.ope_condition,real_ope] : nil
@@ -110,13 +110,13 @@ require 'csv'
   # 品種の情報には、使う抄造、乾燥の速度が入っているか
   # 切り替え時間は入っているか。
   # 
-  # UbeOperation.error_cneck での切り替え時間チェックと異なるのは、
-  #  UbeOperation :: 登録されている全品種について調べる
-  #  UbeProduct   :: どの製品にも使われていない品種については調べない
+  # Ubeboard::Operation.error_cneck での切り替え時間チェックと異なるのは、
+  #  Ubeboard::Operation :: 登録されている全品種について調べる
+  #  Ubeboard::Product   :: どの製品にも使われていない品種については調べない
   def ope_condition_valid?
     error = []
     # 対応する品種は登録されて居るか
-    kind = UbeOperation.all(:conditions => "ope_name = '#{ope_condition}'")[0]
+    kind = Ubeboard::Operation.all(:conditions => "ope_name = '#{ope_condition}'")[0]
     unless kind
       error << "製造条件：#{self.proname}の品種が入力されていません。もしくは未登録の品種です"
     end
@@ -155,7 +155,7 @@ require 'csv'
     error = []
       # 切り替え時間が定義されて居るか 
       #   該当するラインの切り替え時間を全部取ってきて
-      ch_times = UbeChangeTime.all(:conditions => "ope_name='#{line}' and change_time is not null")
+      ch_times = Ubeboard::ChangeTime.all(:conditions => "ope_name='#{line}' and change_time is not null")
       #   前後の全品種を得る
       kinds = ch_times.map{|ch| [ch.ope_from,ch.ope_to]}
       kind_names = kinds.flatten.uniq
@@ -175,6 +175,6 @@ require 'csv'
   end
 
   def ope_condition_id
-    UbeOperation.find_by(ope_name: ope_condition).id
+    Ubeboard::Operation.find_by(ope_name: ope_condition).id
   end
 end

@@ -16,7 +16,7 @@
 #- 所要時間を 分 で定義し、対応する工程にのみ時間が定義される。
 #
 #======カラム
-#ope_name  :: 工程条件名。UbeProduct から参照される
+#ope_name  :: 工程条件名。Ubeboard::Product から参照される
 #west  :: 西抄造を使う場合の速度
 #east  :: 東抄造を使う場合の速度
 #old  :: 原乾燥を使う場合の速度
@@ -24,10 +24,10 @@
 #kakou  :: 加工工程の速度
 #
 #当初は記名切り替えもここに登録が必要かと思っていたが、切り替え時間は
-#UbeChangeTime に登録されており、それを参照しているので不要であった。
+#Ubeboard::ChangeTime に登録されており、それを参照しているので不要であった。
 class Ubeboard::Operation < ActiveRecord::Base
   extend CsvIo
-  self.table_name = 'ubeboard_plans'
+  self.table_name = 'ube_operations'
   #attr_accessible :id ,:ope_name ,:west ,:east ,:old ,:new ,:kakou
 
   # DB column名のリスト
@@ -40,20 +40,20 @@ class Ubeboard::Operation < ActiveRecord::Base
 
   # 選択肢入力のための choise を返す。
   #   今は使われていない。
-  # DB変更時にダイナミックに追随させるために、UbeOpeartionController にて
+  # DB変更時にダイナミックに追随させるために、Ubeboard::OpeartionController にて
   # create,update,csv_upload のときに更新される
   # @openames が　nil か、read がtrueのときにDBから読み直される
   def self.names(read=nil)
     if !@openames || read
-      @openames ||= UbeOperation.all(:conditions => "ope_name not like 'A%'",:order => "ope_name"
+      @openames ||= Ubeboard::Operation.all(:conditions => "ope_name not like 'A%'",:order => "ope_name"
                                  ).map{ |p| [p.ope_name,p.id]}
     end
     @openames 
   end
   def self.hozen_periad  # k = hozen_code == [28, "A02", :shozow]
     @hozen_periad ||= Hash.new{|h,k|
-      uo = UbeOperation.find_by(ope_name: k[1])
-      h[k] = uo[UbeOperation::Real2Field[k[2]]].minute rescue 0
+      uo = Ubeboard::Operation.find_by(ope_name: k[1])
+      h[k] = uo[Ubeboard::Operation::Real2Field[k[2]]].minute rescue 0
     }
   end
 
@@ -63,8 +63,8 @@ class Ubeboard::Operation < ActiveRecord::Base
     #check_pro
   end
 
-  # UbeChangeTimeも含めたデータの整合性をチェックする。
-  # UbeOperationController#index から呼ばれ、エラーが会ったら表示する。
+  # Ubeboard::ChangeTimeも含めたデータの整合性をチェックする。
+  # Ubeboard::OperationController#index から呼ばれ、エラーが会ったら表示する。
   # チェック内容
   #   東西抄造のどちらかに時産が入力されているか
   #   原新乾燥のどちらかに乾燥炉滞留時間が入力されているか（型板のときは無くてもよい）
@@ -74,7 +74,7 @@ class Ubeboard::Operation < ActiveRecord::Base
   def self.error_check
     error = []
     count = Hash.new{|h,k| h[k]=[]}
-    opes = UbeOperation.all
+    opes = self.all
     kinds = opes.select{|ope| ope.ope_name !~ /^A\d\d/}
     hoshus= opes.select{|ope| ope.ope_name =~ /^A\d\d/}
     opes.each{|ope|  error += ope.check   }
@@ -84,12 +84,12 @@ class Ubeboard::Operation < ActiveRecord::Base
     }
     [[:west,"西抄造"],[:east,"東抄造"],[:old,"原乾燥"],[:new,"新乾燥"],[:kakou,"加工"]].each{|sym,name|
       kind_list = kinds.select{|k| k[sym] && k[sym]>0}.map(&:ope_name)
-      error += UbeChangeTime.check(name,kind_list)
+      error += Ubeboard::ChangeTime.check(name,kind_list)
     }
     error.uniq
   end
 
-  # UbeOperation.error_check の下請け。
+  # Ubeboard::Operation.error_check の下請け。
   # 抄造、乾燥はどちらかのラインに値が入っているか
   # 
   def check

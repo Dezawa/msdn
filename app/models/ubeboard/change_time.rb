@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 require 'csv'
-require 'jcode'
+#require 'jcode'
 require 'pp'
 require 'nkf'
 # 同一品種でのロット切り替え時間、異なる品種での切り替え時間を定義します。
 ## 同じ品種であっても銘柄が異なると切り替え時間が長くなるものが有ります。
 ## その場合は長い方の時間を登録します。
 ### この場合、同一銘柄の場合の切り替え時間はプログラム内でハードコードされています。
-### UbeSkdHelp.change_time。
+### Ubeboard::SkdHelp.change_time。
 # ope_name  :: 工程の実名称 東西抄造、原新乾燥、加工
 # ope_type  :: 使ってない。
 # change_time  :: 所要時間 分
@@ -15,10 +15,10 @@ require 'nkf'
 # ope_to  ::  その工程の後の品種
 #
 # １組ごとのオカレンスとなるので、一覧性の良いCSVではそのままでは入力できない。
-# 専用に入力の仕組みを用意している。UbeChangeTime.csv_upload
+# 専用に入力の仕組みを用意している。Ubeboard::ChangeTime.csv_upload
 class Ubeboard::ChangeTime < ActiveRecord::Base
   extend CsvIo
-  self.table_name = 'ubeboard_change_times'
+  self.table_name = 'ube_change_times'
   # ==CSVからのデータ置き換え
   # 追加、修正はできない。全置き換えとなる。
   #
@@ -52,19 +52,19 @@ class Ubeboard::ChangeTime < ActiveRecord::Base
       #rows 
     end
     while row = rows.shift
-      logger.debug("UbeChangeTime  #{row.join(',')}")
+      logger.debug("Ubeboard::ChangeTime  #{row.join(',')}")
       
       case row[0]
       when "東抄造","西抄造","原乾燥","新乾燥","加工"
         opename = row[0] #$&
       when "製品名"
-        logger.debug("UbeChangeTime 製品名 #{row.join(',')}")
+        logger.debug("Ubeboard::ChangeTime 製品名 #{row.join(',')}")
         pro_names = row[1..-1].compact
       when "",nil ; next
       else
         ope_from    = row[0]
         pro_names.each_with_index{|ope_to,idx|
-          UbeChangeTime.find_or_create_by_ope_name_and_ope_from_and_ope_to(
+          Ubeboard::ChangeTime.find_or_create_by_ope_name_and_ope_from_and_ope_to(
                 opename,ope_from,ope_to).update_attribute(:change_time , row[idx+1] )
         }
 
@@ -88,7 +88,7 @@ class Ubeboard::ChangeTime < ActiveRecord::Base
    
   end
 
-  # 未入力の切り替え時間がないか調べる。UbeOperation.error_chec から呼ばれる
+  # 未入力の切り替え時間がないか調べる。Ubeboard::Operation.error_chec から呼ばれる
   # 与えられた品種名のリストを前後品種に持つデータの存在を調べる
   # line_name :: String 東西抄造、原新乾燥、加工 
   # kind_list :: Array  前後にあるべき品種名のリスト

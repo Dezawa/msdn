@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-module Function::LipsToUbePlan
+module Ubeboard::Function::LipsToUbePlan
   # LiPSで指定された製造枚数が多く、ロット数が多くなったとき、
   # 連続製造できる 同一品種のロット数の最大
   LotMax = 5

@@ -8,7 +8,7 @@
 #
 class Ubeboard::NamedChange < ActiveRecord::Base
   extend CsvIo
-  self.table_name = 'ubeboard_named_changes'
+  self.table_name = 'ube_named_changes'
 
   belongs_to :pre_condition,:class_name => "Ubeboard::Operation",:foreign_key => :pre_condition_id
   belongs_to :post_condition,:class_name => "Ubeboard::Operation",:foreign_key => :post_condition_id

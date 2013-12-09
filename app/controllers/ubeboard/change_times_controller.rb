@@ -4,16 +4,19 @@ class Ubeboard::ChangeTimesController < ApplicationController
   #before_filter :login_required
   before_filter {|ctrl| ctrl.set_permit %w(生産計画利用 生産計画利用 生産計画メンテ)}
   before_filter {|ctrl| ctrl.require_permit}
-  #before_filter :set_instanse_variable
+  before_filter :set_instanse_variable
 
   #before_filter {|ctrl| ctrl.require_permit_label "生産計画メイン"}
   Ope = [["東抄造",:east], ["西抄造",:west],["原乾燥",:old],["新乾燥",:new],["加工",:kakou]]
+  def set_instanse_variable
+    @Model  = Ubeboard::ChangeTime
+  end
 
   def index
     @TYTLE = "切り替え時間一覧"
-    @errorse=UbeOperation.error_check.join("<br>")
+    @errorse=Ubeboard::Operation.error_check.join("<br>")
     @ope = Ope
-    @models = UbeChangeTime.find(:all,:order => "ope_name,ope_from")
+    @models =@Model.find(:all,:order => "ope_name,ope_from")
     @names = @models.map(&:ope_from).uniq.sort
     @chtimes  = Hash.new{|h,k| h[k] = {} }
     Ope.each{|lbl,sym| 
@@ -25,7 +28,7 @@ class Ubeboard::ChangeTimesController < ApplicationController
   def edit_on_table
     @TYTLE = "切り替え時間編集"
     @ope = Ope
-    @models = UbeChangeTime.find(:all,:order => "ope_name,ope_from")
+    @models =@Model.find(:all,:order => "ope_name,ope_from")
     @names = @models.map(&:ope_from).uniq.sort
     @chtimes  = Hash.new{|h,k| h[k] = {} }
     Ope.each{|lbl,sym| 
@@ -38,9 +41,10 @@ class Ubeboard::ChangeTimesController < ApplicationController
   def update_on_table
     #render :action=>:test; return
     @ope = Ope
-    @models = params["changetime"]
-    @models.each{|id,model|  UbeChangeTime.find(id).update_attributes(model)
+    if @models = params["changetime"]
+      @models.each{|id,model| @Model.find(id).update_attributes(model)
     }
+    end
     redirect_to :action => :index
   end
 
@@ -51,12 +55,12 @@ class Ubeboard::ChangeTimesController < ApplicationController
       return
 
     end
-    UbeChangeTime.csv_upload(params[:csvfile])
+   @Model.csv_upload(params[:csvfile])
     redirect_to :action => :index
   end
 
   def csv_out
-    csvdata = NKF.nkf("-s",UbeChangeTime.csv_out)
+    csvdata = NKF.nkf("-s",Ubeboard::ChangeTime.csv_out)
     csv_file = Tempfile.new("csvfile","#{Rails.root}/public/tmp")
     csv_file.puts csvdata
     csv_file.close

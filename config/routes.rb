@@ -19,12 +19,20 @@ Msdn::Application.routes.draw do
   get  "ubr/main" => "ubr/main#index"
   get  "ubeboard/top" => "ubeboard/top#top"
   get  "ubeboard/lips/member" => "lips#member"
+
+
   #### EditTable #########
 
   actions = [%w(add_on_table edit_on_table csv_out),%w(add_on_table edit_on_table update_on_table)]
-  %w(user_options users book/main book/kamoku).
+  %w(user_options users book/main book/kamoku   ).
     each{|controller| 
        set_routes(controller,actions)
+    }
+   %w(plan maintain holyday product operation change_times meigara meigara_shortname
+      constant named_changes 
+    ).
+    each{|controller| 
+       set_routes("ubeboard/"+controller,actions)
     }
 
     
@@ -39,7 +47,7 @@ Msdn::Application.routes.draw do
      ]],
     ["book/kamoku", [[],%w(edit_on_table_all_column csv_out)]],
     ["lips"       , 
-     [%w(free member csv_download  ube_hospital calc),
+     [%w(free member csv_download  hospital calc),
       %w(change_form csv_upload calc)]
     ],
     ["ubr/main"   , 
@@ -61,11 +69,11 @@ Msdn::Application.routes.draw do
     #post "book/keeping/owner_change_win" => "keeping#owner_change_win"
   end
   
-  ubeboard_resources = [:ube_skd,:ube_maintain,:ube_holyday,:ube_product,:ube_operation,
-                        :ube_change_times,:ube_meigara,:ube_meigara_shortname,:ube_constant,
-                        :ube_named_changes,:ube_plan]
+  ubeboard_resources = [:skd,:maintain,:holyday,:product,:operation,
+                        :change_times,:meigara,:meigara_shortname,:constant,
+                        :named_changes,:plan]
   namespace :ubeboard do
-    resources *ubeboard_resources
+    resources *ubeboard_resources 
     ubeboard_resources.each{|ctrl| post "#{ctrl}/csv_out" => "#{ctrl}#csv_out"}
   end
   

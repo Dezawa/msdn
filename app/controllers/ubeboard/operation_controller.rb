@@ -22,7 +22,7 @@ class Ubeboard::OperationController < ApplicationController
   end
 
   def set_instanse_variable
-    @Model= UbeOperation
+    @Model= Ubeboard::Operation
     @TYTLE = "工程速度"
     #@TYTLEpost = 
     @labels=Labels

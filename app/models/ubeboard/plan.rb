@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-require 'jcode'
+#require 'jcode'
 # == 製造ロットの情報(UbePlan)
 # UbeSkdに habm される。
 #   完了しなかったロットや、完了していても各工程の最終製品である場合は
@@ -33,10 +33,10 @@ require 'jcode'
 class Ubeboard::Plan < ActiveRecord::Base
   extend Ubeboard::Function::LipsToUbePlan
   extend CsvIo
-  self.table_name = 'ubeboard_plans'
-  belongs_to   :ubeboard_product
+  self.table_name = 'ube_plans'
+  belongs_to   :ube_product
   #belongs_to   :ube_skd
-  has_and_belongs_to_many  :ubeboard_skd
+  has_and_belongs_to_many  :ube_skd
 
 
   #attr_accessible :jun               ,:lot_no            ,:ube_product_id    ,:mass
@@ -73,7 +73,7 @@ class Ubeboard::Plan < ActiveRecord::Base
 
   
   def self.make_plans_from_params(params)
-    [params.map{|id,param|  UbePlan.new(param)  } ,[]]    
+    [params.map{|id,param|  Ubeboard::Plan.new(param)  } ,[]]    
   end
 
 
@@ -112,9 +112,9 @@ class Ubeboard::Plan < ActiveRecord::Base
     @ope_condition ||= ube_product.ope_condition rescue ""
   end
 
-   # このロットの製造速度(を表すUbeOperation)を返す。
+   # このロットの製造速度(を表すUbeboard::Operation)を返す。
   def rate
-    @rate ||= UbeOperation.find_by(ope_name: condition)
+    @rate ||= Ubeboard::Operation.find_by(ope_name: condition)
   end
   def lot_size;  @lot_size ||=  ube_product.lot_size ;end
   def copy; @copy ||= nil ; end
@@ -153,7 +153,7 @@ class Ubeboard::Plan < ActiveRecord::Base
 
   # time_sym :  plan_to, plan_from
   def plans(real_ope,time_sym) 
-    ope = UbePlan.real2ope(real_ope)
+    ope = Ubeboard::Plan.real2ope(real_ope)
 #pp PTime[[ope,time_sym]]
     self[PTime[[ope,time_sym]]]
   end
@@ -171,7 +171,7 @@ class Ubeboard::Plan < ActiveRecord::Base
   
   tt=Hash.new
   # { [:shozo,:plan_from] => :plan_shozo_from }
-  UbeSkd::Ope.each{|ope| %w(plan result).each{|p_r| %w(from to out end).each{|t|
+  Ubeboard::Skd::Ope.each{|ope| %w(plan result).each{|p_r| %w(from to out end).each{|t|
           tt[[ope,"#{p_r}_#{t}".to_sym]] = "#{p_r}_#{ope}_#{t}".to_sym
       }}}
   # 
@@ -189,7 +189,7 @@ class Ubeboard::Plan < ActiveRecord::Base
       @pdf_value[:yojoko]=yojoko
       #@pdf_value[:date]  = (self[plan_to]-8.hour).day
       #@pdf_value[:space] = sprintf( "%5.0f",(self[plan_from]-last_to)/60) rescue " ----"
-      UbeSkd::PlanTimesSym.each{|sym| @pdf_value[sym]=(self[sym].strftime("%H:%M") rescue " ----")}
+      Ubeboard::Skd::PlanTimesSym.each{|sym| @pdf_value[sym]=(self[sym].strftime("%H:%M") rescue " ----")}
       [:plan_yojo_from,:plan_yojo_to].each{|sym| @pdf_value[sym]=(self[sym].strftime("%d %H:%M") rescue " ----")}
     end
     @pdf_value
@@ -221,7 +221,7 @@ class Ubeboard::Plan < ActiveRecord::Base
   #<tt>ope</tt> :: 工程もしくは実工程
   #<tt>times</tt> :: 計画の [開始、終了、乾燥のout、乾燥の end]
    def set_plan(real_ope,times)
-     ope = UbePlan.real2ope(real_ope)
+     ope = Ubeboard::Plan.real2ope(real_ope)
      self[PTime[[ope,:plan_from]]]= times[0] ;    self[PTime[[ope,:plan_to]]] = times[1]
      if  ope == :dry #times.size>2        period,stay,err = ope_length(real_ope)
        period,stay,err = ope_length(real_ope)
@@ -237,7 +237,7 @@ class Ubeboard::Plan < ActiveRecord::Base
        plan_dry_end = times[1]
      end
      logger.debug("set_plan: #{lot_no} #{ope} #{times.map(&:mdHM).join('|')}")
-     #logger.debug("set_plan: #{lot_no}  #{plan_shozo_from.mdHM} #{plan_shozo_to.mdHM}") #if UbeSkd::Lot.include?(lot_no)
+     #logger.debug("set_plan: #{lot_no}  #{plan_shozo_from.mdHM} #{plan_shozo_to.mdHM}") #if Ubeboard::Skd::Lot.include?(lot_no)
 
     current ope
    end
@@ -248,7 +248,7 @@ class Ubeboard::Plan < ActiveRecord::Base
         mass = real_mass
         #sum[plan.ube_product_id] -= real_mass
       else
-        mass =  sum[ube_product_id] >= UbeSkd::MassMin ? sum[ube_product_id] : UbeSkd::MassMin
+        mass =  sum[ube_product_id] >= Ubeboard::Skd::MassMin ? sum[ube_product_id] : Ubeboard::Skd::MassMin
         #sum[plan.ube_product_id] = 0
       end
 
@@ -259,7 +259,7 @@ class Ubeboard::Plan < ActiveRecord::Base
    #   製造開始前は nil
    def current_to
      times= Times[self.current]
-     logger.info("UbePlan#current_to:: #{lot_no} current='#{current}' #{disptime}")
+     logger.info("Ubeboard::Plan#current_to:: #{lot_no} current='#{current}' #{disptime}")
      plans(current,:plan_to)
    end
 
@@ -280,7 +280,7 @@ class Ubeboard::Plan < ActiveRecord::Base
 
 
   # この製品が 東西抄造、原新乾燥か を返す。加工はその判断を行う必要はないが、
-  # UbeSkd#make_plan の中で加工を特別扱いしないために、kakou? も定義する
+  # Ubeboard::Skd#make_plan の中で加工を特別扱いしないために、kakou? も定義する
 
   #この製品の抄造が東西どちらのラインかを返す
   def shozo?   ;    shozo_w? ? :shozow : :shozoe ;end
@@ -290,7 +290,7 @@ class Ubeboard::Plan < ActiveRecord::Base
 
   #この製品の加工ラインを返す。
   #加工では必要はないが、
-  # UbeSkd#make_plan の中で加工を特別扱いしないために、加工も定義する
+  # Ubeboard::Skd#make_plan の中で加工を特別扱いしないために、加工も定義する
   def kakou?   ; :kakou ;end
   def yojo?    ; :yojo  ; end
   def shozo_w? ;  @shozo_w ||= ube_product &&  self.ube_product.shozo == "西抄造" ;end
@@ -356,7 +356,7 @@ class Ubeboard::Plan < ActiveRecord::Base
                  else                  ;nil
                  end
     if sym
-      @current= UbePlan.real2ope(sym) 
+      @current= Ubeboard::Plan.real2ope(sym) 
       @done = (condition == "型板" && plan_yojo_to) || 
         ((rate[:kakou] == 0.0 || rate[:kakou].blank? ?  plan_dry_to : plan_kakou_to) rescue false) ; 
     end
@@ -389,11 +389,11 @@ class Ubeboard::Plan < ActiveRecord::Base
   #  実績がある工程は実績で判断する。無い工程は予定で判断する
   #  内 true、外 false 、時刻空 nil
   def included(from,to)
-    #times = UbeSkd::Ope.map{|ope| 
-      #UbeSkd::PlanTimes[ope].map{|p_f,p_t,r_f,r_t| [self[r_f]||self[p_f] , self[r_t]||self[p_t]]}
+    #times = Ubeboard::Skd::Ope.map{|ope| 
+      #Ubeboard::Skd::PlanTimes[ope].map{|p_f,p_t,r_f,r_t| [self[r_f]||self[p_f] , self[r_t]||self[p_t]]}
     #}.flatten.compact.sort
     #times= plans.each{|sym,ts| p_f,p_t,r_f,r_t=ts; [r_f ||p_f, r_t || p_t] }.flatten.compact.sort
-    times= UbeSkd::Ope.map{|sym| [ plans(sym,:result_from) || plans(sym,:plan_from),
+    times= Ubeboard::Skd::Ope.map{|sym| [ plans(sym,:result_from) || plans(sym,:plan_from),
                                    plans(sym,:result_to)   || plans(sym,:plan_to)] }.flatten.compact.sort
     return nil   if times.size == 0
     return false if ( times[-1]<=from ||  to <= times[0] )
@@ -431,13 +431,13 @@ class Ubeboard::Plan < ActiveRecord::Base
     @change_time ||= Hash.new
     unless @change_time[[ope,before]]
       ub_change = 
-      UbeChangeTime.find_by(ope_name: OpeTable[ope],from: before,ope_to: self.condition)
+      Ubeboard::ChangeTime.find_by(ope_name: OpeTable[ope],from: before,ope_to: self.condition)
       @change_time[[ope,before]] = 
         if ub_change && ub_change[:change_time]
           ub_change[:change_time].minute 
         else
           unless before.blank?
-            err = "UbeChange: #{OpeTable[ope]},#{before}→#{self.condition} の切替時間が未定義です。ゼロ分とします"
+            err = "Ubeboard::Change: #{OpeTable[ope]},#{before}→#{self.condition} の切替時間が未定義です。ゼロ分とします"
             logger.info(err)
           end
           0
@@ -447,25 +447,25 @@ class Ubeboard::Plan < ActiveRecord::Base
   end
 
 
-  #1. UbeChangeTime を参照して切り替え時間を得る。
-  #2. UbeSkdの$Meigara に名前があるときは、銘柄違いの補正をする。
-  #3. UbeSkd::ChangeTimeLimit を越える場合は記名切り替え。このときは
-  #4. named_change_pro_ids にて UbeNamedChange を参照し、UbeProduct#id の配列を得る。
-  #5. 後処理と前処理の両方が記名の時に発生する。どちらを記載するかは UbeNamedChangeによる
-  #戻り値は [ 切り替え時間, [ UbeProduct#id,UbeProduct#id,UbeProduct#id,,,,]
+  #1. Ubeboard::ChangeTime を参照して切り替え時間を得る。
+  #2. Ubeboard::Skdの$Meigara に名前があるときは、銘柄違いの補正をする。
+  #3. Ubeboard::Skd::ChangeTimeLimit を越える場合は記名切り替え。このときは
+  #4. named_change_pro_ids にて Ubeboard::NamedChange を参照し、Ubeboard::Product#id の配列を得る。
+  #5. 後処理と前処理の両方が記名の時に発生する。どちらを記載するかは Ubeboard::NamedChangeによる
+  #戻り値は [ 切り替え時間, [ Ubeboard::Product#id,Ubeboard::Product#id,Ubeboard::Product#id,,,,]
   #
   #複数の記名切り替えがある時は、長い方の時間で返し、メンテナンスコードは複数返す。
   def change_time_concider_meigara(real_ope,pre_plan,skd)
     return Function::Maintain.new([0,[nil]]) if real_ope == :yojo || !pre_plan
     if pre_plan.condition == condition and pre_plan.meigara == meigara
-      Function::Maintain.new([UbeSkd::Round,[]])
+      Function::Maintain.new([Ubeboard::Skd::Round,[]])
     else
       change,err = change_time(real_ope,pre_plan)
       if err
         skd.errors.add(:nil,err)
         logger.info(err)
       end
-      pro_ids = if change > UbeSkd::ChangeTimeLimit
+      pro_ids = if change > Ubeboard::Skd::ChangeTimeLimit
                   skd.named_change_pro_id(real_ope,pre_plan.ope_condition_id ,ope_condition_id) 
                 else
                    []
@@ -481,7 +481,7 @@ class Ubeboard::Plan < ActiveRecord::Base
   def unit_time
     unless @unit_time
       @unit_time = Hash.new
-      uo = UbeOperation.find_by(ope_name: condition)
+      uo = Ubeboard::Operation.find_by(ope_name: condition)
 
       if uo
         @unit_time[:shozo] = shozo_w? ? uo[:west] : uo[:east]
@@ -495,9 +495,9 @@ class Ubeboard::Plan < ActiveRecord::Base
   # 指定工程の 所要時間
   #   乾燥の工程時間は次の様に求める
   #     全所要時間：リードタイム + 滞留時間 x (枚数/1000 + 1 ) + 15分
-  #     　　リードタイム：UbeSkd::DryLead
-  #         15分　　　　：UbeSkd::DryTrail
-  #         滞留時間    ：@ope_length[:dry?] （UbeOperation.find_by_ope_name(ube_product.ope_condition)[:dry?])
+  #     　　リードタイム：Ubeboard::Skd::DryLead
+  #         15分　　　　：Ubeboard::Skd::DryTrail
+  #         滞留時間    ：@ope_length[:dry?] （Ubeboard::Operation.find_by_ope_name(ube_product.ope_condition)[:dry?])
   #              単位は分だから、換算すること
   #  抄造、加工は単位は 枚/時間 だから　これを 秒/枚 に直す。(1/@ope_length).hour
   # { real_ope => [length,stay,error] }
@@ -513,17 +513,17 @@ class Ubeboard::Plan < ActiveRecord::Base
       end
       err = " #{proname}の抄造条件が定義されて居ません" unless unit_time[:shozo] 
       @ope_length[:shozow] =@ope_length[:shozoe] = @ope_length[:shozo] = 
-        [unit_time[:shozo] ? (mass.to_f/unit_time[:shozo]).hour.marume(UbeSkd::Round) : 0 ,0,err]
+        [unit_time[:shozo] ? (mass.to_f/unit_time[:shozo]).hour.marume(Ubeboard::Skd::Round) : 0 ,0,err]
       err=nil
       err = " #{proname}の乾燥条件が定義されて居ません" if !unit_time[:dry] && condition != "型板"
       logger.info(err) if err
-      #length = UbeSkd::DryLead+(stay*(mass/1000.0+1.0)).marume(UbeSkd::Round)+UbeSkd::DryTrail
+      #length = Ubeboard::Skd::DryLead+(stay*(mass/1000.0+1.0)).marume(Ubeboard::Skd::Round)+Ubeboard::Skd::DryTrail
       if unit_time[:dry]
         # 1000枚投入するといっぱいになって最初の1枚が出る。滞在時間は 1000枚分の時産
         stay   =  (1000 / unit_time[:dry]).hour.marume(1.minute)
         
         # 乾燥の時産とは投入/排出に要する時間で求める。これと滞在時間の合計が全処理時間
-        length = ((mass.to_f/unit_time[:dry]).hour + stay).marume(UbeSkd::Round)
+        length = ((mass.to_f/unit_time[:dry]).hour + stay).marume(Ubeboard::Skd::Round)
         
       else
         length = stay = 0
@@ -531,7 +531,7 @@ class Ubeboard::Plan < ActiveRecord::Base
       @ope_length[:dryo] = @ope_length[:dryn] = @ope_length[:dry] = [length,stay,err] 
 
       @ope_length[:kakou] = 
-        [unit_time[:kakou] ? (mass.to_f/unit_time[:kakou]).hour.marume(UbeSkd::Round) : 0,0,nil]
+        [unit_time[:kakou] ? (mass.to_f/unit_time[:kakou]).hour.marume(Ubeboard::Skd::Round) : 0,0,nil]
     end
     @ope_length[sym]
   end
@@ -539,11 +539,11 @@ class Ubeboard::Plan < ActiveRecord::Base
   # debug用出力。
   ## 各工程の予定開始、終了時刻を mdHM formatで表示する 
   def disptime
-    UbeSkd::Ope.map{|ope| "#{ope}:"+UbeSkd::PlanTimes[ope].map{|t| self[t].mdHM rescue "../..-..:.."}.join("～")}.join("|")
+    Ubeboard::Skd::Ope.map{|ope| "#{ope}:"+Ubeboard::Skd::PlanTimes[ope].map{|t| self[t].mdHM rescue "../..-..:.."}.join("～")}.join("|")
   end
 
   def start_times
-    UbeSkd::Ope.map{|ope| self[UbeSkd::PlanTimes[ope][0]].mdHM  rescue "../..-..:.."}.join("  ");
+    Ubeboard::Skd::Ope.map{|ope| self[Ubeboard::Skd::PlanTimes[ope][0]].mdHM  rescue "../..-..:.."}.join("  ");
   end
   def if_error(err)
     return unless err
@@ -591,7 +591,7 @@ class Ubeboard::Plan < ActiveRecord::Base
                   self.ube_product.hozen 
                 rescue 
                   errors.add(:nil,"${id}:#{lot_no} の製品データがおかしい")
-                  logger.info("UbePlan:No ube_product error:#{id}:#{lot_no} の製品データがおかしい")
+                  logger.info("Ubeboard::Plan:No ube_product error:#{id}:#{lot_no} の製品データがおかしい")
                   true
                 end
    end
@@ -605,7 +605,7 @@ module ShozoW
     end
     @Transfer
   end
-  #UbePlan::Transfer[:yojo] = 60.minute
+  #Ubeboard::Plan::Transfer[:yojo] = 60.minute
 end
 module ThreeByTen
   def transfer#time

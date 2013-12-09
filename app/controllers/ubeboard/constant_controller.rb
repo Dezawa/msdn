@@ -23,7 +23,7 @@ class Ubeboard::ConstantController < ApplicationController
   CSVvars   =  [:name ,:value,:keyword  ,:comment,:admin]
 
  def set_instanse_variable
-   @Model= UbeConstant
+   @Model= Ubeboard::Constant
    @TYTLE = "工程管理項目"
    @labels=Labels
    @TableEdit = true # @configure ?  [[:add_buttom,:dmy,:dmy],[:form,:edit_on_table_all_column,"編集"]] :

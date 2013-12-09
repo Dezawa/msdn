@@ -10,14 +10,14 @@ class Ubeboard::MeigaraController < ApplicationController
 
   Labels = [ 
             HtmlSelect.new(  :proname , "品種",:display => :proname,
-                          :correction => Proc.new{UbeOperation.names.map{|o| o[0]}}),
+                          :correction => Proc.new{Ubeboard::Operation.names.map{|o| o[0]}}),
             HtmlText.new(  :meigara , "銘柄",:size => 30)
            ]
   CSVlabels =  ["品種","銘柄"]
   CSVatrs   =  [:proname,:meigara]
 
  def set_instanse_variable
-    @Model= UbeMeigara
+    @Model= Ubeboard::Meigara
     @TYTLE = "銘柄"
     @labels=Labels
     #@Links=BookKeepingController::Labels

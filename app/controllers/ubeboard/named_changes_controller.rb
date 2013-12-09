@@ -8,7 +8,7 @@ class Ubeboard::NamedChangesController < ApplicationController
   before_filter :set_instanse_variable
   delegate :logger, :to=>"ActiveRecord::Base"
 
-  SELF = UbeNamedChange
+  SELF = Ubeboard::NamedChange
   ORDER = "jun"
   SORT  = :jun
   TYTLE_BASE = "記名切り替え"
@@ -21,15 +21,15 @@ class Ubeboard::NamedChangesController < ApplicationController
     [# colmn,ラベル,help,type,size or choice
      HtmlText.new(:jun           , "決定順" ,:size=>3),
      HtmlSelect.new(:pre_condition_id , "前品種" ,:include_blank=>true,
-                    :correction => Proc.new{UbeOperation.names},:display =>:pre_con_name),
+                    :correction => Proc.new{Ubeboard::Operation.names},:display =>:pre_con_name),
      HtmlSelect.new(:post_condition_id, "後品種" ,:include_blank=>true,
-                    :correction => Proc.new{UbeOperation.names},:display =>:post_con_name),
-     HtmlSelect.new(:ope_name      , "工程名" , :correction =>UbeSkd::OpeName),
+                    :correction => Proc.new{Ubeboard::Operation.names},:display =>:post_con_name),
+     HtmlSelect.new(:ope_name      , "工程名" , :correction =>Ubeboard::Skd::OpeName),
      HtmlText.new(:display       , "表示"   ,:size=>4)
     ]
 
   def set_instanse_variable
-    @Model= UbeNamedChange
+    @Model= Ubeboard::NamedChange
     @TYTLE = "記名切り替え"
     @labels=Labels
     #@Links=BookKeepingController::Labels
