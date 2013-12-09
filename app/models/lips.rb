@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 class Lips #< ActiveRecord::Base
   extend ActiveModel::Translation
-  #include ActiveModel::Model
-  #include ActiveModel::Errors
-  include  Errors
-  #require 'jcode'
   require 'csv'
   require 'nkf'
   require 'pp'
@@ -12,7 +8,6 @@ class Lips #< ActiveRecord::Base
               :proname,:gele,:opename,:gain,:time,:rate,:pro,:ope,:errors
 
   def initialize(params=nil)
-    #defaulte value:
     @errors = ActiveModel::Errors.new(self)
    if params
       @promax = params[:promax] ?  params[:promax].to_i : 10
