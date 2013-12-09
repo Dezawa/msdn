@@ -131,7 +131,7 @@ module ApplicationHelper
   # 追加、編集ボタンの表示
   def add_edit_buttoms(dom)
     buttoms =  edit_buttoms(dom)
-    "<table><tr><td>"+ buttoms + "</td></tr></table>"
+    "<table><tr><td>".html_safe+ buttoms + "</td></tr></table>".html_safe
   end
 
 
