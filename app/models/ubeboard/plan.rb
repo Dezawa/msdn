@@ -30,13 +30,13 @@ require 'jcode'
 # result_dry_to  :: 
 # result_kakou_from  :: 
 # result_kakou_to  :: 
-class UbePlan < ActiveRecord::Base
-  extend Function::LipsToUbePlan
-  extend Function::CsvIo
-
-  belongs_to   :ube_product
+class Ubeboard::Plan < ActiveRecord::Base
+  extend Ubeboard::Function::LipsToUbePlan
+  extend CsvIo
+  self.table_name = 'ubeboard_plans'
+  belongs_to   :ubeboard_product
   #belongs_to   :ube_skd
-  has_and_belongs_to_many  :ube_skd
+  has_and_belongs_to_many  :ubeboard_skd
 
 
   #attr_accessible :jun               ,:lot_no            ,:ube_product_id    ,:mass

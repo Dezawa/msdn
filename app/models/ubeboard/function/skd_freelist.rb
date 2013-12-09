@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-module Function
+module Ubeboard::Function
 
   #== 空き時間管理モジュール
   # Hash @FreeList,@freelist に各実工程の空き時間リストを配列でもつ
@@ -67,7 +67,7 @@ module Function
   #    maintain
 
 
-module UbeSkdFreelist
+module SkdFreelist
 
   #各実工程の空き時間のリスト
   #* 戻り値
@@ -94,13 +94,13 @@ module UbeSkdFreelist
         case ope
         when :dryo,:dryn,:kakou
           @FreeList[ope] = 
-            Function::FreeList.new(ope,[time_from,time_to],self) #holydays.dup,maintain)
+            Ubeboard::Function::FreeList.new(ope,[time_from,time_to],self) #holydays.dup,maintain)
         when :shozow,:shozoe
           @FreeList[ope] = 
-            Function::FreeListShozo.new(ope,[time_from,time_to],self) #,holydays.dup,maintain)
+            Ubeboard::Function::FreeListShozo.new(ope,[time_from,time_to],self) #,holydays.dup,maintain)
         when :yojo
           @FreeList[ope] = 
-            Function::FreeListYojo.new(ope,[time_from,time_to],self) #,holydays.dup,maintain)
+            Ubeboard::Function::FreeListYojo.new(ope,[time_from,time_to],self) #,holydays.dup,maintain)
         end
       }
     end
@@ -156,12 +156,12 @@ module UbeSkdFreelist
   #pro_id   :: 割り当てる保守・記名切り替えの UbeProduct#id
   #jun      :: 順番
   def create_hozen_plan(real_ope,start,stop,pro_id,jun=nil)
-    from_to = UbeSkd::PlanTimes[real_ope]
+    from_to = Skd::PlanTimes[real_ope]
     opt = from_to ? { from_to[0] => start,from_to[1]   => stop} : {} 
     lot_no = pro_id_2_lot_no(pro_id)
-    plan = UbePlan.find_or_create_by_ube_product_id(0)
-    plan.update_attributes( opt.merge(:ube_skd_id     => id,
-                                       :ube_product_id => pro_id,
+    plan = Plan.find_or_create_by_ube_product_id(0)
+    plan.update_attributes( opt.merge(:skd_id     => id,
+                                       :product_id => pro_id,
                                        :lot_no         => lot_no,
                                        :mass => 1.0,
                                        :jun => jun
@@ -195,7 +195,7 @@ module UbeSkdFreelist
     unless @unkyu
       @unkyu = Hash.new{|h,k| h[k] = UbeSkd::HolydayUnkyu}
 
-      ucs = UbeConstant.all(:conditions => 'keyword like "%unkyu_start"')
+      ucs = Constant.all(:conditions => 'keyword like "%unkyu_start"')
       ucs.each{|uc|
         realope,dmy,dmy1 = uc.keyword.split("_")
         @unkyu[realope.to_sym] = (uc.value-8).hour
@@ -211,7 +211,7 @@ module UbeSkdFreelist
         [:shozow,1] => 5.hour, [:shozoe,1] => 5.hour,
         [:shozow,4] => 1.hour, [:shozoe,4] => 1.hour
       }
-      ucs = UbeConstant.all(:conditions => 'keyword like "%ending"')
+      ucs = Constant.all(:conditions => 'keyword like "%ending"')
       # "shozow_holyday_ending"
       ucs.each{|uc|
         realope,holyday_type,s = uc.keyword.split("_")
@@ -233,7 +233,7 @@ module UbeSkdFreelist
         [:shozow,1] => 3.hour, [:shozoe,1] => 3.hour,
         [:shozow,4] => 1.hour, [:shozoe,4] => 1.hour
       }
-      ucs = UbeConstant.all(:conditions => 'keyword like "%starting"')
+      ucs = onstant.all(:conditions => 'keyword like "%starting"')
       # "shozow_holyday_starting"
       ucs.each{|uc|
         realope,holyday_type,s = uc.keyword.split("_")
@@ -263,7 +263,7 @@ module UbeSkdFreelist
       @day_from = skd_from.day - 1  # 1日は休日配列の  0
       @days     = (skd_to - skd_from)/1.day
       # 各工程のこの期間の休日予定を得る
-      holydays = UbeHolyday.find(:all,:conditions => ["month >= ? and month <= ?",str_from,str_to])
+      holydays = Ubeboard::Holyday.find(:all,:conditions => ["month >= ? and month <= ?",str_from,str_to])
 
       day0 = skd_from.beginning_of_month+8.hour
 
@@ -298,7 +298,7 @@ module UbeSkdFreelist
     unless @maintain
       @maintain = Hash.new{|h,k| h[k]= []}
       conditions = "plan_time_start <= ? and plan_time_end >= ? "
-      maint = UbeMaintain.find(:all,:conditions=>[conditions ,time_to,time_from])
+      maint = Ubeboard::Maintain.find(:all,:conditions=>[conditions ,time_to,time_from])
       #%w(西抄造 東抄造 養生 原乾燥 新乾燥 加工).zip(RealOpe).each{|ope_name,ope|
       maint.each{|m| 
         @maintain[UbeSkd::RealName2Id[m.ope_name]] << 

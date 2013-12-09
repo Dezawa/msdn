@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-class UbeOperationController < ApplicationController
-  before_filter :login_required
+class Ubeboard::OperationController < ApplicationController
+  include Actions
+  #before_filter :login_required
   before_filter {|ctrl| ctrl.set_permit %w(生産計画利用 生産計画利用 生産計画メンテ)}
   before_filter {|ctrl| ctrl.require_permit}
   before_filter :set_instanse_variable

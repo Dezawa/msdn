@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 require 'csv'
 require 'kconv'
-module Function
-module UbeSkdCsv
+module Ubeboard::Function
+module SkdCsv
   # self からcsvに吐き出す
   Head = %w(id jun 製品番号 数量 製品ID 製品名 銘柄 養生庫 東西 原新 抄造始 抄造終 養生始 養生終 乾燥始 乾燥終 加工始 加工終 抄造始 抄造終 養生始 養生終 乾燥始 乾燥終 加工始 加工終)
   Item1 = [:id,:jun,:lot_no,:mass,:ube_product_id,:proname,:meigara,:yojoko]

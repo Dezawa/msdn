@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-module Function
+module Ubeboard::Function
   #
   #立案時に次に抄造割り当てを行うべき製品を決める。
   # 立案には、優先順モードと優先順尊重モードとがあるが、尊重モードの時に呼ばれる
@@ -20,7 +20,7 @@ module Function
   #
   #
   #
-  module UbeOptimize
+  module Optimize
   
 
   Shozo  = [:shozow,:shozoe]

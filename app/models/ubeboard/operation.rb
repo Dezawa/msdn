@@ -25,8 +25,9 @@
 #
 #当初は記名切り替えもここに登録が必要かと思っていたが、切り替え時間は
 #UbeChangeTime に登録されており、それを参照しているので不要であった。
-class UbeOperation < ActiveRecord::Base
-  extend Function::CsvIo
+class Ubeboard::Operation < ActiveRecord::Base
+  extend CsvIo
+  self.table_name = 'ubeboard_plans'
   #attr_accessible :id ,:ope_name ,:west ,:east ,:old ,:new ,:kakou
 
   # DB column名のリスト

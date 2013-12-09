@@ -6,10 +6,12 @@
 #   ope_name         :: 東西抄造、原新乾燥、加工
 #   display          :: 切り替えの製造番号　A??
 #
-class UbeNamedChange < ActiveRecord::Base
-  extend Function::CsvIo
-  belongs_to :pre_condition,:class_name => "UbeOperation",:foreign_key => :pre_condition_id
-  belongs_to :post_condition,:class_name => "UbeOperation",:foreign_key => :post_condition_id
+class Ubeboard::NamedChange < ActiveRecord::Base
+  extend CsvIo
+  self.table_name = 'ubeboard_named_changes'
+
+  belongs_to :pre_condition,:class_name => "Ubeboard::Operation",:foreign_key => :pre_condition_id
+  belongs_to :post_condition,:class_name => "Ubeboard::Operation",:foreign_key => :post_condition_id
 
   # 前品種の品種名を返す
   def pre_con_name  ; pre_condition  ? pre_condition.ope_name  : nil ;end
@@ -44,7 +46,7 @@ class UbeNamedChange < ActiveRecord::Base
   end
 
   # UbeNamedChange.test2
-  # Function::UbeSkdHelp の named_change_pro_ids のテストを行う
+  # Function::Ubeboad::boad::SkdHelp の named_change_pro_ids のテストを行う
   # と共に、UbeNamedChange database のデータの確認を行う。
    def self.test2(sep="\t",file=nil)
      #　抄造 乾燥　工程の、全 UbeOpeation#opename について調べる

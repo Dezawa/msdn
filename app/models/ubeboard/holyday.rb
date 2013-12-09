@@ -17,8 +17,9 @@
 # 2.  乾燥、加工は製造、切り替え、保守いずれも割り当てできないが、
 #     抄造の切り替え、保守は割り付けできる。外注する。
 # 3.  抄造の保守、切り替えの割付を止めるには休転 UbeMaintain にその期間を登録する。
-class UbeHolyday < ActiveRecord::Base
-  #attr_accessible :month,:shozow,:shozoe,:yojo ,:dryo,:dryn,:kakou,:holyday
+class Ubeboard::Holyday < ActiveRecord::Base
+  self.table_name = 'ubeboard_holydays'
+
   Fields =  [:shozow,:shozoe,:dryo,:dryn,:kakou]
 
   # 一月分の文字列を日ごとのデータに分解する

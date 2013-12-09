@@ -5,7 +5,7 @@ require 'pp'
 # <tt>:assign</tt>;;:next_start からYojoTime時間を割り当てたとし、:next_startをYojoTime時間進める。
 #     ただし、この養生庫の保守が入っていて、それがYojoTime時間後からYojoTime時間の間に
 #     重なる場合は、保守終了予定時間を:next_startにする。
-class UbeYojo
+class Ubeboard::Yojo
 
   YojoTime = 40.hour
 

@@ -2,7 +2,7 @@
 require 'pstore'
 require 'pp'
 require 'nkf'
-module Function
+module Ubeboard::Function
   #UbeSkd.make_plan の下請けたち。
   #
   #保守、製造の割り当てを仮に押さえるmethod群
@@ -29,8 +29,7 @@ module Function
   #
   #この評価には 次工程前lot の情報が必要。それを pre_condition に残す
   #pre_condition :: 各工程最終製品の UbePlan
-module UbeSkdHelp
-
+module SkdHelp
   # 抄造時間を遅らせる調整をしてまで割り付けるモード
   OptimizeShozo = 0100 # 64
 
@@ -264,7 +263,7 @@ module UbeSkdHelp
   #保守・切り替えの UbeProduct#id から A?? 番号を返す
   def pro_id_2_lot_no(pro_id)
     @proid2lotno ||= Hash.new
-    @proid2lotno[pro_id] ||= (UbeProduct.find(pro_id).ope_condition rescue nil)
+    @proid2lotno[pro_id] ||= (Product.find(pro_id).ope_condition rescue nil)
   end
 
 
@@ -339,7 +338,7 @@ module UbeSkdHelp
   #   
   def maintain_time(plan,real_ope)
     case real_ope
-    when :yojo,:dryo,:dryn ; Function::Maintain.null #[0,[nil]] 
+    when :yojo,:dryo,:dryn ; Ubeboard::Maintain.null #[0,[nil]] 
     when :shozow,:shozoe   ; maintain_time_shozo(plan,real_ope)
     when :kakou            ; maintain_time_kakou(plan,real_ope)
     else                   ; raise "real_ope間違い"
@@ -359,19 +358,19 @@ module UbeSkdHelp
   def wf_change(plan,real_ope)
     if plan.proname =~ /^S1/ &&
         running["running_wf_#{real_ope}"]+plan.mass >= UbeSkd::RunShozoS3Cnt
-      Function::Maintain.hozen_data("WF替",real_ope)
+      Ubeboard::Maintain.hozen_data("WF替",real_ope)
     elsif running["running_wf_#{real_ope}"]+plan.mass >= runshozocount(real_ope)
-      Function::Maintain.hozen_data("WF替",real_ope)
+      Ubeboard::Maintain.hozen_data("WF替",real_ope)
     else
-      Function::Maintain.null#[nil] #[0,[nil]]
+      Ubeboard::Maintain.null#[nil] #[0,[nil]]
     end
   end
 
   def pf_change(plan,real_ope)
     if running["running_pf_#{real_ope}"]+plan.ope_length(real_ope)[0]  >= self["limit_pf_"+real_ope.to_s].hour
-      Function::Maintain.hozen_data("PF替",real_ope)
+      Ubeboard::Maintain.hozen_data("PF替",real_ope)
     else
-      Function::Maintain.null # [nil] #[0,[nil]]
+      Ubeboard::Maintain.null # [nil] #[0,[nil]]
     end
   end
 
@@ -381,9 +380,9 @@ module UbeSkdHelp
     ope_to = pre_condition[real_ope].plan_kakou_to rescue time_from
     if ope_to.hour >=8 && ope_to.wday==3  && # 午前中で水曜
         hozen_date[:kakou] != ope_to.day #&&  # まだ予防保全してない
-      Function::Maintain.hozen_data("予防保全",real_ope)
+      Ubeboard::Maintain.hozen_data("予防保全",real_ope)
     else
-      Function::Maintain.null #[0,[nil]]
+      Ubeboard::Maintain.null #[0,[nil]]
     end
   end
   #酸洗要否を判断する。
@@ -410,7 +409,7 @@ module UbeSkdHelp
       #WF替
       runtime = "running_wf_#{real_ope}"
       info = "Maintain-WF替:#{pre_plan.lot_no}の後 #{real_ope} #{running[runtime]}枚"
-      if running[runtime] < UbeSkd::RunShozoS3Cnt
+      if running[runtime] < Skd::RunShozoS3Cnt
         info += " #{UbeSkd::Id2RealName[real_ope]} #{pre_plan.lot_no}の後 : #{runshozocount(real_ope)}枚にならないが、S1抄造のため実施する" 
         @message << "WF替: #{UbeSkd::Id2RealName[real_ope]} #{pre_plan.lot_no}の後 : #{runshozocount(real_ope)}枚にならないが、S1抄造のため実施する" 
       end
@@ -601,7 +600,7 @@ module UbeSkdHelp
       logmsg += "\n→取り直し時刻#{shozo_plan[0].mdHM}～#{shozo_plan[1]}。遅れ #{wait}分"
 
       #酸洗確認しなおす
-      sansen_hozen_data = Function::Maintain.hozen_data("酸洗",plan.shozo?)
+      sansen_hozen_data = Ubeboard::Maintain.hozen_data("酸洗",plan.shozo?)
       date = (shozo_plan[0]-8.hour).day
        if do_sansen?(shozo_plan, plan.shozo?)  # 酸洗する場合
         # 保全・切り替えが酸洗時間以上
@@ -650,7 +649,7 @@ module UbeSkdHelp
     date = shozo_plan[0].ube_date #(shozo_plan[0]-8.hour).day
     
     sansen = nil
-    sansen_hozen_data = Function::Maintain.hozen_data("酸洗",real_ope)
+    sansen_hozen_data = Ubeboard::Maintain.hozen_data("酸洗",real_ope)
     logger.debug("TAAP 酸洗する? #{plan.lot_no} #{do_sansen?(shozo_plan,real_ope)}")
     if do_sansen?(shozo_plan,real_ope)  # 酸洗する場合
       logger.debug("TAAP 酸洗する #{plan.lot_no} ")

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-class UbeMeigaraShortname < ActiveRecord::Base
-  extend Function::CsvIo
-
-  belongs_to   :ube_meigara
+class Ubeboard::MeigaraShortname < ActiveRecord::Base
+  extend CsvIo
+  self.table_name = 'ubeboard_meigara_shortnames'
+  belongs_to   :ubeboard_meigara
 
   def self.meigara(short)
     shortname=self.find_by(short_name: short)

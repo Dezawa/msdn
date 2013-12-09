@@ -16,9 +16,9 @@ require 'nkf'
 #
 # １組ごとのオカレンスとなるので、一覧性の良いCSVではそのままでは入力できない。
 # 専用に入力の仕組みを用意している。UbeChangeTime.csv_upload
-class UbeChangeTime < ActiveRecord::Base
-extend Function::CsvIo
-
+class Ubeboard::ChangeTime < ActiveRecord::Base
+  extend CsvIo
+  self.table_name = 'ubeboard_change_times'
   # ==CSVからのデータ置き換え
   # 追加、修正はできない。全置き換えとなる。
   #

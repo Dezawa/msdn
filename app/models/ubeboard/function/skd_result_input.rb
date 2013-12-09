@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-module Function
+module Ubeboard::Function
   # 
   # Excelデータをもらいそれから実績を入力する。
   # 
@@ -7,7 +7,7 @@ module Function
   #      ssconvert -S --import-encoding=shift-jis  --export-type Gnumeric_stf:stf_csv 各運転日報.xls gomi
   #      シート毎に、gomi.0, gomi.1 ,,, ができる。
   # 2. params としては、File, ActionController::UploadedStringIO のいずれかとなる。
-  module UbeSkdResultInput
+  module SkdResultInput
 
     # 入力されたデータの実績開始、実績終了の時刻が どのフィールドに
     # 書かれているかを定義する。
@@ -39,7 +39,7 @@ module Function
       :kakou  => [50,[ 1,16,17],32 ]   ,
       :masse  => [200,[3,15]], :massw => [200,[3,15]] #:kakou  => [33,[ 1,16,17] ]
     }.merge(
-            eval "{"+UbeConstant.all.select{|c| c.name =~ /実績コピー/}.map(&:comment).join(",")+"}"
+            eval "{"+Constant.all.select{|c| c.name =~ /実績コピー/}.map(&:comment).join(",")+"}"
             )
     # params :: Hash, keyは "0",,,,,"19"。
     #        :: 要素は File, ActionController::UploadedTempfile,ActionController::UploadedStringIO のいずれか

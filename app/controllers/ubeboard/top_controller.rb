@@ -9,20 +9,20 @@ class Ubeboard::TopController < ApplicationController
 
   dmy = Menu
    Labels = [MenuCsv.new("LiPS"        ,:lips    ,:action =>:member,:csv_download_url=>"/lips/LiPS-CSV100V2.xls"),
-             MenuCsv.new("新規立案準備",:ube_skd ,:action => :new  ,
+             MenuCsv.new("新規立案準備",:skd ,:action => :new  ,
                          :csv_upload_action=>:lips_load,
                           :csv_download_url=> nil),
-             Menu.new(   "生産計画"    ,:ube_skd         ),
-             MenuCsv.new("休転計画"    ,:ube_maintain    ),
-             Menu.new(   "休日計画"    ,:ube_holyday     ),
-             MenuCsv.new("製造条件"    ,:ube_product     ),
-             MenuCsv.new("工程速度"    ,:ube_operation   ),
-             MenuCsv.new("切替時間"    ,:ube_change_times),
-             MenuCsv.new("銘柄管理"    ,:ube_meigara     ),
-             MenuCsv.new("銘柄略称"    ,:ube_meigara_shortname ),
-             MenuCsv.new("工程管理項目",:ube_constant     ,:disable => :permit),
-             MenuCsv.new("記名メンテ"  ,:ube_named_changes,:disable => :configure),
-             MenuCsv.new("UbePlan"  ,:ube_plan,:disable => :configure)
+             Menu.new(   "生産計画"    ,:skd         ),
+             MenuCsv.new("休転計画"    ,:maintain    ),
+             Menu.new(   "休日計画"    ,:holyday     ),
+             MenuCsv.new("製造条件"    ,:product     ),
+             MenuCsv.new("工程速度"    ,:operation   ),
+             MenuCsv.new("切替時間"    ,:change_times),
+             MenuCsv.new("銘柄管理"    ,:meigara     ),
+             MenuCsv.new("銘柄略称"    ,:meigara_shortname ),
+             MenuCsv.new("工程管理項目",:constant     ,:disable => :permit),
+             MenuCsv.new("記名メンテ"  ,:named_changes,:disable => :configure),
+             MenuCsv.new("UbePlan"  ,:plan,:disable => :configure)
             ] 
 
   def arrowed
@@ -47,7 +47,7 @@ class Ubeboard::TopController < ApplicationController
     when :re_plan ; action = :csv_upload
     when :set_stock ; action = :csv_upload
     when :set_holyday ; action = :csv_upload
-    when :ube_product ; action = :index
+    when :product ; action = :index
     when :set_operation ; action = :csv_upload
     end
 
@@ -60,7 +60,7 @@ render :action => :test
 
   def lips_load
     @plans = UbePlan.make_plans_from_lips(params[:csvfile])
-    redirect_to :controller=>:ube_skd, :action => :lips_load_sub
+    redirect_to :controller=>:skd, :action => :lips_load_sub
   end
 end
 

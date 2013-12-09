@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 require 'tempfile'
 #
-class UbeSkdController < ApplicationController
-  before_filter :login_required
+class Ubeboard::SkdController < ApplicationController
+  include Actions
+  #before_filter :login_required
   before_filter {|ctrl| ctrl.set_permit %w(生産計画利用 生産計画利用 生産計画メンテ)}
   before_filter {|ctrl| ctrl.require_permit}
   skip_before_filter :verify_authenticity_token
@@ -103,10 +104,10 @@ class UbeSkdController < ApplicationController
   }
   Sort_key = %w(jun lot shozo dry kakou)
 
-  # LiPS CSVファイルを読み込み、UbePlanを作る
+  # LiPS CSVファイルを読み込み、Ubeboard::Planを作る
   # LiPS_load_subにて表示する
   def lips_load
-   @plans,@error = UbePlan.make_plans_from_lips(params[:csvfile])
+   @plans,@error = Ubeboard::Plan.make_plans_from_lips(params[:csvfile])
     @skd_from_label = SkdFromLabels
     @skd_to_label   = SkdToLabels
    lips_load_sub
@@ -120,11 +121,11 @@ class UbeSkdController < ApplicationController
     @labels = Labels2
     @RunTimeLabels=RunTimeLabels
     @plabels= PlanLabelsE
-    @model = UbeSkd.new
+    @model = Ubeboard::Skd.new
     @model.ube_plans << @plans
 
     # 時々起きる、ube_product 無しのplanができてしまうことの後処理。削除
-    UbePlan.delete_all("ube_product_id is null")
+    Ubeboard::Plan.delete_all("ube_product_id is null")
 
     #@plans = @model.ube_plans
     if @model.save
@@ -147,7 +148,7 @@ class UbeSkdController < ApplicationController
       to   = from + ((params[:doc_to].to_i rescue 8) - 1).day
       id = params[:id]
       # doc_to: 6/17 doc_from: 6/10  id: "96"
-      @model = UbeSkd.find(id)#,:include =>  {:ube_plans => :ube_product})
+      @model = Ubeboard::Skd.find(id)#,:include =>  {:ube_plans => :ube_product})
       
       # ZIP file を作り、
       csv_file = Tempfile.new("csvfile","#{Rails.root}/public/tmp")
@@ -181,7 +182,7 @@ class UbeSkdController < ApplicationController
   #製造指示書PDFの出力
   def doc_out
       id = params[:id]
-      @model = UbeSkd.find(id)#,:include =>  {:ube_plans => :ube_product})
+      @model = Ubeboard::Skd.find(id)#,:include =>  {:ube_plans => :ube_product})
       from = (params[:doc_from].blank? ? @model.skd_from : Time.parse(params[:doc_from])) rescue @model.skd_from
       from -= (from.year - @model.skd_from.year).year
       to   = from + ((params[:doc_to].to_i rescue 8) - 1).day
@@ -194,7 +195,7 @@ class UbeSkdController < ApplicationController
     #render :action => "test" ;return
     from = to = nil
     id = params[:id]
-    @model = UbeSkd.find(id)#,:include =>  {:ube_plans => :ube_product})
+    @model = Ubeboard::Skd.find(id)#,:include =>  {:ube_plans => :ube_product})
     doc_out_sub(id,"月度計画",from,to)
   end
 
@@ -211,7 +212,7 @@ class UbeSkdController < ApplicationController
   end
 
   def csv_download  #:nodoc:
-    @model = UbeSkd.find( params[:id])# ,:include => {:ube_plans => :ube_product})
+    @model = Ubeboard::Skd.find( params[:id])# ,:include => {:ube_plans => :ube_product})
     csv = @model.csvout
     csvfile=Tempfile.open("schedule","#{Rails.root}/public/tmp")
     csvfile.print csv 
@@ -223,7 +224,7 @@ class UbeSkdController < ApplicationController
 
   def index  #:nodoc:
     @labels = Labels
-    @models = UbeSkd.all#(:include => :ube_plans )#=> :ube_product})
+    @models = Ubeboard::Skd.all#(:include => :ube_plans )#=> :ube_product})
     #render :action => "test"
   end
 
@@ -232,7 +233,7 @@ class UbeSkdController < ApplicationController
     @labels = Labels2
     @RunTimeLabels=RunTimeLabels
     @plabels= PlanLabelsE
-    @model = UbeSkd.new
+    @model = Ubeboard::Skd.new
     @plans = []
     @skd_from_label = SkdFromLabels
     @skd_to_label   = SkdToLabels
@@ -263,18 +264,18 @@ class UbeSkdController < ApplicationController
     @RunTimeLabels=RunTimeLabels
     @plabels= PlanLabelsE
     @EditOnly = EditOnly
-    @model = UbeSkd.find( params[:id],:include => {:ube_plans => :ube_product})
+    @model = Ubeboard::Skd.find( params[:id],:include => {:ube_plans => :ube_product})
     @model.set_replan_from(params[:ube_skd] ? params[:ube_skd][:replan_from] : nil)
       #(Time.parse(params[:ube_skd][:replan_from]) ||  @model.skd_from) if params[:ube_skd]
     @model.error_check
     #@sortkey = (params[:sort] || 'jun' )
     plan_sort(@sortkey)
-    #logger.debug("UbeSkdCont#edit_sub: @sortkey=#{@sortkey}")
+    #logger.debug("Ubeboard::SkdCont#edit_sub: @sortkey=#{@sortkey}")
     render :action => :edit
   end
 
   def show_sub(params)  #:nodoc:
-    @model = UbeSkd.find( params[:id],:include => :ube_plans)
+    @model = Ubeboard::Skd.find( params[:id],:include => :ube_plans)
     @sortkey = (params[:sort] || 'jun' )
     #@model.set_replan_from(params[:ube_skd][:replan_from])# = Time.parse(params[:ube_skd][:replan_from]) ||  @model.skd_from
     show_view
@@ -298,7 +299,7 @@ class UbeSkdController < ApplicationController
   def show
     if params["id"] == "lips_load" ;
 
-      @plans,@error = UbePlan.make_plans_from_lips(params[:csvfile])
+      @plans,@error = Ubeboard::Plan.make_plans_from_lips(params[:csvfile])
       lips_load_sub
       return
     end
@@ -325,15 +326,15 @@ class UbeSkdController < ApplicationController
       end
     }
     ube_skd = params[:ube_skd]
-    @model = UbeSkd.new( ube_skd )
+    @model = Ubeboard::Skd.new( ube_skd )
     if ! params[:excelfile].blank?
       product_plan_to_ubeplan=Function::ProductPlanToUbePlan.new(params[:excelfile])
       plans = product_plan_to_ubeplan.make_ube_plans
       errors = product_plan_to_ubeplan.errors.uniq
     elsif ! params[:csvfile].blank?
-      plans,errors = UbePlan.make_plans_from_lips(params[:csvfile])
+      plans,errors = Ubeboard::Plan.make_plans_from_lips(params[:csvfile])
     elsif params[:ube_plan] #&& params[:ube_plan].size>0
-      plans,errors = UbePlan.make_plans_from_params(params[:ube_plan])
+      plans,errors = Ubeboard::Plan.make_plans_from_params(params[:ube_plan])
     else
       plans,errors = [[],["CSVファイルが指定されて居ません"]]
     end
@@ -367,7 +368,7 @@ class UbeSkdController < ApplicationController
     @labels = Labels2
     @RunTimeLabels=RunTimeLabels
     @plabels= PlanLabelsE
-    @model = UbeSkd.find(params[:id])#,:include => :ube_plans)#{:ube_plans => :ube_product})
+    @model = Ubeboard::Skd.find(params[:id])#,:include => :ube_plans)#{:ube_plans => :ube_product})
     @model.jun_only = (params[:ube_skd][:jun_only]=="1")
     @model.set_replan_from(params[:ube_skd] ? params[:ube_skd][:replan_from] : nil)# = Time.parse(params[:ube_skd][:replan_from]) ||  @model.skd_from
     @model.make_plan(:jun_only => (params[:ube_skd][:jun_only]=="1"))
@@ -390,20 +391,20 @@ class UbeSkdController < ApplicationController
     ube_skd = params[:ube_skd]
 
     RunTimeSyms.each{|sym| ube_skd[sym].gsub!(/,/,"") unless ube_skd[sym].blank?}
-    skd=UbeSkd.find(params[:id])
+    skd=Ubeboard::Skd.find(params[:id])
     skd.set_replan_from(params[:ube_skd][:replan_from])
     ube_skd[:replan_from] = skd.replan_from
     skd.update_attributes(ube_skd)
     plans = params[:ube_plan]
     plans.each{|id,plan| 
-      next unless ube_plan = UbePlan.find(id) rescue nil
+      next unless ube_plan = Ubeboard::Plan.find(id) rescue nil
       if plan.delete(:delete) == "1" && ube_plan.deletable?
         ube_plan.destroy
         next
       end
 
       # 実績のフォーム、年月の補正。作業の当年当月になってしまうのを防ぐ。
-      UbeSkd::Reuslts.each{|time| next if plan[time].blank? 
+      Ubeboard::Skd::Reuslts.each{|time| next if plan[time].blank? 
         plan[time] = Time.parse(plan[time]) 
         # skd_from と比べ、2月以上離れていたら年が違うと判断する。
         # それを四捨五入で済ませる
@@ -421,7 +422,7 @@ class UbeSkdController < ApplicationController
         #logger.debug("COPY2 #{ube_plan.lot_no} #{ube_plan.result_dry_to}")
       end
     }
-    @model = UbeSkd.find(params[:id])#,:include => :ube_plans)
+    @model = Ubeboard::Skd.find(params[:id])#,:include => :ube_plans)
     if   @model.update_attributes(params[:ube_skd])
       @model.ube_plans.each{|plan| plan.save}
 
@@ -429,7 +430,7 @@ class UbeSkdController < ApplicationController
       @labels = Labels2
       @RunTimeLabels=RunTimeLabels
       @plabels= PlanLabelsE
-      @model = UbeSkd.find(params[:id])#,:include => :ube_plans)
+      @model = Ubeboard::Skd.find(params[:id])#,:include => :ube_plans)
       unless @edit_only
         @model.jun_only = (params[:ube_skd][:jun_only]=="1") 
         @model.make_plan(:jun_only => (params[:ube_skd][:jun_only]=="1"))
@@ -439,21 +440,21 @@ class UbeSkdController < ApplicationController
       #redirect_to :action=>:edit,:id=>params[:id]
      @sortkey = (params[:sort] || 'jun' )
     plan_sort(@sortkey)
-    #logger.debug("UbeSkdCont#edit_sub: @sortkey=#{@sortkey}")
+    #logger.debug("Ubeboard::SkdCont#edit_sub: @sortkey=#{@sortkey}")
       @model.error_check
     render :action => :edit
      #edit_sub(params)
     else
     @sortkey = (params[:sort] || 'jun' )
     plan_sort(@sortkey)
-    #logger.debug("UbeSkdCont#update_false: @sortkey=#{@sortkey}")
+    #logger.debug("Ubeboard::SkdCont#update_false: @sortkey=#{@sortkey}")
       render :action=>:edit
     end
 
   end
 
   def destroy
-    @model = UbeSkd.find(params[:id])
+    @model = Ubeboard::Skd.find(params[:id])
     @model.ube_plans.clear
     @model.destroy
 
@@ -466,11 +467,11 @@ class UbeSkdController < ApplicationController
 
   def input_result
     @id = params[:id]
-    @model = UbeSkd.find(@id,:select => "id,skd_from,skd_to")
+    @model = Ubeboard::Skd.find(@id,:select => "id,skd_from,skd_to")
   end
 
   def update_result
-    @model = UbeSkd.find(params[:ube_skd][:id])
+    @model = Ubeboard::Skd.find(params[:ube_skd][:id])
     @model.result_update(params[:ube_skd])
     show_view
   end
@@ -529,7 +530,7 @@ end
 class Nil
 def to_i ;  0.0 ;end
 end
-#class UbeSkdController < ApplicationCon<troller
+#class Ubeboard::SkdController < ApplicationCon<troller
 
 __END__
 $Id: ube_skd_controller.rb,v 2.39 2012-10-28 03:25:32 dezawa Exp $

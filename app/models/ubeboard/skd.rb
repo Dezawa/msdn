@@ -5,8 +5,8 @@ require 'pp'
 #
 #3つの機能がある。
 #[立案準備]
-#     立案対象のロットを UbePlan::make_plans_from_lips と Function::UbeSkdHelp#stock で用意する。
-#     Function::UbeSkdHelp#stockでは前月度の仕掛品、未開始品(及び今月立案に必要な完了品)を取り込む
+#     立案対象のロットを UbePlan::make_plans_from_lips と Function::boad::boad::SkdHelp#stock で用意する。
+#     Function::SkdHelp#stockでは前月度の仕掛品、未開始品(及び今月立案に必要な完了品)を取り込む
 #[立案]
 #     立案する。詳細は後述する。
 #[実績登録]
@@ -20,18 +20,18 @@ require 'pp'
 #
 #立案は3つのステップで行われる。
 #[立案前処理]
-#     空き時間を初期化(Function::UbeSkdFreelist#freeList)し、
+#     空き時間を初期化(Function::SkdFreelist#freeList)し、
 #     既に終了している工程を割付け(sorted_plan)、
 #     各工程の最終状態を得る。(assign_if_resulted)
 #[仕掛品処理]
-#     すべての仕掛品を最終工程まで割り付ける(Function::UbeSkdHelp#procceed_stock)。
+#     すべての仕掛品を最終工程まで割り付ける(Function::SkdHelp#procceed_stock)。
 #[立案]
 #     立案開始日以前の予定は変更しない。初期値は立案期間開始日
 #
 #     「次に割り付けるロット」を決める方法に優先順モードと優先順尊重モードとがある。
 #
 #     抄造、養生、乾燥までを仮に割付け、
-#     後置き時間、前置き時間をみて調整する(Function::UbeSkdHelp#temp_assign_all_plan)。
+#     後置き時間、前置き時間をみて調整する(Function::SkdHelp#temp_assign_all_plan)。
 #     
 #     仮割付した時間で割り付ける。
 #
@@ -43,18 +43,19 @@ require 'pp'
 #割付は基本的には「優先順」(UbePlan#jun)の順番で行われる。
 #
 #優先順モードは必ず優先順で行われるが、尊重モードでは概ね順の通りだが
-#Function::UbeOptimize#optimizeが決めた順で行われる。
+#Function::Optimize#optimizeが決めた順で行われる。
 #
 #
-class UbeSkd < ActiveRecord::Base
+class Ubeboard::Skd < ActiveRecord::Base
   #require 'function/ube_skd_help'
-  include Function::UbeSkdHelp
-  include Function::UbeSkdResultInput
-  include Function::UbeSkdFreelist
-  include Function::UbeOptimize
-  include Function::UbeSkdCsv
-  include Function::UbeSkdPdf
+  include Ubeboard::Function::SkdFreelist
+  include Ubeboard::Function::Optimize
+  include Ubeboard::Function::SkdHelp
+  include Ubeboard::Function::SkdCsv
+  include Ubeboard::Function::SkdPdf
+  include Ubeboard::Function::SkdResultInput
 
+  self.table_name = 'ubeboard_skds'
   delegate :logger, :to=>"ActiveRecord::Base"
 
   #has_many      :ube_plans ,:dependent => :delete_all
@@ -622,12 +623,12 @@ class UbeSkd < ActiveRecord::Base
   #
   #====考え方
   #* 同じ製品の連続をラウンドととらえ、この単位で割り付ける
-  #* 複数のラウンド群の中から、次に割り当てるべきラウンドを選ぶ( Function::UbeOptimize#optimaize)
+  #* 複数のラウンド群の中から、次に割り当てるべきラウンドを選ぶ( Function::Optimize#optimaize)
   #選び方もいくつか検討したが、現在の採用は以下
   #1. ラウンドを東西抄造、原新乾燥の組み合わせの4つにわける。
   #2. 直前の割付の結果、原新で先に空く乾燥ラインを選ぶ。
   #3. 選んだ乾燥ラインの東西抄造の各々先頭のロットを仮に割付てみる 
-  #   Function::UbeSkdHelp#temp_assign_maint_plan
+  #   Function::SkdHelp#temp_assign_maint_plan
   #4. 早く抄造が終わる方のラウンドに決める。
   #  
   #早く空く乾燥ラインを選ぶ理由、先に「始まる」ではなく「終わる」抄造を選ぶ理由

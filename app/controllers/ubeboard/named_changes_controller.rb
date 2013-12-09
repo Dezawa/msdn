@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-class UbeNamedChangesController < ApplicationController
-  before_filter :login_required
+class Ubeboard::NamedChangesController < ApplicationController
+  include Actions
+  #before_filter :login_required
   before_filter {|ctrl| ctrl.set_permit %w(生産計画利用 生産計画利用 生産計画メンテ)}
   before_filter {|ctrl| ctrl.require_permit}
   before_filter {|ctrl| ctrl.require_configure }

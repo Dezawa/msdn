@@ -3,9 +3,9 @@
 # 品種ごとに銘柄を登録する
 #  meigara ::
 #  proname ::
-class UbeMeigara < ActiveRecord::Base
-  extend Function::CsvIo
-
+class Ubeboard::Meigara < ActiveRecord::Base
+  extend CsvIo
+  self.table_name = 'ubeboard_meigaras'
   # 選択肢入力のための choise を返す。
   # UbeMeigara datqawabseの変更にダイナミックに追随するために、
   # UbeMeigaraController にてnew, update, csv_upload のときに

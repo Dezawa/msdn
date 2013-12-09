@@ -1,43 +1,45 @@
 # -*- coding: utf-8 -*-
-class UbeHolydayController < ApplicationController
-  before_filter :login_required
+class Ubeboard::HolydayController < ApplicationController
+  include Actions
+  #hepler  Ubeboard::HolydayHelper
+  #before_filter :login_required
   before_filter {|ctrl| ctrl.set_permit %w(生産計画利用 生産計画利用 生産計画メンテ)}
-  before_filter {|ctrl| ctrl.require_permit}
+  #before_filter {|ctrl| ctrl.require_permit}
+  before_action :set_instanse_variable
   Labels = %w(西抄造 東抄造 原乾燥 新乾燥 加工).zip([:shozow,:shozoe,:dryo,:dryn,:kakou])
   Wday = %w(日 月 火 水 木 金 土)
   BGcolor =  {"0"=>"White","1"=>"Red","2"=>"#FF5500","3"=>"#FFAA00","4"=>"Yellow"}
   Holyday =  {"0"=>"　","1"=>"休","2"=>"出","3"=>"過","4"=>"運"}
   PerPage = 3
-  def index
+
+  def set_instanse_variable
     @Pagenation = PerPage
-    @Model = UbeHolyday
+    @Model = Ubeboard::Holyday
     @labels = Labels
     @wday = Wday
+    @holy=Holyday
+    @choices = Holyday.invert
+true
+  end
+
+  def index
     @page =  params[:page] || lastpage
-    @models = UbeHolyday.paginate( :page => @page,
+    @models = @Model.paginate( :page => @page,
                                    :per_page => @Pagenation,
                                    :order => :month)
-    @holy=Holyday
+p @models
     @color = BGcolor
   end
 
   def edit_on_table
-    @Pagenation = PerPage
-    @Model = UbeHolyday
     @page ||= params[:page] || lastpage
-    @labels = Labels
-    @wday = Wday
-    @models = UbeHolyday.paginate( :page => @page,
+    @models = @Model.paginate( :page => @page,
                                    :per_page => @Pagenation,
                                    :order => :month)
 
   end
 
   def add_on_table
-    @Pagenation = PerPage
-    @Model = UbeHolyday
-    @labels = Labels
-    @wday = Wday
     @page =  params[:page] || lastpage
     @title = "休暇"
 
@@ -46,15 +48,15 @@ class UbeHolydayController < ApplicationController
       @month0 = Time.parse(params[:holyday][:month0]+"/01").beginning_of_month
       @month9 = Time.parse(params[:holyday][:month9]+"/01").beginning_of_month
       
-      count = UbeHolyday.count
-      #@models = UbeHolyday.all :order => :month
+      count = @Model.count
+      #@models = @Model.all :order => :month
       #@maxid    = @models.size == 0 ? 1 : @models.map(&:id).sort[-1]+1
       #@new_models = []
       month = @month0 
       #id=1
       while month <= @month9 ;
-        unless UbeHolyday.find_by_month(month.strftime("%Y/%m"))
-          @new_model = UbeHolyday.new(:month=>month.strftime("%Y/%m")) ;month=month.next_month
+        unless @Model.find_by_month(month.strftime("%Y/%m"))
+          @new_model = @Model.new(:month=>month.strftime("%Y/%m")) ;month=month.next_month
           #lastday = @new_model.month.getlocal.end_of_month.day
           lastday = month.end_of_month.day
           Labels.each{|lbl,sym| @new_model[sym]=["0"]*lastday }
@@ -70,7 +72,7 @@ class UbeHolydayController < ApplicationController
     end
     @page = params[:page] || lastpage
  
-    @models = UbeHolyday.paginate( :page =>  @page,
+    @models = @Model.paginate( :page =>  @page,
                                    :per_page => @Pagenation,
                                    :order => :month)
     render :action => :edit_on_table
@@ -79,14 +81,9 @@ class UbeHolydayController < ApplicationController
   def update_on_table
     @page = params[:page]
     #render :action => :test ; return
-    @Pagenation = PerPage
-    @Model = UbeHolyday
-    @labels    = Labels
-    @wday = Wday
-    @holy=Holyday
     @color = BGcolor
     @page =  params[:page] || lastpage
-    @models = UbeHolyday.all :order => :month
+    @models = @Model.all :order => :month
     @maxid    = @models.size == 0 ? 0 : @models.map(&:id).sort[-1]
     models = params[:ube_holyday]
     @new_models = []
@@ -102,20 +99,21 @@ class UbeHolydayController < ApplicationController
         else
           model[sym]= "0"*lastday
         end
+p model
         if id > @maxid 
-          @model=UbeHolyday.new(model)
+          @model=@Model.new(model)
           @model[:id] = id+@maxid
           @new_models << @model
       else
-        #  unless UbeProduct.new(product) == products[id]
-        @model = UbeHolyday.find(id)
+        #  unless Ubeboard::Product.new(product) == products[id]
+        @model = @Model.find(id)
         @model.update_attributes(model)
       end
       }
 #render :action => :test ;return
       @model.save
     }
-    @models = UbeHolyday.paginate( :page =>  @page,
+    @models = @Model.paginate( :page =>  @page,
                                    :per_page => @Pagenation,
                                    :order => :month)
     render :action => :index
@@ -126,7 +124,7 @@ class UbeHolydayController < ApplicationController
   end
  
   def destroy
-    @model = UbeHolyday.find(params[:id])
+    @model = @Model.find(params[:id])
     @model.destroy
 
     respond_to do |format|

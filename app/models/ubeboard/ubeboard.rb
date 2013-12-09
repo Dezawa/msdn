@@ -13,7 +13,7 @@
 #
 #===アルゴリズム argorism
 # いくつかの方法を検討したが、現在は7改を採用している。UbeSkd#make_plan7
-# この肝は Function::UbeOptimize#optimize での次の割付ラウンド決定
+# この肝は Function::boad::boad::Optimize#optimize での次の割付ラウンド決定
 # 
 # その後の再検討
 
@@ -40,7 +40,7 @@
     beyond_holyday で定義する。16はclass定数 BeyondHolydayで定義する。
     
     判断は、
-        Function::UbeSkdFreelist#biyond_holyday?(real_ope,start)
+        Function::SkdFreelist#biyond_holyday?(real_ope,start)
     判断を行うのは、temp_assign_all_plan を呼んだ直後
         trueであったら残り時間で可能な数量に減らして再割付する。
               極少ない(MassLimit未満)場合はこのラウンド終了
@@ -50,7 +50,7 @@
 
    残り時間で作れる量をどう求めるか。すなわち残り時間をどう求めるか
       pre_conditionの終了時間をパラメータにして、残り時間を返すmethodを用意する
-        Function::UbeSkdFreelist#rest_time(real_ope,start) => [start,end]
+        Function::SkdFreelist#rest_time(real_ope,start) => [start,end]
 
    更なる検討
       休日前に時間を余してラウンドが,終わると次のラウンドの最初のロットが前置き超過してパスされる
@@ -75,15 +75,15 @@
 #3. 実績を元に
 #     既に使われた時間を空き時間から削除する
 #     工程の状態を得る（最終ロットの品種、終了日時、稼働累積）
-#4. 仕掛かりを仕上げる Function::UbeSkdHelp#procceed_stock
+#4. 仕掛かりを仕上げる Function::SkdHelp#procceed_stock
 #5. 新規の中からアルゴリズムで選ばれたラウンドを割り付ける F
-#    Function::UbeOptimize#optimize でラウンド選定
+#    Function::Optimize#optimize でラウンド選定
 #    UbeSkd#assign_plans で割付
-#      養生庫を割り当てる。 Function::UbeSkdHelp#get_yojoko
+#      養生庫を割り当てる。 Function::SkdHelp#get_yojoko
 #      割り付ける    UbeSkd#assign_temp_and_real
-#         仮押さえ  Function::UbeSkdHelp#temp_assign_all_plan
+#         仮押さえ  Function::SkdHelp#temp_assign_all_plan
 #           乾燥まで仮押さえし、前置き、後置きの時間超過を調整する
-#         押さえた時間で割付 Function::UbeSkdHelp#assign_maint_plan_by_temp
+#         押さえた時間で割付 Function::SkdHelp#assign_maint_plan_by_temp
 #
 #6. 新規が無くなるか、工程に空きが無くなるまで繰り返す。
 #7. 稼働累積を計算し、警告・エラー通知とともに保存する。

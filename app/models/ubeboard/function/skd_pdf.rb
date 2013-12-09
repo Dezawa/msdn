@@ -3,7 +3,7 @@ require 'pstore'
 require 'pp'
 require 'nkf'
 require 'tempfile'
-module Function
+module Ubeboard::Function
   # 製造指示書を作成する
   # 
   # ロットは色分けする。色は UbeProduct#color で定義する。
@@ -32,7 +32,7 @@ module Function
   # 描画期間は、月度計画は skd_from～skd_to、作業指示書は指定日から指定日数。defaultは8日間。
   #
   # 月度計画、作業指示書はそれぞれ PSファイルが書き出される。それを /usr/bin/ps2pdf にてPDFとする。
-  module UbeSkdPdf
+  module SkdPdf
     Goth = "/GothicBBB-Medium-UniJIS-UTF8-H"
     #一日最低行数
     MinLine = 3
