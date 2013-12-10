@@ -22,8 +22,14 @@ class Ubeboard::Holyday < ActiveRecord::Base
 
   Fields =  [:shozow,:shozoe,:dryo,:dryn,:kakou]
 
+  StartFrom = {"0" => nil,
+               "1" => 0,
+               "2" => 8.hour,        #休日出勤日の出勤時間
+               "3" => 4.hour        #過労働日
+  }
+
   # 一月分の文字列を日ごとのデータに分解する
-  def after_find
+  after_find{
     # 0/1 is false/true for checkbox
     lastday = Time.parse(month).end_of_month.day
     @holyday=HashWithIndifferentAccess.new
@@ -31,7 +37,7 @@ class Ubeboard::Holyday < ActiveRecord::Base
       @holyday[sym] = send(sym).split("") rescue ["0"]*lastday
       self[sym]=  @holyday[sym] #: [0]*lastday
     }
-  end
+  }
 
   #alias_method after_initialize after_find
   
