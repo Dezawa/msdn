@@ -20,12 +20,16 @@ module ExcelToCsv
     # そうでないときは CSVであるとみなす。
     # CSV fileのファイルpathの配列を返す
     # 判定はマジックナンバーで調べる
+    XSL = "\xD0\xCF".force_encoding("US-ASCII")
+    XSLX = "\x50\x4B".force_encoding("US-ASCII")
     def ssconvert_if_excel(infile)
-      magic = infile.read(2)
+      magic = infile.read(2).force_encoding("US-ASCII")
+
       #magic = [infile.getc,infile.getc]
       case magic
         #   xsl       xslx
-      when [208,207],[80,75] ; ssconvert infile.path
+      when XSL, XSLX,[208,207],[80,75] 
+        ssconvert(infile.path)
       else                   ;[infile.path]
       end
     end
@@ -38,13 +42,14 @@ module ExcelToCsv
     SJIS       = "--import-encoding=shift-jis"
     EXPORT_CSV = "--export-type Gnumeric_stf:stf_csv"
     def ssconvert(path)
+      tmpfile = Tempfile.new("xls2csv","/tmp")
       pid = fork{
-        exec("#{SSCONVERT} -S #{SJIS} #{EXPORT_CSV} #{path} 2>/dev/null")
+        exec("#{SSCONVERT} -S #{SJIS} #{EXPORT_CSV} #{path} #{tmpfile.path} 2>/dev/null")
       }   
       if pid
         Process.waitall
       end
-      basename = File.basename(path,".*")
-      files = Dir.glob(path.sub(/\.[^.]*/,".")+"csv*").sort_by{|f| /(\d+)$/ =~ f;$1.to_i}
+      
+      files = Dir.glob("#{tmpfile.path}*").sort_by{|f| /(\d+)$/ =~ f;$1.to_i}
     end 
 end
