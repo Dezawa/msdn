@@ -195,7 +195,7 @@ class Ubeboard::Skd < ActiveRecord::Base
   #作業が重なったときに、併記すべき保守・切り替え
   #NamedMult = Ubeboard::Product.all(:conditions => ["proname in (?)",%w(WF替 PF替 サラン替)]).map(&:id)
     begin 
-      namedMult = Ubeboard::Product.all(:conditions => ["proname in (?)",%w(WF替 PF替 サラン替)]).map(&:id)
+      namedMult = Ubeboard::Product.where( ["proname in (?)",%w(WF替 PF替 サラン替)]).pluck(:id)#to_map(&:id)
     rescue
       namedMult = []
     end
