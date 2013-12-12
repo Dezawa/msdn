@@ -1,0 +1,8 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  id:  1
+  ube_meigara_id: 1
+  short_name: hogehoge
+# two:
+#   column: value

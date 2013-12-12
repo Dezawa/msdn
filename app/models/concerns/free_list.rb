@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Function::FreeList
+class FreeList
   delegate :logger, :to=>"ActiveRecord::Base"
   attr_accessor :freeList,:hozenFree
   def initialize(real_ope,time_from_to,skd)#holydays,maintains)
@@ -10,7 +10,7 @@ class Function::FreeList
     @skd=skd
     assign_holyday skd.holydays[real_ope]
     assign_kyuuten skd.maintain[real_ope]
-    @hozenFree = Function::FreeListHozen.new(real_ope,time_from_to,skd)#,holydays,maintains)
+    @hozenFree = FreeListHozen.new(real_ope,time_from_to,skd)#,holydays,maintains)
     #add_kyuuten 
   end
   def freetime ; @freeList.inject(0){|s,free| s += free[1]-free[0]} ;end
@@ -131,7 +131,7 @@ class Function::FreeList
 
 end
 
-class Function::FreeListShozo < Function::FreeList
+class FreeListShozo < FreeList
   def initialize(real_ope,time_from_to,skd)#holydays,maintains)
     @real_ope = real_ope
 #pp time_from_to
@@ -140,7 +140,7 @@ class Function::FreeListShozo < Function::FreeList
     @skd=skd
     assign_holyday skd.holydays[real_ope]
     assign_kyuuten skd.maintain[real_ope]
-    @hozenFree = Function::FreeListHozenShozo.new(real_ope,time_from_to,skd)
+    @hozenFree = FreeListHozenShozo.new(real_ope,time_from_to,skd)
     #add_kyuuten 
   end
 
@@ -154,7 +154,7 @@ class Function::FreeListShozo < Function::FreeList
 
 end
 
-class Function::FreeListHozen < Function::FreeList
+class FreeListHozen < FreeList
   attr_accessor :freeList
   def initialize(real_ope,time_from_to,skd)#,holydays,maintains)
 #pp time_from_to
@@ -179,7 +179,7 @@ class Function::FreeListHozen < Function::FreeList
     return nil
   end
 end
-class Function::FreeListHozenShozo < Function::FreeListHozen
+class FreeListHozenShozo < FreeListHozen
   attr_accessor :freeList
 
   def assign_holyday(holydays)
@@ -189,7 +189,7 @@ class Function::FreeListHozenShozo < Function::FreeListHozen
   end
 end
 
-class Function::FreeListYojo < Function::FreeList
+class FreeListYojo < FreeList
   def remove_skd_from_freelist(start,stop);return;end
   def searchfree(start,periad,is_hozen=nil) ; return [start,start+periad] ;end
   def holydays;[]; end

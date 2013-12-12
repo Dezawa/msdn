@@ -34,7 +34,7 @@ class Ubeboard::Plan < ActiveRecord::Base
   extend Ubeboard::Function::LipsToUbePlan
   extend CsvIo
   self.table_name = 'ube_plans'
-  belongs_to   :ube_product
+  belongs_to   :ube_product,:class_name => "Ubeboard::Product"
   #belongs_to   :ube_skd
   has_and_belongs_to_many  :ube_skd
 
@@ -227,9 +227,9 @@ class Ubeboard::Plan < ActiveRecord::Base
        period,stay,err = ope_length(real_ope)
        self[PTime[[ope,:plan_out]]] =  plan_dry_out || times[0] + stay ;    
        self[PTime[[ope,:plan_end]]] =  plan_dry_end || times[1] - stay
-     else
-       self[PTime[[ope,:plan_out]]] = times[0]    
-       self[PTime[[ope,:plan_end]]] = times[1]
+     #else
+     #  self[PTime[[ope,:plan_out]]] = times[0]    
+     #  self[PTime[[ope,:plan_end]]] = times[1]
      end
      # 型板の養生の場合は、養生終了が養生庫の空きだから、その計算のために 
      #  養生終了時間を乾燥搬入終了時間に入れる
@@ -431,7 +431,7 @@ class Ubeboard::Plan < ActiveRecord::Base
     @change_time ||= Hash.new
     unless @change_time[[ope,before]]
       ub_change = 
-      Ubeboard::ChangeTime.find_by(ope_name: OpeTable[ope],from: before,ope_to: self.condition)
+      Ubeboard::ChangeTime.find_by(ope_name: OpeTable[ope],ope_from: before,ope_to: self.condition)
       @change_time[[ope,before]] = 
         if ub_change && ub_change[:change_time]
           ub_change[:change_time].minute 
@@ -456,9 +456,9 @@ class Ubeboard::Plan < ActiveRecord::Base
   #
   #複数の記名切り替えがある時は、長い方の時間で返し、メンテナンスコードは複数返す。
   def change_time_concider_meigara(real_ope,pre_plan,skd)
-    return Function::Maintain.new([0,[nil]]) if real_ope == :yojo || !pre_plan
+    return Ubeboard::Function::Maintain.new([0,[nil]]) if real_ope == :yojo || !pre_plan
     if pre_plan.condition == condition and pre_plan.meigara == meigara
-      Function::Maintain.new([Ubeboard::Skd::Round,[]])
+      Ubeboard::Function::Maintain.new([Ubeboard::Skd::Round,[]])
     else
       change,err = change_time(real_ope,pre_plan)
       if err
@@ -472,7 +472,7 @@ class Ubeboard::Plan < ActiveRecord::Base
                 end
 
         logger.info("NAMEDCHANGE 名前付き切り替えか? #{lot_no} PRO_IDS #{ pro_ids.join(',')}")
-      Function::Maintain.new([change,pro_ids]) #maintain_code]
+      Ubeboard::Function::Maintain.new([change,pro_ids]) #maintain_code]
     end
   end
   

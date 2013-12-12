@@ -77,8 +77,8 @@ require 'csv'
 
   def self.holydaycode(ope_condition,ope ,real_ope,real_ope_name)
     pro = ope == :kakou ?
-    self.all(:conditions => "ope_condition ='#{ope_condition}' and shozo is null and dryer is null") :
-      self.all(:conditions => "ope_condition='#{ope_condition}'and #{ope}='#{real_ope_name}'")
+    self.where( "ope_condition ='#{ope_condition}' and shozo is null and dryer is null") :
+      self.where("ope_condition='#{ope_condition}'and #{ope}='#{real_ope_name}'")
       if pro.size>0
         [ pro.first.id, ope_condition ,real_ope ]
       else
@@ -88,8 +88,8 @@ require 'csv'
 
   def self.holyday_code
     unless @@holycode.size>0
-      @@holycode=Hash.new
-      [[1,"A01"],[4,"A01-1"],["A15","A15"]].each{|type,ope_condition|
+      @@holycode=Hash.new{|h,k| h[k] = [nil,nil,k[1]] }
+      [[1,"A01"],[2,"A01"],[3,"A01"],[4,"A01-1"],["A15","A15"]].each{|type,ope_condition|
         [[:shozow,"西抄造",:shozo],[:shozoe,"東抄造",:shozo],
          [:dryo,  "原乾燥",:dryer],[:dryn  ,"新乾燥",:dryer]
         ].each{|real_ope,real_ope_name,ope|

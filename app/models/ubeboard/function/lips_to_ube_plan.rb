@@ -6,15 +6,15 @@ module Ubeboard::Function::LipsToUbePlan
   # 連続製造できる 同一品種のロット数の最小
   LotMin = (LotMax+1)/2
 
-   # LiPSのデータを元に、UbePlanのインスタンスを作る。saveはしない。
-  # 　LiPSの製品名とUbeProduct#pronameが一致していないとだめ。
+   # LiPSのデータを元に、Ubeboard::Planのインスタンスを作る。saveはしない。
+  # 　LiPSの製品名とUbeboard::Product#pronameが一致していないとだめ。
   # 　　一致しない時は取り込まず、警告を表示する
   # 　　一応、全角→半角 の正規化は行っている
   # 　製造数量　：LiPSから渡された製造量に (1-不良率)を乗じた数量を製造計画する。
   # 　ロット分割：どの養生庫が使われるか未定なので、標準製造量で割り当てる。
-  # 　　　　　　　半端ができたら 最低数量 MassMin のロットにするが、それは UbeSkd#male_plamn で
+  # 　　　　　　　半端ができたら 最低数量 MassMin のロットにするが、それは Ubeboard::Skd#male_plamn で
   # 　　　　　　　行うので、ここでは半端数をそのまま割り当てておく
-  # 　連続lot数 ：同じ製品が連続製造数量が UbeProduct#roundsizeを越えないように分割する
+  # 　連続lot数 ：同じ製品が連続製造数量が Ubeboard::Product#roundsizeを越えないように分割する
   # 　製造順　　：LiPSの順番。
   # 
   # <tt>lips</tt> :: LiPSのデータ。
@@ -53,7 +53,7 @@ module Ubeboard::Function::LipsToUbePlan
     pro.each{|proname,mass|
       # proname正規化
       proname.tr!("０-９（）Ａ-Ｚａ-ｚｱ-ﾝ","0-9()A-Za-zア-ン")
-      product = UbeProduct.find_by(proname: proname)
+      product = Ubeboard::Product.find_by(proname: proname)
       if product.nil?
         errors << "製品 '#{proname}'は製造条件一覧にありません"
         next
@@ -75,14 +75,14 @@ module Ubeboard::Function::LipsToUbePlan
       # lotに分割する
       lotNr =  (mass_correct.to_f/product.lot_size).ceil.to_f
       plns =lotNr.to_i.times.map{ 
-        UbePlan.new(:ube_product_id =>product.id,:mass =>product.lot_size,:lot_no =>"")  
+        Ubeboard::Plan.new(:ube_product_id =>product.id,:mass =>product.lot_size,:lot_no =>"")  
       }
       # 最後のロットは、端数のはず
       plns[-1].mass = product.lot_size * lotNr - mass_correct
       
       #### 多量ロットの分割。LotMin 以上のとき、LotMin～LotMax に収まるように分割する
       #### 抄造乾燥時間比からLotMax、ラウンドサイズを決める
-      # 多量ロットの分割。1ラウンドの製造数量を UbeProduct#roundsize 以下にする。
+      # 多量ロットの分割。1ラウンドの製造数量を Ubeboard::Product#roundsize 以下にする。
       # 未定義の時は警告を出し1万枚にする
       plan = plns.first
       if (roundsize = plan.ube_product.roundsize).blank? || roundsize==0
@@ -109,7 +109,7 @@ module Ubeboard::Function::LipsToUbePlan
     #
     # subplan[:dryo] = [
     plans = subplan.inject([]){|a,v| a += v}
-    max_id = UbePlan.find(:first,:order => "id DESC").id+1 rescue 1
+    max_id = Ubeboard::Plan.find(:first,:order => "id DESC").id+1 rescue 1
     plans.each{|plan| plan.id = max_id ; max_id += 1}
     errors << "LiPS CSVファイルの様ですが、製造数がゼロです" if plans.size == 0
     jun = 3000
@@ -118,7 +118,7 @@ module Ubeboard::Function::LipsToUbePlan
   end
   
   def make_plans_from_params(params)
-    [params.map{|id,param|  UbePlan.new(param)  } ,[]]    
+    [params.map{|id,param|  Ubeboard::Plan.new(param)  } ,[]]    
   end
 
 end

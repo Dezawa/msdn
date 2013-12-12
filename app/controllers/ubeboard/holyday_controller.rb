@@ -48,7 +48,7 @@ p @models
       @month0 = Time.parse(params[:holyday][:month0]+"/01").beginning_of_month
       @month9 = Time.parse(params[:holyday][:month9]+"/01").beginning_of_month
       
-      count = @Model.count
+      count = @Model.distinct.count
       #@models = @Model.all :order => :month
       #@maxid    = @models.size == 0 ? 1 : @models.map(&:id).sort[-1]+1
       #@new_models = []

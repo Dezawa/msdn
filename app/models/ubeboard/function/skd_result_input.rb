@@ -8,7 +8,7 @@ module Ubeboard::Function
   #      シート毎に、gomi.0, gomi.1 ,,, ができる。
   # 2. params としては、File, ActionController::UploadedStringIO のいずれかとなる。
   module SkdResultInput
-
+    include ExcelToCsv
     # 入力されたデータの実績開始、実績終了の時刻が どのフィールドに
     # 書かれているかを定義する。
     #
@@ -33,14 +33,16 @@ module Ubeboard::Function
     #   構成：［データ行数、［ロット、開始時刻、終了時刻、銘柄、養生庫],]
     # [製造数量]
     #   
-    Fields = { 
+    ColumnList = { 
       :shozoe =>  [18,[ 1, 6, 7,3,17]] , :shozow => [18,[ 1, 6, 7,3,17]] ,
+      #               S   T H  L
       :dryn   => [18,[18,19,7,11]]     , :dryo   => [18,[19,21,7,12]],
       :kakou  => [50,[ 1,16,17],32 ]   ,
       :masse  => [200,[3,15]], :massw => [200,[3,15]] #:kakou  => [33,[ 1,16,17] ]
     }.merge(
-            eval "{"+Constant.all.select{|c| c.name =~ /実績コピー/}.map(&:comment).join(",")+"}"
+            eval "{"+Ubeboard::Constant.all.select{|c| c.name =~ /実績コピー/}.map(&:comment).join(",")+"}"
             )
+
     # params :: Hash, keyは "0",,,,,"19"。
     #        :: 要素は File, ActionController::UploadedTempfile,ActionController::UploadedStringIO のいずれか
     # ファイル形式 :: ファイルのマジックナンバーで判断する。xls,xlsx以外はCSVとして扱う
@@ -49,7 +51,7 @@ module Ubeboard::Function
     #        :: 形式２ /,\d{4}/\d{1,2}/\d{1,2},/  
     #        :: 形式３ /運転日報.*抄造.*,(4\d{4}),/ Excel 日付データを ssconvertが1900年からの日数にすることが有る
     # データ行 :: ロット番号の有る行
-    # データフィールド :: ロット番号より右で、Fields に定義されカラム
+    # データフィールド :: ロット番号より右で、ColumnList に定義されカラム
     # 開始・終了時刻   :: 24時間制表記。00:00～ は暦日は翌日のデータと解釈する
     # 　　　 :: 班をまたぐロットの場合、一つのロットが二つ書かれる。
     # 　　　 :: この様な場合、前の班の終了と後の班の開始が同じ時刻となる。
@@ -90,7 +92,7 @@ module Ubeboard::Function
           when :shozoe,:shozow,:dryo,:dryn,:kakou
             y,m,d = date = extract_ymd(lines)
             unless date
-              errors.add(:nil,"実績コピペ : 添付番号 #{k+1}、シート#{idx+1}:#{UbeSkd::Id2RealName[real_ope]} のデータに日付が有りません")
+              errors.add(:nil,"実績コピペ : 添付番号 #{k+1}、シート#{idx+1}:#{Ubeboard::Skd::Id2RealName[real_ope]} のデータに日付が有りません")
               next
             end
             set_result(real_ope,date,lines)
@@ -106,7 +108,7 @@ module Ubeboard::Function
     # そうでないときは CSVであるとみなす。
     # CSV fileのファイルpathの配列を返す
     # 判定はマジックナンバーで調べる
-    def ssconvert_if_excel(infile)
+    def dddssconvert_if_excel(infile)
       magic = [infile.getc,infile.getc]
       case magic
         #   xsl       xslx
@@ -123,7 +125,7 @@ module Ubeboard::Function
     SSCONVERT= "/usr/bin/ssconvert"
     SJIS       = "--import-encoding=shift-jis"
     EXPORT_CSV = "--export-type Gnumeric_stf:stf_csv"
-    def ssconvert(path)
+    def dddssconvert(path)
       pid = fork{
         exec("#{SSCONVERT} -S #{SJIS} #{EXPORT_CSV} #{path} 2>/dev/null")
       }   
@@ -195,18 +197,18 @@ module Ubeboard::Function
   end
 
   # 抄造と加工の結果設定
-  # 1. 該当するUbePlanを探し,無ければ次のデータに移る
+  # 1. 該当するUbeboard::Planを探し,無ければ次のデータに移る
   # 2. from,to のデータがあれば入れる
   #    ただし、既に終了時刻が入っていてそれが開始時刻と同じ場合は
   #    班の切り替えだと思われるので、開始時刻は直さない
   # 3. 抄造の場合、massを入れたいのだが、解決できない問題があり今回パス
   # 4. 抄造の場合、yojoがあれば入れる。終了時酷は40時間追加してこれも入れる。
   def set_result_sub(real_ope,results)
-    id_f,id_t = UbeSkd::PlanTimes[real_ope][2..3]
+    id_f,id_t = Ubeboard::Skd::PlanTimes[real_ope][2..3]
     results.each{|lot,from,to,meigara,yojo,yojoko|
   
 
-      # 該当するUbePlanを探し
+      # 該当するUbeboard::Planを探し
       plan =search_plan(lot) # ube_plans.select{|p| p.lot_no == lot }[0]
       next unless plan
       # from のデータがあれば入れる
@@ -217,7 +219,7 @@ module Ubeboard::Function
       end
       plan[id_t] = to if to
 
-      plan.meigara = UbeMeigaraShortname::meigara(meigara) if meigara
+      plan.meigara = Ubeboard::MeigaraShortname::meigara(meigara) if meigara
       
       #yojoがあれば入れる yojo
       if yojo
@@ -234,7 +236,7 @@ module Ubeboard::Function
   #
   # 1行に開始と終了の二つのデータがあるが、これは異なるロットのものなので
   # 開始と終了と２回に分けて以下を行う。
-  # 1. 該当するUbePlanを探し,無ければ次のデータに移る
+  # 1. 該当するUbeboard::Planを探し,無ければ次のデータに移る
   # 2. from |to のデータがあれば入れる
   #    fromの場合は、
   #    既に終了時刻が入っていてそれが開始時刻と同じ場合は
@@ -243,10 +245,10 @@ module Ubeboard::Function
   #    予定時刻をs入れてしまう。
   # 
   def set_result_dry(real_ope,results)
-    id_f,id_t = UbeSkd::PlanTimes[real_ope][2..3]
+    id_f,id_t = Ubeboard::Skd::PlanTimes[real_ope][2..3]
     results.each{|lot,from,lot_e,to|
       # 開始時刻について
-      # 該当するUbePlanを探し
+      # 該当するUbeboard::Planを探し
       if plan = search_plan(lot) # ube_plans.select{|p| p.lot_no == lot }[0]
         # from のデータがあれば入れる
         # ただし、終了時刻が入っていてそれが開始時刻と同じ場合は
@@ -262,7 +264,7 @@ module Ubeboard::Function
         end        
       end
       # 終了時刻について
-      # 該当するUbePlanを探し
+      # 該当するUbeboard::Planを探し
       if plan = ube_plans.select{|p| p.lot_no == lot_e }[0]
         plan[id_t] = to if to
         #yojoが入ってないときは、予定を入れちゃう
@@ -310,8 +312,7 @@ module Ubeboard::Function
       #puts "############### #{real_ope} ### #{lines.size} ####"
       rows = extruct_rows(real_ope,lines)
 
-      s_lot_idx,start_idx,e_lot_idx,end_idx  = Fields[real_ope][1]
-
+      s_lot_idx,start_idx,e_lot_idx,end_idx  = ColumnList[real_ope][1]
       rows.map{|row|
         lot_no         =  normalize_lotno(row[s_lot_idx])
         lot_no_e       =  normalize_lotno(row[e_lot_idx])
@@ -328,7 +329,7 @@ module Ubeboard::Function
     # 製造数量のデータを抜き出す
     def extract_mass(real_ope,lines)
       rows = extruct_rows(real_ope,lines)
-      s_lot_idx,mass_idx = Fields[real_ope][1]
+      s_lot_idx,mass_idx = ColumnList[real_ope][1]
       rows.map{|row|
         lot_no         =  normalize_lotno(row[s_lot_idx]  )
         row[mass_idx] =  row[mass_idx] ? row[mass_idx].sub(/,/,"").to_i : 0
@@ -354,7 +355,7 @@ module Ubeboard::Function
     #    この時に 再立案を行うと少ない数量での立案となり、後工程の時間が短めになってしまう。
     def extract_data_nomal(real_ope,date,lines)
       rows = extruct_rows(real_ope,lines)
-      s_lot_idx,start_idx,end_idx,meigara_idx,yojo_idx = Fields[real_ope][1]
+      s_lot_idx,start_idx,end_idx,meigara_idx,yojo_idx = ColumnList[real_ope][1]
 
       rows.map{|row|
         lot_no         =  normalize_lotno(row[s_lot_idx]  )

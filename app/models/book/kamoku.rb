@@ -19,7 +19,7 @@ class Book::Kamoku < ActiveRecord::Base
 
   def self.find_with_main(login)
     kamokus = Book::Kamoku.all.each{|kamoku| kamoku.book_id=login }
-    mains   = Book::Main.all(:conditions => ["owner = ? and date = ? ",
+    mains   = Book::Main.where(["owner = ? and date = ? ",
                                              login,
                                              "2000/1/1"]
                              )
@@ -41,7 +41,8 @@ class Book::Kamoku < ActiveRecord::Base
     #if !@@kamokus || read
       #logger.info("KAMOKU: read=#{read}")
     #  begin 
-        @@kamokus = self.all(:order => "bunrui,kamoku").map{|ch| [ch.kamoku,ch.id]} 
+    @@kamokus = self.order(:bunrui,:kamoku).
+      to_a.map{|ch| [ch.kamoku,ch.id]} 
     #  rescue
     #    @@kamokus = []
     #  end

@@ -65,8 +65,7 @@ class Ubeboard::Yojo
     end
     if datetime
       maintain = 
-        UbeMaintain.find(:all,
-                         :conditions=>["ope_name=? and plan_time_start <= ? and plan_time_end>=?",
+        Ubeboard::Maintain.where(["ope_name=? and plan_time_start <= ? and plan_time_end>=?",
                                        name,datetime,datetime+YojoTime
                                       ]
                          )

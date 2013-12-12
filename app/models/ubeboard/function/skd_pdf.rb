@@ -6,14 +6,14 @@ require 'tempfile'
 module Ubeboard::Function
   # 製造指示書を作成する
   # 
-  # ロットは色分けする。色は UbeProduct#color で定義する。
+  # ロットは色分けする。色は Ubeboard::Product#color で定義する。
   # リリース時の色は  　西：暖色系  東：寒色系  とした。
   # 
   # 作成期間の指定有無で動作が変わる
   # [作業指示書]  期間が指定されている場合は、その期間の 抄造、養生、乾燥、加工の指示書がでる。
   #               1ロット１行で表示される。
   # [月度計画]  指定されていない場合は、立案期間全体に渡っての全工程が一覧できる
-  #             1工程１行で表示される。UbeSkdのデータを元に割付の全体像を見る。
+  #             1工程１行で表示される。Ubeboard::Skdのデータを元に割付の全体像を見る。
   # 後者は割付の状況をみて、立案条件を変えるための情報
   #
   # PS, PDF の日本語を表示させることができなかったので、gedit のPS、PDF化の仕掛けを利用させてもらった。
@@ -117,7 +117,7 @@ module Ubeboard::Function
       range = "  #{@sdate.strftime('%Y/%m/%d')}-#{@edate.strftime('%Y/%m/%d')}"
       # 出力期間に当たるplanを抜き出す
       plans = ube_plans.select{|plan| 
-        times = UbeSkd::PlanTimesSym.map{|sym| plan[sym]}.compact
+        times = Ubeboard::Skd::PlanTimesSym.map{|sym| plan[sym]}.compact
         times.size>1 && times[0] <= @edate+32.hour && times[-1] >= @sdate
       }
       # 製品数
@@ -177,7 +177,7 @@ module Ubeboard::Function
 
     def docOutOpe(title,real_opes,range,items,ope_check)
       scale = OpeScale[real_opes]
-      ope_names = real_opes.map{|real_ope| UbeSkd::Id2RealName[real_ope]}
+      ope_names = real_opes.map{|real_ope| Ubeboard::Skd::Id2RealName[real_ope]}
 
       work = plans_run_inthe_range_of_operation(real_opes,ope_check,range)
 
@@ -190,7 +190,7 @@ module Ubeboard::Function
       makeLabelMacroOpe(title,scale,real_ope_plan,real_opes,items)
 
       # 予定表出力のマクロ定義 
-      makeGraphMacroOpe(real_ope_plan,UbeSkd::PlanTimes[real_opes.first][0..1],scale,ope_check)
+      makeGraphMacroOpe(real_ope_plan,Ubeboard::Skd::PlanTimes[real_opes.first][0..1],scale,ope_check)
       ### ページ分ループ
       all_days("")
     end
@@ -198,7 +198,7 @@ module Ubeboard::Function
     def skdAllOutByUbeSkd(title)#,paper="a3",orient="l")
       @scale=1.83
       plans = ube_plans
-      @noOfPro = UbeSkd::RealOpe.size
+      @noOfPro = Ubeboard::Skd::RealOpe.size
 
       # 工程間の間隔は、製品の時の間隔の2倍にする
       #space_rate = 2
@@ -222,7 +222,7 @@ module Ubeboard::Function
       #outTitle("月度割付概観 #{skd_from.strftime('%Y/%m/%d')}-#{skd_to.strftime('%Y/%m/%d')}")
       @pdf.add( "%%%% /Label %%%%\n").define(:Label){
         #outTitle("月度割付概観 #{skd_from.strftime('%Y/%m/%d')}-#{skd_to.strftime('%Y/%m/%d')}")
-        names = UbeSkd::RealOpe.select{|ope| ope != :yojo}.map{|real_ope| UbeSkd::Id2RealName[real_ope]}
+        names = Ubeboard::Skd::RealOpe.select{|ope| ope != :yojo}.map{|real_ope| Ubeboard::Skd::Id2RealName[real_ope]}
         @pdf.set_font( :font => Goth,:point => 8)
         @pdf.show_labels(names,[Xlabel,@Y0+2-@ObjSkip],[0,-@ObjSkip])
       }.add "\n%%%% end /Label\n"
@@ -233,7 +233,7 @@ module Ubeboard::Function
         dateline(skd_from,skd_to,@noOfPro,@scale)
         [:shozow,:shozoe,:dryo,:dryn,:kakou].each_with_index{|real_ope,i|
           @pdf.add("\n%%% #{real_ope} %%%")
-          stime,etime = UbeSkd::PlanTimes[real_ope][0..1]
+          stime,etime = Ubeboard::Skd::PlanTimes[real_ope][0..1]
           output_plans = plans.select{|plan| 
             plan.real_ope?(real_ope) &&
             plan[stime] && plan[stime] < skd_to + 5.day  &&
@@ -324,7 +324,7 @@ module Ubeboard::Function
         }
       }
     end
-    # <tt>plans</tt>;;抄造の時間があるUbePlanを、西と東にわけ、各々時間順にソートしたもの
+    # <tt>plans</tt>;;抄造の時間があるUbeboard::Planを、西と東にわけ、各々時間順にソートしたもの
     #                 plans = { :shozow => [], :shozoe=>[]
     #                 乾燥、加工の場合も同じ
     def docOutLeft(real_ope_plans,real_opes,items,scale=1.0)
@@ -342,8 +342,8 @@ module Ubeboard::Function
 
   def docOutLotname(real_ope_plans,real_opes,items,yoff)
     x00,y00  =  [Xlabel+2,@Y0-@ObjSkip+yoff] 
-    openames = real_opes.map{|real_ope| UbeSkd::Id2RealName[real_ope]}
-    plan_from,plan_to = plan_times = UbeSkd::PlanTimes[real_opes.first][0..1]
+    openames = real_opes.map{|real_ope| Ubeboard::Skd::Id2RealName[real_ope]}
+    plan_from,plan_to = plan_times = Ubeboard::Skd::PlanTimes[real_opes.first][0..1]
     y0 = y00
     real_ope_plans.each{|plnsHash| # 東西、新旧毎に
       last_to = nil
@@ -408,20 +408,20 @@ module Ubeboard::Function
       # 養生庫分の枠を作る
       ## タイトル
       @pdf.set_font(:font => Goth,:point => 12).
-      show_labels(%w(養 生 庫),[Xlabel+2,@Y0 - UbeYojo::Yojoko.size*@ObjSkip],[0,-24])
+      show_labels(%w(養 生 庫),[Xlabel+2,@Y0 - Ubeboard::Yojo::Yojoko.size*@ObjSkip],[0,-24])
       ## 養生庫番号、線
-      yojoko_Nos = UbeYojo::Yojoko.keys.sort.map{|no| "%3d" % no }
+      yojoko_Nos = Ubeboard::Yojo::Yojoko.keys.sort.map{|no| "%3d" % no }
       @pdf.set_font(:point => 10,:font => "/Helvetica")
-      @pdf.show_labels( UbeYojo::Yojoko.keys.sort.map{|no| "%3d" % no },
+      @pdf.show_labels( Ubeboard::Yojo::Yojoko.keys.sort.map{|no| "%3d" % no },
                         [xline+2,@Y0- _ObjSkip+yoff],[0,-_ObjSkip])
       @pdf.multi_lines(xline,@Y0- _ObjSkip,@X0+@label_days*Day*scale,@Y0- _ObjSkip,
-                       [0,-_ObjSkip],UbeYojo::Yojoko.size,0.3)
+                       [0,-_ObjSkip],Ubeboard::Yojo::Yojoko.size,0.3)
 
 
       x000 = Xlabel+2 + (@Lefts[:ope][1]+@Lefts[:yojoko][1])*@scale
       y0 = @Y0- _ObjSkip+yoff
       #plan_yojoko.each{|no,plansY|
-      UbeYojo::Yojoko.keys.sort.each{|no| plansY = plan_yojoko[no]
+      Ubeboard::Yojo::Yojoko.keys.sort.each{|no| plansY = plan_yojoko[no]
         x0 = x000
         plansY.each_with_index{|plan,idx|
           x0 = outByItem(plan,@Items[:yojo],x0,y0)
@@ -658,7 +658,7 @@ module Ubeboard::Function
       arrayarray_plan.each{|plans|
         work2=Hash.new{|h,k| h[k]=[]}
         plans.each{|plan|  work2[plan.date] << plan}
-        (sdate..edate).each{|d| s=work2[d].size ; (s..min-1).each{|f| work2[d]<<nil}}
+        (sdate..edate).each{|d| s=work2[d].size ; (s..min-1).each{|f| work2[d]<< nil}}
         real_ope_plan << work2
       }
       real_ope_plan
@@ -666,7 +666,7 @@ module Ubeboard::Function
 
     def makeGraphMacroYojo(plan_yojoko)
       @pdf.define(:Graph) {
-        dateline(@sdate,@edate,UbeYojo::Yojoko.size*2,OpeScale[:yojo])
+        dateline(@sdate,@edate,Ubeboard::Yojo::Yojoko.size*2,OpeScale[:yojo])
         docOutGraphYojo(plan_yojoko,OpeScale[:yojo])
       }
     end
@@ -701,7 +701,7 @@ module Ubeboard::Function
       }
     end
     def plans_run_inthe_range_of_operation(real_opes,ope_check,range)
-      plan_from,plan_to = UbeSkd::PlanTimes[real_opes.first][0..1]
+      plan_from,plan_to = Ubeboard::Skd::PlanTimes[real_opes.first][0..1]
 
       plans =ube_plans.select{|plan| plan[plan_from] && plan[plan_to] &&
         plan[plan_from] <= @edate+32.hour && 

@@ -122,7 +122,7 @@ module Actions
     end
     if @model.save
       page =  if @Pagenation
-                (@Model.count(@FindOption||{}).to_f/@Pagenation).ceil
+                (@Model.distinct.count(@FindOption||{}).to_f/@Pagenation).ceil
               end
       @models = @Pagenation ? pagenate(page) : find(page)
       redirect_to :action => "index" ,:page => page
@@ -251,7 +251,7 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
   def update_on_table
     @page = params[:page] || 1 
     @models= @PagenatTbl ? find_and : find #@Model.all(@conditions)#@PagenatTbl
-    @maxid    = @Model.count == 0 ? 0 : @Model.maximum(:id)
+    @maxid    = @Model.distinct.count == 0 ? 0 : @Model.maximum(:id)
     @modelList = params[@Domain]
     @new_models = []
     @models = []
@@ -329,7 +329,7 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
   end
 
   def lastpage
-    page = (@Model.count(@FindOption||{}).to_f/@Pagenation).ceil 
+    page = (@Model.distinct(@FindOption||{}).count.to_f/@Pagenation).ceil 
     page > 0 ? page : nil
   end
 

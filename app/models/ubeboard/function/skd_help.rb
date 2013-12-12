@@ -3,7 +3,7 @@ require 'pstore'
 require 'pp'
 require 'nkf'
 module Ubeboard::Function
-  #UbeSkd.make_plan の下請けたち。
+  #Ubeboard::Skd.make_plan の下請けたち。
   #
   #保守、製造の割り当てを仮に押さえるmethod群
   #temp_assign_all_plan   :: 1ロット乾燥終了までを仮押さえ。抄造-養生-乾燥の工程間待ち時間の制約を考慮する。
@@ -28,7 +28,7 @@ module Ubeboard::Function
   #3つの開始可能時間を比べもっとも遅い時間を採用する
   #
   #この評価には 次工程前lot の情報が必要。それを pre_condition に残す
-  #pre_condition :: 各工程最終製品の UbePlan
+  #pre_condition :: 各工程最終製品の Ubeboard::Plan
 module SkdHelp
   # 抄造時間を遅らせる調整をしてまで割り付けるモード
   OptimizeShozo = 0100 # 64
@@ -50,7 +50,7 @@ module SkdHelp
   #1. 各ロットの 製造数量は規格化されている(x0.75,1.00,1.25))
   #2. mass の他に、x0.75,1.00,1.25 を入れた　n_mass もある
   #3. round の総量を求め、養生庫数(規格化された数量)を求める
-  #4. 製造数量は UbeSkd#make_plan7 で規格化されている
+  #4. 製造数量は Ubeboard::Skd#make_plan7 で規格化されている
   #
   #Round について先に決めておくのはやめる
   #
@@ -245,7 +245,7 @@ module SkdHelp
   def set_pre_condition_for_done(plan,real_ope)
     shozo=plan.shozo?
     dry=plan.dry?
-    opes = UbeSkd::Ope.dup; opes[0]=shozo ;opes[2]=dry
+    opes = Ubeboard::Skd::Ope.dup; opes[0]=shozo ;opes[2]=dry
     opes = case real_ope
            when :shozo,:shozow,:shozoe ; opes[0..0]
            when :yojo           ; opes[0..1]
@@ -253,7 +253,7 @@ module SkdHelp
            when :kakou          ; opes[0..3]
            end
     opes.each{|ope| 
-      return unless times = UbeSkd::PlanTimes[ope][3]
+      return unless times = Ubeboard::Skd::PlanTimes[ope][3]
       #periad,maintain = maintain_time(plan,ope)
       #pre_condition[ope]=[periad,maintain,plan]
       pre_condition[ope] = plan
@@ -263,7 +263,7 @@ module SkdHelp
   #保守・切り替えの UbeProduct#id から A?? 番号を返す
   def pro_id_2_lot_no(pro_id)
     @proid2lotno ||= Hash.new
-    @proid2lotno[pro_id] ||= (Product.find(pro_id).ope_condition rescue nil)
+    @proid2lotno[pro_id] ||= ( Ubeboard::Product.find(pro_id).ope_condition rescue nil)
   end
 
 
@@ -281,11 +281,11 @@ module SkdHelp
   #保守要否評価        maintain_time(plan,real_ope)　 → 所要時間、Pro_id
   #  plan,real_ope ← 今割り付けが終わったもの
   #  戻り値は ［ 保守所用時間, ［保全情報, 保全情報,保全情報,,,,]]
-  #  保全情報は ［UbeProduct.id, 製造番号]
+  #  保全情報は ［Ubeboard::Product.id, 製造番号]
   #
   #各工程で以下の保守作業を自動的に割り付ける。
-  #* どういう名称にするか、は UbeProduct に登録する
-  #* 所要時間は UbeOperation で定義する。ここにあるのは打ち合わせでの情報
+  #* どういう名称にするか、は Ubeboard::Product に登録する
+  #* 所要時間は Ubeboard::Operation で定義する。ここにあるのは打ち合わせでの情報
   #* その割付要否を判断し、 必要なら上記を、不要なら空配列 [ ] を返す
   #    
   #抄造                                 
@@ -338,7 +338,7 @@ module SkdHelp
   #   
   def maintain_time(plan,real_ope)
     case real_ope
-    when :yojo,:dryo,:dryn ; Ubeboard::Maintain.null #[0,[nil]] 
+    when :yojo,:dryo,:dryn ; Ubeboard::Function::Maintain.null #[0,[nil]] 
     when :shozow,:shozoe   ; maintain_time_shozo(plan,real_ope)
     when :kakou            ; maintain_time_kakou(plan,real_ope)
     else                   ; raise "real_ope間違い"
@@ -357,20 +357,20 @@ module SkdHelp
   
   def wf_change(plan,real_ope)
     if plan.proname =~ /^S1/ &&
-        running["running_wf_#{real_ope}"]+plan.mass >= UbeSkd::RunShozoS3Cnt
-      Ubeboard::Maintain.hozen_data("WF替",real_ope)
+        running["running_wf_#{real_ope}"]+plan.mass >= Ubeboard::Skd::RunShozoS3Cnt
+      Ubeboard::Function::Maintain.hozen_data("WF替",real_ope)
     elsif running["running_wf_#{real_ope}"]+plan.mass >= runshozocount(real_ope)
-      Ubeboard::Maintain.hozen_data("WF替",real_ope)
+      Ubeboard::Function::Maintain.hozen_data("WF替",real_ope)
     else
-      Ubeboard::Maintain.null#[nil] #[0,[nil]]
+      Ubeboard::Function::Maintain.null#[nil] #[0,[nil]]
     end
   end
 
   def pf_change(plan,real_ope)
     if running["running_pf_#{real_ope}"]+plan.ope_length(real_ope)[0]  >= self["limit_pf_"+real_ope.to_s].hour
-      Ubeboard::Maintain.hozen_data("PF替",real_ope)
+      Ubeboard::Function::Maintain.hozen_data("PF替",real_ope)
     else
-      Ubeboard::Maintain.null # [nil] #[0,[nil]]
+      Ubeboard::Function::Maintain.null # [nil] #[0,[nil]]
     end
   end
 
@@ -380,9 +380,9 @@ module SkdHelp
     ope_to = pre_condition[real_ope].plan_kakou_to rescue time_from
     if ope_to.hour >=8 && ope_to.wday==3  && # 午前中で水曜
         hozen_date[:kakou] != ope_to.day #&&  # まだ予防保全してない
-      Ubeboard::Maintain.hozen_data("予防保全",real_ope)
+      Ubeboard::Function::Maintain.hozen_data("予防保全",real_ope)
     else
-      Ubeboard::Maintain.null #[0,[nil]]
+      Ubeboard::Function::Maintain.null #[0,[nil]]
     end
   end
   #酸洗要否を判断する。
@@ -409,9 +409,9 @@ module SkdHelp
       #WF替
       runtime = "running_wf_#{real_ope}"
       info = "Maintain-WF替:#{pre_plan.lot_no}の後 #{real_ope} #{running[runtime]}枚"
-      if running[runtime] < Skd::RunShozoS3Cnt
-        info += " #{UbeSkd::Id2RealName[real_ope]} #{pre_plan.lot_no}の後 : #{runshozocount(real_ope)}枚にならないが、S1抄造のため実施する" 
-        @message << "WF替: #{UbeSkd::Id2RealName[real_ope]} #{pre_plan.lot_no}の後 : #{runshozocount(real_ope)}枚にならないが、S1抄造のため実施する" 
+      if running[runtime] <  Ubeboard::Skd::RunShozoS3Cnt
+        info += " #{Ubeboard::Skd::Id2RealName[real_ope]} #{pre_plan.lot_no}の後 : #{runshozocount(real_ope)}枚にならないが、S1抄造のため実施する" 
+        @message << "WF替: #{Ubeboard::Skd::Id2RealName[real_ope]} #{pre_plan.lot_no}の後 : #{runshozocount(real_ope)}枚にならないが、S1抄造のため実施する" 
       end
       logger.info("Maintain-WF替:#{pre_plan.lot_no}の後 #{real_ope} #{running[runtime]}枚")
       running[runtime] = 0
@@ -444,14 +444,14 @@ module SkdHelp
     end
   end
 
-  #切り替え時間の長さと記名切替の UbeProduct.id の配列を返す。
+  #切り替え時間の長さと記名切替の Ubeboard::Product.id の配列を返す。
   #  記名でないときは ["切替"] を返す。これはログのため。
   def change_time(plan,real_ope)
       plan.change_time_concider_meigara(real_ope,pre_condition[real_ope],self)
   end
   
 
-  #UbePlan#set_planを呼び出して予定を入れ
+  #Ubeboard::Plan#set_planを呼び出して予定を入れ
   #稼働累計を更新する
   def plan_set(plan,real_ope,plans)
     plan.set_plan real_ope,plans
@@ -600,7 +600,7 @@ module SkdHelp
       logmsg += "\n→取り直し時刻#{shozo_plan[0].mdHM}～#{shozo_plan[1]}。遅れ #{wait}分"
 
       #酸洗確認しなおす
-      sansen_hozen_data = Ubeboard::Maintain.hozen_data("酸洗",plan.shozo?)
+      sansen_hozen_data = Ubeboard::Function::Maintain.hozen_data("酸洗",plan.shozo?)
       date = (shozo_plan[0]-8.hour).day
        if do_sansen?(shozo_plan, plan.shozo?)  # 酸洗する場合
         # 保全・切り替えが酸洗時間以上
@@ -649,7 +649,7 @@ module SkdHelp
     date = shozo_plan[0].ube_date #(shozo_plan[0]-8.hour).day
     
     sansen = nil
-    sansen_hozen_data = Ubeboard::Maintain.hozen_data("酸洗",real_ope)
+    sansen_hozen_data = Ubeboard::Function::Maintain.hozen_data("酸洗",real_ope)
     logger.debug("TAAP 酸洗する? #{plan.lot_no} #{do_sansen?(shozo_plan,real_ope)}")
     if do_sansen?(shozo_plan,real_ope)  # 酸洗する場合
       logger.debug("TAAP 酸洗する #{plan.lot_no} ")
@@ -703,7 +703,7 @@ module SkdHelp
     return nil unless plan_from 
     logmsg = "INFO      TEMP ASSIGN 乾燥仮押え  #{plan.lot_no} #{plan_from.mdHM}-#{plan_to.mdHM}"
     if @log
-      logger.debug("==== 製造仮割付 #{UbeSkd::Id2RealName[real_ope]} "+
+      logger.debug("==== 製造仮割付 #{Ubeboard::Skd::Id2RealName[real_ope]} "+
                    "#{plan_from.mdHM}--#{plan_to.mdHM}\n" +
                    "\t移動　#{trans.mdHM}  保守 #{dry_maint[1].mdHM}" +
                    (shozo?(real_ope) ? "養生 #{yojoko[plan.yojoko].next_start}" : "")
@@ -735,7 +735,7 @@ module SkdHelp
 
   # 時間の仮押さえ：切り替え・保守の時間を仮に確保する
   # -  保守候補と切替の遅い方を採る。
-  #    　ただし、UbeNamedChange にて複数の　にある物は併記する
+  #    　ただし、Ubeboard::NamedChange にて複数の　にある物は併記する
   # -  保守は候補が pre_condition[0..1] に格納済み。
   # -  この工程の前品種の終了時間は  pre_condition[4]に格納済み。これが切り替えの開始可能時間
   # -  始業作業と重なる場合、長い方にする。
@@ -835,7 +835,7 @@ module SkdHelp
     plan_from,plan_to = freeList[real_ope].searchfree(plan_from,period)
     return nil unless plan_from 
     if @log
-      logger.debug("==== 製造仮割付 #{UbeSkd::Id2RealName[real_ope]} "+
+      logger.debug("==== 製造仮割付 #{Ubeboard::Skd::Id2RealName[real_ope]} "+
                    "#{plan_from.mdHM}--#{plan_to.mdHM}\n" +
                    "\t移動　#{trans.mdHM}  保守 #{maint_to.mdHM}" +
                    (shozo?(real_ope) ? "養生 #{yojoko[plan.yojoko].next_start}" : "")
@@ -918,11 +918,11 @@ module SkdHelp
   # 一つ前の立案結果から、仕掛かり・未開始と各工程の最終製造になるplanを抜き出す
   def stock
     # 一つ前の立案結果。開始日が一番遅くかつ今回の開始日前のもの。同じ期間のが複数有ったらID最大
-    skd = UbeSkd.find(:first,:order => "skd_from desc,id desc",:conditions=>["skd_from < ?",skd_from])
+    skd = Ubeboard::Skd.find(:first,:order => "skd_from desc,id desc",:conditions=>["skd_from < ?",skd_from])
     return [] if skd.nil?
 
     # 累積の取得
-    UbeSkd::Running.each{|ing,run| self[run]=skd[ing]} 
+    Ubeboard::Skd::Running.each{|ing,run| self[run]=skd[ing]} 
 
     # 仕掛かりと未開始。完成でないもので製品、または期間内の保守
     stocks = skd.ube_plans.select{|plan|
@@ -947,7 +947,7 @@ module SkdHelp
     end
       
     # 各工程最終製品を選ぶ
-    dones = UbeSkd::ResultTimes.map{|r_o,from,to| 
+    dones = Ubeboard::Skd::ResultTimes.map{|r_o,from,to| 
       skd.ube_plans.find(:first,:order => "#{from} desc",:conditions => ["mass > 1 "] )
     }
     #養生の最終製品を選び直す
@@ -968,8 +968,8 @@ module SkdHelp
   def set_jun_for_holiday
     make_plans_of_holyday_and_maintain
 
-    UbeSkd::RealOpe.each{|real_ope| 
-      plan_from = UbeSkd::PlanTimes[real_ope][0]
+    Ubeboard::Skd::RealOpe.each{|real_ope| 
+      plan_from = Ubeboard::Skd::PlanTimes[real_ope][0]
       jun = 0
       ube_plans.select{|plan| plan[plan_from] 
       }.sort_by{|plan| plan[plan_from] 
@@ -989,13 +989,13 @@ module SkdHelp
     i=0
     holydays.each{|real_ope,hldys| 
       hldys.each{|holyday|
-        hc = UbeProduct.holyday_code[holyday[2..3]]
+        hc = Ubeboard::Product.holyday_code[holyday[2..3]] || []
         plan = create_hozen_plan(holyday[3],holyday[0],holyday[1],hc[0])
         i += 1
       }
     }
-    UbeSkd::RealOpe.each{|real_ope|
-      hc = UbeProduct.holyday_code[["A15",real_ope]]
+    Ubeboard::Skd::RealOpe.each{|real_ope|
+      hc = Ubeboard::Product.holyday_code[["A15",real_ope]]
       maintain[real_ope].each{|plan_start,plan_end,maintain|
         plan = create_hozen_plan(real_ope,plan_start,plan_end,hc[0])
         i += 1
@@ -1013,7 +1013,7 @@ module SkdHelp
   def sumtimes
     %w(_shozo_w _shozo_e _yojo _dry_o _dry_n _kakou).each_with_index{|sym,idxs|
       %w(runtime plantime freetime mainttime changetime donetime).each_with_index{|time,idxt|
-        self[time+sym] = sumtime(time,UbeSkd::RealOpe[idxs])
+        self[time+sym] = sumtime(time,Ubeboad::Skd::RealOpe[idxs])
       }
     }
   end
@@ -1034,7 +1034,7 @@ module SkdHelp
   #製造予定の累計。予定時間が一部でも立案期間に掛かっているものを累計する。
   #はみ出している部分は控除していないので、そういうのがあると多めの誤差となる。
   #
-  #plan_doneを下請けに使って、UbePlanの予定情報を累計している
+  #plan_doneを下請けに使って、Ubeboad::Planの予定情報を累計している
   def plantime(real_ope)
     plan_done(real_ope,0..1)
   end
@@ -1043,19 +1043,19 @@ module SkdHelp
   #製造予定の累計。予定時間が一部でも立案期間に掛かっているものを累計する。
   #はみ出している部分は控除していないので、そういうのがあると多めの誤差となる。
   #
-  #plan_doneを下請けに使って、UbePlanの実績情報を累計している
+  #plan_doneを下請けに使って、Ubeboad::Planの実績情報を累計している
   def donetime(real_ope)
     plan_done(real_ope,2..3)
   end
 
   #=====予定、実績製造時間の集計(plan_done)
-  #UbePlan#{plan,result}_****_{from|to}を元に製造時間を集計する。
+  #Ubeboad::Plan#{plan,result}_****_{from|to}を元に製造時間を集計する。
   #
   #乾燥工程は、投入終了から終了(完全排出)までの間に次のロットの乾燥が始まっている
   #場合がある。その場合は重なり部分は二重に累積しないように、控除する。
   #
   def plan_done(real_ope,range)
-    from,to = UbeSkd::PlanTimes[real_ope][range]
+    from,to = Ubeboad::Skd::PlanTimes[real_ope][range]
     unless [:dryo,:dryn].include?(real_ope)
       ube_plans.select{|plan| 
         plan.real_ope?(real_ope) && plan.mass >1 && plan[to]&&plan[from]&&
@@ -1095,12 +1095,12 @@ module SkdHelp
   end
 
   #=====保守時間累計(mainttime)
-  #UbePlan#conditionがA02 A03 A06 A07 A08 A09 A11 A13 であるものを
+  #Ubeboard::Plan#conditionがA02 A03 A06 A07 A08 A09 A11 A13 であるものを
   #保守として累計する。
   #
   #立案時に「実績のない保守・切り替え」は削除してしまっているので、正しい値になっていない。
   def mainttime(real_ope)
-    from,to = UbeSkd::PlanTimes[real_ope][0..1]
+    from,to = Ubeboard::Skd::PlanTimes[real_ope][0..1]
     ube_plans.select{|plan| 
       plan.real_ope?(real_ope) && %w(A02 A03 A06 A07 A08 A09 A11 A13).include?(plan.condition)
     }.inject(0){|s,plan| s +=  ( plan[to] && plan[from] ? (plan[to] - plan[from]) : 0) }
@@ -1117,8 +1117,8 @@ module SkdHelp
   ## 実績を入れる。plan通りの値
   def set_result_by_plan
     ube_plans.each{|plan| 
-      UbeSkd::Ope.each{|ope|  
-        p_f,p_t,r_f,r_t = UbeSkd::PlanTimes[ope]
+      Ubeboard::Skd::Ope.each{|ope|  
+        p_f,p_t,r_f,r_t = Ubeboard::Skd::PlanTimes[ope]
         plan[r_f]=plan[p_f]+0 rescue nil
         plan[r_t] = plan[p_t]+0 rescue nil
       }

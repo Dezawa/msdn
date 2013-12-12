@@ -18,7 +18,7 @@ class Book::Controller <  ApplicationController
       @arrowed << Book::Permission.create_myself(User.find_by(username: "guest"))  if  @permit
       @arrowed += (@aaa=Book::Permission.arrowed_owner(current_user.username) )
     end
-    @arrowed.sort!{|a,b|  (b.permission <=> a.permission)*2 + (a.username <=> b.username)}
+    @arrowed.sort!{|a,b|  (b.permission <=> a.permission)*2 + (a.login <=> b.login)}
     @arrowed.unshift(myself) if myself
     logger.debug "BookCtrl SET_INSTANSE_VARIABLE : @arrowed.first=#{@arrowed.first.inspect},session[:BK_owner] =#{session[:BK_owner].inspect}"
     permittion_id = session[:BK_owner] 

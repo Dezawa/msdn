@@ -74,8 +74,8 @@ class Book::MainController < Book::Controller
     @TYTLE = "#{@owner.owner}の 複式簿記：振替伝票"
     @TYTLEpost = "#{@year.year}年度"
     #@Links=BookKeepingController::Labels
-    @FindOption = {:conditions => ["owner = ? and date >= ? and date <= ?",
-                                         @owner.owner, @year_beginning,@year_end],
+    @FindOption = { :conditions => ["owner = ? and date >= ? and date <= ?",
+                     @owner.owner, @year_beginning,@year_end],
                           :order => "no"
     }
     @TableEdit = 
@@ -101,6 +101,7 @@ class Book::MainController < Book::Controller
     @PagenatTbl = true
     maxNo = Book::Main.maximum(:no,:conditions =>  ["owner = ? and date >= ? and date <= ?",
                                                     @owner.owner,@year_beginning,@year_end])
+    #maxNo  = Book::Main.this_year(@owner.owner,@year_beginning,@year_end).maximun(:no)
     no = (maxNo ? maxNo : 0) + 1
     @New = {:no => no, :date => Time.now,:amount => ""}
     @Create = {:owner => @owner.owner } #current_user.login }
@@ -108,16 +109,16 @@ class Book::MainController < Book::Controller
   end
 
   def count
-    Book::Main.count(:conditions => ["owner = ? and date >= ? and date <= ?",
-                                          @owner.owner,@year_beginning,@year_end])
+    Book::Main.distinct(:conditions => ["owner = ? and date >= ? and date <= ?",
+                                          @owner.owner,@year_beginning,@year_end]).count
   end
 
   def kaisizandaka_count
-    Book::Main.count(:conditions => 
+    Book::Main.distinct(:conditions => 
                      ["owner = ? and date >= ? and date <= ? and (karikata = ? or kasikata = ?)",
                       @owner.owner,@year_beginning,@year_end,
                       Book::Kamoku.kaisizandaka,Book::Kamoku.kaisizandaka
-                     ])
+                     ]).count
   end
 
   def index

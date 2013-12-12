@@ -20,6 +20,9 @@ class Book::Main < ActiveRecord::Base
   belongs_to :kari_kamoku,:class_name => "Book::Kamoku",:foreign_key => :karikata
   belongs_to :kasi_kamoku,:class_name => "Book::Kamoku",:foreign_key => :kasikata
 
+  scope :this_year, ->(owner_name,from,to) { 
+    where(["owner = ? and date >= ? and date <= ?", owner_name,from,to])}
+
   def self.new(*args)
     args.first[:amount].gsub!(/,/,"") if args.first[:amount].class == String
     super

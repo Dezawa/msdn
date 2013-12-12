@@ -94,13 +94,13 @@ module SkdFreelist
         case ope
         when :dryo,:dryn,:kakou
           @FreeList[ope] = 
-            FreeList.new(ope,[time_from,time_to],self) #holydays.dup,maintain)
+            Ubeboard::Function::FreeList.new(ope,[time_from,time_to],self) #holydays.dup,maintain)
         when :shozow,:shozoe
           @FreeList[ope] = 
-            FreeListShozo.new(ope,[time_from,time_to],self) #,holydays.dup,maintain)
+            Ubeboard::Function::FreeListShozo.new(ope,[time_from,time_to],self) #,holydays.dup,maintain)
         when :yojo
           @FreeList[ope] = 
-            FreeListYojo.new(ope,[time_from,time_to],self) #,holydays.dup,maintain)
+            Ubeboard::Function::FreeListYojo.new(ope,[time_from,time_to],self) #,holydays.dup,maintain)
         end
       }
     end
@@ -155,12 +155,13 @@ module SkdFreelist
   #stop     :: 割り当て終了日時
   #pro_id   :: 割り当てる保守・記名切り替えの Ubeboard::Product#id
   #jun      :: 順番
-  def create_hozen_plan(real_ope,start,stop,pro_id,jun=nil)
-    from_to = Ubeboard::Skd::PlanTimes[real_ope]
+  def ddcreate_hozen_plan(real_ope,start,stop,pro_id,jun=nil)
+    from_to = Skd::PlanTimes[real_ope]
     opt = from_to ? { from_to[0] => start,from_to[1]   => stop} : {} 
     lot_no = pro_id_2_lot_no(pro_id)
-    plan = Ubeboard::Plan.find_or_create_by(ube_product_id: 0)
-    plan.update_attributes( opt.merge( :ube_product_id => pro_id,
+    plan = Plan.find_or_create_by_ube_product_id(0)
+    plan.update_attributes( opt.merge(:skd_id     => id,
+                                       :product_id => pro_id,
                                        :lot_no         => lot_no,
                                        :mass => 1.0,
                                        :jun => jun
@@ -208,11 +209,9 @@ module SkdFreelist
     unless @ending 
       @ending = { 
         [:shozow,1] => 5.hour, [:shozoe,1] => 5.hour,
-        [:shozow,2] => 5.hour, [:shozoe,2] => 5.hour,
-        [:shozow,3] => 5.hour, [:shozoe,3] => 5.hour,
         [:shozow,4] => 1.hour, [:shozoe,4] => 1.hour
       }
-      ucs = Ubeboard::Constant.where( 'keyword like "%ending"')
+      ucs = Constant.all(:conditions => 'keyword like "%ending"')
       # "shozow_holyday_ending"
       ucs.each{|uc|
         realope,holyday_type,s = uc.keyword.split("_")
@@ -232,11 +231,9 @@ module SkdFreelist
     unless @starting 
       @starting = { 
         [:shozow,1] => 3.hour, [:shozoe,1] => 3.hour,
-        [:shozow,2] => 3.hour, [:shozoe,2] => 3.hour,
-        [:shozow,3] => 3.hour, [:shozoe,3] => 3.hour,
         [:shozow,4] => 1.hour, [:shozoe,4] => 1.hour
       }
-      ucs = Ubeboard::Constant.where( 'keyword like "%starting"')
+      ucs = onstant.all(:conditions => 'keyword like "%starting"')
       # "shozow_holyday_starting"
       ucs.each{|uc|
         realope,holyday_type,s = uc.keyword.split("_")
@@ -303,7 +300,7 @@ module SkdFreelist
     unless @maintain
       @maintain = Hash.new{|h,k| h[k]= []}
       conditions = "plan_time_start <= ? and plan_time_end >= ? "
-      maint = Ubeboard::Maintain.where([conditions ,time_to,time_from]).to_a
+      maint = Ubeboard::Maintain.find(:all,:conditions=>[conditions ,time_to,time_from])
       #%w(西抄造 東抄造 養生 原乾燥 新乾燥 加工).zip(RealOpe).each{|ope_name,ope|
       maint.each{|m| 
         @maintain[Ubeboard::Skd::RealName2Id[m.ope_name]] << 
@@ -315,7 +312,7 @@ module SkdFreelist
   end
 
 
-end # of Ubeboard::Freelist
+end # of Ubeboard::SkdFreelist
 end # of Function
 __END__
 $Id: ube_skd_freelist.rb,v 2.31 2012-11-01 08:35:29 dezawa Exp $

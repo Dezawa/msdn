@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 require 'pp'
 #== 計画立案(UbeSkd)
-#ロットデータ(UbePlan)のインスタンスをhabmする。1月1インスタンスが原則。
+#ロットデータ(Ubeboard::Plan)のインスタンスをhabmする。1月1インスタンスが原則。
 #
 #3つの機能がある。
 #[立案準備]
-#     立案対象のロットを UbePlan::make_plans_from_lips と Function::boad::boad::SkdHelp#stock で用意する。
+#     立案対象のロットを Ubeboard::Plan::make_plans_from_lips と Function::boad::boad::SkdHelp#stock で用意する。
 #     Function::SkdHelp#stockでは前月度の仕掛品、未開始品(及び今月立案に必要な完了品)を取り込む
 #[立案]
 #     立案する。詳細は後述する。
@@ -20,7 +20,7 @@ require 'pp'
 #
 #立案は3つのステップで行われる。
 #[立案前処理]
-#     空き時間を初期化(Function::SkdFreelist#freeList)し、
+#     空き時間を初期化(Function::Freelist#freeList)し、
 #     既に終了している工程を割付け(sorted_plan)、
 #     各工程の最終状態を得る。(assign_if_resulted)
 #[仕掛品処理]
@@ -40,7 +40,7 @@ require 'pp'
 #現最終アルゴリズムは7改 make_plan7
 #
 #==== 優先順モード・優先順尊重モード
-#割付は基本的には「優先順」(UbePlan#jun)の順番で行われる。
+#割付は基本的には「優先順」(Ubeboard::Plan#jun)の順番で行われる。
 #
 #優先順モードは必ず優先順で行われるが、尊重モードでは概ね順の通りだが
 #Function::Optimize#optimizeが決めた順で行われる。
@@ -48,18 +48,19 @@ require 'pp'
 #
 class Ubeboard::Skd < ActiveRecord::Base
   #require 'function/ube_skd_help'
+  include Ubeboard::Function::SkdResultInput
+  include Ubeboard::Function::SkdHelp
   include Ubeboard::Function::SkdFreelist
   include Ubeboard::Function::Optimize
-  include Ubeboard::Function::SkdHelp
   include Ubeboard::Function::SkdCsv
   include Ubeboard::Function::SkdPdf
-  include Ubeboard::Function::SkdResultInput
 
   self.table_name = 'ube_skds'
   delegate :logger, :to=>"ActiveRecord::Base"
 
+  
   #has_many      :ube_plans ,:dependent => :delete_all
-  has_and_belongs_to_many :ube_plans
+  has_and_belongs_to_many :ube_plans,:class_name => "Ubeboard::Plan"
   validates_presence_of :skd_from, :message =>"立案期間開始が未入力です"
   validates_presence_of :skd_to,  :message =>"立案期間終了が未入力です"
 
@@ -82,12 +83,12 @@ class Ubeboard::Skd < ActiveRecord::Base
                    :runned_dryo,:runned_dryn]
                   )
   
-  # これは UbeNamedChange に置くべき性格であるが、UbeNamedChangeを更新したときに
+  # これは Ubeboard::NamedChange に置くべき性格であるが、Ubeboard::NamedChangeを更新したときに
   # 自動的に反映させるため、立案毎に更新されるように ube_skdに置く
   def named_change_pro_id(real_ope,pre_condition_id,post_condition_id)
     @named_change ||= Hash.new
     @named_change[[real_ope,pre_condition_id,post_condition_id]] ||=
-      UbeSkd.named_change(real_ope,pre_condition_id,post_condition_id)
+      Ubeboard::Skd.named_change(real_ope,pre_condition_id,post_condition_id)
   end
   
   def self.named_change(real_ope,pre_condition_id,post_condition_id)
@@ -96,15 +97,15 @@ class Ubeboard::Skd < ActiveRecord::Base
     sql = "ope_name = ? and ( pre_condition_id = ? and post_condition_id = ? or" +
       " pre_condition_id = ? and post_condition_id is null or "+
       " pre_condition_id is null and post_condition_id = ? )"
-    named_changes = UbeNamedChange.all(:conditions => [ sql, ope_name,
-                                                        pre_condition_id,post_condition_id,
-                                                        pre_condition_id,post_condition_id
-                                                      ],
-                                       :order => "jun"
-                                       )
+    named_changes = Ubeboard::NamedChange.where( [ sql, ope_name,
+                                                   pre_condition_id,post_condition_id,
+                                                   pre_condition_id,post_condition_id
+                                                 ]
+                                                 ).order( "jun")
+                                       
     if named_changes.size > 0
       named_changes.first[:display].split.map{|a00| 
-        up = UbeProduct.all(:conditions => ["ope_condition = ? and #{ope} = ?",a00,UbeSkd::Id2RealName[real_ope]])
+        up = Ubeboard::Product.where(["ope_condition = ? and #{ope} = ?",a00,Id2RealName[real_ope]])
         up.size > 0 ? up[0][:id] : nil
       }.compact
     else
@@ -154,7 +155,7 @@ class Ubeboard::Skd < ActiveRecord::Base
   #最低製造数。休日前に半端な製造数量となるとき、最低この数量にならないときはやめる。
   MassLimit = 300
   def masslimit
-    @masslimit ||=  UbeConstant.find_by(keyword: "minimum_mass").value rescue MassLimit
+    @masslimit ||=  Ubeboard::Constant.find_by(keyword: "minimum_mass").value rescue MassLimit
   end
 
   #過労働日の残業時間
@@ -172,7 +173,7 @@ class Ubeboard::Skd < ActiveRecord::Base
 
   #乾燥工程内滞在時間を計算するための定数
   #-  今は乾燥にのみ意味がある。値は乾燥炉内にある枚数。名前は不適切だ
-  #-  UbeOperationで定められる 滞在時間 から、投入間隔＝滞在時間/StayTime
+  #-  Ubeboard::Operationで定められる 滞在時間 から、投入間隔＝滞在時間/StayTime
   StayTime = { :shozo => 0 , :yojo => 0, :dry => 1000 , :kakou => 0 }
 
   #乾燥工程に関わる時間:  投入から乾燥炉に入るまで
@@ -192,9 +193,9 @@ class Ubeboard::Skd < ActiveRecord::Base
 
   def self.named_mult
   #作業が重なったときに、併記すべき保守・切り替え
-  #NamedMult = UbeProduct.all(:conditions => ["proname in (?)",%w(WF替 PF替 サラン替)]).map(&:id)
+  #NamedMult = Ubeboard::Product.all(:conditions => ["proname in (?)",%w(WF替 PF替 サラン替)]).map(&:id)
     begin 
-      namedMult = UbeProduct.all(:conditions => ["proname in (?)",%w(WF替 PF替 サラン替)]).map(&:id)
+      namedMult = Ubeboard::Product.all(:conditions => ["proname in (?)",%w(WF替 PF替 サラン替)]).map(&:id)
     rescue
       namedMult = []
     end
@@ -253,7 +254,7 @@ class Ubeboard::Skd < ActiveRecord::Base
                   "運休開始時刻 新乾燥","運休開始時刻 加工"].zip(RealOpe)
   def unkyu_start
     unless @unkyu_start
-      unkyu_start = UbeConstant.all(:conditions => "name like '運休開始時刻 %'")
+      unkyu_start = Ubeboard::Constant.all(:conditions => "name like '運休開始時刻 %'")
       @unkyu_start = 
         Hash[*unkyu_start.map{|h| [UbeSkd::RealName2Id[h.name.sub(/運休開始時刻 /,"")],h.value]}.flatten]
     end
@@ -289,7 +290,7 @@ class Ubeboard::Skd < ActiveRecord::Base
   #
   #defaultは定数で定めてあるが、立案時に変更可能なので、それを保存する。
   def runshozocount(shozo) ; 
-    #logger.info("UbeSkd:runshozocount(#{shozo}) is nil") unless self["limit_wf_#{shozo}"] 
+    #logger.info("Ubeboard::Skd:runshozocount(#{shozo}) is nil") unless self["limit_wf_#{shozo}"] 
     self["limit_wf_#{shozo}"] || RunShozoCount ; 
   end
 
@@ -304,7 +305,7 @@ class Ubeboard::Skd < ActiveRecord::Base
       params = Hash[*RealOpe.map{|real_ope| PlanTimes[real_ope][0..1].zip([time_from,time_from])}.flatten]
       params[:plan_dry_end]=params[:plan_dry_out] = time_from
       params[:ube_product_id]=nil
-      @dmy= UbePlan.new(params)
+      @dmy= Ubeboard::Plan.new(params)
     end
     @dmy
   end
@@ -343,12 +344,12 @@ class Ubeboard::Skd < ActiveRecord::Base
 
   #養生庫の養生庫番号をキーとするハッシュ
   #
-  #最初に呼ばれるときに初期化(UbeYokojoのインスタンス作成)も行う。
+  #最初に呼ばれるときに初期化(Ubeboard::Yokojoのインスタンス作成)も行う。
   def yojoko
     unless @yojoko
       @yojoko = Hash.new
-      UbeYojo::Yojoko.each_key{|no| 
-        @yojoko[no]=UbeYojo.new(no);@yojoko[no].next_start time_from
+      Ubeboard::Yojo::Yojoko.each_key{|no| 
+        @yojoko[no]=Ubeboard::Yojo.new(no);@yojoko[no].next_start time_from
       }
     end
     @yojoko
@@ -376,12 +377,12 @@ class Ubeboard::Skd < ActiveRecord::Base
 
   #proname,productid の変換テーブル　使わないな
   def pronamessave
-    @pronames ||= UbeProduct.all(:conditions => "hozen = false or hozen is null",
+    @pronames ||= Ubeboard::Product.all(:conditions => "hozen = false or hozen is null",
                                  :select => "proname,id"
                                  ).map{ |p| [p.proname,p.id]}
   end
 
-  #UbeSkdに付いているUbePlanを完了、仕掛、未実施にわけ、
+  #Ubeboard::Skdに付いているUbeboard::Planを完了、仕掛、未実施にわけ、
   #各々優先順に並べたもの。planの配列の配列。
   #
   #最初に評価されたときに初期化(分類、ソート、優先順付け、製造番号付け)
@@ -548,7 +549,7 @@ class Ubeboard::Skd < ActiveRecord::Base
                      else
                        @message.uniq.join("\n") 
                      end
-    #debug用 freeListを UbeSkd.gree_list に保存
+    #debug用 freeListを Ubeboard::Skd.gree_list に保存
     self.free_list = YAML.dump(freeList)
     
     #ごみ掃除
@@ -632,7 +633,7 @@ class Ubeboard::Skd < ActiveRecord::Base
   #4. 早く抄造が終わる方のラウンドに決める。
   #  
   #早く空く乾燥ラインを選ぶ理由、先に「始まる」ではなく「終わる」抄造を選ぶ理由
-  #については、Function::UbeOptimize#optimaize を参照されたし。
+  #については、Function::Ubeboard::Optimize#optimaize を参照されたし。
   #  新乾燥を使うラウンドが続いた後で原乾燥を使うラウンドが来ると
   #  それまでに抄造が埋まってしまうため、原乾燥に大きな空きが
   #  できてしまうことが有る
@@ -823,8 +824,8 @@ class Ubeboard::Skd < ActiveRecord::Base
     ret
   end
 
-  #UbePlan の集合を割り付ける
-  #1. 養生庫を割り当てる。 Function::UbeSkdHelp#get_yojoko
+  #Ubeboard::Plan の集合を割り付ける
+  #1. 養生庫を割り当てる。 Function::Ubeboard::SkdHelp#get_yojoko
   #2. 割り付ける assign_temp_and_real
   def assign_plans(plans,sum)
     @first_lot = true
@@ -1073,7 +1074,7 @@ end
     # DBからの削除
     attribute = Hash[*PlanTimes.values.flatten.uniq.map{|sym| [sym,nil]}.flatten].
       merge(:ube_product_id => 0,:lot_no => "", :mass => 0)
-    UbePlan.update(ids,[attribute]*ids.size)
+    Ubeboard::Plan.update(ids,[attribute]*ids.size)
 
     ids
   end

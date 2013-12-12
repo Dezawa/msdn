@@ -7,17 +7,17 @@ class LipsController < ApplicationController
   before_filter {|ctrl| ctrl.set_permit %w(LiPS会員)}
   before_filter(:only => [:csv_upload,:csv_download,:change_form]){|ctrl| ctrl.require_permit "/msg_lips_login"} 
   skip_before_filter :verify_authenticity_token
-
+  max= "3"
   Permit = ["promax", "opemax", "vertical", "minmax", 
-            "opename"=>("1".."100").to_a ,
-            "time"   =>("1".."100").to_a ,
-            "gele"   => ("1".."100").to_a ,
-            "proname"=> ("1".."100").to_a ,
-            "gain"   => ("1".."100").to_a ,
-            "min"    =>("1".."100").to_a ,
-            "max"    =>("1".."100").to_a ,
-            "rate"   =>[ {"1" => ("1".."100").to_a} ,{"2" => ("1".."100").to_a} ]
-#Hash[*("1".."100").map{|i| [i,("1".."100").to_a]}.flatten(1)]
+            "opename"=>("1"..max).to_a ,
+            "time"   =>("1"..max).to_a ,
+            "gele"   => ("1"..max).to_a ,
+            "proname"=> ("1"..max).to_a ,
+            "gain"   => ("1"..max).to_a ,
+            "min"    =>("1"..max).to_a ,
+            "max"    =>("1"..max).to_a ,
+            "rate"   =>[ "1" => ("1"..max).to_a ,"2" => ("1"..max).to_a ]
+#Hash[*("1"..max).map{|i| [i,("1"..max).to_a]}.flatten(1)]
            ]
 
 
@@ -52,7 +52,7 @@ class LipsController < ApplicationController
     @login = @user ? @user.login : "guest"
     set_filename
     if params[:lips]
-      @lips=Lips.new(params.require(:lips).permit!)
+      @lips=Lips.new(params.require(:lips).permit!)#(Permit))#!)
     else
       @lips=Lips.new
     end
