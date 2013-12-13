@@ -1,4 +1,17 @@
-<div align=center><H2>複式簿記：メイン</H2>
+<script type="text/javascript">
+jQuery(function($) {
+// when the #region_id field changes
+  $("#year_owner_year").change(function() {
+    // make a POST call and replace the content
+    var year = $('select#year_owner_year :selected').val();
+    if(year == "") year="2010";
+    jQuery.post('/book/keeping/year_change/' + year, function(data){})
+    return false;
+  });
+})
+</script>
+
+<div align=center><H2>複式簿記：メイン</H2><div>year</div>
  <div id='year_change' >
    <%= select_year( @year.year, {start_year: 2012, end_year: Time.now.next_year.year},
                                 id: 'year_owner_year' ,name: 'year_owner[year]' ) %>年度
