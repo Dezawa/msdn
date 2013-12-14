@@ -68,7 +68,7 @@ class Book::MainController < Book::Controller
     @Model= Book::Main
 
     @year = (year = session[:BK_year] || Time.now) #.year
-    pp "@year=#{@year}"
+    #pp "@year=#{@year}"
     @year_beginning =  @year.beginning_of_year
     @year_end       =  @year.end_of_year
     @year_full = year
@@ -98,7 +98,8 @@ class Book::MainController < Book::Controller
     #@SortBy   = :bunrui
     @CSVatrs = CSVatrs; @CSVlabels = CSVlabels
     @CSVfile = @owner.owner+"_#{@Domain}.csv"
-    @Pagenation = session["BKMain_per_page"] || (session["BKMain_per_page"] = 10)
+    @PageSession="BKMain_per_page"
+    @Pagenation = session[@PageSession] || (session[@PageSession] = 10)
     #@page = params[:page] || :lastpage
     @PagenatTbl = true
     maxNo = Book::Main.this_year( @owner.owner,@year_beginning,@year_end).maximum(:no)

@@ -31,7 +31,8 @@ class Ubeboard::MeigaraController < ApplicationController
     #@SortBy    = :bunrui
    @CSVatrs = CSVatrs; @CSVlabels = CSVlabels
    @CSVfile =  current_user.login + "_meigara.csv"
-    @Pagenation = 20
+    @pageSession="UBmeiga_perpage"
+    @Pagenation =  session[@PageSession] || (session[@PageSession] = 20)
     #maxNo = BookMain.maximum :no 
     #no = (maxNo ? maxNo : 0) + 1
     #@New = {:no => no, :date => Time.now}

@@ -298,12 +298,13 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
   def change_per_page
     if params[:line_per_page] && params[:line_per_page].to_i > 0
       @page = (((params[:page].to_i-1) * @Pagenation) / params[:line_per_page].to_i).to_i+1
-      @Pagenation =  session[self.class.name + "_per_page"] = params[:line_per_page].to_i
+      @Pagenation =  session[@PageSession] = params[:line_per_page].to_i
     else 
       @page = params[:page]
     end
-    find_and
-    render  :file => 'application/index',:layout => 'application'
+    redirect_to :action => :index,page: @page
+    #find_and
+    #render  :file => 'application/index',:layout => 'application'
   end
 
   def csv_out(filename=nil)
@@ -333,7 +334,7 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     page > 0 ? page : nil
   end
 
-  def find(page=1); @Model.all(@FindOption||{});end
+  def find(page=1); @Model.where(@FindOption||{});end
 
   def pagenate(page=1)
     page=1 unless page.to_i >0

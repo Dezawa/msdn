@@ -38,7 +38,8 @@ require 'csv'
     #@Refresh = :kamokus
     #@SortBy   = :bunrui
     @CSVatrs = Ubeboard::Product::CSVatrs; @CSVlabels = Ubeboard::Product::CSVlabels
-    @Pagenation = 20
+    @pageSession="UBpro_perpage"
+    @Pagenation =  session[@PageSession] || (session[@PageSession] = 20)
     #@New = {:no => no, :date => Time.now}
     #@Create = {:owner => current_user.login }
     #@PostMessage = BookMainController::Comment

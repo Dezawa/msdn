@@ -35,7 +35,8 @@ class Ubeboard::ConstantController < ApplicationController
    #@SortBy    = :bunrui
    @CSVatrs = CSVvars; @CSVlabels = CSVlabels
    @CSVfile =  current_user.login + "_constant.csv"
-   @Pagenation = 20
+    @pageSession="UBcnst_perpage"
+    @Pagenation =  session[@PageSession] || (session[@PageSession] = 20)
    #maxNo = BookMain.maximum :no 
    #no = (maxNo ? maxNo : 0) + 1
    #@New = {:no => no, :date => Time.now}

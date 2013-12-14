@@ -13,7 +13,8 @@ class Ubeboard::HolydayController < ApplicationController
   PerPage = 3
 
   def set_instanse_variable
-    @Pagenation = PerPage
+    @pageSession="UBcnst_perpage"
+    @Pagenation =  session[@PageSession] || (session[@PageSession] = PerPage)
     @Model = Ubeboard::Holyday
     @labels = Labels
     @wday = Wday

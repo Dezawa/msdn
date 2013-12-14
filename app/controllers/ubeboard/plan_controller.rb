@@ -83,7 +83,8 @@ class Ubeboard::PlanController < ApplicationController
                   "予定乾燥開始","予定乾燥終了","予定加工開始", "予定加工終了",
                   "実績抄造開始","実績抄造終了","実績養生開始","実績養生終了",
                   "実績乾燥開始","実績乾燥終了","実績加工開始","実績加工終了"]
-    @Pagenation = 20
+    @pageSession="UBplan_perpage"
+    @Pagenation =  session[@PageSession] || (session[@PageSession] = 20)
     #@New = {:no => no, :date => Time.now}
     #@Create = {:owner => current_user.login }
     #@PostMessage = BookMainController::Comment
