@@ -248,7 +248,7 @@ module ApplicationHelper
 
   def delete_if_accepted(obj)
     if deletable
-        "<td>".html_safe + link_to('削除',obj , :confirm => 'Are you sure?', :method => :delete) + "</td>".html_safe
+        "<td>".html_safe + link_to('削除',obj ,data: { confirm: 'Are you sure?' } , :method => :delete) + "</td>".html_safe
     else
       "".html_safe
     end
