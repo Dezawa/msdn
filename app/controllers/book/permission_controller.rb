@@ -28,7 +28,7 @@ class Book::PermissionController < Book::Controller
     @labels = Labels
     @TYTLEpost = "#{@year.year}年度"
     #@#Links=BookKeepingController::Labels
-    @FindOption = {:conditions => ["owner = ? ",current_user.username]  }
+    @FindOption =["owner = ? ",current_user.username]  
     @TableEdit =  editable ? [[:form,:new,"新ユーザ"]] : false
     @edit_vertical = true
     @New = { :owner => current_user.username }

@@ -62,7 +62,7 @@ class Book::KeepingController <  Book::Controller
 
   def year_change
     unless params[:year].blank?
-      @year = session[:BK_year] = Time.parse(params[:year]+"/1/1 JST") 
+      @year = session[:BK_year] = Time.parse(params[:year]+"/1/1") 
     end
     redirect_to :action => :index
   end

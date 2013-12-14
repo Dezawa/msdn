@@ -337,7 +337,8 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
 
   def pagenate(page=1)
     page=1 unless page.to_i >0
-    @Model.paginate((@FindOption||{}).merge({ :page => page,:per_page => @Pagenation}))
+    @Model.where(@FindOption||{}).order(@FindOrder).
+      paginate( :page => page,:per_page => @Pagenation)
   end
   def attr_list
     @labels.map{|html_cell| html_cell.symbol}

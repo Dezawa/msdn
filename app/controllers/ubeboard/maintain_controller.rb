@@ -23,7 +23,7 @@ class Ubeboard::MaintainController < ApplicationController
     #@TYTLEpost = 
     @labels=Labels
     #@Links=BookKeepingController::Labels
-    @FindOption = {:order => :plan_time_start}
+    @FindOrder= "plan_time_start"
     #@errors=Proc.new{@Model.error_check.join("<br>")}
     @TableEdit = true
     #@Edit = true

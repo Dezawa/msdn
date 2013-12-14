@@ -33,7 +33,7 @@ class Ubeboard::NamedChangesController < ApplicationController
     @TYTLE = "記名切り替え"
     @labels=Labels
     #@Links=BookKeepingController::Labels
-    @FindOption = {:order => ORDER}
+    @FindOrder =  ORDER
     @TableEdit = true
     @Edit = true
     @Delete=true

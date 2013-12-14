@@ -21,7 +21,7 @@ class Ubeboard::MeigaraController < ApplicationController
     @TYTLE = "銘柄"
     @labels=Labels
     #@Links=BookKeepingController::Labels
-   @FindOption = {:order => "proname,meigara"}
+   @FindOrder =  "proname,meigara"
     @TableEdit = true
    #@Show = true
     #@Edit = true

@@ -68,16 +68,17 @@ class Book::MainController < Book::Controller
     @Model= Book::Main
 
     @year = (year = session[:BK_year] || Time.now) #.year
+    pp "@year=#{@year}"
     @year_beginning =  @year.beginning_of_year
     @year_end       =  @year.end_of_year
     @year_full = year
     @TYTLE = "#{@owner.owner}の 複式簿記：振替伝票"
     @TYTLEpost = "#{@year.year}年度"
     #@Links=BookKeepingController::Labels
-    @FindOption = { :conditions => ["owner = ? and date >= ? and date <= ?",
-                     @owner.owner, @year_beginning,@year_end],
-                          :order => "no"
-    }
+    @FindOption = ["owner = ? and date >= ? and date <= ?",
+                     @owner.owner, @year_beginning,@year_end]
+    @FindOrder  =   "no"
+    
     @TableEdit = 
       unless editable ; false
       else
@@ -89,6 +90,7 @@ class Book::MainController < Book::Controller
     @Edit = editable
     @Delete=editable
     #@conditions = { :order => "bunrui,kamoku" }
+
     @Domain=  @Model.name.underscore
     choice = Book::Kamoku.kamokus(@owner.owner)
     @labels=Labels
@@ -99,8 +101,7 @@ class Book::MainController < Book::Controller
     @Pagenation = session["BKMain_per_page"] || (session["BKMain_per_page"] = 10)
     #@page = params[:page] || :lastpage
     @PagenatTbl = true
-    maxNo = Book::Main.maximum(:no,:conditions =>  ["owner = ? and date >= ? and date <= ?",
-                                                    @owner.owner,@year_beginning,@year_end])
+    maxNo = Book::Main.this_year( @owner.owner,@year_beginning,@year_end).maximum(:no)
     #maxNo  = Book::Main.this_year(@owner.owner,@year_beginning,@year_end).maximun(:no)
     no = (maxNo ? maxNo : 0) + 1
     @New = {:no => no, :date => Time.now,:amount => ""}

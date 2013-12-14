@@ -39,7 +39,7 @@ class Ubeboard::ConstantController < ApplicationController
    #maxNo = BookMain.maximum :no 
    #no = (maxNo ? maxNo : 0) + 1
    #@New = {:no => no, :date => Time.now}
-   @FindOption = configure ? {} : {:conditions => "admin is not true"}
+   @FindOption = configure ? {} :  "admin is not true"
  end
 end
 
