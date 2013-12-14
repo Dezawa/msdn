@@ -19,8 +19,7 @@ Msdn::Application.routes.draw do
   get  "ubr/main" => "ubr/main#index"
   get  "ubeboard/top" => "ubeboard/top#top"
   get  "ubeboard/lips/member" => "lips#member"
-
-
+  post "book/keeping/year_change/:year" => "book/keeping#year_change"
   #### EditTable #########
 
   actions = [%w(add_on_table edit_on_table csv_out),%w(add_on_table edit_on_table update_on_table)]
@@ -40,7 +39,7 @@ Msdn::Application.routes.draw do
   ## [ controller,[get_actions,post_actions] ]
   [ ["book/keeping",
      [%w(taishaku motocho error csv_motocho csv_taishaku help),
-      %w(owner_change_win)]],
+      %w(owner_change_win )]],
     ["book/main",
      [%w( book_make  csv_out_print csv_upload ),
       %w(set_const count kaisizandaka_count renumber sort_by_tytle make_new_year csv_out)
@@ -75,6 +74,7 @@ Msdn::Application.routes.draw do
   namespace :ubeboard do
     resources *ubeboard_resources 
     ubeboard_resources.each{|ctrl| post "#{ctrl}/csv_out" => "#{ctrl}#csv_out"}
+    post "skd/input_result" => "skd#input_result"
   end
   
     
