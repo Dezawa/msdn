@@ -6,6 +6,12 @@ Msdn::Application.routes.draw do
     actions[1].each{|action|
       post "#{controller}/#{action}" => "#{controller}##{action}"
     }
+    actions[2] && actions[2].each{|action|
+      update "#{controller}/#{action}" => "#{controller}##{action}"
+    }
+    actions[3] && actions[3].each{|action|
+      delete "#{controller}/#{action}" => "#{controller}##{action}"
+    }
   end
 
   ### Special routs #####
@@ -20,10 +26,11 @@ Msdn::Application.routes.draw do
   get  "ubeboard/top" => "ubeboard/top#top"
   get  "ubeboard/lips/member" => "lips#member"
   post "book/keeping/year_change/:year" => "book/keeping#year_change"
-  #### EditTable #########
 
+
+  #### EditTable #########
   actions = [%w(add_on_table edit_on_table csv_out),%w(add_on_table edit_on_table update_on_table)]
-  %w(user_options users book/main book/kamoku   ).
+  %w(user_options users book/main book/kamoku holydays  ).
     each{|controller| 
        set_routes(controller,actions)
     }
@@ -37,7 +44,9 @@ Msdn::Application.routes.draw do
     
   ##### Controller ######
   ## [ controller,[get_actions,post_actions] ]
-  [ ["book/keeping",
+  [["holydays",
+    [%w(index edit),%w(years),[],%w(destroy)]],
+   ["book/keeping",
      [%w(taishaku motocho error csv_motocho csv_taishaku help),
       %w(owner_change_win )]],
     ["book/main",
@@ -61,7 +70,7 @@ Msdn::Application.routes.draw do
     
 
   #### resources namespaces #####
-  resources :user_options,:users
+  resources :user_options,:users,:holydays
 
   namespace :book do
     resources :keeping, :kamoku, :main, :permission
