@@ -37,7 +37,6 @@ class Book::KeepingController <  Book::Controller
  def error
   end
 
-  # 年度をメニューにて対象年度を変更した時のaction
 
   def owner_change_win
     @labels = OwnerChangeLabels
@@ -47,7 +46,7 @@ class Book::KeepingController <  Book::Controller
     unless params[:owner].blank?
       if owner = @arrowed.find{|arrw| arrw.owner == params[:owner]}
         @owner = owner; session[:BK_owner] = owner.id
-        @labels = Labels
+        #@labels = Labels
         logger.debug("CHANGE_OWNER new owner = #{@owner}, @year=#{@year}")
         redirect_to  :action => :index
       else
@@ -60,6 +59,7 @@ class Book::KeepingController <  Book::Controller
     #nder :partial => "menu_list" 
   end
 
+  # 年度をメニューにて対象年度を変更した時のaction
   def year_change
     unless params[:year].blank?
       @year = session[:BK_year] = Time.parse(params[:year]+"/1/1") 
