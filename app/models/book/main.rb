@@ -21,7 +21,9 @@ class Book::Main < ActiveRecord::Base
   belongs_to :kasi_kamoku,:class_name => "Book::Kamoku",:foreign_key => :kasikata
 
   scope :this_year, ->(owner_name,from,to) { 
-    where(["owner = ? and date >= ? and date <= ?", owner_name,from,to])}
+    where(["owner = ? and date >= ? and date <= ?", owner_name,from,to]).
+    order(:no)
+  }
 
   def self.new(*args)
     args.first[:amount].gsub!(/,/,"") if args.first[:amount].class == String
@@ -313,7 +315,7 @@ true
 
   def readable?(login)
     login == owner ||
-
+      (bp = Book::Permission.find_by(login: login,owner: owner)) &&
       bp.permission > Book::Permission::NON
   end
 end
