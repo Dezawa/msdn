@@ -16,7 +16,7 @@ class Ubeboard::ChangeTimesController < ApplicationController
     @TYTLE = "切り替え時間一覧"
     @errorse=Ubeboard::Operation.error_check.join("<br>")
     @ope = Ope
-    @models =@Model.find(:all,:order => "ope_name,ope_from")
+    @models =@Model.order "ope_name,ope_from"
     @names = @models.map(&:ope_from).uniq.sort
     @chtimes  = Hash.new{|h,k| h[k] = {} }
     Ope.each{|lbl,sym| 
@@ -28,7 +28,7 @@ class Ubeboard::ChangeTimesController < ApplicationController
   def edit_on_table
     @TYTLE = "切り替え時間編集"
     @ope = Ope
-    @models =@Model.find(:all,:order => "ope_name,ope_from")
+    @models =@Model.order  "ope_name,ope_from"
     @names = @models.map(&:ope_from).uniq.sort
     @chtimes  = Hash.new{|h,k| h[k] = {} }
     Ope.each{|lbl,sym| 
