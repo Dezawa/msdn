@@ -48,7 +48,7 @@ class LipsController < ApplicationController
   def calc
     @title = "線形計画法"
    # begin
-      @user  = current_user ? current_user : User.find_by_login("guest")
+      @user  = current_user ? current_user : User.find_by(login: "guest")
     @login = @user ? @user.login : "guest"
     set_filename
     if params[:lips]
