@@ -24,9 +24,8 @@ module Ubeboard::Function::LipsToUbePlan
 
     if lips.class == String
       infp = open(RAILS_ROOT+"/public"+lips) rescue infp = open(lips)
-    elsif lips.class == ActionController::UploadedTempfile or
-        lips.class == File or
-        lips.class == ActionController::UploadedStringIO 
+    elsif  lips.class == File or
+        lips.class == ActionDispatch::Http::UploadedFile #ActionController::UploadedStringIO 
       infp = lips
     end
 
