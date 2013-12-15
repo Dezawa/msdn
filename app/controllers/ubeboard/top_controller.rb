@@ -8,7 +8,8 @@ class Ubeboard::TopController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   dmy = Menu
-   Labels = [MenuCsv.new("LiPS"        ,:lips    ,:action =>:member,:csv_download_url=>"/lips/LiPS-CSV100V2.xls"),
+   Labels = [MenuCsv.new("LiPS"      ,:top    ,:action =>:member,
+                         :csv_download_url=>"/lips/LiPS-CSV100V2.xls"),
              MenuCsv.new("新規立案準備",:skd ,:action => :new  ,
                          :csv_upload_action=>:lips_load,
                           :csv_download_url=> nil),
@@ -37,7 +38,15 @@ class Ubeboard::TopController < ApplicationController
     @title = "ウベボードTOP"
   end
 
+  def member
+    redirect_to :controller => :lips,:action => :member
+  end
+
   def csv_upload
+    redirect_to "/lips/csv_upload" #controller: :lips, action: :csv_upload
+  end
+
+  def dumy
     csvfile = (params.keys - %w(action controller))[0]
     @title = Labels.assoc(csvfile.to_sym)[1]
 @csvfile = csvfile

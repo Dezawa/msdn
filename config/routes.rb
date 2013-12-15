@@ -26,10 +26,12 @@ Msdn::Application.routes.draw do
   get  "ubeboard/top" => "ubeboard/top#top"
   get  "ubeboard/lips/member" => "lips#member"
   post "book/keeping/year_change/:year" => "book/keeping#year_change"
-
+  post "lips/csv_upload"               => "lips#csv_upload"
+  get "lips/csv_upload"               => "lips#csv_upload"
 
   #### EditTable #########
-  actions = [%w(add_on_table edit_on_table csv_out),%w(add_on_table edit_on_table update_on_table)]
+  actions = [%w(add_on_table edit_on_table csv_out),
+             %w(add_on_table edit_on_table update_on_table change_per_page)]
   %w(user_options users book/main book/kamoku holydays  ).
     each{|controller| 
        set_routes(controller,actions)
@@ -47,13 +49,14 @@ Msdn::Application.routes.draw do
   [["holydays",
     [%w(index edit),%w(years),[],%w(destroy)]],
    ["book/keeping",
-     [%w(taishaku motocho error csv_motocho csv_taishaku help),
-      %w(owner_change_win )]],
+     [%w(taishaku motocho error csv_motocho csv_taishaku owner_change_win owner_change help),
+      %w(owner_change)]],
     ["book/main",
      [%w( book_make  csv_out_print csv_upload ),
-      %w(set_const count kaisizandaka_count renumber sort_by_tytle make_new_year csv_out)
+      %w(set_const count kaisizandaka_count renumber sort_by_tytle make_new_year  csv_upload csv_out
+         owner_change owner_change_win )
      ]],
-    ["book/kamoku", [[],%w(edit_on_table_all_column csv_out)]],
+    ["book/kamoku", [%w(csv_download),%w(edit_on_table_all_column  csv_upload csv_out)]],
     ["lips"       , 
      [%w(free member csv_download  hospital calc),
       %w(change_form csv_upload calc)]
@@ -70,20 +73,30 @@ Msdn::Application.routes.draw do
     
 
   #### resources namespaces #####
-  resources :user_options,:users,:holydays
+  resources :user_options,:users,:holydays,:lips
 
   namespace :book do
     resources :keeping, :kamoku, :main, :permission
-    #post "book/keeping/owner_change_win" => "keeping#owner_change_win"
+    post "keeping/owner_change_win" => "keeping#owner_change_win"
+    post "keeping/owner_change" => "keeping#owner_change"
   end
   
+
+
   ubeboard_resources = [:skd,:maintain,:holyday,:product,:operation,
                         :change_times,:meigara,:meigara_shortname,:constant,
                         :named_changes,:plan]
   namespace :ubeboard do
     resources *ubeboard_resources 
-    ubeboard_resources.each{|ctrl| post "#{ctrl}/csv_out" => "#{ctrl}#csv_out"}
+    ubeboard_resources.each{|ctrl| 
+      post "#{ctrl}/csv_out" => "#{ctrl}#csv_out"
+      post "#{ctrl}/csv_upload" => "#{ctrl}#csv_upload"
+    }
+    get  "top/member"      => "top#member"
+    post "top/csv_upload"  => "top#csv_upload"
+    #post "lips/csv_upload" => "lips#csv_upload"
     post "skd/input_result" => "skd#input_result"
+    post "skd/lips_load" => "skd#lips_load"
   end
   
     
