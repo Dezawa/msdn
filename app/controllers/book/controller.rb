@@ -20,10 +20,14 @@ class Book::Controller <  ApplicationController
     end
     @arrowed.sort!{|a,b|  (b.permission <=> a.permission)*2 + (a.login <=> b.login)}
     @arrowed.unshift(myself) if myself
-    logger.debug "BookCtrl SET_INSTANSE_VARIABLE : @arrowed.first=#{@arrowed.first.inspect},session[:BK_owner] =#{session[:BK_owner].inspect}"
     permittion_id = session[:BK_owner] 
-    @owner =  (permittion_id ? Book::Permission.find(permittion_id) : @arrowed.first) || 
+    logger.debug "BookCtrl SET_INSTANSE_VARIABLE : @arrowed.first=#{@arrowed.first.inspect},session[:BK_owner] =#{session[:BK_owner].inspect} permittion_id=#{permittion_id} ========"
+    @owner =  (permittion_id ? 
+               Book::Permission.find(permittion_id) : 
+               @arrowed.first) || 
       Book::Permission.create_nobody #owner
+    logger.debug "BookCtrl SET_INSTANSE_VARIABLE : @owner = #{@owner.login} #{@owner.owner}"
+
     @Links=Book::KeepingController::Links
   end
 
@@ -101,5 +105,28 @@ class Book::Controller <  ApplicationController
       render  :file => 'application/edit_on_table',:layout => 'application'
     end
   end
+ 
+ #  for test:controllers
+  def owner_change_win
+    @labels = OwnerChangeLabels
+  end
+
+  def owner_change
+    unless params[:owner].blank?
+      if owner = @arrowed.find{|arrw| arrw.owner == params[:owner]}
+        @owner = owner; session[:BK_owner] = owner.id
+        #@labels = Labels
+        logger.debug("CHANGE_OWNER new owner = #{@owner}, @year=#{@year}")
+        redirect_to  :action => :index
+      else
+        flash[:error] = "許可の無いユーザです"
+        redirect_to :action => "owner_change_win"
+      end
+    else
+        redirect_to  :action => :index     
+    end
+    #nder :partial => "menu_list" 
+  end
+
 
 end
