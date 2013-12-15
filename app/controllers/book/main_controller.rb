@@ -111,8 +111,8 @@ class Book::MainController < Book::Controller
   end
 
   def count
-    Book::Main.distinct(:conditions => ["owner = ? and date >= ? and date <= ?",
-                                          @owner.owner,@year_beginning,@year_end]).count
+    Book::Main.where( ["owner = ? and date >= ? and date <= ?",
+                          @owner.owner,@year_beginning,@year_end]).count
   end
 
   def kaisizandaka_count
