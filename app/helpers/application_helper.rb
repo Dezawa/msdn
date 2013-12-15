@@ -287,13 +287,14 @@ module ApplicationHelper
       ""
     else
       will_page = will_paginate(models, :previous_label=>'前へ', :next_label=>'次へ').to_s
-      if controller.session[controller.class.name+"_per_page"]
+      if @Pagenation #controller.session[controller.class.name+"_per_page"]
         will_page =
-          form_tag(:action => :change_per_page) +
-          will_page+"　　<input type='hidden' name='page' value='#{@page}'>"+
-          "<input id='line_per_page' name='line_per_page' size='1' type='text' value='#{@Pagenation}'>"+
-          "件/ページ"+help("Common#perpage")+"</form>"
-        will_page.gsub!(/<\/?div.*?>/,"")
+          form_tag(:action => :change_per_page) + "\n".html_safe +
+          will_page.gsub(/<\/?div.*?>/,"").html_safe+"\n"+
+          hidden_field_tag(:page, @page) + "\n".html_safe+
+          text_field_tag(:line_per_page,@Pagenation, size: 1) +"\n".html_safe+
+          "件/ページ"+help("Common#perpage")+"</form>".html_safe
+        #will_page.gsub!(/<\/?div.*?>/,"").html_safe
       end
       will_page
     end
