@@ -122,7 +122,7 @@ module Actions
     end
     if @model.save
       page =  if @Pagenation
-                (@Model.distinct.count(@FindOption||{}).to_f/@Pagenation).ceil
+                (@Model.distinct(@FindOption||{}).count.to_f/@Pagenation).ceil
               end
       @models = @Pagenation ? pagenate(page) : find(page)
       redirect_to :action => "index" ,:page => page
