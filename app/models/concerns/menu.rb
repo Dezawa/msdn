@@ -72,7 +72,8 @@ class Menu < ActionView::Base
                        else enable_csv_upload
                        end
     size = (@option[:size] rescue 30)
-    safe_join( [view.form_tag( "/#{model}/#{csv_upload_action}", 
+    #safe_join( [view.form_tag( "/#{model}/#{csv_upload_action}",
+    safe_join( [view.form_tag( {:controller=>model,:action=> csv_upload_action}, 
                               :multipart => true,:method => :post),
                " <td><input name='commit' type='submit' value='#{buttonlabel}' />\n".html_safe ,
                " <input size=#{size} name='csvfile' type='file'></td></form>".html_safe
