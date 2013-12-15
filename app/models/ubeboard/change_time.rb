@@ -93,7 +93,7 @@ class Ubeboard::ChangeTime < ActiveRecord::Base
   # line_name :: String 東西抄造、原新乾燥、加工 
   # kind_list :: Array  前後にあるべき品種名のリスト
   def self.check(line_name,kind_list)
-    changes = self.all(:conditions => ["ope_name = ? and change_time  > 0",line_name])
+    changes = self.where(["ope_name = ? and change_time  > 0",line_name])
     from_to   = changes.map{|ch| [ch.ope_from,ch.ope_to]}
     not_defined = kind_list.product(kind_list) - from_to
     if not_defined.size > 0
