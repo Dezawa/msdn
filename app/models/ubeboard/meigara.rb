@@ -24,7 +24,7 @@ class Ubeboard::Meigara < ActiveRecord::Base
   # 銘柄略称の　edit_ontableなどで、銘柄一覧のselectに用いる
   def self.all_meigara(read = nil )
     if !@all_meigara || read
-      @all_meigara = self.all(:order => "meigara",:select=>"meigara,id" ).
+      @all_meigara = self.where( "meigara",:select=>"meigara,id" ).
         map{|ch| [ch.meigara,ch.id]}
     end
     @all_meigara
