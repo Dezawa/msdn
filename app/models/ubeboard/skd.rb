@@ -55,6 +55,12 @@ class Ubeboard::Skd < ActiveRecord::Base
   include Ubeboard::Function::SkdCsv
   include Ubeboard::Function::SkdPdf
 
+  attr_accessor  :limit_wf,  :limit_pf, :replan_from    
+
+
+
+
+
   self.table_name = 'ube_skds'
   delegate :logger, :to=>"ActiveRecord::Base"
 
@@ -64,18 +70,10 @@ class Ubeboard::Skd < ActiveRecord::Base
   validates_presence_of :skd_from, :message =>"立案期間開始が未入力です"
   validates_presence_of :skd_to,  :message =>"立案期間終了が未入力です"
 
-  #attr_accessible :message
-  #attr_accessible :runtime_shozo_w ,:plantime_shozo_w,:donetime_shozo_w 
-  #attr_accessible :runtime_shozo_e ,:plantime_shozo_e,:donetime_shozo_e 
-  #attr_accessible :runtime_dry_o   ,:plantime_dry_o  ,:donetime_dry_o   
-  #attr_accessible :runtime_dry_n   ,:plantime_dry_n  ,:donetime_dry_n   
-  #attr_accessible :runtime_kakou   ,:plantime_kakou  ,:donetime_kakou   
-  #attr_accessible :skd_from, :skd_to,:replan_from, :free_list
-  #attr_accessible :skd_f, :skd_t, :holydays
-  #attr_accessible :running_wf_shozow,:running_wf_shozoe,:running_pf_shozow,:running_pf_shozoe,
-  #:running_dryo,:running_dryn,:limit_wf_shozow,:limit_wf_shozoe
-  #attr_accessible :runned_wf_shozow,:runned_wf_shozoe,     :runned_pf_shozow,:runned_pf_shozoe,
-  #:runned_dryero,:runned_dryern
+  def after_initialize
+    #super(*args)
+    after_find
+  end
 
   Running = [:running_pf_shozow,:running_pf_shozoe,:running_wf_shozow,:running_wf_shozoe,
              :running_dryo,:running_dryn
@@ -116,22 +114,26 @@ class Ubeboard::Skd < ActiveRecord::Base
 
   ###
   def after_find2
-    err =ube_plans.map{|plan| plan.errors.on(:plan_dry_from)}.compact
+    err =ube_plans.map{|plan| plan.errors[:plan_dry_from]}.compact
     errors.add(:nil,"次の製品の乾燥工程が開きすぎています　" + err.sort.join("  ") ) if err.size>0
-    err= ube_plans.map{|plan| er=plan.errors.on(:plan_shozo_from)}.compact
+    err= ube_plans.map{|plan| er=plan.errors[:plan_shozo_from]}.compact
     errors.add(:nil,"次の製品は製造開始しませんでした　" + err.sort.join("  ") ) if err.size>0
-    err = ube_plans.map{|plan| plan.errors.on(:plan_kakou_from)}.compact
+    err = ube_plans.map{|plan| plan.errors[:plan_kakou_from]}.compact
     errors.add(:nil,"次の製品は期間内に完了しませんでした　" + err.sort.join("  ")) if err.size>0
     message.split("\n").each{|msg| errors.add(:nil,msg) } unless message.blank?  
   end
 
   #稼動累積による保全のための上限値を設定する。
-  def after_find
-    self[:limit_wf_shozow] = RunShozoCount unless  self[:limit_wf_shozow] && self[:limit_wf_shozow]>0
-    self[:limit_wf_shozoe] = RunShozoCount unless  self[:limit_wf_shozoe] && self[:limit_wf_shozoe]>0
-    self[:limit_pf_shozow] = RunShozoTime  unless  self[:limit_pf_shozow] && self[:limit_pf_shozow]>0
-    self[:limit_pf_shozoe] = RunShozoTime  unless  self[:limit_pf_shozoe] && self[:limit_pf_shozoe]>0
-    self[:replan_from]       = skd_from      unless  self[:replan_from]
+   after_find do |item| ;after_find_sub ;end
+
+  def after_find_sub
+    @limit_wf ||= {}
+    @limit_pf ||= {}
+    limit_wf[:shozow] = RunShozoCount unless  limit_wf[:shozow] && limit_wf[:shozow]>0
+    limit_wf[:shozoe] = RunShozoCount unless  limit_wf[:shozoe] && limit_wf[:shozoe]>0
+    limit_pf[:shozow] = RunShozoTime  unless  limit_pf[:shozow] && limit_pf[:shozow]>0
+    limit_pf[:shozoe] = RunShozoTime  unless  limit_pf[:shozoe] && limit_pf[:shozoe]>0
+    @replan_from      ||= skd_from
   end
 
   def error_check
@@ -291,7 +293,7 @@ class Ubeboard::Skd < ActiveRecord::Base
   #defaultは定数で定めてあるが、立案時に変更可能なので、それを保存する。
   def runshozocount(shozo) ; 
     #logger.info("Ubeboard::Skd:runshozocount(#{shozo}) is nil") unless self["limit_wf_#{shozo}"] 
-    self["limit_wf_#{shozo}"] || RunShozoCount ; 
+    limit_wf[shozo] || RunShozoCount ; 
   end
 
   #先月度から取り込まれたplanのうち、先月度に完了しているもの
@@ -936,8 +938,7 @@ end
     #debug 出力　freeList,pre_condition,yojo
     logger.info("freeList #{msg}")
     [:shozow,:shozoe,:yojo,:dryo,:dryn,:kakou].each{|real_ope|
-      logger.info("#{real_ope}\n"+freeList[real_ope].map{|f,t| "#{f.mdHM} - #{t.mdHM}" }.join("  ")
-)
+      logger.info("#{real_ope}\n"+freeList[real_ope].freeList.map{|f,t| "#{f.mdHM} - #{t.mdHM}" }.join("  ") )
     }
     logger.info("freeList hozen #{msg}")
     [:shozow,:shozoe,:yojo,:dryo,:dryn,:kakou].each{|real_ope|
