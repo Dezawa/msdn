@@ -94,9 +94,9 @@ Msdn::Application.routes.draw do
     }
     get  "top/member"      => "top#member"
     post "top/csv_upload"  => "top#csv_upload"
-    #post "lips/csv_upload" => "lips#csv_upload"
-    post "skd/input_result" => "skd#input_result"
-    post "skd/lips_load" => "skd#lips_load"
+    actions = [%w( csv_download doc_out_all),
+               %w(input_result doc_out lips_load makeplan edit_only sort sort_edit)]
+    set_routes("skd",actions)
   end
   
     
