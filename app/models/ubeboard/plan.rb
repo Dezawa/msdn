@@ -49,8 +49,9 @@ class Ubeboard::Plan < ActiveRecord::Base
 
   attr_reader     :yojoKo
 
+   after_find do |item| ;after_find_sub ;end
 
-  def after_find
+  def after_find_sub
     extend ThreeByTen if _3by10?
     extend ShozoW     if  shozo_w?
     lot_no = "" unless lot_no

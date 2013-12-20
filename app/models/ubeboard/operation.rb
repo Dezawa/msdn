@@ -45,8 +45,8 @@ class Ubeboard::Operation < ActiveRecord::Base
   # @openames が　nil か、read がtrueのときにDBから読み直される
   def self.names(read=nil)
     if !@openames || read
-      @openames ||= Ubeboard::Operation.all(:conditions => "ope_name not like 'A%'",:order => "ope_name"
-                                 ).map{ |p| [p.ope_name,p.id]}
+      @openames ||= Ubeboard::Operation.where( "ope_name not like 'A%'").order("ope_name").
+                                 to_a.map{ |p| [p.ope_name,p.id]}
     end
     @openames 
   end
@@ -58,7 +58,9 @@ class Ubeboard::Operation < ActiveRecord::Base
   end
 
   # 値ゼロは未定義とみなす。プログラム中での処理を簡便にするために、変換しておく。
-  def after_find
+   after_find do |item| ;after_find_sub ;end
+
+  def after_find_sub
     ["west", "east", "old", "new", "kakou"].each{|ope| self[ope]=nil if self[ope]==0.0 }
     #check_pro
   end
