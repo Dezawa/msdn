@@ -5,35 +5,35 @@ require 'testdata/maintain'
 require 'testdata/freelist'
 require 'testdata/holyday'
 
-class UbeMaintainTest < ActiveSupport::TestCase
-  fixtures  :ube_maintains,:ube_holydays,:ube_products,:ube_operations,:ube_constants
+class Ube::UbeMaintainTest < ActiveSupport::TestCase
+  fixtures  "ube/maintains","ube/holydays","ube/products","ube/operations","ube/constants"
   #test "the truth" do ;    assert true; end
 
   def setup
-    @skd=UbeSkd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
+    @skd=Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
   end
 
   must " 最初の保守" do
-    maintain = UbeMaintain.find 1
+    maintain = Ubeboard::Maintain.find 1
     assert_equal Time.parse("2012-6-3 8:00"),maintain.plan_time_start
   end
-
   ########### 休転が FreeList に与える影響
   Holyday.each{|real_ope,list| 
     must "#{real_ope}の休日は " do
-    assert_equal list,@skd.holydays[real_ope]
+    assert_equal_array list,@skd.holydays[real_ope],[],"休転が FreeList に与える影響"
     end
   }
 
   ## 初期化
   Freelist0.each{|real_ope,list|
     must "製造を入れないFreeList #{real_ope}" do
-      assert_equal  list,@skd.freeList[real_ope].freeList
+     assert_equal_array  list,@skd.freeList[real_ope].freeList,[],"製造を入れないFreeList #{real_ope}"
     end
   }  
+
   Freelist1.each{|real_ope,list|
     must "保守を入れない FreeList #{real_ope}" do
-      assert_equal  list,@skd.freeList[real_ope].hozenFree.freeList
+      assert_equal_array  list,@skd.freeList[real_ope].hozenFree.freeList,nil,"保守を入れない FreeList #{real_ope}"
     end
   }
 
@@ -67,7 +67,7 @@ Assign.keys.each{|real_ope|
     must "#{real_ope} 製造のアサインは 両方から" do
       s,e = @skd.freeList[real_ope].searchfree(start,periad)
       @skd.freeList[real_ope].assignFreeList(s,e)
-      assert_equal list,[@skd.freeList[real_ope].freeList ,@skd.freeList[real_ope].hozenFree.freeList]
+      assert_equal_array_array list,[@skd.freeList[real_ope].freeList ,@skd.freeList[real_ope].hozenFree.freeList]
       #assert_equal list[1],@skd.freelist[real_ope]
     end
     }
@@ -76,7 +76,7 @@ Assign1.keys.each{|real_ope|
     start,periad,list = Assign1[real_ope]
       must "#{real_ope} 保守のアサインは 両方から" do
         @skd.freeList[real_ope].assignFreeList(*@skd.freeList[real_ope].searchfree(start,periad,true))
-        assert_equal list,[@skd.freeList[real_ope].freeList,@skd.freeList[real_ope].hozenFree.freeList]
+        assert_equal_array_array list,[@skd.freeList[real_ope].freeList,@skd.freeList[real_ope].hozenFree.freeList]
       end
     
   }

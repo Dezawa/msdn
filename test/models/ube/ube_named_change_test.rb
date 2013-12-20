@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
 require 'pp'
-class Function::UbeNamedChangeTest < ActiveSupport::TestCase
-  fixtures :ube_products,:ube_operations,:ube_named_changes,:ube_plans,:ube_change_times
+class Ube::UbeNamedChangeTest < ActiveSupport::TestCase
+  fixtures "ube/products","ube/operations","ube/named_changes","ube/plans","ube/change_times"
 
    def make_skd(ids=[])
-    skd=UbeSkd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
-    skd.after_find
+    skd=Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
+    skd.after_find_sub
     skd.ube_plans=[]
-    ids.each{|id| skd.ube_plans<< UbePlan.find(id) }
+    ids.each{|id| skd.ube_plans<< Ubeboard::Plan.find(id) }
     skd
   end
   
@@ -35,7 +35,7 @@ class Function::UbeNamedChangeTest < ActiveSupport::TestCase
   ].each{|ope_name,post_condition_id,display|
     must "#{ope_name} ->#{post_condition_id} な記名切り替えは" do
       sql = "ope_name = ? and post_condition_id = ? and pre_condition_id is null "
-      unc=UbeNamedChange.all(:conditions => [ sql,ope_name,post_condition_id])
+      unc=Ubeboard::NamedChange.where([ sql,ope_name,post_condition_id])
       #pp [unc,ope_name,pre_condition_id]
       assert_equal display,
       unc.first[:display]
@@ -46,7 +46,7 @@ class Function::UbeNamedChangeTest < ActiveSupport::TestCase
   ].each{|ope_name,pre_condition_id,display|
     must "#{ope_name} #{pre_condition_id}-> な記名切り替えは" do
       sql = "ope_name = ? and pre_condition_id = ? and post_condition_id is null "
-      unc=UbeNamedChange.all(:conditions => [ sql,ope_name,pre_condition_id])
+      unc=Ubeboard::NamedChange.where( [ sql,ope_name,pre_condition_id])
       #pp [unc,ope_name,pre_condition_id]
       assert_equal display,
       unc.first[:display]
@@ -57,7 +57,7 @@ class Function::UbeNamedChangeTest < ActiveSupport::TestCase
   ].each{|ope_name,pre_condition_id,post_condition_id,display|
     must "#{ope_name} #{pre_condition_id}->#{post_condition_id} な記名切り替えは" do
       sql = "ope_name = ? and pre_condition_id = ? and post_condition_id = ? "
-      unc=UbeNamedChange.all(:conditions => [ sql,ope_name,pre_condition_id,post_condition_id])
+      unc=Ubeboard::NamedChange.where( [ sql,ope_name,pre_condition_id,post_condition_id])
       #pp [unc,ope_name,pre_condition_id]
       assert_equal display,
       unc.first[:display]
@@ -66,13 +66,13 @@ class Function::UbeNamedChangeTest < ActiveSupport::TestCase
 
 
   must "総数は" do
-    assert_equal 28,UbeNamedChange.count
+    assert_equal 28,Ubeboard::NamedChange.count
   end
 
    NC_PLAN  = (75..82)
    NC_OPE   = [["抄造",:shozoe],["乾燥",:dryo],["乾燥",:dryn]]
    NC_REAL_OPE = [:shozoe,:dryo]
-   #NC_PRO_ID = NC_PRO.map{|pro_name| UbeOperation.find_by_ope_name(pro_name).id}
+   #NC_PRO_ID = NC_PRO.map{|pro_name| Ubeboard::Operation.find_by_ope_name(pro_name).id}
    NC_RESULT =
      {
      :shozoe => {# 76 77 78    79    80    81 82
@@ -110,7 +110,7 @@ class Function::UbeNamedChangeTest < ActiveSupport::TestCase
        }
      }
    }
-end   
+end
 __END__
 
    NC_PLAN.each_with_index{|pre_plan_id,idx| NC_PLAN.each_with_index{|post_plan_id,jdx| 

@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
-class Book::KamokuTest < ActiveSupport::TestCase
- fixtures :book_kamokus,:book_mains
+class Book::BookKamokuTest < ActiveSupport::TestCase
+ fixtures "book/kamokus","book/mains"
   Kamoku =[
            [ 3,3,310,"元入金",1, 106],
            [ 5,5,590,"雑費", 2, 108],
@@ -67,8 +68,6 @@ class Book::KamokuTest < ActiveSupport::TestCase
     new_zappi = Book::Main.find_by_date_and_karikata("2000/1/1",4)
     assert_equal 6, new_zappi.no
   end
-end
-__END__
 
   must "SQL" do
     kamokus = 
@@ -78,7 +77,8 @@ __END__
                  " from book_kamokus left join book_mains on book_kamokus.id=book_mains.kasikata "+
                  " where (book_mains.date='2000-01-01' )"
                                )
-    pp kamokus#.map{|k| [k.id,k.code,k.bunrui,k.kamoku,k.no,k.book_id]}
-    pp Book::Main.find(:all,:conditions => "date='2000/01/01'")
+    #pp kamokus#.map{|k| [k.id,k.code,k.bunrui,k.kamoku,k.no,k.book_id]}
+    #pp Book::Main.find(:all,:conditions => "date='2000/01/01'")
   end
 end
+# -*- coding: utf-8 -*-

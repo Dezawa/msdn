@@ -75,7 +75,7 @@ class UbeSkdTest < ActiveSupport::TestCase
 
   def make_skd(planidx,sansen,plans=Plans,pre_plans=0)
     skd=Ubeboard::Skd.create(:skd_from => Time.parse("2011/9/1"),:skd_to => Time.parse("2011/9/30"))
-    skd.after_find; skd.freeList
+    skd.after_find_sub; skd.freeList
     skd.hozen_date[:shozow]=Time.parse(sansen).day    
     ube_plans = planidx.map{|p| plans[p]}.map{|lot,jun,pro_id,mass,yojoko,to,dry| 
       dry_to,dry_end = dry

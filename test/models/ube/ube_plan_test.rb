@@ -1,35 +1,35 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
 
-class UbePlanTest < ActiveSupport::TestCase
-  fixtures :ube_plans,:ube_products
-  fixtures :ube_operations,:ube_change_times
+class Ube::UbePlanTest < ActiveSupport::TestCase
+  fixtures "ube/plans","ube/products"
+  fixtures "ube/operations","ube/change_times"
   #def setup
-  #  @plans = UbePlan.all(:order => "id")
+  #  @plans = Ubeboard::Plan.all(:order => "id")
   #  @plans[2].ube_product_id=nil
   #end
 
   def make_skd_and_set_pre_condition(ids=[])
-    skd=UbeSkd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
-    skd.after_find
+    skd=Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
+    skd.after_find_sub
     skd.ube_plans=[]
-    ids.each{|id| skd.ube_plans<< UbePlan.find(id) }
-    UbeSkd::RealOpe.each{|real_ope| skd.pre_condition[real_ope] = skd.ube_plans.first}
+    ids.each{|id| skd.ube_plans<< Ubeboard::Plan.find(id) }
+    Ubeboard::Skd::RealOpe.each{|real_ope| skd.pre_condition[real_ope] = skd.ube_plans.first}
     skd.yojoko
     skd
   end
 
   must "cont" do
-    assert_equal 100,UbePlan.count
+    assert_equal 100,Ubeboard::Plan.count
   end
   #must "PTime is" do
-  #  assert_equal [],UbePlan::PTime
+  #  assert_equal [],Ubeboard::Plan::PTime
   #end
   #product_error?
   Product_error = ["","ID=300の製品登録がありません","2M0248の製品が未入力です"]
   (1..3).each{|id| idx=id-1
     must "ID=#{id} proname_id" do 
-      plan=UbePlan.find(id) 
+      plan=Ubeboard::Plan.find(id) 
       plan.ube_product_id = nil if idx==2
       assert_equal Product_error[idx],plan.ube_product_error?
     end
@@ -39,16 +39,16 @@ class UbePlanTest < ActiveSupport::TestCase
   Nmass=[0.75,1.00,1.25]
   (4..6).each{|id| idx = id - 4 
     must "ID #{id}.mass" do
-      assert_equal Nmass[idx],UbePlan.find(id).n_mass
+      assert_equal Nmass[idx],Ubeboard::Plan.find(id).n_mass
     end
   }
   must "大きすぎる mass のときは 1.25" do
-    plan =UbePlan.find 5
+    plan =Ubeboard::Plan.find 5
     plan.mass=100000
     assert_equal 1.25,plan.n_mass
   end
   must "小さすぎる mass のときは 0.75" do
-    plan = UbePlan.find 5
+    plan = Ubeboard::Plan.find 5
     plan.mass=100
     assert_equal 0.75,plan.n_mass
   end
@@ -57,12 +57,12 @@ class UbePlanTest < ActiveSupport::TestCase
   [7,8,9,10,11].zip([false,false,true,false,true]).each{|id,bool|
     idx = id - 7 
     must "ID #{id}の削除可能性" do
-      assert_equal bool,UbePlan.find(id).deletable?
+      assert_equal bool,Ubeboard::Plan.find(id).deletable?
     end
   }
 
   #date
-  plan=UbePlan.new
+  plan=Ubeboard::Plan.new
   time = %w(23:59 0:00 0:01 7:59 8:00 8:01)
   day  =   [ 10  ,9   ,9   ,9   ,10   ,10]
   (0..5).each{|idx|
@@ -81,7 +81,7 @@ class UbePlanTest < ActiveSupport::TestCase
   prtime = ptime.zip rtime
   (12..14).each{|id| idx=id-12
     must "ID #{id} は #{copy_count[idx]}個までcopy" do
-      plan=UbePlan.find(id); 
+      plan=Ubeboard::Plan.find(id); 
       plan.copy_results
       assert_equal rsrt[idx],prtime.map{|p,r|  plan[p].to_i == plan[r].to_i }
     end
@@ -91,7 +91,7 @@ class UbePlanTest < ActiveSupport::TestCase
   (15..26).each{|id|    idx = id-15
   # current
     must "ID #{id} の終了工程 current は" do 
-      plan =  UbePlan.find(id)
+      plan =  Ubeboard::Plan.find(id)
       current = plan.meigara.split[2].to_sym
       current = nil if current == :nil
       assert_equal current, plan.current
@@ -102,14 +102,14 @@ class UbePlanTest < ActiveSupport::TestCase
     zip([:nil,:nil,:nil,:nil,:shozo,:yojo,:yojo,:yojo,:dry]).
   each{|c,p|
     must "#{c}の前工程は#{p}" do
-      plan=UbePlan.new
+      plan=Ubeboard::Plan.new
       assert_equal p, plan.pre(c)
     end
   }
   # pre
   (15..26).each{|id|    idx = id-15
     must "ID #{id} の終了工程一つまえ pre は" do 
-      plan =  UbePlan.find(id)
+      plan =  Ubeboard::Plan.find(id)
       pre = plan.meigara.split[1].to_sym
       assert_equal pre, plan.pre
     end
@@ -134,33 +134,33 @@ class UbePlanTest < ActiveSupport::TestCase
     #done?
   (15..26).each{|id|    idx = id-15
     must "ID #{id} は完了しているかdone?" do 
-      assert_equal Done[idx], UbePlan.find(id).done?
+      assert_equal Done[idx], Ubeboard::Plan.find(id).done?
     end
  
      #next?
       must "ID #{id} next?" do 
-        plan =  UbePlan.find(id)
+        plan =  Ubeboard::Plan.find(id)
 #pp plan.proname
         assert_equal  plan.meigara.split[3].to_sym,plan.next?
       end
     #result_done?
     must "ID #{id} は実績完了しているかresult_done?" do 
-      assert_equal Done[idx], !!UbePlan.find(id).result_done?
+      assert_equal Done[idx], !!Ubeboard::Plan.find(id).result_done?
     end
 
     #current_to
     must "ID #{id} の現工程（つまり今割り付けている工程の一つ前）の終了時間current_to" do
-      assert_equal Current_to[idx], UbePlan.find(id).current_to
+      assert_equal Current_to[idx], Ubeboard::Plan.find(id).current_to
     end
 
     #lastmonth 2011-10-1
     must "ID #{id} 2012/6/10 に完了しているか done?  " do 
-      assert_equal Done2[idx], UbePlan.find(id).lastmonth?(Time.parse("2012/6/10"))
+      assert_equal Done2[idx], Ubeboard::Plan.find(id).lastmonth?(Time.parse("2012/6/10"))
     end
 
     #lastmonth 2011/9/8
     must "ID #{id} 2012/6/9に完了しているか done?  " do 
-      assert_equal Done3[idx], UbePlan.find(id).lastmonth?(Time.parse("2012/6/9"))
+      assert_equal Done3[idx], Ubeboard::Plan.find(id).lastmonth?(Time.parse("2012/6/9"))
     end
   }
 
@@ -175,7 +175,7 @@ class UbePlanTest < ActiveSupport::TestCase
   (44..47).each{|id|  idx=id-44
     RealOpe.each_with_index{|real_ope,j|
       must "ID #{id} real_ope?  #{real_ope}" do
-        assert_equal RealOpeBool[idx][j],UbePlan.find(id).real_ope?(real_ope)
+        assert_equal RealOpeBool[idx][j],Ubeboard::Plan.find(id).real_ope?(real_ope)
       end
     }  
   }
@@ -187,16 +187,16 @@ class UbePlanTest < ActiveSupport::TestCase
           ]
   #             抄造、乾燥end、乾燥、加工]
   OpeLength = 
-    [ [(2304*3600.0/500).marume(UbeSkd::Round),(2304*3600.0/750).marume(UbeSkd::Round)],
-      [(1728*3600.0/500).marume(UbeSkd::Round),(1728*3600.0/750).marume(UbeSkd::Round)],
-      [(2304*3600.0/500).marume(UbeSkd::Round),(2304*3600.0/650).marume(UbeSkd::Round)]
+    [ [(2304*3600.0/500).marume(Ubeboard::Skd::Round),(2304*3600.0/750).marume(Ubeboard::Skd::Round)],
+      [(1728*3600.0/500).marume(Ubeboard::Skd::Round),(1728*3600.0/750).marume(Ubeboard::Skd::Round)],
+      [(2304*3600.0/500).marume(Ubeboard::Skd::Round),(2304*3600.0/650).marume(Ubeboard::Skd::Round)]
 
     ]
   # ope_length
   (0..1).each{|idx|
     lot,jun,pro_id,mass,yojoko = Plans[idx]
     must "Ope_length　#{idx}" do
-      plan = UbePlan.new(:ube_product_id => pro_id,:mass => mass)
+      plan = Ubeboard::Plan.new(:ube_product_id => pro_id,:mass => mass)
       shozo,dry,kakou = [:shozo,:dry,:kakou].map{|ope| plan.ope_length(ope)}
       assert_equal OpeLength[idx],[shozo[0],kakou[0]]
     end

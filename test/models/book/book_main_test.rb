@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
 
-class BookMainTest < ActiveSupport::TestCase
+class Book::BookMainTest < ActiveSupport::TestCase
  fixtures "book/kamokus","book/mains"
   Kamoku =[
            [ 3,3,310,"元入金",1, 106],

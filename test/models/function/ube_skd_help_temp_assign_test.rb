@@ -5,61 +5,26 @@ require 'testdata/ube_const.rb'
 require 'pp'
 #require 'result_copy_data.rb'
 class Function::UbeSkdHelpTempAssignTest < ActiveSupport::TestCase
-  fixtures :ube_holydays,:ube_maintains,:ube_products,:ube_operations,
-  :ube_plans,:ube_named_changes,:ube_change_times
+  fixtures "ube/holydays","ube/maintains","ube/products","ube/operations",
+  "ube/plans","ube/named_changes","ube/change_times"
   Ope = [:shozow,:shozoe,:yojo,:dryero,:dryern,:kakou]
   #              real_ope,from,to,time 
   
   def setup
     #@skd=make_skd
-    #@skd=UbeSkd.find(97,:include=>:ube_plans)
+    #@skd=Ubeboard::Skd.find(97,:include=>:ube_plans)
   end
 
 
   def make_skd(real_ope,ids=[])
-    skd=UbeSkd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
-    skd.after_find
+    skd=Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
+    skd.after_find_sub
     skd.ube_plans=[]
-    ids.each{|id| skd.ube_plans<< UbePlan.find(id) }
+    ids.each{|id| skd.ube_plans<< Ubeboard::Plan.find(id) }
     skd.yojoko
     skd.set_yojoKo_object#sorted_plan
     skd
   end
-
-  # 初期化
-  DryMaintPlan.
-    each{|real_ope,ids,maintain,plantimes,msg|
-    next unless real_ope
-    must "乾燥の仮割付  #{msg} #{ids.join('->')} " do
-      #         # 初期化
-      skd = make_skd(real_ope,ids)
-      skd.pre_condition[real_ope]= skd.ube_plans[0]
-      pre_plan,plan = skd.ube_plans[0..1]
-      # pre_condition他の設定
-      skd.assign_force(pre_plan,pre_plan.dry?,pre_plan.plan_yojo_to)
-      # planの結果期待値の作成
-      # 開始時間は plantimes[0]
-      len,sty = plan.ope_length(real_ope)
-      plantimes[1] = plantimes[0]+len
-      plantimes[2] = plantimes[0]+sty
-      plantimes[3] = plantimes[0]+len-sty
-
-      # current_toのために、加工時間を削除する
-
-      pre_plan_from = pre_plan.plan_dry_from
-      ClrList[4..-1].each{|sym| plan[sym]=nil}
-      ClrList[6..-1].each{|sym| pre_plan[sym]=nil}
-
-      # pre_condition他の設定
-      expect = [ maintain ,   plantimes ]
-
-      #skd.assign_maint_plan_by_temp(pre_plan,pre_plan.dry?,dry)
-      assert_equal "06/08-08:03, 06/08-15:58, 06/08-10:56, 06/08-13:05".times,
-      [pre_plan.plan_dry_from,pre_plan.plan_dry_to,pre_plan.plan_dry_out,pre_plan.plan_dry_end]
-      assert_equal [maintain,plantimes], skd.temp_assign_dry(plan)
-    end
-  }  
-
 
 # 抄造の temp_assign_工程
 [[ShozoMaintPlan,"(酸洗は前ロットで済)"],[ShozoMaintPlanSansen,"(酸洗はまだ)"]].each{|plan,sansen|
@@ -97,7 +62,7 @@ KakouMaintPlan.each{|real_ope,ids,runtime_symbols,maint,plan_from,msg|
     }
     ClrList[ClrPoint[real_ope]..-1].each{|sym| plan[sym]=nil}
     
-    assert_equal [[pre_plan_to,pre_plan_to+maint[0],maint[1]],
+    assert_equal_array [[pre_plan_to,pre_plan_to+maint[0],maint[1]],
                   [plan_from,plan_from+plan.ope_length(real_ope)[0],
                    plan_from,plan_from+plan.ope_length(real_ope)[0]
                   ]],
@@ -128,3 +93,38 @@ YojoMaintPlan.each{|real_ope,ids,runtime_symbols,maint,plan_from,msg|
 
 
 end
+__END__
+  # 初期化
+  DryMaintPlan.
+    each{|real_ope,ids,maintain,plantimes,msg|
+    next unless real_ope
+    must "乾燥の仮割付  #{msg} #{ids.join('->')} " do
+      #         # 初期化
+      skd = make_skd(real_ope,ids)
+      skd.pre_condition[real_ope]= skd.ube_plans[0]
+      pre_plan,plan = skd.ube_plans[0..1]
+      # pre_condition他の設定
+      skd.assign_force(pre_plan,pre_plan.dry?,pre_plan.plan_yojo_to)
+      # planの結果期待値の作成
+      # 開始時間は plantimes[0]
+      len,sty = plan.ope_length(real_ope)
+      plantimes[1] = plantimes[0]+len
+      plantimes[2] = plantimes[0]+sty
+      plantimes[3] = plantimes[0]+len-sty
+
+      # current_toのために、加工時間を削除する
+
+      pre_plan_from = pre_plan.plan_dry_from
+      ClrList[4..-1].each{|sym| plan[sym]=nil}
+      ClrList[6..-1].each{|sym| pre_plan[sym]=nil}
+
+      # pre_condition他の設定
+      expect = [ maintain ,   plantimes ]
+
+      #skd.assign_maint_plan_by_temp(pre_plan,pre_plan.dry?,dry)
+      assert_equal "06/08-08:03, 06/08-15:58, 06/08-10:56, 06/08-13:05".times,
+      [pre_plan.plan_dry_from,pre_plan.plan_dry_to,pre_plan.plan_dry_out,pre_plan.plan_dry_end]
+      assert_equal [maintain,plantimes], skd.temp_assign_dry(plan)
+    end
+  }  
+

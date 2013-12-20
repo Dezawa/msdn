@@ -4,7 +4,7 @@ require 'pp'
 #require 'result_copy_data.rb'
 class Function::UbeRenumberTest < ActiveSupport::TestCase
   #fixtures :ube_holydays,:ube_maintains,:ube_products,:ube_operations,:ube_plans,:ube_named_changes,:ube_change_times
- fixtures :ube_products,:ube_operations,:ube_named_changes,:ube_change_times,:ube_plans
+ fixtures "ube/products","ube/operations","ube/named_changes","ube/change_times","ube/plans"
 
 # 1   前回と同じものが利用可能ならそれ                   No4 6/10 12:30 => No4
 # 2   前回と同じものが使えず、他に利用可能なものがあれば
@@ -49,10 +49,10 @@ class Function::UbeRenumberTest < ActiveSupport::TestCase
     #Yojoko.each{|no,date| @skd.yojoko[no].next_start  date.times.first }
   end
   def make_skd(ids=[])
-    skd=UbeSkd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
-    skd.after_find
+    skd=Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
+    skd.after_find_sub
     skd.ube_plans=[]
-    ids.each{|id| skd.ube_plans<< UbePlan.find(id) }
+    ids.each{|id| skd.ube_plans<< Ubeboard::Plan.find(id) }
     skd.yojoko
     Yojoko.each{|no,date| skd.yojoko[no].next_start  date.times.first }
     skd
@@ -63,7 +63,7 @@ class Function::UbeRenumberTest < ActiveSupport::TestCase
   end    
 
   def set_plan(no,n_mass,opt={}) #no,n_mass)
-    plan=UbePlan.new(
+    plan=Ubeboard::Plan.new(
                 { :ube_product_id => 1,
                   :mass => 2341,
                   :plan_shozo_from => Times[0],
@@ -148,4 +148,3 @@ class Function::UbeRenumberTest < ActiveSupport::TestCase
   end
 end
 
-__END__

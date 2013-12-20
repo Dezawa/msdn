@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 require 'test_helper'
 require 'testdata/temp_assign_all.rb'
 require 'testdata/ube_const.rb'
 require 'pp'
 #require 'result_copy_data.rb'
 class Function::BeyondHolydayTest < ActiveSupport::TestCase
-  fixtures :ube_holydays,:ube_maintains,:ube_constants
+  fixtures "ube/holydays","ube/maintains","ube/constants"
   Ope = [:shozow,:shozoe,:yojo,:dryero,:dryern,:kakou]
   #              real_ope,from,to,time 
   
   def setup
     #@skd=make_skd
-    #@skd=UbeSkd.find(97,:include=>:ube_plans)
+    #@skd=Ubeboard::Skd.find(97,:include=>:ube_plans)
   end
 
 
   def make_skd(ids=[])
-    skd=UbeSkd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
-    skd.after_find
+    skd=Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
+    skd.after_find_sub
     skd.ube_plans=[]
-    ids.each{|id| skd.ube_plans<< UbePlan.find(id) }
+    ids.each{|id| skd.ube_plans<< Ubeboard::Plan.find(id) }
     skd.yojoko
     skd
   end
@@ -38,3 +39,4 @@ class Function::BeyondHolydayTest < ActiveSupport::TestCase
   }
     
 end
+# -*- coding: utf-8 -*-

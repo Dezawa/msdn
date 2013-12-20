@@ -5,21 +5,21 @@ require 'testdata/ube_const.rb'
 require 'pp'
 #require 'result_copy_data.rb'
 class Function::UbeSkdHelpTempAssignPlanTest < ActiveSupport::TestCase
-  fixtures :ube_holydays,:ube_maintains,:ube_products,:ube_operations,:ube_plans,:ube_named_changes,:ube_change_times
+  fixtures "ube/holydays","ube/maintains","ube/products","ube/operations","ube/plans","ube/named_changes","ube/change_times"
   Ope = [:shozow,:shozoe,:yojo,:dryero,:dryern,:kakou]
   #              real_ope,from,to,time 
  
   def setup
     #@skd=make_skd
-    #@skd=UbeSkd.find(97,:include=>:ube_plans)
+    #@skd=Ubeboard::Skd.find(97,:include=>:ube_plans)
   end
 
 
   def make_skd(ids=[])
-    skd=UbeSkd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
-    skd.after_find
+    skd=Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
+    skd.after_find_sub
     skd.ube_plans=[]
-    ids.each{|id| skd.ube_plans<< UbePlan.find(id) }
+    ids.each{|id| skd.ube_plans<< Ubeboard::Plan.find(id) }
     skd.yojoko
     skd.set_yojoKo_object#sorted_plan
     skd
@@ -45,6 +45,33 @@ class Function::UbeSkdHelpTempAssignPlanTest < ActiveSupport::TestCase
       [maint[1],skd.temp_assign_plan(plan,real_ope,current_to,maint[1])[0,2]]
     end
   }  
+
+  #   切り替えは入るが製造が入らない
+  #   切り替えは入るが製造が入らない
+  #   切り替えも入らない
+  #   水曜で保守が入る
+  #   保守が入った後の水曜
+  # 抄造
+  #   酸洗済み
+  #     切り替え、製造が休み前に入る
+  #     切り替えは入るが製造が入らない
+  #     切り替えも入らない
+  #   WFが入る
+  #     製造が休み前に入る
+  #     製造が入らない
+  #     WFは休転に入る
+  #  酸洗まだ
+  #     休日明け
+  #     休転明け
+  #     WFも入る
+  # 乾燥
+
+  
+
+end
+
+
+__END__
 
   # 乾燥
   DryPlan.each{|real_ope,ids,plan_from,change_time,runtime_symbols,msg|
@@ -72,29 +99,3 @@ class Function::UbeSkdHelpTempAssignPlanTest < ActiveSupport::TestCase
       assert_equal expect, [ maint,assign ]
     end
   }
-  #   切り替えは入るが製造が入らない
-  #   切り替えは入るが製造が入らない
-  #   切り替えも入らない
-  #   水曜で保守が入る
-  #   保守が入った後の水曜
-  # 抄造
-  #   酸洗済み
-  #     切り替え、製造が休み前に入る
-  #     切り替えは入るが製造が入らない
-  #     切り替えも入らない
-  #   WFが入る
-  #     製造が休み前に入る
-  #     製造が入らない
-  #     WFは休転に入る
-  #  酸洗まだ
-  #     休日明け
-  #     休転明け
-  #     WFも入る
-  # 乾燥
-
-  
-
-end
-
-
-__END__

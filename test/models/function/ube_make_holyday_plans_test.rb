@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 require 'test_helper'
 require 'pp'
 #require 'result_copy_data.rb'
 class Function::UbeMakeHolydayPlansTest < ActiveSupport::TestCase
-  fixtures :ube_products,:ube_operations,:ube_plans,:ube_holydays,:ube_maintains
+  fixtures "ube/products","ube/operations","ube/plans","ube/holydays","ube/maintains"
  RealOpe = [:shozow,:shozoe,:dryero,:dryern,:kakou]
   #              real_ope,from,to,time 
  
   def setup
     #@skd=make_skd
-    #@skd=UbeSkd.find(97,:include=>:ube_plans)
+    #@skd=Ubeboard::Skd.find(97,:include=>:ube_plans)
   end
 
 
   def make_skd(ids=[])
-    skd=UbeSkd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
-    skd.after_find
+    skd=Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
+    skd.after_find_sub
     skd.ube_plans=[]
-    ids.each{|id| skd.ube_plans<< UbePlan.find(id) }
+    ids.each{|id| skd.ube_plans<< Ubeboard::Plan.find(id) }
     skd
   end
   HOLYDAY_CODE = { 
@@ -39,7 +40,7 @@ class Function::UbeMakeHolydayPlansTest < ActiveSupport::TestCase
   }
   HOLYDAY_CODE.each{|key,val|
     must "HOLYDAY_CODE of [#{key},#{val}] は" do
-      assert_equal HOLYDAY_CODE[key] ,UbeProduct.holyday_code[key]
+      assert_equal HOLYDAY_CODE[key] ,Ubeboard::Product.holyday_code[key]
     end
   }
   #          Product_id condition pro_name
@@ -99,10 +100,10 @@ class Function::UbeMakeHolydayPlansTest < ActiveSupport::TestCase
   must "休日のUbePlan " do
     skd =  make_skd([1])
     skd.make_plans_of_holyday_and_maintain
-    assert_equal HolyPlans,
-    skd.ube_plans[1..-1].map{|plan| [plan.ube_product_id,plan.proname,plan.condition]}.sort
+    assert_equal_array HolyPlans,
+    skd.ube_plans[1..-1].map{|plan| [plan.ube_product_id,plan.proname,plan.condition]}.
+      sort
   end
 
   #}
 end
-__END__

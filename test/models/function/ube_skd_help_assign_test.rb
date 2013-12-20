@@ -6,21 +6,21 @@ require 'pp'
 
 #require 'result_copy_data.rb'
 class Function::UbeSkdHelpAssignTest < ActiveSupport::TestCase
-  fixtures :ube_holydays,:ube_maintains,:ube_products,:ube_operations, :ube_plans,:ube_named_changes,:ube_change_times
+  fixtures "ube/holydays","ube/maintains","ube/products","ube/operations", "ube/plans","ube/named_changes","ube/change_times"
   Ope = [:shozow,:shozoe,:yojo,:dryero,:dryern,:kakou]
   #              real_ope,from,to,time 
   
   def setup
     #@skd=make_skd
-    #@skd=UbeSkd.find(97,:include=>:ube_plans)
+    #@skd=Ubeboard::Skd.find(97,:include=>:ube_plans)
   end
 
 
   def make_skd(ids=[])
-    skd=UbeSkd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
-    skd.after_find
+    skd=Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
+    skd.after_find_sub
     skd.ube_plans=[]
-    ids.each{|id| skd.ube_plans<< UbePlan.find(id) }
+    ids.each{|id| skd.ube_plans<< Ubeboard::Plan.find(id) }
     skd.yojoko
     skd
   end
@@ -52,7 +52,7 @@ class Function::UbeSkdHelpAssignTest < ActiveSupport::TestCase
     
     plan = skd.ube_plans[4] #18
     skd.hozen_date[:shozow]=6 
-    assert_equal([:shozo,[times("06/08-08:00, 06/08-10:00")<<[105],
+    assert_equal_array([:shozo,["06/08-08:00 06/08-10:00".times<<[105],
                   times("06/08-10:00, 06/08-13:30, 06/08-10:00, 06/08-13:30")]],
                   [:shozo,skd.temp_assign_all_plan_check_biyond_holyday(plan,nil)[0]]#.dump]
                   )

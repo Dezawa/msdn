@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 class Book::UsersTest < ActiveSupport::TestCase
@@ -6,3 +7,4 @@ class Book::UsersTest < ActiveSupport::TestCase
     assert true
   end
 end
+# -*- coding: utf-8 -*-

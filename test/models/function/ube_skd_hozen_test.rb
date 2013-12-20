@@ -2,13 +2,13 @@
 require 'test_helper'
 require 'pp'
 require 'testdata/result_copy/result_copy_data.rb'
-class UbeSkdHozenTest < ActiveSupport::TestCase
+class Function::UbeSkdHozenTest < ActiveSupport::TestCase
   fixtures "ube/plans","ube/products","ube/operations","ube/holydays","ube/change_times","ube/maintains"
   Ope = [:shozow,:shozoe,:yojo,:dryero,:dryern,:kakou]
 
   def make_skd(ids=[])
     skd=Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
-    skd.after_find
+    skd.after_find_sub
     skd.ube_plans=[]
     ids.each{|id| skd.ube_plans<< Ubeboard::Plan.find(id) }
     skd.yojoko

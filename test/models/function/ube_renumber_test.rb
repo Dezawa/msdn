@@ -3,13 +3,12 @@ require 'test_helper'
 require 'pp'
 #require 'result_copy_data.rb'
 class Function::UbeRenumberTest < ActiveSupport::TestCase
-  #fixtures :ube_holydays,:ube_maintains,:ube_products,:ube_operations,:ube_plans,:ube_named_changes,:ube_change_times
-  fixtures :ube_products,:ube_operations,:ube_plans
-  fixtures :ube_skds,:ube_plans_ube_skds
+  fixtures "ube/products","ube/operations","ube/plans"
+  fixtures "ube/skds","ube/plans_skds"
 
 
   must "未割り当てロット" do
-    skd = UbeSkd.find 2
+    skd = Ubeboard::Skd.find 2
     #assert_equal [1,2,3],skd.ube_plans.map(&:jun)
     assert_equal [[23, "2M0307"],
                   [26, "2M0372"],
@@ -23,25 +22,25 @@ class Function::UbeRenumberTest < ActiveSupport::TestCase
   end
 
   must "Max lot_no of 西抄造" do
-    skd = UbeSkd.find 2
+    skd = Ubeboard::Skd.find 2
     lot_no,jun = skd.max_lot_no_and_jun_of_assigned
     assert_equal "2W0299",lot_no[:shozow]
   end
 
   must "Max lot_no of 東 抄造" do
-    skd = UbeSkd.find 2
+    skd = Ubeboard::Skd.find 2
     lot_no,jun = skd.max_lot_no_and_jun_of_assigned
     assert_equal "2M0372", lot_no[:shozoe]
   end
 
   must "Max jun " do
-    skd = UbeSkd.find 2
+    skd = Ubeboard::Skd.find 2
     lot_no,jun = skd.max_lot_no_and_jun_of_assigned
     assert_equal 44     , jun
   end
 
   must "未割り当てロットのlot_no、順のつけ直し" do
-    skd = UbeSkd.find 2
+    skd = Ubeboard::Skd.find 2
     unassigned = skd.unassigned_plans.values.flatten
     skd.renumber
     assert_equal [
@@ -58,4 +57,3 @@ class Function::UbeRenumberTest < ActiveSupport::TestCase
     
 end
 
-__END__

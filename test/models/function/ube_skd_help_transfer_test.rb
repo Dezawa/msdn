@@ -4,20 +4,20 @@ require 'test_helper'
 require 'pp'
 #require 'result_copy_data.rb'
 class Function::UbeSkdHelpTransferTest < ActiveSupport::TestCase
-  fixtures :ube_products,:ube_operations,:ube_plans
+  fixtures "ube/products","ube/operations","ube/plans"
   #Ope = [:shozow,:shozoe,:yojo,:dryero,:dryern,:kakou]
   #              real_ope,from,to,time 
     TimeTo= {:shozo =>:plan_shozo_to , :yojo =>:plan_yojo_to ,:dry =>:plan_dry_to,
     :kakou=>:plan_kakou_to}
   def setup
     #@skd=make_skd
-    #@skd=UbeSkd.find(97,:include=>:ube_plans)
+    #@skd=Ubeboard::Skd.find(97,:include=>:ube_plans)
   end
   def make_skd(id,real_ope=nil)
-    skd=UbeSkd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
-    skd.after_find
+    skd=Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
+    skd.after_find_sub
     skd.ube_plans=[]
-    skd.ube_plans<< UbePlan.find(id)
+    skd.ube_plans<< Ubeboard::Plan.find(id)
     skd.pre_condition[real_ope]= skd.ube_plans[0] if real_ope
     skd
   end
@@ -53,7 +53,7 @@ class Function::UbeSkdHelpTransferTest < ActiveSupport::TestCase
   (16..19).each{|id|
     must "移動時間考慮した開始可能時間 id #{id}" do
       skd=make_skd id
-      plan=UbePlan.find id
+      plan=Ubeboard::Plan.find id
       assert_equal TransTime[id-16],plan.transfer_time(skd)
     end
   }
@@ -63,7 +63,7 @@ class Function::UbeSkdHelpTransferTest < ActiveSupport::TestCase
    Ope.each_with_index{|ope,idx|
     must "工程指定：移動時間考慮した開始可能時間 #{ope}" do
       skd=make_skd 16
-      plan=UbePlan.find 16
+      plan=Ubeboard::Plan.find 16
       assert_equal TransTime1[idx],plan.transfer_time(skd,ope)
     end
   }
@@ -71,7 +71,7 @@ class Function::UbeSkdHelpTransferTest < ActiveSupport::TestCase
   (16..19).each{|id|
     must "工程開始時刻指定：移動時間考慮した開始可能時間 id #{id}" do
       skd=make_skd id
-      plan=UbePlan.find id
+      plan=Ubeboard::Plan.find id
       assert_equal TransTime2[id-16],
       plan.transfer_time(skd,Ope[id-16],Time.parse("2012/6/10 8:00"))
     end

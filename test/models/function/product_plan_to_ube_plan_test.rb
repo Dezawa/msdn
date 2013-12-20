@@ -4,19 +4,19 @@ require 'pp'
 
 #require 'result_copy_data.rb'
 class Function::ProductPlanToUbePlanTest < ActiveSupport::TestCase
-  fixtures :ube_holydays,:ube_maintains,:ube_products,:ube_operations
+  fixtures "ube/holydays","ube/maintains","ube/products","ube/operations"
   #fixtures :ube_products,:ube_operations
   #fixtures :ube_plans,:ube_named_changes,:ube_change_times
   #Ope = [:shozow,:shozoe,:yojo,:dryero,:dryern,:kakou]
   #              real_ope,from,to,time 
   
   CSV = "test/testdata/productplan_h24.csv"
-  CSV ="/home/dezawa/MSDN/Deverop/ubeboad/立ち上げ資料/20121020/生産計画本物H24.xls"
+  CSV ="test/testdata/SeisanKeikaku.xls"
   def setup
-    #@skd = UbeSkd.create(:skd_from => Time.parse("2012/6/1"),
+    #@skd = Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),
     #                     :skd_to => Time.parse("2012/6/30"))
     #csvio = open(CSV,"r")
-    @ProductPlan = Function::ProductPlanToUbePlan.new(CSV)
+    @ProductPlan = Ubeboard::Function::ProductPlanToUbePlan.new(CSV)
   end
 
   must "CSV ファイル" do
@@ -52,3 +52,4 @@ class Function::ProductPlanToUbePlanTest < ActiveSupport::TestCase
     assert_equal 26,@ProductPlan.products.size
   end
 end
+# -*- coding: utf-8 -*-

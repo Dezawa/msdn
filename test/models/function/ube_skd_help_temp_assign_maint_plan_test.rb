@@ -5,21 +5,21 @@ require 'testdata/ube_const.rb'
 require 'pp'
 #require 'result_copy_data.rb'
 class Function::UbeSkdHelpTempAssignMaintPlanTest < ActiveSupport::TestCase
-  fixtures :ube_holydays,:ube_maintains,:ube_products,:ube_operations,:ube_plans,:ube_named_changes,:ube_change_times,:ube_constants
+  fixtures "ube/holydays","ube/maintains","ube/products","ube/operations","ube/plans","ube/named_changes","ube/change_times","ube/constants"
   Ope = [:shozow,:shozoe,:yojo,:dryero,:dryern,:kakou]
   #              real_ope,from,to,time 
  
   def setup
     #@skd=make_skd
-    #@skd=UbeSkd.find(97,:include=>:ube_plans)
+    #@skd=Ubeboard::Skd.find(97,:include=>:ube_plans)
   end
 
 
   def make_skd(real_ope,ids=[])
-    skd=UbeSkd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
-    skd.after_find
+    skd=Ubeboard::Skd.create(:skd_from => Time.parse("2012/6/1"),:skd_to => Time.parse("2012/6/30"))
+    skd.after_find_sub
     skd.ube_plans=[]
-    ids.each{|id| skd.ube_plans<< UbePlan.find(id) }
+    ids.each{|id| skd.ube_plans<< Ubeboard::Plan.find(id) }
     skd.yojoko
     skd.set_yojoKo_object#sorted_plan
     skd
@@ -61,7 +61,7 @@ class Function::UbeSkdHelpTempAssignMaintPlanTest < ActiveSupport::TestCase
       }
       ClrList[ClrPoint[real_ope]..-1].each{|sym| plan[sym]=nil}
       
-      assert_equal [[pre_plan_to,pre_plan_to+maint[0],maint[1]],
+      assert_equal_array [[pre_plan_to,pre_plan_to+maint[0],maint[1]],
                     [plan_from,plan_from+plan.ope_length(real_ope)[0],
                      plan_from,plan_from+plan.ope_length(real_ope)[0]
                     ]],
@@ -83,7 +83,7 @@ class Function::UbeSkdHelpTempAssignMaintPlanTest < ActiveSupport::TestCase
       }
       ClrList[ClrPoint[real_ope]..-1].each{|sym| plan[sym]=nil}
       current_to =  plan.plan_shozo_to
-      assert_equal [plan_from,plan_from+plan.ope_length(real_ope)[0]],
+      assert_equal_array [plan_from,plan_from+plan.ope_length(real_ope)[0]],
       skd.temp_assign_plan_yojo(plan,plan.plan_shozo_to)
     end
   }  
