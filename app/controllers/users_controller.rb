@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 class UsersController < CommonController
   #before_filter :login_required 
-  #before_filter {|ctrl| ctrl.require_permit_label "ユーザメンテ"}
-  before_filter :set_instanse_variable
+  before_action {|ctrl| ctrl.require_permit_label "ユーザメンテ"}
+  before_action :set_instanse_variable
   # Be sure to include AuthenticationSystem in Application Controller instead
   #include AuthenticatedSystem
   
@@ -10,14 +10,14 @@ class UsersController < CommonController
 
   LabelsChangePass = [
              HtmlText.new(:name         ,"氏名",          :size => 20, :ro => true),
-             HtmlText.new(:login         ,"ユーザ名",          :size => 20, :ro => true),
+             HtmlText.new(:username     ,"ユーザ名",          :size => 20, :ro => true),
              HtmlPasswd.new(:password    ,"パスワード",        :size => 20),
              HtmlPasswd.new(:password_confirmation,"確認パスワード",:size => 20)
             ]
 
   Labels0 = [
              HtmlText.new(:name         ,"氏名",          :size => 20),
-             HtmlText.new(:login         ,"ユーザ名",          :size => 20),
+             HtmlText.new(:username     ,"ユーザ名",          :size => 20),
              HtmlText.new(:email         ,"メール",            :size => 20),
              HtmlPasswd.new(:password    ,"パスワード",        :size => 20),
              HtmlPasswd.new(:password_confirmation,"確認パスワード",:size => 20),
