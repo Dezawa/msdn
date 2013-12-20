@@ -76,7 +76,7 @@ class HtmlCell
 
   def disp(object,htmlopt="")
     #txt=object.send(symbol); txt.blank? || !txt ? "　" : object.send(symbol)
-    object.send(symbol).blank?  ? "　" : object.send(symbol)
+    object.send(symbol).blank?  ? "　" : object.send(symbol).to_s
   end
   def checked( obj,symbol,choice)
     {:checked => ( obj.send(symbol) == choice[-1] )}
