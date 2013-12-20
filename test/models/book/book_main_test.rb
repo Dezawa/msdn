@@ -4,29 +4,30 @@ require 'test_helper'
 class Book::BookMainTest < ActiveSupport::TestCase
  fixtures "book/kamokus","book/mains"
   Kamoku =[
-           [ 3,3,310,"元入金",1, 106],
-           [ 5,5,590,"雑費", 2, 108],
-           [ 1,2,210,"未払金",3, 105],
-           [11,5,565,"消耗品費",4, 107],
-           [18,0,  0,"開始残高", nil, "dezawa"],
-           [ 4,1,110,"普通預金", nil, "dezawa"],
-           [ 6,1,140,"受取手形", nil, "dezawa"],
-           [ 7,1,180,"工具器具備品", nil, "dezawa"],
-           [ 9,1,190,"事業主貸", nil, "dezawa"],
-           [16,2,280,"事業主借", nil, "dezawa"],
-           [ 8,4,410,"売上", nil, "dezawa"],
-           [12,5,525,"荷造運賃", nil, "dezawa"],
-           [19,5,535,"旅費交通費", nil, "dezawa"],
-           [10,5,540,"通信費", nil, "dezawa"],
-           [13,5,540,"通信費", nil, "dezawa"],
-           [ 2,5,560,"接待交際費",nil, "dezawa"],
-           [20,5,589,"資料・教育",nil, "dezawa"]
+           ["元入金"     , 1   ],
+           ["雑費"       , 2   ],
+           ["未払金"     , 3   ],
+           ["消耗品費"   , 4   ],
+           ["開始残高"   , nil ],
+           ["普通預金"   , nil ],
+           ["受取手形"   , nil ],
+           ["工具器具備品", nil ],
+           ["事業主貸"   , nil ],
+           ["事業主借"   , nil ],
+           ["売上"      , nil ],
+           ["荷造運賃"   , nil ],
+           ["旅費交通費"  , nil ],
+           ["通信費"     , nil ],
+           ["通信費"     , nil ],
+           ["接待交際費"  , nil ],
+           ["資料・教育"  , nil ]
   ]
-  must "課目一覧"  do
+  must "選択肢に出て来る課目一覧の順番"  do
     kamoku= Book::Kamoku.new
     #puts Book::Kamoku.all.map{|k| [k.id,k.code,k.bunrui,k.kamoku].join(",")}
-    assert_equal Kamoku,Book::Kamoku.find_with_main("dezawa").
-      map{|k| [k.id,k.code,k.bunrui,k.kamoku,k.no,k.book_id]}
+    assert_equal Kamoku,
+    Book::Kamoku.find_with_main("dezawa").map{|k| [k.kamoku,k.no]},
+    "選択肢に出て来る課目一覧の順番,Arrayは 科目、順番"
   end
 
   KamokuChoise= [

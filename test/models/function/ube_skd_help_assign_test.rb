@@ -52,9 +52,9 @@ class Function::UbeSkdHelpAssignTest < ActiveSupport::TestCase
     
     plan = skd.ube_plans[4] #18
     skd.hozen_date[:shozow]=6 
-    assert_equal_array([:shozo,["06/08-08:00 06/08-10:00".times<<[105],
+    assert_equal_array_array([["06/08-08:00 06/08-10:00".times<<[105],
                   times("06/08-10:00, 06/08-13:30, 06/08-10:00, 06/08-13:30")]],
-                  [:shozo,skd.temp_assign_all_plan_check_biyond_holyday(plan,nil)[0]]#.dump]
+                  [skd.temp_assign_all_plan_check_biyond_holyday(plan,nil)[0]]#.dump]
                   )
     
 
@@ -72,14 +72,14 @@ must "affter procceed_stock" do
     # 養生　　　　　　　　　　　乾燥　　　　　　　　　　　　　　　　　　加工
    # "06/08-21:17, 06/10-13:17, 06/11-12:17, 06/12-00:32, 06/11-21:23, 06/13-19:30, 06/13-23:25".
     # ube_plans[3]の乾燥endは 06/11-21:23。これの 24+40hr - 切り替え前まで養生開始を遅らせる
-    assert_equal([:shozo,"06/08-10:00, 06/08-13:30".times],#06/06-22:05, 06/07-09:40")],
-                 [:shozo,[plan.plan_shozo_from,plan.plan_shozo_to]])
-    assert_equal([:yojo,times("06/09-06:28, 06/10-22:28")], #06/08-19:40 06/10-11:40
-                 [:yojo,[plan.plan_yojo_from,plan.plan_yojo_to]])
-    assert_equal([:dry,times("06/11-21:28, 06/12-06:03, 06/12-02:54")], #06/10-11:40
-                 [:dry,[plan.plan_dry_from,plan.plan_dry_to,plan.plan_dry_end]])
-    assert_equal([:kakou,times("06/14-00:05, 06/14-02:25")],
-                 [:kakou,[plan.plan_kakou_from,plan.plan_kakou_to]])
+    assert_equal_array("06/08-10:00, 06/08-13:30".times,#06/06-22:05, 06/07-09:40")],
+                 [plan.plan_shozo_from,plan.plan_shozo_to])
+    assert_equal(times("06/09-06:28, 06/10-22:28"), #06/08-19:40 06/10-11:40
+                 [plan.plan_yojo_from,plan.plan_yojo_to])
+    assert_equal(times("06/11-21:28, 06/12-06:03, 06/12-02:54"), #06/10-11:40
+                 [plan.plan_dry_from,plan.plan_dry_to,plan.plan_dry_end])
+    assert_equal(times("06/14-00:05, 06/14-02:25"),
+                 [plan.plan_kakou_from,plan.plan_kakou_to])
 
   end
 

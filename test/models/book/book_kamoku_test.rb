@@ -4,10 +4,10 @@ require 'test_helper'
 class Book::BookKamokuTest < ActiveSupport::TestCase
  fixtures "book/kamokus","book/mains"
   Kamoku =[
-           [ 3,3,310,"元入金",1, 106],
-           [ 5,5,590,"雑費", 2, 108],
-           [ 1,2,210,"未払金",3, 105],
-           [11,5,565,"消耗品費",4, 107],
+           [ 3,3,310,"元入金",1, 84],
+           [ 5,5,590,"雑費", 2, 85],
+           [ 1,2,210,"未払金",3, 83],
+           [11,5,565,"消耗品費",4, 95],
            [18,0,  0,"開始残高", nil, "dezawa"],
            [ 4,1,110,"普通預金", nil, "dezawa"],
            [ 6,1,140,"受取手形", nil, "dezawa"],
@@ -25,7 +25,7 @@ class Book::BookKamokuTest < ActiveSupport::TestCase
   must "課目一覧"  do
     kamoku= Book::Kamoku.new
     #puts Book::Kamoku.all.map{|k| [k.id,k.code,k.bunrui,k.kamoku].join(",")}
-    assert_equal Kamoku,Book::Kamoku.find_with_main("dezawa").
+    assert_equal_array Kamoku,Book::Kamoku.find_with_main("dezawa").
       map{|k| [k.id,k.code,k.bunrui,k.kamoku,k.no,k.book_id]}
   end
 
