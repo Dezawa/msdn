@@ -7,8 +7,8 @@
 <% @arrowed.each do |obj|  -%>
   <tr><% @labels.each{|html_cell| -%>
   <%= html_cell.td %><%= html_cell.disp_field obj -%></td>  <%- } -%>
-
-  <td><%= "<a href=\"owner_change?owner=#{obj.owner}\">選択</a>" if @owner.owner != obj.owner %></td>
+  <td>  <% if @owner.owner != obj.owner -%>
+<a href="owner_change?owner=<%= obj.owner %>">選択</a> <% end %> </td>
   </tr>
 <% end -%>
 </table>
