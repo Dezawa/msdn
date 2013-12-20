@@ -122,7 +122,7 @@ module Actions
     end
     if @model.save
       page =  if @Pagenation
-                (@Model.distinct(@FindOption||{}).count.to_f/@Pagenation).ceil
+                (@Model.where(@FindOption||{}).count.to_f/@Pagenation).ceil
               end
       @models = @Pagenation ? pagenate(page) : find(page)
       redirect_to :action => "index" ,:page => page
@@ -251,7 +251,7 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
   def update_on_table
     @page = params[:page] || 1 
     @models= @PagenatTbl ? find_and : find #@Model.all(@conditions)#@PagenatTbl
-    @maxid    = @Model.distinct.count == 0 ? 0 : @Model.maximum(:id)
+    @maxid    = @Model.all.count == 0 ? 0 : @Model.maximum(:id)
     @modelList = params[@Domain]
     @new_models = []
     @models = []
@@ -302,9 +302,9 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     else 
       @page = params[:page]
     end
-    redirect_to :action => :index,page: @page
-    #find_and
-    #render  :file => 'application/index',:layout => 'application'
+    #redirect_to :action => :index,:page => @page
+    find_and
+    render  :file => 'application/index',:layout => 'application'
   end
 
   def csv_out(filename=nil)
@@ -330,7 +330,7 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
   end
 
   def lastpage
-    page = (@Model.distinct(@FindOption||{}).count.to_f/@Pagenation).ceil 
+    page = (@Model.where(@FindOption||{}).count.to_f/@Pagenation).ceil 
     page > 0 ? page : nil
   end
 
@@ -341,8 +341,9 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     @Model.where(@FindOption||{}).order(@FindOrder).
       paginate( :page => page,:per_page => @Pagenation)
   end
-  def attr_list
-    @labels.map{|html_cell| html_cell.symbol}
+  def attr_list(labels = nil)
+    labels ||= @labels
+    labels.map{|html_cell| html_cell.symbol}
   end
 
   def permit_attr

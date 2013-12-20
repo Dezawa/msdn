@@ -29,9 +29,10 @@ require 'csv'
   # のときに再読み込みされる
   def self.products(read=nil)
     if !@pronames || read
-      @pronames ||= self.all(:conditions => "hozen = false or hozen is null",
-                                 :select => "proname,id"
-                                 ).map{ |p| [p.proname,p.id]}
+      @pronames ||= self.where("hozen = false or hozen is null").
+        pluck([ "proname","id"])#,
+                                # :select => "proname,id"
+                                # ).map{ |p| [p.proname,p.id]}
     end
     @pronames 
   end
@@ -40,7 +41,7 @@ require 'csv'
   def self.error_check
     error = []
     count = Hash.new{|h,k| h[k]=[]}
-    products = self.all(:conditions => "ope_condition not like 'A%'").each{|ube_pro|
+    products = self.where( "ope_condition not like 'A%'").each{|ube_pro|
       error += ube_pro.ope_condition_valid?
       count[ube_pro.proname] << ube_pro
     }
@@ -116,7 +117,7 @@ require 'csv'
   def ope_condition_valid?
     error = []
     # 対応する品種は登録されて居るか
-    kind = Ubeboard::Operation.all(:conditions => "ope_name = '#{ope_condition}'")[0]
+    kind = Ubeboard::Operation.where( "ope_name = '#{ope_condition}'")[0]
     unless kind
       error << "製造条件：#{self.proname}の品種が入力されていません。もしくは未登録の品種です"
     end
@@ -155,7 +156,7 @@ require 'csv'
     error = []
       # 切り替え時間が定義されて居るか 
       #   該当するラインの切り替え時間を全部取ってきて
-      ch_times = Ubeboard::ChangeTime.all(:conditions => "ope_name='#{line}' and change_time is not null")
+      ch_times = Ubeboard::ChangeTime.where( "ope_name='#{line}' and change_time is not null")
       #   前後の全品種を得る
       kinds = ch_times.map{|ch| [ch.ope_from,ch.ope_to]}
       kind_names = kinds.flatten.uniq

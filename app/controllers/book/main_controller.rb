@@ -116,8 +116,7 @@ class Book::MainController < Book::Controller
   end
 
   def kaisizandaka_count
-    Book::Main.distinct(:conditions => 
-                     ["owner = ? and date >= ? and date <= ? and (karikata = ? or kasikata = ?)",
+    Book::Main.where(["owner = ? and date >= ? and date <= ? and (karikata = ? or kasikata = ?)",
                       @owner.owner,@year_beginning,@year_end,
                       Book::Kamoku.kaisizandaka,Book::Kamoku.kaisizandaka
                      ]).count
