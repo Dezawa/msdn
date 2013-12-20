@@ -21,11 +21,11 @@
 <table><tr><td><font size=2>製造計画</td>
 <td style='font-size:120%;'>優先順で立案<%= check_box(@model,:name => 'ube_skd[jun_only]') %></td>
 <td>立案開始日 <%= raw edit_md_date(:ube_skd,:replan_from,@model,:size => 3) %></td>
-<td><%= submit_tag UbeSkdController::Commit[@edit_only] %><%= hidden_field_tag :id,value = @model.id %>
+<td><%= submit_tag Ubeboard::SkdController::Commit[@edit_only] %><%= hidden_field_tag :id,value = @model.id %>
 </td><% if !@edit_only %><% end %>
 <td><%= link_to  '表示・立案',:action =>:show, :id=>@model.id,:sort =>@sortkey -%></td>
-<td><%= link_to UbeSkdController::EditOnly[!@edit_only],:action=> UbeSkdController::Action[!@edit_only],:id=>@model.id ,:sort=>@sortkey,
-	:commit => UbeSkdController::Action[!@edit_only] %> </td>
+<td><%= link_to Ubeboard::SkdController::EditOnly[!@edit_only],:action=> Ubeboard::SkdController::Action[!@edit_only],:id=>@model.id ,:sort=>@sortkey,
+	:commit => Ubeboard::SkdController::Action[!@edit_only] %> </td>
 <% @sort.each{|sort| -%>
 <td><%= raw link_to( @Sort[sort],:action => :sort_edit,:sort => sort,:id=>@model.id) %></td>
 <% } -%>
