@@ -27,7 +27,7 @@
    <tr><td><%=  weekdays_of_month_label(month) %></td></tr>
 </td></tr>
 <tr><td rowspan=5><%= month.strftime("%y年<br>%m月").html_safe -%><br>
-<%= link_to '削除',model , :confirm => 'Are you sure?', :method => :delete %>
+<%= link_to '削除',model , data: { confirm: 'Are you sure?' }, :method => :delete %>
 <%hidden_field(:ube_holyday,:month,{:index=>model.id ,:value=>model.month})%></td>
 <% @labels.each{|lbl,sym| holyday = model[sym] -%>
 <td><nobr><%= lbl %></td>

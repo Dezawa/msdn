@@ -12,7 +12,7 @@
     <td><%= link_to '表示・立案', obj %></td>
     <td><%= link_to '編集・実績', edit_ubeboard_skd_path(obj) %></td>
     <td><%= link_to '実績入力', :id => id,:action => :input_result %></td>
-    <td><%= link_to '削除', obj, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to '削除', obj, data: { confirm: 'Are you sure?' } , :method => :delete %></td>
  </tr>
 <% end -%>
 </table>
