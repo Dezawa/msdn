@@ -264,7 +264,8 @@ class Ubeboard::SkdController < ApplicationController
     @RunTimeLabels=RunTimeLabels
     @plabels= PlanLabelsE
     @EditOnly = EditOnly
-    @model = Ubeboard::Skd.find( params[:id],:include => {:ube_plans => :ube_product})
+    @model = Ubeboard::Skd.find( params[:id])#,:include => {:ube_plans => :ube_product})[0]
+    #@model  = Ubeboard::Skd.where(id: 1).joins(:ube_plans)#,:include => {:ube_plans => :ube_product})[0]
     @model.set_replan_from(params[:ube_skd] ? params[:ube_skd][:replan_from] : nil)
       #(Time.parse(params[:ube_skd][:replan_from]) ||  @model.skd_from) if params[:ube_skd]
     @model.error_check
@@ -275,7 +276,7 @@ class Ubeboard::SkdController < ApplicationController
   end
 
   def show_sub(params)  #:nodoc:
-    @model = Ubeboard::Skd.find( params[:id],:include => :ube_plans)
+    @model = Ubeboard::Skd.find(params[:id])#,:include => :ube_plans)[0]
     @sortkey = (params[:sort] || 'jun' )
     #@model.set_replan_from(params[:ube_skd][:replan_from])# = Time.parse(params[:ube_skd][:replan_from]) ||  @model.skd_from
     show_view
@@ -325,7 +326,7 @@ class Ubeboard::SkdController < ApplicationController
         params[:ube_skd][skd_time] = Time.parse(timestr.gsub(/[^\d]+/,"/")).strftime("%Y/%m/%d")
       end
     }
-    ube_skd = params[:ube_skd]
+    ube_skd = params.require(:ube_skd).permit(attr_list(Labels))#[:ube_skd]
     @model = Ubeboard::Skd.new( ube_skd )
     if ! params[:excelfile].blank?
       product_plan_to_ubeplan=Function::ProductPlanToUbePlan.new(params[:excelfile])
@@ -353,7 +354,7 @@ class Ubeboard::SkdController < ApplicationController
       plan_sort(sort)
       render :action => :edit
     else
-      errors.each{|error| @model.errors.add_to_base(error)}
+      errors.each{|error| @model.errors.add(:base,error)}
       @plans = plans
       @model.ube_plans << @plans  
       plan_sort(sort)
@@ -388,7 +389,7 @@ class Ubeboard::SkdController < ApplicationController
         params[:ube_skd][skd_time] = Time.parse(timestr.gsub(/[^\d]+/,"/")).strftime("%Y/%m/%d")
       end
     }
-    ube_skd = params[:ube_skd]
+    ube_skd =  params.require(:ube_skd).permit(attr_list(Labels))
 
     RunTimeSyms.each{|sym| ube_skd[sym].gsub!(/,/,"") unless ube_skd[sym].blank?}
     skd=Ubeboard::Skd.find(params[:id])
@@ -423,7 +424,7 @@ class Ubeboard::SkdController < ApplicationController
       end
     }
     @model = Ubeboard::Skd.find(params[:id])#,:include => :ube_plans)
-    if   @model.update_attributes(params[:ube_skd])
+    if   @model.update_attributes(params.require(:ube_skd).permit(attr_list(Labels)))
       @model.ube_plans.each{|plan| plan.save}
 
       @TYTLE = "製造計画修正"
