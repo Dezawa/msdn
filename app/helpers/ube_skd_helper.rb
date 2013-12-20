@@ -3,38 +3,47 @@ module UbeSkdHelper
 
   def table_of_buttom
 
-    "   <tr><td>"+
+    "   <tr><td>".html_safe+
       form_tag(:action => :input_result,:id=>@model.id)+submit_tag('実績コピペ ')+
-      hidden_field(:ube_skd,:sort,:value => @sortkey)+"</form></td>\n"+
-      "  <td>"+button_to('CSVダウンロード',:action=>:csv_download,:id=>@model.id)+"</td></tr>\n"+
-      " <tr><td colspan=2 >"+
+      hidden_field(:ube_skd,:sort,:value => @sortkey)+"</form></td>\n".html_safe+
+      "  <td>".html_safe+
+      button_to('CSVダウンロード',:action=>:csv_download,:id=>@model.id)+
+      "</td></tr>\n".html_safe+
+      " <tr><td colspan=2 >".html_safe+
       form_tag( :action => :doc_out_all,:id=>@model.id )+submit_tag( '　月度割付図　')+
-      "</form>\n  </td></tr>\n  <tr><td colspan=2 >"+
+      "</form>\n  </td></tr>\n  <tr><td colspan=2 >".html_safe+
       form_tag( :action => :doc_out,:id=>@model.id )+submit_tag( '作業指示書')+
-      "  <input type='hidden' name='show_edit' value='s'>\n"+ 
-      "  <input type='text' name='doc_from' size=4> から\n"+
-      "  <input type='text' name='doc_to' size=1 value=8>日間</form>\n"+
-      "  </td></tr>\n  <tr><td></td></tr>\n"+
-      "  <tr><td colspan=2 style='font-size:120%;'>立案期間　\n"+
-      @model.skd_from.strftime('%Y-%m-%d')+"～"+ @model.skd_to.strftime('%m-%d') +
-      "</td></tr>\n"
+      "  <input type='hidden' name='show_edit' value='s'>\n".html_safe+ 
+      "  <input type='text' name='doc_from' size=4> から\n".html_safe+
+      "  <input type='text' name='doc_to' size=1 value=8>日間</form>\n".html_safe+
+      "  </td></tr>\n  <tr><td></td></tr>\n".html_safe+
+      "  <tr><td colspan=2 style='font-size:120%;'>立案期間　\n".html_safe+
+      @model.skd_from.strftime('%Y-%m-%d').html_safe+"～".html_safe+ 
+      @model.skd_to.strftime('%m-%d').html_safe +
+      "</td></tr>\n".html_safe
   end
 
   #TimeLine
   def timeline
-     "<table border =1 ><tr><td>" + @labels[0].join("</td><td>") +"</tr>\n" +
+     "<table border =1 ><tr><td>".html_safe + 
+      @labels[0].join("</td><td>".html_safe) +"</tr>\n".html_safe +
       @labels[1..-1].map{|lbl| 
-      "<tr><td>" + lbl[0] +"</td><td align=right>"+ lbl[1..5].map{|l|  @model[l] }.join("</td><td align=right>")+"</td>"+
-      "<td>#{lbl[6]||'　'}</td>"
-    }.join("</tr>\n")+"</table>\n"
+      "<tr><td>".html_safe + lbl[0].html_safe  +
+      "</td><td align=right>".html_safe+
+      lbl[1..5].map{|l|  @model[l] }.join("</td><td align=right>").html_safe+
+      "</td>".html_safe+
+      "<td>#{lbl[6]||'　'}</td>".html_safe
+    }.join("</tr>\n".html_safe)+"</table>\n".html_safe
   end
 
   def runtimeline(edit=nil)
-     "<table border =1 ><tr><td>" + @RunTimeLabels[0].join("</td><td>") +"</tr>\n" + #Label行
+     "<table border =1 ><tr><td>".html_safe +
+      @RunTimeLabels[0].join("</td><td>").html_safe +
+      "</tr>\n".html_safe + #Label行
       #@RunTimeLabels[1,2].map{|lbl|  dspline(lbl,edit,1)    }.join+
       #@RunTimeLabels[3..-1].map{|lbl|  dspline(lbl,edit,1000) }.join+
-      @RunTimeLabels[1..-1].map{|lbl|  dspline(lbl,edit)    }.join+
-      "</table>\n"
+      @RunTimeLabels[1..-1].map{|lbl|  dspline(lbl,edit)    }.join.html_safe+
+      "</table>\n".html_safe
   end
 
   def dspline(lbl,edit)

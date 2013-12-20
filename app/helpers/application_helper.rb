@@ -426,13 +426,13 @@ module ApplicationHelper
 
   def error_messages(errors)
     return "" if errors.size == 0
-    fullmsg="<div  align=left id='errorExplanation'><table>" ; count =0
+    fullmsg="<div  align=left id='errorExplanation'><table>".html_safe ; count =0
     errors.each{|attr,msg| 
            #if attr.to_s == "base"
-              fullmsg += "<tr><td><font color=Red>　○#{msg}</td></tr>"; count += 1
+              fullmsg += "<tr><td><font color=Red>　○#{msg}</td></tr>".html_safe; count += 1
            #end
     } 
-    fullmsg+"</table></div>\n"
+    fullmsg+"</table></div>\n".html_safe
   end
 
   def disp_errors(objects)
