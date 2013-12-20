@@ -15,7 +15,7 @@ class Ubeboard::Meigara < ActiveRecord::Base
   def self.meigaras(read = nil )
     if !@meigara || read
       @meigara = Hash.new{|h,k| h[k]=[]}
-      self.all(:order => "meigara").map{|ch| [ch.proname,ch.meigara]
+      self.order( "meigara").to_a.map{|ch| [ch.proname,ch.meigara]
       }.each{|p,m| @meigara[p] << m }
     end
     @meigara
