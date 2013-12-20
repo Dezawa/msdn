@@ -367,7 +367,9 @@ module SkdHelp
   end
 
   def pf_change(plan,real_ope)
-    if running["running_pf_#{real_ope}"]+plan.ope_length(real_ope)[0]  >= self["limit_pf_"+real_ope.to_s].hour
+    if running["running_pf_#{real_ope}"]+
+        plan.ope_length(real_ope)[0]  >= 
+        @limit_pf[real_ope].hour
       Ubeboard::Function::Maintain.hozen_data("PF替",real_ope)
     else
       Ubeboard::Function::Maintain.null # [nil] #[0,[nil]]
@@ -1011,9 +1013,9 @@ module SkdHelp
   #
   #統計:順は重要。changetimeはmaintainを使う。
   def sumtimes
-    %w(_shozo_w _shozo_e _yojo _dry_o _dry_n _kakou).each_with_index{|sym,idxs|
+    %w(_shozo_w _shozo_e _dry_o _dry_n _kakou).each_with_index{|sym,idxs|
       %w(runtime plantime freetime mainttime changetime donetime).each_with_index{|time,idxt|
-        self[time+sym] = sumtime(time,Ubeboad::Skd::RealOpe[idxs])
+        self[time+sym] = sumtime(time,Ubeboard::Skd::RealOpe[idxs])
       }
     }
   end
@@ -1034,7 +1036,7 @@ module SkdHelp
   #製造予定の累計。予定時間が一部でも立案期間に掛かっているものを累計する。
   #はみ出している部分は控除していないので、そういうのがあると多めの誤差となる。
   #
-  #plan_doneを下請けに使って、Ubeboad::Planの予定情報を累計している
+  #plan_doneを下請けに使って、Ubeboard::Planの予定情報を累計している
   def plantime(real_ope)
     plan_done(real_ope,0..1)
   end
@@ -1043,19 +1045,19 @@ module SkdHelp
   #製造予定の累計。予定時間が一部でも立案期間に掛かっているものを累計する。
   #はみ出している部分は控除していないので、そういうのがあると多めの誤差となる。
   #
-  #plan_doneを下請けに使って、Ubeboad::Planの実績情報を累計している
+  #plan_doneを下請けに使って、Ubeboard::Planの実績情報を累計している
   def donetime(real_ope)
     plan_done(real_ope,2..3)
   end
 
   #=====予定、実績製造時間の集計(plan_done)
-  #Ubeboad::Plan#{plan,result}_****_{from|to}を元に製造時間を集計する。
+  #Ubeboard::Plan#{plan,result}_****_{from|to}を元に製造時間を集計する。
   #
   #乾燥工程は、投入終了から終了(完全排出)までの間に次のロットの乾燥が始まっている
   #場合がある。その場合は重なり部分は二重に累積しないように、控除する。
   #
   def plan_done(real_ope,range)
-    from,to = Ubeboad::Skd::PlanTimes[real_ope][range]
+    from,to = Ubeboard::Skd::PlanTimes[real_ope][range]
     unless [:dryo,:dryn].include?(real_ope)
       ube_plans.select{|plan| 
         plan.real_ope?(real_ope) && plan.mass >1 && plan[to]&&plan[from]&&
