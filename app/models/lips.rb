@@ -20,7 +20,6 @@ class Lips #< ActiveRecord::Base
     @time,@pro,@ope,@gain,@min,@max = 
      [@time,@pro,@ope,@gain,@min,@max].map{|i| Array.new(@opemax+1,0.0) }
     @rate = (0..@promax).map{|pro| (0..@opemax).map{|ope| 0.0 }}
-pp params
     if params
       [:proname,:opename,:gele].each{|sym|
         if params[sym]
@@ -262,7 +261,6 @@ pp params
         csv << "\n"
       }
     end
-pp csvfile
     fp=open(csvfile,"w")
     fp.print NKF.nkf("-s",csv)
     fp.close
