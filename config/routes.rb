@@ -22,6 +22,8 @@ Msdn::Application.routes.draw do
   post    "password_update" => "users#password_update"
   put "users/new" => "users#create"
 
+  get     "lips" => "lips#calc"
+
   get  "ubr/main" => "ubr/main#index"
   get  "ubeboard/top" => "ubeboard/top#top"
   get  "ubeboard/lips/member" => "lips#member"
