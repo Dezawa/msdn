@@ -2,6 +2,7 @@
 # TopPage
 class Ubeboard::TopController < ApplicationController
   include Actions
+  before_action :authenticate_user! 
   #before_filter :login_required
   before_filter {|ctrl| ctrl.set_permit %w(生産計画利用 生産計画利用 生産計画メンテ)}
   before_filter {|ctrl| ctrl.require_permit}

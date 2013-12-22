@@ -2,6 +2,7 @@
 require 'html_cell'
 class HolydaysController < ApplicationController
   include Actions
+  before_action :authenticate_user! 
   before_filter :set_instanse_variable
 
   Labels = [ HtmlHidden.new(:year),

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 class Ubr::MainController < ApplicationController
   include ExcelToCsv
+  before_action :authenticate_user! 
   before_filter :set_instanse_variable
 
    dmy=Menu

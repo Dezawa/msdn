@@ -4,6 +4,7 @@
 class Book::Controller <  ApplicationController
   include Actions
   #include BookPermit
+  before_action :authenticate_user! 
   #before_filter :login_required 
   before_action {|ctrl| ctrl.set_permit %w(複式簿記試用 複式簿記利用 複式簿記メンテ)}
   #before_action :set_instanse_variable

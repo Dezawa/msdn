@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 class Hospital::Controller < ApplicationController
+  before_action :authenticate_user! 
   before_filter :set_instanse_variable
   attr_accessor :current_busho_id,:month
   def _TableAddEditChangeBusho 

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 class UsersController < CommonController
   #before_filter :login_required 
+  before_action :authenticate_user! 
   before_action {|ctrl| ctrl.require_permit_label "ユーザメンテ"}
   before_action :set_instanse_variable
   # Be sure to include AuthenticationSystem in Application Controller instead
