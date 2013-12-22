@@ -989,7 +989,16 @@ end
   def set_yojoKo_object
     ube_plans.each{|plan| plan.yojoKo = yojoko[plan.yojoko] if yojoko[plan.yojoko] }
   end
-
+  
+  # 次のロットとの間に休日が入ったかどうかも含めて仮に割り付ける
+  #   temp_assign_all_plan で割付け、その結果を調べる。
+  #   抄造が割付不能、もしくは抄造が終了している場合はここはなし    nilを返す
+  #   養生前置き時間超過しかつラウンドで二つ目以降のロットの場合 → そのロットは中止し次のラウンドに移る nil を返す
+  #   前のロットのあと休日を挟まずに抄造開始していたら、この割付を返す [shozo,yojo,dry,wait]
+  #   もしくは、 優先順モードの場合、ラウンド最初のロットの場合も、この割り付けを返す
+  #   残りは
+  #     前のロットのあと休日を挟んでいる。ラウンドで二つ目以降。
+  #   
   def temp_assign_all_plan_check_biyond_holyday(plan,shozoDone)
     shozo,yojo,dry,wait = temp_assign_all_plan(plan,shozoDone)
     return nil if !shozo && !shozoDone
