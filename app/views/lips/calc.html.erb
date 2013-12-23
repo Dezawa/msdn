@@ -9,7 +9,10 @@
   <tr><td><%= change_disp_form %></td></tr>
   </table>
 </div>
-<form method="POST" action="./calc"><input type="submit" value="実行">
+
+<!-- ############### 実行ぼたん ################  -->
+<%=    form_tag(:action => :calc) %><%= submit_tag('実行') %>
+
   <% %w(promax opemax vertical).each{|item| %>
   <%= hidden_field(:lips,item) %>
   <% } -%>
@@ -18,4 +21,5 @@
 <font size = 2>　最大化/最小化<%= help "LiPS#maxmin" %>
   <%= radio_button(:lips,:minmax,"maximize") %>最大
   <%= radio_button(:lips,:minmax,"minimize") %>最小
+<!-- ############### 一覧 ################  -->
 <%= vertical_or_landscape %>
