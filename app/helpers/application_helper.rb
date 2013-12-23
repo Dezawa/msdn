@@ -147,9 +147,6 @@ module ApplicationHelper
       "</form></td><td>".html_safe
   end
 
-  def edit_bottom
-       button_to( '編集', :action => :edit_on_table,:page => @page )
-  end
   def edit_buttom
        button_to( '編集', :action => :edit_on_table,:page => @page )
   end
