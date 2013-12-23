@@ -1,3 +1,4 @@
+# -*- coding: euc-jp -*-
 Msdn::Application.routes.draw do
   def set_routes(controller,actions)
     actions[0].each{|action|
@@ -22,8 +23,14 @@ Msdn::Application.routes.draw do
   post    "password_update" => "users#password_update"
   put     "users/new" => "users#create"
 
+  ### Lips ##
   get     "lips" => "lips#calc"
   post    "lips" => "lips#calc"
+  ## free,member を参照しているbookmarkが残っている可能性がある。ので
+  get     "lips/free"  => "lips#calc"
+  get     "lips/member" => "lips#calc"
+
+  ###
   get  "ubr/main" => "ubr/main#index"
   get  "ubeboard/top" => "ubeboard/top#top"
   get  "ubeboard/lips/calc" => "lips#calc"
