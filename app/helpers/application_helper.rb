@@ -134,9 +134,8 @@ module ApplicationHelper
     "<table><tr><td>".html_safe+ buttoms + "</td></tr></table>".html_safe
   end
 
-
   def edit_buttoms(dom)
-    add_buttom(dom)+edit_bottom
+    add_buttom(dom)+edit_buttom
   end
 
   def add_buttom(dom)
