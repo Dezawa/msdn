@@ -5,19 +5,20 @@ require 'postscript'
 
 module Ubr
   @dir= File.dirname(__FILE__)
-  if /www/ =~ @dir
+  if Rails
     $LOAD_PATH << @dir
     #  $MasterDir =  @dir
   else
     $LOAD_PATH << File.join(File.dirname(__FILE__),"../System") << "~/lib/ruby"
     #  $MasterDir =  File.join(@dir,"../System/Master")
-  end
-  require 'souko_plan'
-  require 'const'
+
+  #require 'souko_plan'
+  #require 'const'
   require 'souko'
   require 'lot'
   require 'lot_list'
 
+  end
 
   # 通路置きも表示する
   # 
