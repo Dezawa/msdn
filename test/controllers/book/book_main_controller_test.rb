@@ -1,13 +1,19 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 require 'test_book_helper'
 
-class BookMainControllerTest < BookControllerTest
-  include AuthenticatedTestHelper
+class Book::MainControllerTest < BookControllerTest
+  include Devise::TestHelpers
+
+  Params = { 
+    date: Time.utc(2012,10,12),amount: 1000, no: 1,
+    karikata: 1, kasikata: 2, tytle: "TESTW"
+  }
 
   @@Users = [:dezawa,:aaron,:quentin]
     @@Model = Book::Main
-    @@modelname = @@Model.name.underscore.to_sym
-  @@url_index ="/#{@@Model.name.underscore.sub(/\//,"_")}"
+    @@modelname = @@Model.name.underscore#.to_sym
+  @@url_index ="/book/main"
   @@url_pagenate = @@url_index + "?page=%d"
   @@url_create = @@url_index +"?page=6"
   @@count   = "#{@@Model.name}.count"
@@ -15,35 +21,36 @@ class BookMainControllerTest < BookControllerTest
   @@redirect = [:redirect,false]
   BookMain=Book::Main
   if Rails.version < "3"
-    fixtures "book_mains","book_kamokus"
+    fixtures "book/mains","book/kamokus"
   elsif Rails.version > "3"
     fixtures "book/mains","book/kamokus"
   end
     
   fixtures :users,:user_options,:user_options_users
-  fixtures :book_permissions
+  fixtures "book/permissions"
 
   def setup 
-    @controller = BookMainController.new
-    @request = ActionController::TestRequest.new
-    @request.session = ActionController::TestSession.new
+    @controller = Book::MainController.new
+    #@request = ActionController::TestRequest.new
+    #@request.session = ActionController::TestSession.new
     @model = Book::Main.first
   end
 
   Result = [:success,:success,:success,:success,:success,:success,:redirect]
   Users.zip(Result).each{|login,result|
     must "#{login}では振替伝票一覧は" do
-      login_as login
+      user = User.find_by(:username => login)
+      login_as( login)
+#pp user.authenticate!
       get :index
       assert_response result
     end
   }
-
   Users.zip([:success]*2+[:redirect]+[:success]*3+[:redirect]).
     each{|login,result|
     must "User #{login} は#{@@Model.name}のedit_on_table 可能か results #{result}" do
       login_as (login)
-      put :edit_on_table, @@modelname => {@model.id.to_i => @model.attributes}
+      post :edit_on_table, @@modelname => {@model.id.to_i => @model.attributes}
         assert_response result
       end
     }
@@ -78,7 +85,7 @@ class BookMainControllerTest < BookControllerTest
   Users[DEZAWA].zip([:success]*2).each{|login,result|
     test "ユーザ #{login}は出沢の伝票を作成(new)可能か #{result}" do
       owner_change(login,"dezawa")
-      get :new
+      post :create, "book/main" => Params.merge( owner: "dezawa")
       assert_equal "dezawa",assigns(:owner).owner
     end
   }
@@ -95,28 +102,28 @@ class BookMainControllerTest < BookControllerTest
     end
   }
 
-  Users[NO_DZW].each{|login|
-    test "ユーザ #{login}は出沢の伝票を作成(new)可能か " do
-      owner_change(login,"dezawa")
-      get :new
-      assert_redirected_to "/msg_book_permit.html"
-    end
-  }
 
+#  Users[NO_DZW].each{|login|
+#    test "ユーザ #{login}は出沢の伝票を作成(new)可能か " do
+#      owner_change(login,"dezawa")
+#      post :create, "book/main" => Params.merge( owner: "dezawa")
+#      assert_redirected_to "/msg_book_permit.html"
+#    end
+#  }
 
-  Users[NO_DZW].each{|login|
-    test "ユーザ #{login}は出沢の伝票を作成(create)可能か " do
-      owner_change(login,"dezawa")
-      get :create
-      assert_redirected_to "/msg_book_permit.html"
-    end
-  }
+ # Users[NO_DZW].each{|login|
+ #   test "ユーザ #{login}は出沢の伝票を作成(create)可能か " do
+ #     owner_change(login,"dezawa")
+ #     post :create ,"book/main" => Params.merge(:owner => "dezawa")
+ #     assert_redirected_to "/msg_book_permit.html"
+ #   end
+ # }
 
  #            id delta
-  Users.zip([ [1,-1] , [2,-1],[1,0],[4,-1],[3,-1],[3,-1],[1,0]]).
+  Users.zip([ [1,-1] , [1,-1],[1,0],[2,-1],[3,-1],[3,-1],[1,0]]).
     each{|login,id_delta|
-    must "User #{login} は#{@@Model.name}の削除 可能か" do
-      login_as (login)
+    must "User #{login} は#{@@Model.name}:#{id_delta[0]}の削除 可能か" do
+      owner_change(login,"dezawa")
       assert_difference "Book::Main.count",id_delta[1] do
         put :destroy, :id =>  id_delta[0]
       end
@@ -141,24 +148,29 @@ class BookMainControllerTest < BookControllerTest
     end
   }
 
-  Users[SUCCESS].zip([:success]*2+[:redirect]*4).each{|login,result|
-    test "ユーザ #{login}は出沢の伝票の一覧編集画面がでるか #{result}" do
+  Users[SUCCESS].zip([T,T,F,F,F,F,F]).each{|login,result|
+    test "ユーザ #{login}は出沢の伝票editableか #{result}" do
       owner_change(login,"dezawa")
-      get :edit_on_table
-      assert_response result
+      assert_equal result, assigns[:owner].owner == "dezawa" && @controller.editable
     end
   }
 
-  Users.
-    zip([@@url_pagenate%1,@@url_pagenate%1,
-         @@url_permit,@@url_permit,@@url_permit,
-         @@url_permit,@@url_error]).
-    each{|login,result|
-    must "ユーザ #{login}は出沢の伝票を一覧編集可能か #{result}" do
-      owner_change(login,"dezawa")
+    must "ユーザ dezawaは出沢の伝票を一覧編集可能か " do
+      owner_change("aaron","dezawa")
       get :update_on_table, @@modelname => {@model.id.to_i => @model.attributes}
-      assert_redirected_to result
+      assert_redirected_to @@url_pagenate%1
     end
-  }
+
+    must "ユーザ aaronは出沢の伝票を一覧編集可能か " do
+      owner_change("aaron","dezawa")
+      get :update_on_table, @@modelname => {@model.id.to_i => @model.attributes}
+      assert_redirected_to @@url_pagenate%1
+    end
+
+    must "ユーザ quentin は出沢の伝票を一覧編集可能か " do
+      owner_change("quentin","dezawa")
+      get :update_on_table, @@modelname => {@model.id.to_i => @model.attributes}
+      assert_redirected_to @@url_permit
+    end
 
 end

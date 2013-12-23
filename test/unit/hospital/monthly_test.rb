@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 require 'test_helper'
 require 'hospital/kinmu'
 class Hospital::MonthlyTest < ActiveSupport::TestCase
@@ -87,3 +88,4 @@ class Hospital::MonthlyTest < ActiveSupport::TestCase
 
   
 end
+# -*- coding: utf-8 -*-

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 class Ubr::LotTest < ActiveSupport::TestCase
@@ -37,3 +38,4 @@ class Ubr::LotTest < ActiveSupport::TestCase
 
 end
 __END__
+# -*- coding: utf-8 -*-

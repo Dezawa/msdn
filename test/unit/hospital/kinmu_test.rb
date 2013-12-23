@@ -1,4 +1,5 @@
 require 'test_helper'
+# -*- coding: utf-8 -*-
 #require 'need'
 
 class Hospital::KinmuTest < ActiveSupport::TestCase
@@ -17,3 +18,4 @@ class Hospital::KinmuTest < ActiveSupport::TestCase
     assert_equal [3, 2, "3"],[kinmu.kinmucode_id,kinmu.want,kinmu.shift]
   end
 end
+# -*- coding: utf-8 -*-

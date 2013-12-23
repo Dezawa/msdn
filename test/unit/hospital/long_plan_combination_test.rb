@@ -1,4 +1,5 @@
 require 'test_helper'
+# -*- coding: utf-8 -*-
 #require 'need'
 
 class Hospital::LongPlanCombinationTest < ActiveSupport::TestCase
@@ -35,3 +36,4 @@ class Hospital::LongPlanCombinationTest < ActiveSupport::TestCase
 
 
 end
+# -*- coding: utf-8 -*-

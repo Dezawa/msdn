@@ -1,14 +1,15 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 
 class UbeMaintainControllerTest < ActionController::TestCase
-  include AuthenticatedTestHelper
+  include Devise::TestHelpers
 
-    @@Model = UbeMaintain
-  @@Controller = UbeMaintainController
+    @@Model = Ubeboard::Maintain
+  @@Controller = Ubeboard::MaintainController
   def model_by_sym(sym); ube_maintains(:one) ;end
   AttrMerge = {}
-  fixtures :ube_maintains,:ube_operations,:ube_products #maintains, :ube_maintains,:ube_maintains
+  fixtures "ube/maintains","ube/operations","ube/products" #maintains, :ube_maintains,:ube_maintains
 
   @@Users = [:dezawa,:ubeboard,:guest]
   @@modelname = @@Model.name.underscore.to_sym #:ube_maintain
@@ -24,8 +25,8 @@ class UbeMaintainControllerTest < ActionController::TestCase
 
   def setup 
     @controller =  @@Controller.new
-    @request = ActionController::TestRequest.new
-    @request.session = ActionController::TestSession.new
+    #@request = ActionController::TestRequest.new
+    #@request.session = ActionController::TestSession.new
     @model = @@Model.find 1
   end
 
@@ -127,7 +128,7 @@ class UbeMaintainControllerTest < ActionController::TestCase
     test " ユーザ #{login} indexで[行削除]が #{result}" do
       login_as (login)
       get :index 
-      assert_tag  :tag => "td"  ,:child => { :tag => "a",:attributes => {:onclick => /delete/ },:child =>"削除"}
+      assert_tag  :tag => "td"  ,:child => { :tag => "a",:attributes => {"data-method" => "delete" }}
     end
   }
 
@@ -152,7 +153,7 @@ class UbeMaintainControllerTest < ActionController::TestCase
       :child => { 
         :tag => "td",:child => {
         :tag => "select",:attributes => {:name => "#{@@modelname}[1][ope_name]"},
-        :children => {:count => 2+2+1+UbeYojo::Yojoko.size ,:only => { :tag => "option"} }
+        :children => {:count => 2+2+1+Ubeboard::Yojo::Yojoko.size ,:only => { :tag => "option"} }
       }
     }
     

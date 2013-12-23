@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 require 'test_book_helper'
 
 class BookKamokuControllerTest <  BookControllerTest
-  include AuthenticatedTestHelper
+  #include AuthenticatedTestHelper
+  include Devise::TestHelpers
   @@Users = [:dezawa,:aaron,:quentin]
     @@Model = Book::Kamoku
     @@modelname = @@Model.name.underscore.to_sym
@@ -22,22 +24,24 @@ class BookKamokuControllerTest <  BookControllerTest
 
   fixtures :users,:user_options,:user_options_users
   def setup
-    @controller = BookKamokuController.new
-    @request = ActionController::TestRequest.new
-    @request.session = ActionController::TestSession.new
+    @controller = Book::KamokuController.new
+    #@request = ActionController::TestRequest.new
+    #@request.session = ActionController::TestSession.new
     @model = Book::Kamoku.first #nd(1) 
     #@model = book_kamokus(:one)
   end
 
   Users.zip([:success,:success,:success,:success,:success,:success,:redirect]).each{|login,result|
     must "#{login}では科目の一覧がでる" do
+      #login_as login
       login_as login
       get :index
       assert_response result
     end
   }
 
-  
+  end
+__END__
  # Result = 
   Users.zip([:success,:success,:redirect,:success,:success,:success,:redirect]).each{|login,result|
     must "#{login}では科目の一覧更新画面は" do

@@ -2,7 +2,7 @@
 require 'test_helper'
 
 class LipsControllerTest < ActionController::TestCase
-  include AuthenticatedTestHelper
+  include Devise::TestHelpers
 
   @@Model = Lips
   @@model_size = 60
@@ -25,22 +25,30 @@ class LipsControllerTest < ActionController::TestCase
 
   def setup 
     @controller =  @@Controller.new
-    @request = ActionController::TestRequest.new
-    @request.session = ActionController::TestSession.new
+    #@request = ActionController::TestRequest.new
+    #@request.session = ActionController::TestSession.new
     #@model = @@Model.find 1
   end
 
-  Users = %w(ubeboard guest)
+  Users = %w(ubeboard dezawa guest testuser)
   
-  Users.zip( %w(汎用会員版 無償版)).each{|login,reg|
+  Users.zip( %w(汎用会員版 汎用会員版 無償版 無償版)).each{|login,reg|
     test "ユーザー #{login} は #{reg}" do
-    login_as (login)
-    get :calc
+      login_as (login)
+      get :calc
       assert_tag  :tag => "b",:child => /#{reg}/
   end
   }
 
-  Users.zip( [:assert_no_tag,:assert_tag]).each{|login,assert|
+  Users.zip([TTT,TTT,FFF,FFF]).each{|login,permission|
+    test "ユーザー #{login} の権限は #{permission}" do
+      login_as (login)
+      get :calc
+      assert_equal permission,%w(permit editor configure).map{|f| !!assigns[f]}
+    end
+  }
+    
+  Users.zip( [:assert_no_tag,:assert_no_tag,:assert_tag,:assert_tag]).each{|login,assert|
     test "ユーザー #{login} は #{assert}" do
       login_as (login)
       get :calc
@@ -48,7 +56,7 @@ class LipsControllerTest < ActionController::TestCase
   end
   }
   [:csv_upload,:change_form].each{|comm|
-  Users.zip( [:success,:redirect]).each{|login,res|
+  Users.zip( [:success,:success,:redirect,:redirect]).each{|login,res|
       test "ユーザー #{login}の #{comm} は #{res}" do
       login_as (login)
       get comm

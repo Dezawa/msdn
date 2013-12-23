@@ -1,4 +1,5 @@
 require 'test_helper'
+# -*- coding: utf-8 -*-
 
 class Hospital::WantTest < ActiveSupport::TestCase
   # Replace this with your real tests.
@@ -16,3 +17,4 @@ end
 
 n_c([1,2],[3,4,5,6,7],2){|c| p c}
 
+# -*- coding: utf-8 -*-

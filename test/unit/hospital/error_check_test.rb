@@ -1,4 +1,5 @@
 require 'test_helper'
+# -*- coding: utf-8 -*-
 #require 'need'
 
 class Hospital::ErrorCheckTest < ActiveSupport::TestCase
@@ -42,3 +43,4 @@ __END__
     @assign.assign_month
     @assign.error_check
   end
+# -*- coding: utf-8 -*-

@@ -1,18 +1,19 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 class UbeSkdControllerTest < ActionController::TestCase
-  include AuthenticatedTestHelper
+  include Devise::TestHelpers
 
-  @@Model = UbeSkd
-  @@Controller=UbeSkdController
-  fixtures :ube_skds,:ube_plans,:ube_plans_ube_skds,:ube_products,:ube_operations #meigaras, :ube_products,:ube_operations
+  @@Model = Ubeboard::Skd
+  @@Controller=Ubeboard::SkdController
+  fixtures "ube/skds","ube/plans","ube/plans_skds","ube/products","ube/operations" #meigaras, :ube_products","ube_operations"
   def model_by_sym(sym); ube_skds(:one) ;end
   AttrMerge = {"skd_from" => "2012/9/1","skd_to"=>"2012/9/30","replan_from"=>"2012/9/10",
     :skd_from => "2012/9/1",:skd_to=>"2012/9/30",:replan_from=>"2012/9/10",
   }
 
   @@Users = [:dezawa,:ubeboard,:guest]
-  @@modelname = @@Model.name.underscore.to_sym #:ube_product
+  @@modelname = "ube_skd" #@@Model.name.underscore.to_sym #:ube_product
   @@url_index ="/#{@@Model.name.underscore}"
   @@url_create = @@url_index +"?page=1"
   @@missing_url= '/404.html'
@@ -25,8 +26,8 @@ class UbeSkdControllerTest < ActionController::TestCase
 
   def setup 
     @controller =  @@Controller.new
-    @request = ActionController::TestRequest.new
-    @request.session = ActionController::TestSession.new
+    #@request = ActionController::TestRequest.new
+    #@request.session = ActionController::TestSession.new
     @model = @@Model.find 1
   end
 
@@ -35,7 +36,7 @@ class UbeSkdControllerTest < ActionController::TestCase
     test " User #{login} update #{@@Model.name} results #{result}" do
       login_as (login)
       attributes = @model.attributes.merge(AttrMerge)
-      UbeSkdController::RunTimeSyms.each{|sym| s=sym.to_s;attributes[s] = attributes[s].to_s if attributes[s]}
+      Ubeboard::SkdController::RunTimeSyms.each{|sym| s=sym.to_s;attributes[s] = attributes[s].to_s if attributes[s]}
       put( :update, :id => @model, 
            @@modelname => attributes,
            :ube_plan =>  @model.ube_plans.map{|plan| plan.attributes }
@@ -83,9 +84,10 @@ class UbeSkdControllerTest < ActionController::TestCase
     test "  ユーザ #{login}が #{@@Model.name} create に#{result[0]}" do
     login_as (login)
       attributes=@model.attributes.merge(AttrMerge)
-      UbeSkdController::RunTimeSyms.each{|sym| s=sym.to_s;attributes[s] = attributes[s].to_s if attributes[s]}
+      Ubeboard::SkdController::RunTimeSyms.each{|sym| s=sym.to_s;attributes[s] = attributes[s].to_s if attributes[s]}
  
       attributes.delete("id")
+#pp attributes
       assert_difference(@@count, result[0]) do
         post :create, @@modelname => attributes
       end

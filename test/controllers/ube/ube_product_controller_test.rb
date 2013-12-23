@@ -1,14 +1,15 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 class UbeProductControllerTest < ActionController::TestCase
-  include AuthenticatedTestHelper
+  include Devise::TestHelpers
 
-  @@Model = UbeProduct
+  @@Model = Ubeboard::Product
   @@model_size = 77
-  @@Controller = UbeProductController
+  @@Controller = Ubeboard::ProductController
   def model_by_sym(sym); ube_products(:one) ;end
   AttrMerge = {}
-  fixtures :ube_products #meigaras, :ube_products,:ube_operations
+  fixtures "ube/products" #meigaras, :ube_products,:ube_operations
 
   @@Users = [:dezawa,:ubeboard,:guest]
   @@modelname = @@Model.name.underscore.to_sym #:ube_product
@@ -24,10 +25,28 @@ class UbeProductControllerTest < ActionController::TestCase
 
   def setup 
     @controller =  @@Controller.new
-    @request = ActionController::TestRequest.new
-    @request.session = ActionController::TestSession.new
+    #@request = ActionController::TestRequest.new
+    #@request.session = ActionController::TestSession.new
     @model = @@Model.find 1
   end
+
+
+  @@Users.zip([:success,:success,:redirect]).each{|login,result|
+    test " User #{login} get edit #{@@Model.name} results #{result}" do
+    login_as (login)
+    get :edit, :id => 1# @model
+    assert_response result
+  end
+  }
+
+  rets = [TTT,TTF,FFF]
+  @@Users.zip(rets).each{|login,ret|
+    must "#{login} が持つ権限 試用、使用、コンフィグは#{ret}" do
+      login_as login
+      get :index
+      assert_equal ret,[assigns["permit"],assigns[:editor],assigns[:configure]]
+    end
+  }
 
   must "#@@Model.name}.couont is " do
     assert_equal @@model_size, @@Model.count
@@ -71,14 +90,6 @@ class UbeProductControllerTest < ActionController::TestCase
     end
   }
 
-  @@Users.zip([:success,:success,:redirect]).each{|login,result|
-    test " User #{login} get edit #{@@Model.name} results #{result}" do
-    login_as (login)
-    get :edit, :id => @model
-    assert_response result
-  end
-  }
-
   @@Users.zip([@@url_index,@@url_index,"/404.html"]).each{|login,result|
     test " User #{login} update #{@@Model.name} results #{result}" do
     login_as (login)
@@ -87,18 +98,21 @@ class UbeProductControllerTest < ActionController::TestCase
   end
   }
 
-  @@Users.zip([[-1,@@url_index],[-1,@@url_index],[0,"/404.html"]]).each{|login,result|
-    test " User #{login} destroy #{@@Model.name} results difference is #{result}" do
-    login_as (login)
-    assert_difference(@@count, result[0]) do
-      delete :destroy, :id => @model
+  must "Product ID=1はUbePlanに使われているので削除できない" do
+    login_as ("dezawa")
+    assert_difference(@@count, 0) do
+      delete :destroy, :id => @model.id
+      assert_equal flash[:message],"この製品は使われているので削除できません"
     end
-    
-    assert_redirected_to result[1]
   end
-    }
-  ###
-
+    
+  must "Product ID=9はUbePlanに使われていないので削除できる" do
+    login_as ("dezawa")
+    assert_difference(@@count, -1) do
+      delete :destroy, :id => 9
+    end
+  end
+    
   @@Users[0..1].each{|login,result|
     test " ユーザ #{login} indexで[追加]が #{result}" do
       login_as (login)
@@ -132,7 +146,7 @@ class UbeProductControllerTest < ActionController::TestCase
     test " ユーザ #{login} indexで[行削除]が #{result}" do
       login_as (login)
       get :index 
-      assert_tag  :tag => "td"  ,:child => { :tag => "a",:attributes => {:href =>"/#{@@modelname}/1",:onclick => /delete/ }}#,:child =>"削除"}
+      assert_tag  :tag => "td"  ,:child => { :tag => "a",:attributes => {"data-method" => "delete" }}#,:child =>"削除"}
     end
   }
 end

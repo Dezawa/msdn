@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
 require 'pp'
-class Ube::UbeNamedChangeTest < ActiveSupport::TestCase
+class UbeNamedChangeTest < ActiveSupport::TestCase
   fixtures "ube/products","ube/operations","ube/named_changes","ube/plans","ube/change_times"
 
    def make_skd(ids=[])

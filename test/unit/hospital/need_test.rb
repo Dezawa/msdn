@@ -1,4 +1,5 @@
 require 'test_helper'
+# -*- coding: utf-8 -*-
 
 class Hospital::NeedTest < ActiveSupport::TestCase
   fixtures :hospital_needs
@@ -24,3 +25,4 @@ class Hospital::NeedTest < ActiveSupport::TestCase
     assert_equal [1,2,4,5],Hospital::Need.roles.sort
   end
 end
+# -*- coding: utf-8 -*-

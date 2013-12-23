@@ -5,7 +5,7 @@ require 'testdata/maintain'
 require 'testdata/freelist'
 require 'testdata/holyday'
 
-class Ube::UbeMaintainTest < ActiveSupport::TestCase
+class UbeMaintainTest < ActiveSupport::TestCase
   fixtures  "ube/maintains","ube/holydays","ube/products","ube/operations","ube/constants"
   #test "the truth" do ;    assert true; end
 

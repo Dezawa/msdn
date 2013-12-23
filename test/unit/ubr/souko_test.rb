@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 class Ubr::SoukoTest < ActiveSupport::TestCase
@@ -51,3 +52,4 @@ class Ubr::SoukoTest < ActiveSupport::TestCase
     end
   }
 end
+# -*- coding: utf-8 -*-

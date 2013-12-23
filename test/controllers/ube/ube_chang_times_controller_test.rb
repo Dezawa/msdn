@@ -1,13 +1,14 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 class UbeChangeTimesControllerTest < ActionController::TestCase
-  include AuthenticatedTestHelper
-    @@Model = UbeChangeTime
-  @@Controller =UbeChangeTimesController
+  include Devise::TestHelpers
+    @@Model = Ubeboard::ChangeTime
+  @@Controller =Ubeboard::ChangeTimesController
   def model_by_sym(sym); ube_change_times(:one) ;end
   AttrMerge = {}
 
-  fixtures :ube_change_times
+  fixtures "ube/change_times"
 
   @@Users = [:dezawa,:ubeboard,:guest]
   @@modelname = @@Model.name.underscore.to_sym #:ube_product
@@ -24,7 +25,7 @@ class UbeChangeTimesControllerTest < ActionController::TestCase
 
   def setup 
     @controller =  @@Controller.new
-    @request = ActionController::TestRequest.new
+    #@request = ActionController::TestRequest.new
     @request.session = ActionController::TestSession.new
     @model = @@Model.first
   end

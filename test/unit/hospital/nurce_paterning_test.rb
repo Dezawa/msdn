@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 require 'test_helper'
 class Hospital::Nurce < ActiveRecord::Base
   # [0,0,0,1,3,0.....]
@@ -156,3 +157,4 @@ __END__
 
 end
 
+# -*- coding: utf-8 -*-

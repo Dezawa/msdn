@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 class Hospital::KinmucodeTest < ActiveSupport::TestCase
@@ -93,3 +94,4 @@ Id = {       #  0   1 2 3  5 L M N  O
     }
     
 end
+# -*- coding: utf-8 -*-

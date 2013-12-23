@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
 
-class Ube::UbePlanTest < ActiveSupport::TestCase
+class UbePlanTest < ActiveSupport::TestCase
   fixtures "ube/plans","ube/products"
   fixtures "ube/operations","ube/change_times"
   #def setup

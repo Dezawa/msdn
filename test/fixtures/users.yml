@@ -56,8 +56,8 @@ aaron:
   updated_at: 2013-12-01 11:56:54.000000000 Z
   lipscsvio: false
   lipssizeoption: false
-  lipssizepro: 10
-  lipssizeope: 10
+  lipssizepro: 2
+  lipssizeope: 2
   lipslabelcode: default
   state: passive
 
@@ -98,8 +98,8 @@ guest:
   updated_at: 2013-12-01 11:56:54.000000000 Z
   lipscsvio: false
   lipssizeoption: false
-  lipssizepro: 10
-  lipssizeope: 10
+  lipssizepro: 2
+  lipssizeope: 2
   lipslabelcode: default
   state: passive
 

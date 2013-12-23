@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
 require 'testdata/holyday.rb'
-class Ube::UbeHolydayTest < ActiveSupport::TestCase
+class UbeHolydayTest < ActiveSupport::TestCase
  fixtures  "ube/holydays","ube/constants" # Replace this with your real tests.
   #test "the truth" do ;    assert true ;  end
 

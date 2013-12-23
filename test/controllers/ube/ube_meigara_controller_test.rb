@@ -1,14 +1,15 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 
 class UbeMeigaraControllerTest < ActionController::TestCase
-  include AuthenticatedTestHelper
+  include Devise::TestHelpers
 
-  @@Model = UbeMeigara
-  @@Controller = UbeMeigaraController
+  @@Model = Ubeboard::Meigara
+  @@Controller = Ubeboard::MeigaraController
   def model_by_sym(sym); ube_meigaras(:one) ;end
   AttrMerge = {}
-  fixtures :ube_meigaras,:ube_operations,:ube_products #meigaras, :ube_meigaras,:ube_meigaras
+  fixtures "ube/meigaras","ube/operations","ube/products" #meigaras, :ube_meigaras,:ube_meigaras
 
   @@Users = [:dezawa,:ubeboard,:guest]
   @@modelname = @@Model.name.underscore.to_sym #:ube_meigara
@@ -24,8 +25,8 @@ class UbeMeigaraControllerTest < ActionController::TestCase
 
   def setup 
     @controller =  @@Controller.new
-    @request = ActionController::TestRequest.new
-    @request.session = ActionController::TestSession.new
+    #@request = ActionController::TestRequest.new
+    #@request.session = ActionController::TestSession.new
     @model = @@Model.find 1
   end
 
@@ -36,6 +37,7 @@ class UbeMeigaraControllerTest < ActionController::TestCase
       get :index
       assert_response result[0]
       assert_equal result[1], !!assigns(:models)
+
     end
   }
 
@@ -127,7 +129,7 @@ class UbeMeigaraControllerTest < ActionController::TestCase
     test " ユーザ #{login} indexで[行削除]が #{result}" do
       login_as (login)
       get :index 
-      assert_tag  :tag => "td"  ,:child => { :tag => "a",:attributes => {:onclick => /delete/ },:child =>"削除"}
+      assert_tag  :tag => "td"  ,:child => { :tag => "a",:attributes => {"data-method" => "delete" },:child =>"削除"}
     end
   }
 
@@ -152,7 +154,7 @@ class UbeMeigaraControllerTest < ActionController::TestCase
       :child => { 
         :tag => "td",:child => {
         :tag => "select",:attributes => {:name => "#{@@modelname}[1][proname]"},
-        :children => {:count => UbeOperation.names.size ,:only => { :tag => "option"} }
+        :children => {:count => Ubeboard::Operation.names.size ,:only => { :tag => "option"} }
       }
     }
     
@@ -170,7 +172,7 @@ __END__
     :child => { 
       :tag => "td",:child => { 
         :tag => "select",:attributes => {:name => "/#{@@modelname}/1[proname]"},
-        :children => {:count => 1}#UbeOperation.count}
+        :children => {:count => 1}#Ubeboard::Operation.count}
       }
     }
   end

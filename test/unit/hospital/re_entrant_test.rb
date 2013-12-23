@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 require 'test_helper'
 #require 'need'
 
@@ -326,3 +327,4 @@ must "2/1にわりつけ " do
     #assert_equal [1],@assign.short_role_shift_of(28)
   end
 end
+# -*- coding: utf-8 -*-

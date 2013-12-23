@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 class Ubr::WakuTest < ActiveSupport::TestCase
@@ -302,3 +303,4 @@ __END__
 
 }
 
+# -*- coding: utf-8 -*-

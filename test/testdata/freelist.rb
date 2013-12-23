@@ -38,9 +38,11 @@ Freelist0 = {
              ["06/27-08:00", "06/27-16:00"],
              ["06/28-08:00", "07/01-08:00"]]
 }
+
 Freelist0.each_key{|ope|
   Freelist0[ope].each{|times| [0,1].each{|s| times[s]=Time.parse("2012/"+times[s])}}
 }
+
 #保全FreeList初期値
 Freelist1 = {  
   :shozow=>[["06/01-08:00", "06/04-08:00"], # 休転を被せてあるので、保守は可能

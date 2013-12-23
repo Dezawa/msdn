@@ -1,46 +1,47 @@
-require File.dirname(__FILE__) + '/../test_helper'
+# -*- coding: utf-8 -*-
+require 'test_helper'
 require 'users_controller'
 
 # Re-raise errors caught by the controller.
 class UsersController; def rescue_action(e) raise e end; end
 
+
 class UsersControllerTest < ActionController::TestCase
-  # Be sure to include AuthenticatedTestHelper in test/test_helper.rb instead
   # Then, you can remove it from this and the units test.
-  include AuthenticatedTestHelper
+  include Devise::TestHelpers
 
   fixtures :users,:user_options,:user_options_users
 
   def test_should_allow_create_new_user_by_dezawa
-    assert_difference 'User.count' do
-      login_as("dezawa")
-      create_user
-      assert_response :redirect
+    login_as("dezawa")
+    assert_difference 'User.count',1 do
+      create_user 
     end
   end
 
   def test_should_not_arrow_create_new_user_by_quentin
+    login_as("quentin")
+    #assert_
     assert_no_difference 'User.count' do
-      login_as("quentin")
       create_user
       assert_response :redirect
     end
   end
 
-  def test_should_require_login_on_signup
+  def test_should_require_username_on_create_new_user
+    login_as("dezawa")
     assert_no_difference 'User.count' do
-      login_as("dezawa")
-      create_user(:login => nil)
-      assert assigns["user"].errors.on(:login)
-      assert_response :success
+      create_user(:username => nil)
     end
-  end
+       assert assigns["user"].errors[:username].size>0
+      assert_response :success
+ end
 
   def test_should_require_password_on_signup
     assert_no_difference 'User.count' do
       login_as("dezawa")
       create_user(:password => nil)
-      assert assigns("user").errors.on(:password)
+      assert assigns("user").errors[:password].size>0
       assert_response :success
     end
   end
@@ -49,7 +50,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_no_difference 'User.count' do
       login_as("dezawa")
       create_user(:password_confirmation => nil)
-      assert assigns("user").errors.on(:password_confirmation)
+      assert assigns("user").errors[:password_confirmation].size > 0
       assert_response :success
     end
   end
@@ -58,7 +59,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_no_difference 'User.count' do
       login_as("dezawa")
       create_user(:email => nil)
-      assert assigns("user").errors.on(:email)
+      assert assigns("user").errors[:email]
       assert_response :success
     end
   end
@@ -73,7 +74,7 @@ class UsersControllerTest < ActionController::TestCase
 
   protected
     def create_user(options = {})
-      post :create, :user => { :login => 'quire', :email => 'quire@example.com',
+      post :create, :user => { :username => 'quire', :email => 'quire@example.com',
         :password => 'quire6999', :password_confirmation => 'quire6999' }.merge(options)
     end
 end

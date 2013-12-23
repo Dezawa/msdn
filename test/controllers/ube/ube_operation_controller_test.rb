@@ -1,15 +1,16 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 
 class UbeOperationControllerTest < ActionController::TestCase
-  include AuthenticatedTestHelper
+  include Devise::TestHelpers
 
-  @@Model = UbeOperation
+  @@Model = Ubeboard::Operation
   @@model_size = 60
-  @@Controller = UbeOperationController
+  @@Controller = Ubeboard::OperationController
   def model_by_sym(sym); ube_operations(:one) ;end
   AttrMerge = {}
-  fixtures :ube_operations #meigaras, :ube_operations,:ube_operations
+  fixtures "ube/operations" #meigaras, :ube_operations,:ube_operations
 
   @@Users = [:dezawa,:ubeboard,:guest]
   @@modelname = @@Model.name.underscore.to_sym #:ube_operation
@@ -25,8 +26,8 @@ class UbeOperationControllerTest < ActionController::TestCase
 
   def setup 
     @controller =  @@Controller.new
-    @request = ActionController::TestRequest.new
-    @request.session = ActionController::TestSession.new
+    #@request = ActionController::TestRequest.new
+    #@request.session = ActionController::TestSession.new
     @model = @@Model.find 1
   end
 
@@ -129,8 +130,7 @@ class UbeOperationControllerTest < ActionController::TestCase
     test " ユーザ #{login} indexで[行削除]が #{result}" do
       login_as (login)
       get :index 
-      assert_tag  :tag => "td"  ,:child => { :tag => "a",:attributes => {:href =>"/#{@@modelname}/1",:onclick => /delete/ }}#,:child =>"削除"}
+      assert_tag  :tag => "td"  ,:child => { :tag => "a",:attributes => {"data-method" => "delete"}}#,:child =>"削除"}
     end
   }
 end
-

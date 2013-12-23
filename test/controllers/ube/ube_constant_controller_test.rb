@@ -1,13 +1,14 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 class UbeConstantControllerTest < ActionController::TestCase
-  include AuthenticatedTestHelper
+  include Devise::TestHelpers
 
-  @@Model = UbeConstant
-  @@Controller = UbeConstantController
+  @@Model = Ubeboard::Constant
+  @@Controller = Ubeboard::ConstantController
   def model_by_sym(sym); ube_skds(:one) ;end
   AttrMerge = {}
-  fixtures :ube_constants #meigaras, :ube_products,:ube_operations
+  fixtures "ube/constants" #meigaras, :ube_products,:ube_operations
   fixtures :users,:user_options,:user_options_users
 
   @@Users = [:dezawa,:ubeboard,:guest]
@@ -23,8 +24,8 @@ class UbeConstantControllerTest < ActionController::TestCase
 
   def setup 
     @controller =  @@Controller.new
-    @request = ActionController::TestRequest.new
-    @request.session = ActionController::TestSession.new
+    #@request = ActionController::TestRequest.new
+    #@request.session = ActionController::TestSession.new
     @model = @@Model.first
   end
 

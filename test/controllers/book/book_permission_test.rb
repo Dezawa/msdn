@@ -30,6 +30,7 @@ class Book::PermissionControllerTest < BookControllerTest
     @model = Book::Main.first
   end
 
+
   rets = [TTT,TTF,FFF,TTF,TFF,TFF,FFF]
   Users.zip(rets).each{|login,ret|
     must "#{login} が持つ権限 試用、使用、コンフィグは#{ret}" do
@@ -39,17 +40,8 @@ class Book::PermissionControllerTest < BookControllerTest
     end
   }
 
-  right = ["/book/main/owner_change_win", "/book/main", "/book/main"]
-  rights = [2,2,1,0,0,0,0] 
-  Users.zip(rights).each{|login,ret|
-    must "#{login}はdezawaの共有ユーザーか" do
-      owner_change(login,"dezawa")
-      assert_redirected_to right[ret]
-    end
-  }
-
-  right = ["/book/main/owner_change_win", "/book/main", "/book/main"]
-  rights = [2,2,1,0,0,0,0] 
+  right = ["/book/main/owner_change_win", "/book/main", "/book/main","/book/keeping/error"]
+  rights = [2,2,1,0,0,0,3] 
   Users.zip(rights).each{|login,ret|
     must "#{login}はdezawaの共有ユーザーか" do
       owner_change(login,"dezawa")

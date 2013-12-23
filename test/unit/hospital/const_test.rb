@@ -1,4 +1,5 @@
 require 'test_helper'
+# -*- coding: utf-8 -*-
 
 class Hospital::ConstTest < ActiveSupport::TestCase
   # Replace this with your real tests.
@@ -6,3 +7,4 @@ class Hospital::ConstTest < ActiveSupport::TestCase
     assert_equal "新人",Hospital::Const::Idou.rassoc(1)[0]
   end
 end
+# -*- coding: utf-8 -*-

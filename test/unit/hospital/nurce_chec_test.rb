@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 class Hospital::NurceChecTest < ActiveSupport::TestCase
@@ -138,3 +139,4 @@ class Hospital::NurceChecTest < ActiveSupport::TestCase
   
 
 end
+# -*- coding: utf-8 -*-

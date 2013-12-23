@@ -1,13 +1,14 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 require 'test_book_helper'
 
 class BookKeepingControllerTest < BookControllerTest
-  include AuthenticatedTestHelper
+  include Devise::TestHelpers
   # Replace this with your real tests.
-  @@Controller =  BookKeepingController
+  @@Controller =  Book::KeepingController
 
   fixtures :users,:user_options,:user_options_users
-  fixtures :book_permissions
+  fixtures "book/permissions"
 
   Result = [:success,:success,:success,:success,:success,:success,:redirect]
   Choise = [ #dezawa
@@ -26,8 +27,8 @@ class BookKeepingControllerTest < BookControllerTest
 
   def setup
     @controller = @@Controller.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
+    #@request    = ActionController::TestRequest.new
+    #@response   = ActionController::TestResponse.new
   end
 
   Users[SUCCESS].zip([4,4,2,2,1,1]).each{|login,count|
@@ -37,13 +38,12 @@ class BookKeepingControllerTest < BookControllerTest
       assert_equal count,assigns["arrowed"].size
       end
     }
-
   Users[0..3].each{|login|
     must "二つ以上アクセス権のある#{login}は、owner変更の選択肢が出る" do
-      login_as login
+      login_as  login
       get :index
       assert_tag(:tag => "a",
-                 :attributes => { :href => "/book_keeping/owner_change_win?popup=true"}
+                 :attributes => { :href => "/book/keeping/owner_change_win?popup=true"}
                  )
     end
   }
@@ -52,20 +52,19 @@ class BookKeepingControllerTest < BookControllerTest
       login_as login
       get :index
       assert_no_tag(:tag => "a",
-                 :attributes => { :href => "/book_keeping/owner_change_win?popup=true"}
+                 :attributes => { :href => "/book/keeping/owner_change_win?popup=true"}
                  )
     end
   }
-
   must "BookKeeping Top without login is redirect 'login'" do
     get :index
-    assert_redirected_to "/book_keeping/error"
+    assert_redirected_to "/users/sign_in"
   end
 
   must "BookKeeping Top login as old_password_holder 複式簿記 is rejected " do
     login_as "old_password_holder"
     get :index
-    assert_redirected_to "/book_keeping/error"
+    assert_redirected_to "/book/keeping/error"
   end
 
   Users[SUCCESS].
@@ -95,7 +94,7 @@ class BookKeepingControllerTest < BookControllerTest
       login_as user
       get :index
       assert_tag(:tag => "div",
-                 :child => {:tag => "a",:attributes => { :href => "/book_main/csv_out_print"} }
+                 :child => {:tag => "a",:attributes => { :href => "/book/main/csv_out_print"} }
                  )
     end
   }
@@ -111,20 +110,20 @@ class BookKeepingControllerTest < BookControllerTest
   @@Controller::Labels.each{|menu| 
     must "出沢のとき、BookKeeping Top menu #{menu.label} link toはある" do
       login_as("dezawa")
-      href = "/"+menu.model.to_s + (menu.action == :index ? "" : "/#{menu.action}")
+      href = "/book/"+menu.model.to_s + (menu.action == :index ? "" : "/#{menu.action}")
       get :index
-      assert_tag :tag => "tr",:child => {:tag => "td",
-        :child => {:tag => "a",:attributes => { :href => href }}
-      }
+      assert_tag :tag => "tr",#, #child => {:tag => "td",
+        :descendant => {:tag => "a",:attributes => { :href => href }}
+      #}
     end
   }
 
   @@Controller::Labels.each{|menu| next unless menu.enable_csv_upload
     must "出沢のとき、BookKeeping Top menu #{menu.label} csv upload" do
       login_as("dezawa")
-      href = "/#{menu.model}/#{menu.csv_upload_action}"
+      href = "/book/#{menu.model}/#{menu.csv_upload_action}"
       get :index
-      assert_tag :tag => "tr",:child => {:tag => "form",
+      assert_tag :tag => "tr",:descendant => {:tag => "form",
         :attributes => { :action => href }
       }
     end
@@ -134,16 +133,16 @@ class BookKeepingControllerTest < BookControllerTest
     must "BookKeeping Top menu #{menu.label} csv download" do
       login_as("dezawa")
       href = case menu.csv_download_url
-             when Symbol ;"/#{menu.model}/#{menu.csv_download_url}"
+             when Symbol ;"/book/#{menu.model}/#{menu.csv_download_url}"
              when String ; menu.csv_download_url
              else ; ""
              end
       get :index
-      assert_tag :tag => "tr",:child => {:tag => "td",
-        :child => {
+      assert_tag :tag => "tr",
+        :descendant => {
         :tag => "a",
         :attributes => { :href => href }
-        }}
+        }#}
     end
   }
   
@@ -168,9 +167,9 @@ class BookKeepingControllerTest < BookControllerTest
       login_as("dezawa")
       get :owner_change, :owner => owner
       get :index
-      assert_no_tag :tag => "tr",:child => {:tag => "td",
-        :child => {:tag => "a",:attributes => { :href => "/book_permission" }}
-      }
+      assert_no_tag :tag => "tr",#:child => {:tag => "td",
+        :descendant => {:tag => "a",:attributes => { :href => "/book/permission" }}
+
     end
   }
 end

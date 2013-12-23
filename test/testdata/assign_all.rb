@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 #製造を入れないFreeList
 AssignFreeList = {

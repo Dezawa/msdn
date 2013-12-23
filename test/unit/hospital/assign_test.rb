@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 require 'test_helper'
 #require 'need'
 
@@ -166,3 +167,4 @@ pp @assign.role_order_by_tightness(shift)
   end
 
 end
+# -*- coding: utf-8 -*-

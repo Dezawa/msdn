@@ -1,14 +1,15 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 
 
 class UbeMeigaraShortnameControllerTest < ActionController::TestCase
-  include AuthenticatedTestHelper
-    @@Model = UbeMeigaraShortname
+  include Devise::TestHelpers
+    @@Model = Ubeboard::MeigaraShortname
 
-  @@Controller = UbeMeigaraShortnameController
+  @@Controller = Ubeboard::MeigaraShortnameController
   def model_by_sym(sym); ube_meigara_shortnames(:one) ;end
   AttrMerge = {}
-  fixtures :ube_meigara_shortnames ,:ube_meigaras  #meigarashortnames, :ube_meigarashortnames,:ube_meigarashortnames
+  fixtures "ube/meigara_shortnames" ,"ube/meigaras" #meigarashortnames, :ube_meigarashortnames,:ube_meigarashortnames
 
   @@Users = [:dezawa,:ubeboard,:guest]
   @@modelname = @@Model.name.underscore.to_sym #:ube_meigarashortname
@@ -24,8 +25,8 @@ class UbeMeigaraShortnameControllerTest < ActionController::TestCase
 
   def setup 
     @controller =  @@Controller.new
-    @request = ActionController::TestRequest.new
-    @request.session = ActionController::TestSession.new
+    #@request = ActionController::TestRequest.new
+    #@request.session = ActionController::TestSession.new
     @model = @@Model.find 1
   end
 
@@ -127,7 +128,7 @@ class UbeMeigaraShortnameControllerTest < ActionController::TestCase
     test " ユーザ #{login} indexで[行削除]が #{result}" do
       login_as (login)
       get :index 
-      assert_tag  :tag => "td"  ,:child => { :tag => "a",:attributes => {:onclick => /delete/ },:child =>"削除"}
+      assert_tag  :tag => "td"  ,:child => { :tag => "a",:attributes => {"data-method" => "delete" },:child =>"削除"}
     end
   }
  test " ユーザ dezawaで edit_on_table " do
@@ -151,7 +152,7 @@ class UbeMeigaraShortnameControllerTest < ActionController::TestCase
       :child => { 
         :tag => "td",:child => {
         :tag => "select",:attributes => {:name => "#{@@modelname}[1][ube_meigara_id]"},
-        :children => {:count => UbeMeigara.all_meigara.size ,:only => { :tag => "option"} }
+        :children => {:count => Ubeboard::Meigara.all_meigara.size ,:only => { :tag => "option"} }
       }
     }
     
