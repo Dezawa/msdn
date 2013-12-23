@@ -20,13 +20,14 @@ Msdn::Application.routes.draw do
   get     "top" => "top#msdn"
   get     "change_password" => "users#change_password"
   post    "password_update" => "users#password_update"
-  put "users/new" => "users#create"
+  put     "users/new" => "users#create"
 
   get     "lips" => "lips#calc"
-
+  post    "lips" => "lips#calc"
   get  "ubr/main" => "ubr/main#index"
   get  "ubeboard/top" => "ubeboard/top#top"
-  get  "ubeboard/lips/member" => "lips#member"
+  get  "ubeboard/lips/calc" => "lips#calc"
+  post "ubeboard/lips/calc" => "lips#calc"
   post "book/keeping/year_change/:year" => "book/keeping#year_change"
   post "lips/csv_upload"               => "lips#csv_upload"
   get "lips/csv_upload"               => "lips#csv_upload"
@@ -94,7 +95,7 @@ Msdn::Application.routes.draw do
       post "#{ctrl}/csv_out" => "#{ctrl}#csv_out"
       post "#{ctrl}/csv_upload" => "#{ctrl}#csv_upload"
     }
-    get  "top/member"      => "top#member"
+    get  "top/calc"      => "top#calc"
     post "top/csv_upload"  => "top#csv_upload"
     actions = [%w( csv_download doc_out_all),
                %w(input_result doc_out lips_load makeplan edit_only sort sort_edit)]
