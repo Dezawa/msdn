@@ -46,3 +46,9 @@ end
 gem 'devise'
 
 gem "will_paginate"
+gem "capybara"
+
+group :test do
+  gem "rspec"
+  gem "rspec-rails"
+end
