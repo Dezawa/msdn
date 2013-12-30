@@ -1,0 +1,1091 @@
+---
+one:
+  id: '3'
+  "no": '1'
+  date: '2012-01-01'
+  amount: '3940'
+  karikata: '13'
+  kasikata: '2'
+  tytle: 計算違い補正
+  memo: 
+  owner: guest
+two:
+  id: '2'
+  "no": '2'
+  date: '2012-01-02'
+  amount: '301'
+  karikata: '13'
+  kasikata: '2'
+  tytle: カード：KDDI
+  memo: 12月分
+  owner: ubeboard
+No3:
+  id: '1'
+  "no": '3'
+  date: '2012-01-03'
+  amount: '9074'
+  karikata: '13'
+  kasikata: '2'
+  tytle: ASAHIネット
+  memo: 1月分
+  owner: dezawa
+No4:
+  id: '4'
+  "no": '4'
+  date: '2012-01-4'
+  amount: '2747'
+  karikata: '13'
+  kasikata: '2'
+  tytle: カード：KDDI
+  memo: 1月分
+  owner: dezawa
+No5:
+  id: '5'
+  "no": '5'
+  date: '2012-02-5'
+  amount: '3129'
+  karikata: '13'
+  kasikata: '2'
+  tytle: カード:KDDI料金
+  memo: 
+  owner: dezawa
+No6:
+  id: '6'
+  "no": '6'
+  date: '2012-02-6'
+  amount: '9074'
+  karikata: '13'
+  kasikata: '2'
+  tytle: カード:ASAHIネット
+  memo: 2月分
+  owner: dezawa
+No7:
+  id: '7'
+  "no": '7'
+  date: '2012-01-07'
+  amount: '3940'
+  karikata: '13'
+  kasikata: '2'
+  tytle: 計算違い補正
+  memo: 
+  owner: dezawa
+No8:
+  id: '8'
+  "no": '8'
+  date: '2012-01-08'
+  amount: '301'
+  karikata: '13'
+  kasikata: '2'
+  tytle: カード：KDDI
+  memo: 12月分
+  owner: dezawa
+No9:
+  id: '9'
+  "no": '9'
+  date: '2012-01-9'
+  amount: '9074'
+  karikata: '13'
+  kasikata: '2'
+  tytle: ASAHIネット
+  memo: 1月分
+  owner: dezawa
+No10:
+  id: '10'
+  "no": '10'
+  date: '2012-01-10'
+  amount: '2747'
+  karikata: '13'
+  kasikata: '2'
+  tytle: カード：KDDI
+  memo: 1月分
+  owner: dezawa
+No11:
+  id: '11'
+  "no": '11'
+  date: '2012-02-11'
+  amount: '3129'
+  karikata: '13'
+  kasikata: '2'
+  tytle: カード:KDDI料金
+  memo: 
+  owner: dezawa
+No12:
+  id: '12'
+  "no": '12'
+  date: '2012-02-12'
+  amount: '9074'
+  karikata: '13'
+  kasikata: '2'
+  tytle: カード:ASAHIネット
+  memo: 2月分
+  owner: dezawa
+No13:
+  id: '13'
+  "no": '13'
+  date: '2012-01-13'
+  amount: '3940'
+  karikata: '13'
+  kasikata: '2'
+  tytle: 計算違い補正
+  memo: 
+  owner: dezawa
+No14:
+  id: '14'
+  "no": '14'
+  date: '2012-01-14'
+  amount: '301'
+  karikata: '13'
+  kasikata: '2'
+  tytle: カード：KDDI
+  memo: 12月分
+  owner: dezawa
+No15:
+  id: '15'
+  "no": '15'
+  date: '2012-01-15'
+  amount: '9074'
+  karikata: '13'
+  kasikata: '2'
+  tytle: ASAHIネット
+  memo: 1月分
+  owner: dezawa
+No16:
+  id: '16'
+  "no": '16'
+  date: '2012-01-16'
+  amount: '2747'
+  karikata: '13'
+  kasikata: '2'
+  tytle: カード：KDDI
+  memo: 1月分
+  owner: dezawa
+No17:
+  id: '17'
+  "no": '17'
+  date: '2012-02-17'
+  amount: '3129'
+  karikata: '13'
+  kasikata: '2'
+  tytle: カード:KDDI料金
+  memo: 
+  owner: dezawa
+No18:
+  id: '18'
+  "no": '18'
+  date: '2012-02-18'
+  amount: '9074'
+  karikata: '13'
+  kasikata: '2'
+  tytle: カード:ASAHIネット
+  memo: 2月分
+  owner: dezawa
+No19:
+  id: '19'
+  "no": '19'
+  date: '2012-01-19'
+  amount: '61514'
+  karikata: '18'
+  kasikata: '2'
+  tytle: 開始残高
+  memo: '3940'
+  owner: dezawa
+No20:
+  id: '20'
+  "no": '20'
+  date: '2012-01-20'
+  amount: '61514'
+  karikata: '18'
+  kasikata: '2'
+  tytle: 開始残高
+  memo: '3940'
+  owner: dezawa
+No21:
+  id: '21'
+  "no": '21'
+  date: '2012-01-21'
+  amount: '61514'
+  karikata: '18'
+  kasikata: '2'
+  tytle: 開始残高
+  memo: '3940'
+  owner: dezawa
+No22:
+  id: '22'
+  "no": '22'
+  date: '2012-02-22'
+  amount: '749'
+  karikata: '20'
+  kasikata: '2'
+  tytle: カード:Amazon
+  memo: ruby/GTK
+  owner: dezawa
+No23:
+  id: '23'
+  "no": '23'
+  date: '2012-02-23'
+  amount: '749'
+  karikata: '20'
+  kasikata: '2'
+  tytle: カード:Amazon
+  memo: ruby/GTK
+  owner: dezawa
+No24:
+  id: '24'
+  "no": '24'
+  date: '2012-02-24'
+  amount: '749'
+  karikata: '20'
+  kasikata: '2'
+  tytle: カード:Amazon
+  memo: ruby/GTK
+  owner: dezawa
+No25:
+  id: '25'
+  "no": '25'
+  date: '2012-01-25'
+  amount: '201846'
+  karikata: '18'
+  kasikata: '4'
+  tytle: 開始残高
+  memo: 
+  owner: dezawa
+No26:
+  id: '26'
+  "no": '26'
+  date: '2012-01-26'
+  amount: '201846'
+  karikata: '18'
+  kasikata: '4'
+  tytle: 開始残高
+  memo: 
+  owner: dezawa
+No27:
+  id: '27'
+  "no": '27'
+  date: '2012-01-27'
+  amount: '201846'
+  karikata: '18'
+  kasikata: '4'
+  tytle: 開始残高
+  memo: 
+  owner: dezawa
+No28:
+  id: '28'
+  "no": '28'
+  date: '2012-01-28'
+  amount: '2815'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード：KDDI
+  memo: 10月分
+  owner: dezawa
+No29:
+  id: '29'
+  "no": '29'
+  date: '2012-01-29'
+  amount: '8694'
+  karikata: '2'
+  kasikata: '6'
+  tytle: ASAHIネット
+  memo: 11月分
+  owner: dezawa
+No30:
+  id: '30'
+  "no": '30'
+  date: '2012-01-30'
+  amount: '37040'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード：ANA
+  memo: 12月宇部出張
+  owner: dezawa
+No31:
+  id: '31'
+  "no": '31'
+  date: '2012-03-01'
+  amount: '3171'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード：KDDI
+  memo: 11月分
+  owner: dezawa
+No32:
+  id: '32'
+  "no": '32'
+  date: '2012-03-02'
+  amount: '4660'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード：JR
+  memo: 12月宇部出張
+  owner: dezawa
+No33:
+  id: '33'
+  "no": '33'
+  date: '2012-03-03'
+  amount: '9074'
+  karikata: '2'
+  kasikata: '6'
+  tytle: ASAHIネット
+  memo: 12月
+  owner: dezawa
+No34:
+  id: '34'
+  "no": '34'
+  date: '2012-03-04'
+  amount: '3129'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード:KDDI料金
+  memo: 12月分
+  owner: dezawa
+No35:
+  id: '35'
+  "no": '35'
+  date: '2012-03-05'
+  amount: '9074'
+  karikata: '2'
+  kasikata: '6'
+  tytle: ASAHIネット
+  memo: 1月分
+  owner: dezawa
+No36:
+  id: '36'
+  "no": '36'
+  date: '2012-03-06'
+  amount: '2815'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード：KDDI
+  memo: 10月分
+  owner: dezawa
+No37:
+  id: '37'
+  "no": '37'
+  date: '2012-03-07'
+  amount: '8694'
+  karikata: '2'
+  kasikata: '6'
+  tytle: ASAHIネット
+  memo: 11月分
+  owner: dezawa
+No38:
+  id: '38'
+  "no": '38'
+  date: '2012-03-08'
+  amount: '37040'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード：ANA
+  memo: 12月宇部出張
+  owner: dezawa
+No39:
+  id: '39'
+  "no": '39'
+  date: '2012-03-09'
+  amount: '3171'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード：KDDI
+  memo: 11月分
+  owner: dezawa
+No40:
+  id: '40'
+  "no": '40'
+  date: '2012-04-06'
+  amount: '4660'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード：JR
+  memo: 12月宇部出張
+  owner: dezawa
+No41:
+  id: '41'
+  "no": '41'
+  date: '2012-04-01'
+  amount: '9074'
+  karikata: '2'
+  kasikata: '6'
+  tytle: ASAHIネット
+  memo: 12月
+  owner: dezawa
+No42:
+  id: '42'
+  "no": '42'
+  date: '2012-04-02'
+  amount: '3129'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード:KDDI料金
+  memo: 12月分
+  owner: dezawa
+No43:
+  id: '43'
+  "no": '43'
+  date: '2012-04-02'
+  amount: '9074'
+  karikata: '2'
+  kasikata: '6'
+  tytle: ASAHIネット
+  memo: 1月分
+  owner: dezawa
+No44:
+  id: '44'
+  "no": '44'
+  date: '2012-04-04'
+  amount: '2815'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード：KDDI
+  memo: 10月分
+  owner: dezawa
+No45:
+  id: '45'
+  "no": '45'
+  date: '2012-04-05'
+  amount: '8694'
+  karikata: '2'
+  kasikata: '6'
+  tytle: ASAHIネット
+  memo: 11月分
+  owner: dezawa
+No46:
+  id: '46'
+  "no": '46'
+  date: '2012-04-06'
+  amount: '37040'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード：ANA
+  memo: 12月宇部出張
+  owner: dezawa
+No47:
+  id: '47'
+  "no": '47'
+  date: '2012-04-07'
+  amount: '3171'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード：KDDI
+  memo: 11月分
+  owner: dezawa
+No48:
+  id: '48'
+  "no": '48'
+  date: '2012-04-08'
+  amount: '4660'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード：JR
+  memo: 12月宇部出張
+  owner: dezawa
+No49:
+  id: '49'
+  "no": '49'
+  date: '2012-04-09'
+  amount: '9074'
+  karikata: '2'
+  kasikata: '6'
+  tytle: ASAHIネット
+  memo: 12月
+  owner: dezawa
+No50:
+  id: '50'
+  "no": '50'
+  date: '2012-05-05'
+  amount: '3129'
+  karikata: '2'
+  kasikata: '6'
+  tytle: カード:KDDI料金
+  memo: 12月分
+  owner: dezawa
+No51:
+  id: '51'
+  "no": '51'
+  date: '2012-05-01'
+  amount: '9074'
+  karikata: '2'
+  kasikata: '6'
+  tytle: ASAHIネット
+  memo: 1月分
+  owner: dezawa
+No52:
+  id: '52'
+  "no": '52'
+  date: '2012-05-02'
+  amount: '157500'
+  karikata: '6'
+  kasikata: '8'
+  tytle: ウベボード：試作品
+  memo: 
+  owner: dezawa
+No53:
+  id: '53'
+  "no": '53'
+  date: '2012-05-03'
+  amount: '157500'
+  karikata: '6'
+  kasikata: '8'
+  tytle: ウベボード：試作品
+  memo: 
+  owner: dezawa
+No54:
+  id: '54'
+  "no": '54'
+  date: '2012-05-04'
+  amount: '157500'
+  karikata: '6'
+  kasikata: '8'
+  tytle: ウベボード：試作品
+  memo: 
+  owner: dezawa
+No55:
+  id: '55'
+  "no": '55'
+  date: '2012-05-05'
+  amount: '9'
+  karikata: '6'
+  kasikata: '16'
+  tytle: 利息
+  memo: 
+  owner: dezawa
+No56:
+  id: '56'
+  "no": '56'
+  date: '2012-05-06'
+  amount: '9'
+  karikata: '6'
+  kasikata: '16'
+  tytle: 利息
+  memo: 
+  owner: dezawa
+No57:
+  id: '57'
+  "no": '57'
+  date: '2012-05-07'
+  amount: '9'
+  karikata: '6'
+  kasikata: '16'
+  tytle: 利息
+  memo: 
+  owner: dezawa
+No58:
+  id: '58'
+  "no": '58'
+  date: '2012-05-08'
+  amount: '1600'
+  karikata: '7'
+  kasikata: '16'
+  tytle: メモリー
+  memo: USBメモリー
+  owner: dezawa
+No59:
+  id: '59'
+  "no": '59'
+  date: '2012-05-09'
+  amount: '1200'
+  karikata: '7'
+  kasikata: '16'
+  tytle: LED電球
+  memo: 作業机照明
+  owner: dezawa
+No60:
+  id: '60'
+  "no": '60'
+  date: '2012-06-07'
+  amount: '2158'
+  karikata: '7'
+  kasikata: '16'
+  tytle: 印刷用紙、バックアップ用DVD
+  memo: 1月分
+  owner: dezawa
+No61:
+  id: '61'
+  "no": '61'
+  date: '2012-06-01'
+  amount: '1600'
+  karikata: '7'
+  kasikata: '16'
+  tytle: メモリー
+  memo: USBメモリー
+  owner: dezawa
+No62:
+  id: '62'
+  "no": '62'
+  date: '2012-06-03'
+  amount: '1200'
+  karikata: '7'
+  kasikata: '16'
+  tytle: LED電球
+  memo: 作業机照明
+  owner: dezawa
+No63:
+  id: '63'
+  "no": '63'
+  date: '2012-06-03'
+  amount: '2158'
+  karikata: '7'
+  kasikata: '16'
+  tytle: 印刷用紙、バックアップ用DVD
+  memo: 1月分
+  owner: dezawa
+No64:
+  id: '64'
+  "no": '64'
+  date: '2012-06-04'
+  amount: '1600'
+  karikata: '7'
+  kasikata: '16'
+  tytle: メモリー
+  memo: USBメモリー
+  owner: dezawa
+No65:
+  id: '65'
+  "no": '65'
+  date: '2012-06-05'
+  amount: '1200'
+  karikata: '7'
+  kasikata: '16'
+  tytle: LED電球
+  memo: 作業机照明
+  owner: dezawa
+No66:
+  id: '66'
+  "no": '66'
+  date: '2011-06-06'
+  amount: '2158'
+  karikata: '7'
+  kasikata: '16'
+  tytle: 印刷用紙、バックアップ用DVD
+  memo: 1月分
+  owner: dezawa
+No67:
+  id: '67'
+  "no": '67'
+  date: '2012-06-07'
+  amount: '2158'
+  karikata: '7'
+  kasikata: '16'
+  tytle: 印刷用紙、バックアップ用DVD
+  memo: 1月分
+  owner: guest
+No68:
+  id: '68'
+  "no": '68'
+  date: '2012-06-10'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: ウベボード打ち合わせ
+  memo: 大雄山←→東京
+  owner: dezawa
+No69:
+  id: '69'
+  "no": '69'
+  date: '2012-06-29'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: ウベボード打ち合わせ
+  memo: 大雄山←→東京
+  owner: dezawa
+No70:
+  id: '70'
+  "no": '70'
+  date: '2012-01-27'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: ウベボード打ち合わせ
+  memo: 大雄山←→東京
+  owner: dezawa
+No71:
+  id: '71'
+  "no": '71'
+  date: '2012-02-09'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: 宇部ボード打ち合わせ
+  memo: 大雄山←→東京
+  owner: dezawa
+No72:
+  id: '72'
+  "no": '72'
+  date: '2012-03-01'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: ウベボード打ち合わせ
+  memo: JR品川+大雄山
+  owner: dezawa
+No73:
+  id: '73'
+  "no": '73'
+  date: '2012-01-10'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: ウベボード打ち合わせ
+  memo: 大雄山←→東京
+  owner: dezawa
+No74:
+  id: '74'
+  "no": '74'
+  date: '2012-01-25'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: ウベボード打ち合わせ
+  memo: 大雄山←→東京
+  owner: dezawa
+No75:
+  id: '75'
+  "no": '75'
+  date: '2012-01-27'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: ウベボード打ち合わせ
+  memo: 大雄山←→東京
+  owner: dezawa
+No76:
+  id: '76'
+  "no": '76'
+  date: '2012-02-09'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: 宇部ボード打ち合わせ
+  memo: 大雄山←→東京
+  owner: dezawa
+No77:
+  id: '77'
+  "no": '77'
+  date: '2012-03-01'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: ウベボード打ち合わせ
+  memo: JR品川+大雄山
+  owner: dezawa
+No78:
+  id: '78'
+  "no": '78'
+  date: '2012-01-10'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: ウベボード打ち合わせ
+  memo: 大雄山←→東京
+  owner: dezawa
+No79:
+  id: '79'
+  "no": '79'
+  date: '2012-01-25'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: ウベボード打ち合わせ
+  memo: 大雄山←→東京
+  owner: dezawa
+No80:
+  id: '80'
+  "no": '80'
+  date: '2012-01-27'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: ウベボード打ち合わせ
+  memo: 大雄山←→東京
+  owner: dezawa
+No81:
+  id: '81'
+  "no": '81'
+  date: '2012-03-01'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: ウベボード打ち合わせ
+  memo: JR品川+大雄山
+  owner: dezawa
+No82:
+  id: '82'
+  "no": '82'
+  date: '2012-02-09'
+  amount: '3450'
+  karikata: '19'
+  kasikata: '16'
+  tytle: 宇部ボード打ち合わせ
+  memo: 大雄山←→東京
+  owner: dezawa
+No83:
+  id: '83'
+  "no": '3'
+  date: '2000-01-01'
+  amount: '0'
+  karikata: '1'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: nasi
+  owner: dezawa
+No84:
+  id: '84'
+  "no": '1'
+  date: '2000-01-01'
+  amount: '0'
+  karikata: '3'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No85:
+  id: '85'
+  "no": '2'
+  date: '2000-01-01'
+  amount: '0'
+  karikata: '5'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No86:
+  id: '86'
+  "no": '86'
+  date: '2012-01-01'
+  amount: '157500'
+  karikata: '8'
+  kasikata: '18'
+  tytle: 開始残高
+  memo: 
+  owner: aaron
+No87:
+  id: '87'
+  "no": '87'
+  date: '2012-01-10'
+  amount: '860'
+  karikata: '8'
+  kasikata: '18'
+  tytle: うべ
+  memo: 
+  owner: dezawa
+No88:
+  id: '88'
+  "no": '88'
+  date: '2012-01-01'
+  amount: '157500'
+  karikata: '8'
+  kasikata: '18'
+  tytle: 開始残高
+  memo: 
+  owner: dezawa
+No89:
+  id: '89'
+  "no": '89'
+  date: '2012-01-10'
+  amount: '860'
+  karikata: '8'
+  kasikata: '18'
+  tytle: うべ
+  memo: 
+  owner: dezawa
+No90:
+  id: '90'
+  "no": '90'
+  date: '2012-01-01'
+  amount: '157500'
+  karikata: '8'
+  kasikata: '18'
+  tytle: 開始残高
+  memo: 
+  owner: dezawa
+No91:
+  id: '91'
+  "no": '91'
+  date: '2012-01-10'
+  amount: '860'
+  karikata: '8'
+  kasikata: '18'
+  tytle: うべ
+  memo: 
+  owner: dezawa
+No92:
+  id: '92'
+  "no": '92'
+  date: '2012-01-01'
+  amount: '105000'
+  karikata: '10'
+  kasikata: '18'
+  tytle: 開始残高
+  memo: 
+  owner: dezawa
+No93:
+  id: '93'
+  "no": '93'
+  date: '2012-01-01'
+  amount: '105000'
+  karikata: '10'
+  kasikata: '18'
+  tytle: 開始残高
+  memo: 
+  owner: dezawa
+No94:
+  id: '94'
+  "no": '94'
+  date: '2012-01-01'
+  amount: '105000'
+  karikata: '10'
+  kasikata: '18'
+  tytle: 開始残高
+  memo: 
+  owner: dezawa
+No95:
+  id: '95'
+  "no": '4'
+  date: '2000-01-01'
+  amount: '0'
+  karikata: '11'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No96:
+  id: '96'
+  "no": '96'
+  date: '2012-04-02'
+  amount: '0'
+  karikata: '18'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: nasi
+  owner: dezawa
+No97:
+  id: '97'
+  "no": '97'
+  date: '2012-04-02'
+  amount: '0'
+  karikata: '18'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No98:
+  id: '98'
+  "no": '98'
+  date: '2012-04-02'
+  amount: '0'
+  karikata: '18'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No99:
+  id: '99'
+  "no": '99'
+  date: '2012-04-02'
+  amount: '0'
+  karikata: '18'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No100:
+  id: '100'
+  "no": '100'
+  date: '2012-04-02'
+  amount: '0'
+  karikata: '18'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No101:
+  id: '101'
+  "no": '36'
+  date: '2012-04-02'
+  amount: '0'
+  karikata: '18'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No102:
+  id: '102'
+  "no": '37'
+  date: '2012-04-26'
+  amount: '100'
+  karikata: '18'
+  kasikata: '18'
+  tytle: 新幹線　小田原→東京
+  memo: KDDI
+  owner: dezawa
+No103:
+  id: '103'
+  "no": '31'
+  date: '2012-04-02'
+  amount: '0'
+  karikata: '18'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: nasi
+  owner: dezawa
+No104:
+  id: '104  '
+  "no": '32'
+  date: '2012-04-02'
+  amount: '0'
+  karikata: '18'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No105:
+  id: '105'
+  "no": '33'
+  date: '2012-04-02'
+  amount: '0'
+  karikata: '18'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No106:
+  id: '106'
+  "no": '34'
+  date: '2012-04-02'
+  amount: '0'
+  karikata: '18'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No107:
+  id: '107'
+  "no": '35'
+  date: '2012-04-02'
+  amount: '0'
+  karikata: '18'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No108:
+  id: '108'
+  "no": '36'
+  date: '2012-04-02'
+  amount: '0'
+  karikata: '18'
+  kasikata: '18'
+  tytle: ダブリ
+  memo: 
+  owner: dezawa
+No109:
+  id: '109'
+  "no": '37'
+  date: '2012-04-26'
+  amount: '100'
+  karikata: '19'
+  kasikata: '18'
+  tytle: 新幹線　小田原→東京
+  memo: KDDI
+  owner: dezawa

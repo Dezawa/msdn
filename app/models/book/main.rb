@@ -9,7 +9,8 @@
 class Book::Main < ActiveRecord::Base
   extend CsvIo
   self.table_name = 'book_mains'
-   validates_presence_of :no, :date ,:message=> "は必須項目です"
+  before_validation      :no_check
+   validates_presence_of :no,:date ,:message=> "は必須項目です"
    validates_presence_of :karikata ,:message=> "借方勘定科目は必須項目です"
    validates_presence_of :kasikata ,:message=> "貸方勘定科目は必須項目です"
    validates_presence_of :amount   ,:message => "金額は必須項目です"
@@ -20,24 +21,38 @@ class Book::Main < ActiveRecord::Base
   belongs_to :kari_kamoku,:class_name => "Book::Kamoku",:foreign_key => :karikata
   belongs_to :kasi_kamoku,:class_name => "Book::Kamoku",:foreign_key => :kasikata
 
-  scope :this_year, ->(owner_name,from,to) { 
+  # 所有者、日付を指定して伝票を読む
+  def self.this_year_of_owner(owner_name,date)
+    self.this_year(owner_name,date.beginning_of_year)
+  end
+  def self.this_year_of_owner_sort_by_date(owner_name,year)
+    from = year.beginning_of_year
+    to = year.end_of_year
+    where(["owner = ? and date >= ? and date <= ?", owner_name,from,to]).
+      order(["date","no"])
+  end
+
+  scope :this_year, ->(owner_name,from,to=nil) { 
+    to ||= from.end_of_year
     where(["owner = ? and date >= ? and date <= ?", owner_name,from,to]).
     order(:no)
   }
 
+  def no_check
+    no || self[:no] = Book::Main.maximum(:no) + 1
+  end
+  
   def self.new(*args)
-    args.first[:amount].gsub!(/,/,"") if args.first[:amount].class == String
+    arg = args.first || {}
+    arg[:amount] ||= ""
+    arg[:amount].gsub!(/,/,"") if arg[:amount].class == String
     super
   end
 
+  
   # 日付が前後したときに日付順に並べ直す
   def self.renumber(login,year)
-   models= self.all(
-                    :conditions => ["owner = ? and date >= ? and date <= ?",
-                                    login,
-                                    year.beginning_of_year,year.end_of_year],
-                    :order => "date,no"
-                    )
+   models= self.this_year_of_owner_sort_by_date(login,year)
     numbers = models.map(&:no).sort
     ids     = models.map(&:id).sort
     models.each_with_index{|model,idx|
@@ -76,10 +91,12 @@ class Book::Main < ActiveRecord::Base
   BookMakeSql = "owner = ? and ( karikata = ? or kasikata = ? ) and date >= ? and date <= ?"
   def self.book_make(kamoku_id,login,year)
     
-    books = Book::Main.all(:conditions => [BookMakeSql,login,
-                                         kamoku_id,kamoku_id,year.beginning_of_year,year.end_of_year
-                                        ],
-                         :order => "no")
+    books = 
+      Book::Main.where( [BookMakeSql,
+                         login,kamoku_id,kamoku_id,
+                         year.beginning_of_year,year.end_of_year
+                        ]).
+      order("no")
     sum = 0
     books.each{|book| 
       next unless book.amount

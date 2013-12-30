@@ -1,0 +1,86 @@
+---
+one:
+  id: '1'
+  code: '2'
+  bunrui: '210'
+  kamoku: 未払金
+two:
+  id: '2'
+  code: '5'
+  bunrui: '560'
+  kamoku: 接待交際費
+No3:
+  id: '3'
+  code: '3'
+  bunrui: '310'
+  kamoku: 元入金
+No4:
+  id: '4'
+  code: '1'
+  bunrui: '110'
+  kamoku: 普通預金
+No5:
+  id: '5'
+  code: '5'
+  bunrui: '590'
+  kamoku: 雑費
+No6:
+  id: '6'
+  code: '1'
+  bunrui: '140'
+  kamoku: 受取手形
+No7:
+  id: '7'
+  code: '1'
+  bunrui: '180'
+  kamoku: 工具器具備品
+No8:
+  id: '8'
+  code: '4'
+  bunrui: '410'
+  kamoku: 売上
+No9:
+  id: '9'
+  code: '1'
+  bunrui: '190'
+  kamoku: 事業主貸
+No10:
+  id: '10'
+  code: '5'
+  bunrui: '540'
+  kamoku: 通信費
+No11:
+  id: '11'
+  code: '5'
+  bunrui: '565'
+  kamoku: 消耗品費
+No12:
+  id: '12'
+  code: '5'
+  bunrui: '525'
+  kamoku: 荷造運賃
+No13:
+  id: '13'
+  code: '5'
+  bunrui: '540'
+  kamoku: 通信費
+No14:
+  id: '16'
+  code: '2'
+  bunrui: '280'
+  kamoku: 事業主借
+No15:
+  id: '18'
+  code: '0'
+  bunrui: '0'
+  kamoku: 開始残高
+No16:
+  id: '19'
+  code: '5'
+  bunrui: '535'
+  kamoku: 旅費交通費
+No17:
+  id: '20'
+  code: '5'
+  bunrui: '589'
+  kamoku: 資料・教育

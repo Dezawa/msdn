@@ -17,6 +17,21 @@ class Book::Kamoku < ActiveRecord::Base
     @@Kaisizandaka ||= self.find_by(kamoku: "開始残高").id
   end
 
+  def self.order_no_for_display(owner_name,kamoku_id)
+    book = Book::Main.find_by(owner: owner_name, date: "2000/1/1",karikata: kamoku_id)
+    book ? book.no : nil
+  end
+
+  def self.change_order_no_for_display(owner_name,kamoku_id,new_no)
+    book = Book::Main.find_by(owner: owner_name, date: "2000/1/1",karikata: kamoku_id)
+    if book 
+      book.update_attributes(no: new_no)
+    else
+      Book::Main.create(owner: owner_name, date: "2000/1/1",karikata: kamoku_id,
+                        kasikata: kamoku_id ,amount: 0, no: new_no, tytle: "表示順")
+    end
+  end
+
   def self.find_with_main(login)
     kamokus = Book::Kamoku.all.each{|kamoku| kamoku.book_id=login }
     mains   = Book::Main.where(["owner = ? and date = ? ",
