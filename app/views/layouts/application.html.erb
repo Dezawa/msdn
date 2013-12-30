@@ -9,8 +9,8 @@
 <body>
 <BODY bgcolor="#Ffd0d0">
 <%   names_free     = [["MSDN Top","/"],["線形計画法","/lips"],["複式簿記","/book/keeping"]]
-     names_login    = [["ログイン","/users/sign_in"]]
-     names_logout = [["ログアウト","/users/sign_out",{:method => "DELETE"}]]
+     names_login    = [["ログイン","/users/sign_in",{:id => "Sign in"}]]
+     names_logout = [["ログアウト","/users/sign_out",{:method => "DELETE",:id => "Log out"}]]
      names_loggedin   = [["パスワード変更","/change_password"]]
       begin ;@login = current_user;rescue ;@login=nil;end
 urls  = %w(/lips/free /lips/member /users/sign_in /logout /change_password)
@@ -33,7 +33,8 @@ urls  = %w(/lips/free /lips/member /users/sign_in /logout /change_password)
 <table class="menuline" border=0 bordercolor="#FFFFFF" width="100%" bgcolor="#e0d0Ff"><tr><td>
 <table border=1 cellspacing=0><tr>
    <% names.each{|name,url,option| option ||= {} -%>
-   <td width="90" align="center" ><font size=1><%= link_to_unless_current(name,url,option) %></td> <% } %>
+   <td width="90" align="center" ><font size=1><%= link_to_unless_current(name,url,{:id => url}.merge(option)) %></td>
+   <% } %>
 <%= links_table  @Links %>
 </table></td></tr></table>　<br>
 <br>

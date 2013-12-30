@@ -61,7 +61,7 @@ class Menu < ActionView::Base
   end
 
   def label_and_link(view)
-    view.link_to(label,:controller=>model,:action=> action)
+    view.link_to(label,{:controller=>model,:action=> action},:id => "/#{model}/#{action}")
     #action == :index ? "<a href='/#{model}'>#{label}</a>" : "<a href='/#{model}/#{action}'>#{label}</a>"
   end
 
