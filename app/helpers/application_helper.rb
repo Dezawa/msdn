@@ -103,20 +103,22 @@ module ApplicationHelper
     #labels = BookKeepingController::Labels.select{|l| l[2] != :new }
    safe_join( menus.map{|menu| 
                 next if menu.disable && !controller.send(menu.disable)
-                link_to_unless_current(menu.label,:controller => menu.model,:action => menu.action)
-              }
+                link_to_unless_current(menu.label,{:controller => menu.model, :action => menu.action},
+                                       :id => "/#{menu.model}/#{menu.action}")
+              },"\n"
               )
   end
 
   def links_table(menus)
     return "" unless menus
-    td="<td width=\"90\" align=\"center\" bgcolor=\"#c0f0f0\">"
+    td="<td width=\"90\" align=\"center\" bgcolor=\"#c0f0f0\">\n"
     table = 
       "<tr>" + td +
       menus.map{|menu| 
       next if menu.disable && !controller.send(menu.disable)
       "<font size=1>"+
-      link_to_unless_current(menu.label,{:controller => menu.model,:action => menu.action}.merge(menu.option||{}))
+      link_to_unless_current(menu.label,{:controller => menu.model,:action => menu.action}.merge(menu.option||{}),
+                             :id => "/#{menu.model}/#{menu.action}")
     }.compact.join("</td>" + td )+"</td></tr>"
     table.html_safe
   end
