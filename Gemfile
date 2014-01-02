@@ -48,7 +48,11 @@ gem 'devise'
 gem "will_paginate"
 gem "capybara"
 
-group :test do
-  gem "rspec"
-  gem "rspec-rails"
+group :development, :test do
+  gem "rspec" 
+  gem 'rspec-rails'
+  gem 'guard-rspec'
+  gem 'factory_girl_rails'
+  gem 'spring' # これを新しく追加
 end
+
