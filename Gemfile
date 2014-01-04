@@ -53,6 +53,6 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'guard-rspec'
   gem 'factory_girl_rails'
-  gem 'spring' # これを新しく追加
+ # gem 'spring' # これを新しく追加
 end
 
