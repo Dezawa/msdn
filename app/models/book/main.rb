@@ -70,21 +70,22 @@ class Book::Main < ActiveRecord::Base
     csv_update(csvfile,labels,columns,{:condition => :editable_by_user?,:owner => user})
   end
 
-  # 振替伝票の一覧を印刷用のCSVにすする。
+  # 振替伝票の一覧を印刷用のCSVにする。
   # csv_outと異なるのは、貸方、借方が BookKamoku#id ではなく、名称になる。
   # なお、csv_out はモジュール CsvIo で記述
-  def self.csv_out_print(login,year)
-    models= self.all(:conditions => ["owner = ? and date >= ? and date <= ?",
-                                     login,
-                                     year.beginning_of_year,year.end_of_year],
-                     :order => "no")
+  def self.set_to_array_for_print(login,year)
+    models= self.this_year_of_owner( login,year)
     columns = %w(no date karikata kasikata tytle memo amount)
     ary = [ %w(番号 日付 貸方 借方 備考 メモ 金額)]
     models.each{|model|  ary << columns.map{|clm|
         %w(karikata kasikata).include?(clm) ?  Book::Kamoku.kamokus.rassoc(model[clm])[0] : model[clm]
       }
     }
-    csv_out(ary)    
+    ary
+  end
+
+  def self.csv_out_print(login,year)
+    csv_out(set_to_array_for_prin(login,year))    
   end
 
   # 元帳データを作る。
@@ -197,7 +198,7 @@ class Book::Main < ActiveRecord::Base
   def self.sum(login,year,condition="")
     period ||= [year.beginning_of_year,year.end_of_year]
     @@sum = Hash.new{|h,k| h[k]=0}
-    books = Book::Main.all(:conditions => ["owner = ? and date >= ? and date <= ? "+condition,
+    books = Book::Main.where( ["owner = ? and date >= ? and date <= ? "+condition,
                                           login,period[0],period[1] ])
     books.each{|book|
       @@sum[book.kariKata.bunrui] += book.amount* book.kariKata.taishaku
@@ -215,7 +216,7 @@ class Book::Main < ActiveRecord::Base
     # Hashから貸借対照表的な配列を作る。
     # 科目を 貸借と損益、借方貸方に分ける
     #        貸借借方貸方 => 0 損益借方貸方=> 1
-    bookKamoku_all = Book::Kamoku.all(:order => "bunrui")
+    bookKamoku_all = Book::Kamoku.order( "bunrui")
     kamoku  = [[bookKamoku_all.select{|k| k.code == 1},  # 資産 貸借貸方
                 bookKamoku_all.select{|k| k.code == 2 || k.code == 3}], #負債,資本 貸借借方
                [bookKamoku_all.select{|k| k.code == 5},  # 経費 損益貸方
