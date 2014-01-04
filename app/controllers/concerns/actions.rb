@@ -73,6 +73,7 @@ module Actions
     else
       @permit = current_user.option?( labels[0] )
     end
+    @permissions = [@permit,@editor,@configure]
   end
 
   def permit(label=nil)
@@ -188,7 +189,7 @@ module Actions
     @params = params
     @model = @Model.find(params[:id])
 
-    if @model.update_attributes(params[@Domain]) 
+    if @model.update_attributes(permit_attr)#params[@Domain]) 
       @Model.send(@Refresh,true) if @refresh #BookKamoku.kamokus true
       if params[:back]
         if params[:back_params]
