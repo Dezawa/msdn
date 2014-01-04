@@ -6,6 +6,7 @@ require 'rspec/rails'
 require 'rspec/autorun'
 ## require 'factory_girl'
 
+
 $LOAD_PATH << File.join(File.dirname(__FILE__),"helpers")
 
 # Requires supporting ruby files with custom matchers and macros, etc,
@@ -53,3 +54,10 @@ RSpec.configure do |config|
   #############################
   config.include Devise::TestHelpers, :type => :controller  
 end
+
+
+ TTT = [true]*3
+ TTF=[true, true,false]
+ TFF=[true,false,false]
+ FFF=[false]*3
+ NNN=[nil]*3
