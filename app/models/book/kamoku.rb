@@ -6,12 +6,8 @@ require 'pp'
 class Book::Kamoku < ActiveRecord::Base
   extend CsvIo
   self.table_name = 'book_kamokus'
-  #attr_accessible :id ,:kamoku ,:bunrui ,:code
   attr_accessor   :no,:book_id,:book
   @@kamokus=nil
-  #work = self.find_by_kamoku("開始残高")
-  #Kaisizandaka = self.find_by_kamoku("開始残高").id
-
   # 開始残高の id を返す
   def self.kaisizandaka 
     @@Kaisizandaka ||= self.find_by(kamoku: "開始残高").id
@@ -52,18 +48,9 @@ class Book::Kamoku < ActiveRecord::Base
   # optional arg が !nil の時は読み直す。これは Book::Kamokuの
   # create、update、csv_upload があると実行される。
   def self.kamokus(login=nil,read = nil )
-    find_with_main(login)
-    #if !@@kamokus || read
-      #logger.info("KAMOKU: read=#{read}")
-    #  begin 
+    #find_with_main(login)
     @@kamokus = self.order(:bunrui,:kamoku).
       to_a.map{|ch| [ch.kamoku,ch.id]} 
-    #  rescue
-    #    @@kamokus = []
-    #  end
-#      }.each{|p,m| @kamokus[p] << [m] }
-    #end
-    #@@kamokus
     find_with_main(login).map{|ch| [ch.kamoku,ch.id]}
   end
 
@@ -73,17 +60,7 @@ class Book::Kamoku < ActiveRecord::Base
   #def book_id ; @book.id rescue nil ;end
   def update_attributes(attrs)
     unless (no = attrs[:no]).blank?
-      #logger.debug "update_attributes no=#{no} book.id =#{attrs[:book_id]}"
-      #puts  "update_attributes no=#{no} book.id =#{attrs[:book_id]}"
-      begin
-        Book::Main.find(attrs[:book_id]).update_attributes(:no => no)
-      rescue
-        book=Book::Main.create(:no=>no,:owner => attrs[:book_id],:date => "2000/1/1",
-                          :karikata => id,:kasikata=> id ,:amount =>"0" ,:tytle => "表示順")
-        #puts  "update_attributes no=#{no} book.id =#{attrs[:book_id]} karikata = #{id}"
-        book.save
-        #pp book.errors
-      end
+      Book::Kamoku.change_order_no_for_display(attrs[:book_id],id,no)
     end
     #pp no
     super(attrs)
