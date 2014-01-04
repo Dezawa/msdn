@@ -84,3 +84,13 @@ No17:
   code: '5'
   bunrui: '589'
   kamoku: 資料・教育
+No18:
+  id: '14'
+  code: '5'
+  bunrui: '580'
+  kamoku: 消耗品
+No21:
+  id: '21'
+  code: '5'
+  bunrui: '580'
+  kamoku: 租税公課
