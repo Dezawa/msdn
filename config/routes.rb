@@ -62,7 +62,7 @@ Msdn::Application.routes.draw do
      [%w(taishaku motocho error csv_motocho csv_taishaku owner_change_win owner_change help),
       %w(owner_change)]],
     ["book/main",
-     [%w( book_make  csv_out_print csv_upload ),
+     [%w( book_make  csv_out_print csv_upload  sort_by_tytle),
       %w(set_const count kaisizandaka_count renumber sort_by_tytle make_new_year  csv_upload csv_out
          owner_change owner_change_win )
      ]],
