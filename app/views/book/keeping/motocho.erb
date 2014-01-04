@@ -4,7 +4,7 @@
 <h3>清算表<%= @year.year %>年度 <%= @owner.owner_name %>の簿記</h3>
 <table border=1>
 <tr><td></td><td>課目</td><td>借方</td><td>貸方</td></tr>
-<% Book::Kamoku.all(:order => "bunrui,kamoku").each{|kamoku|  
+<% Book::Kamoku.order([ "bunrui","kamoku"]).each{|kamoku|  
   s[kamoku.taishaku] += @sum[kamoku.bunrui]
 %>
 <% if @sum[kamoku.bunrui] != 0 %>
