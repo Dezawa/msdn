@@ -28,4 +28,23 @@ describe Book::Kamoku do
       Book::Kamoku.order_no_for_display("dezawa",7).should == 6
     end
   end
+
+  describe "update_attributesで表示順が変えられる" do
+    fixtures "book/kamokus","book/mains"
+    [{id: 7, from: nil, to: 19},{id:5,from: 2, to:10}].
+      each{|arg|
+      it "Kamoku id #{arg[:id]}は#{arg[:from]}から#{arg[:to]}へ" do
+        kamoku = Book::Kamoku.find arg[:id]
+        expect{kamoku.update_attributes( no: arg[:to], book_id: "dezawa" )}.
+          to change{  Book::Kamoku.order_no_for_display("dezawa",arg[:id])}.
+          from(arg[:from]).to(arg[:to])
+      end
+    }
+    it "Kamoku id 5は 2から10へ" do
+      kamoku = Book::Kamoku.find 5
+      expect{kamoku.update_attributes( no: 10, book_id: "dezawa" )}.
+      to change{  Book::Kamoku.order_no_for_display("dezawa",5)}.
+      from(2).to(10)
+    end
+  end
 end
