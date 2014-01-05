@@ -10,6 +10,7 @@ $LOAD_PATH << File.join(File.dirname(__FILE__),"helpers")
   FFF=[false]*3
   NNN=[nil]*3
 
+Dezawa = "dezawa"
 class ActiveSupport::TestCase
   ActiveRecord::Migration.check_pending!
 

@@ -173,4 +173,26 @@ class Book::MainControllerTest < BookControllerTest
       assert_redirected_to @@url_permit
     end
 
+  test "伝票作成必須項目" do
+    login_as "dezawa"
+    get :new
+    post :create, "book/main" => {date: "2012/10/10"}
+    assert  assigns[:model].errors[:date].size ==0    ,"日付は必須"
+    assert  assigns[:model].errors[:kasikata].size>0,"貸し方は必須"
+    assert  assigns[:model].errors[:karikata].size>0,"借り方は必須"
+    assert  assigns[:model].errors[:amount].size>0  ,"金額は必須" 
+    assert  assigns[:model].errors[:tytle].size>0   ,"備考は必須"
+  end
+
+  test "伝票一覧" do
+    login_as ("dezawa")
+    get :index
+    assert_response 200
+    assert 0,assigns[:models].size
+
+    assert_equal 2013,session[:BK_year]
+    session[:BK_year]
+  end
+
+  
 end
