@@ -181,65 +181,39 @@ module Ubr
     def waku_out(sfx,waku,base_point)
       return unless waku && waku.direction
       waku.enable = true 
+      
+      masu_xy = Masu[waku.kata]
+      delta_xy =  masu_xy*waku.direction
+      waku_xy =  waku.pos_xy + base_point+[-masu_xy.x,0]
+      # masu     = waku.kawa_suu
 
-      if waku.tuuro?
-        tuuro_out(sfx,waku,base_point)   
-      else
-        masu_xy = Masu[waku.kata]
-        delta_xy =  masu_xy*waku.direction
-        waku_xy =  waku.pos_xy + base_point+[-masu_xy.x,0]
-        # masu     = waku.kawa_suu
+      waku_out_sub(waku,waku_xy,masu_xy,delta_xy)
+      waku_weight(waku,waku_xy,masu_xy,delta_xy)
+      waku_label(sfx,waku_xy,masu_xy)
 
-        ary = waku.used_map
-        gsave
-        (0..3).each{ |idx|
-          next unless ary[idx] && ary[idx]>0
-          repeat(ary[idx]){ 
-            box_fill(waku_xy,masu_xy,Color[idx]).translate(delta_xy.x,delta_xy.y)}
+    end
+
+    def waku_out_sub(waku,waku_xy,masu_xy,delta_xy)
+      aary = waku.used_map
+      gsave_restore{
+        aary.each{ |ary|
+          gsave_restore{ 
+            (waku.tuuro? ? [3,2,1,0] : [0,1,2,3]).each{ |idx|
+              next unless ary[idx] && ary[idx]>0
+              repeat(ary[idx]){ 
+                box_fill(waku_xy,masu_xy,Color[idx]).translate(delta_xy.x,delta_xy.y)
+              }
+            }
+          } #grestore 
+          translate( masu_xy*waku.drift_by_mult_retu)        
         }
-        grestore
-        waku_weight(waku,waku_xy,masu_xy,delta_xy)
-        waku_label(sfx,waku_xy,masu_xy)
-      end
+      }
     end
 
     def waku_name(name,base_point)
       #pp base_point
       centering(name,base_point.merge(:point => 1.6,:font => Bold))
     end
-
-    ########## sub of waku_out ######
-    def tuuro_out(sfx,waku,base_point)
-      pulles   = waku.occupied(false)
-      occupied = waku.occupied(true)
-      return if pulles==0
-
-      masu_xy = Masu[waku.kata]
-      delta_xy =  masu_xy*waku.direction
-      waku_xy =  waku.pos_xy + base_point+[-masu_xy.x,0]
-      masu     = waku.kawa_suu
-      if Const::Suuro2Retu.include?(waku.name)
-        occupied0=occupied/2        ; occupied1=occupied-occupied0
-        pulles1=(pulles-occupied)/2 ; pulles0  =(pulles-occupied)-pulles1 
-        gsave
-        repeat(occupied0){ box_fill(waku_xy,masu_xy,Color[2]).translate(delta_xy.x,delta_xy.y)}
-        repeat(pulles0){ box_fill(waku_xy,masu_xy,Color[1]).translate(delta_xy.x,delta_xy.y)}
-        grestore
-        gsave
-        repeat(occupied1){ box_fill(waku_xy+[0,-masu_xy.y],masu_xy,Color[2]).translate(delta_xy.x,delta_xy.y)}
-        repeat(pulles1){ box_fill(waku_xy+[0,-masu_xy.y],masu_xy,Color[1]).translate(delta_xy.x,delta_xy.y)}
-        grestore
-      else
-        gsave
-        [[occupied,2],[pulles-occupied,1]].each{ |val,color|
-          repeat(val){ box_fill(waku_xy,masu_xy,Color[color]).translate(delta_xy.x,delta_xy.y)}
-        }
-        grestore
-      end
-      waku_weight(waku,waku_xy,masu_xy,delta_xy)
-      waku_label(sfx,waku_xy,masu_xy)
-    end
-
 
     def waku_label(sfx,waku_xy,masu_xy)
       #moveto(waku_xy.x-masu_xy.x*0.5,waku_xy.y+0.8*masu_xy.y)
