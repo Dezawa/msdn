@@ -15,6 +15,18 @@ class Ubr::WakuTest < ActiveSupport::TestCase
     
   end
  
+  [["1A2R",[[0,0,6,4]]],
+   ["1B2Z",[[0, 0, 31, 0], [0, 0, 31, 0]]],
+   ["2D1Z",[[0, 14, 23, 0], [0, 15, 23, 0]]]
+  ].each{ |waku_name,ary|
+    must "枠#{waku_name}のused_map" do
+      waku=@Waku[waku_name]
+      assert_equal ary, waku.used_map
+    end
+  }
+end
+__END__
+
   #         lot数 [Fと40袋を越える紙,40袋までの紙]
   [
    ["1A3D",[1,0],[54]       ,10,[0,0,3,7]],  # 40袋越えるの紙
