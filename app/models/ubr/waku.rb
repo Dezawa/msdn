@@ -15,7 +15,7 @@ class Waku
   Attr_str = [:name,:accessbility,:location,:aria,:kata]
   Attr_ary = [:lot_list,:direction]
 
-  Attr_num = [:kawa_suu,:volum3,:volum2,:volum1,:dan3,:dan2,:dan1]
+  Attr_num = [:kawa_suu,:volum3,:volum2,:volum1,:dan3,:dan2,:dan1,:retusu]
   attr_accessor *Attr_str
   attr_accessor *Attr_ary
   attr_accessor  :enable
@@ -116,11 +116,13 @@ class Waku
                  :kawa_suu => row[4].to_i+row[5].to_i+row[6].to_i,
                  :pos_x => row[8].to_f,
                  :pos_y => row[9].to_f,
+                 :retusu    => (row[12] || 1 ).to_i,
                  :direction => Direction[row[10]],
                  :kata => Kata[[row[10]||"↑",row[11]|| "N"]],
                  :volum3 => (row[4].to_i * 3 + row[5].to_i * 2 + row[6].to_i)#*1000
                  )
     end
+
     $Waku
   end
 
@@ -253,6 +255,11 @@ class Waku
     lot_list(without_pull).inject(0){|wt,segment| wt + segment.weight }
   end
 
+  def drift_by_mult_retu
+    [(direction[0] == 0 ? 1 : 0),(direction[1] == 0 ? 1 : 0)]
+  end
+
+
   #def tuuro? ; /Z$/ =~ name ;end
 
   def max_packets
@@ -266,17 +273,50 @@ class Waku
 
   #  [空き,引き合い,引き合い無,過剰]
   def used_map
-    without = occupied(true)
-    within  = occupied(false)
-    masu     = kawa_suu
-    vacunt = [ kawa_suu - within,0].max
+    without = occupied(true)  # 引き合い含まず
+    within  = occupied(false) # 引き合い込み
+    if tuuro? # 通路のときはmasu数は無限なので、占有数だけあることにする
+      masu     = within #.to_f/retusu).ceil 
+    else
+      masu     = kawa_suu * retusu
+    end
+    vacunt = [ masu - within,0].max
     ary = [ vacunt,                                              # 空枠
-            [kawa_suu - vacunt - without,0].max,                    # 引き合い
-            without <= kawa_suu+1 ? [kawa_suu, without].min : 0,       # 埋まり
-            without >  kawa_suu+1 ? [without-1-kawa_suu,kawa_suu].min : 0] # 超過
-    ary[2] = kawa_suu - ary[3] if ary[3]>0                           # 埋まり
-    
-    ary
+            [masu - vacunt - without,0].max,                    # 引き合い
+            without <= masu+1 ? [masu, without].min : 0,       # 埋まり
+            without >  masu+1 ? [without-1-masu,masu].min : 0] # 超過
+    ary[2] = masu - ary[3] if ary[3]>0                           # 埋まり
+    destribute_ary(ary,masu)
+  end
+
+  # ary（空き、埋まり、引き合い、溢れ） をretusu列に分ける
+  def  destribute_ary(arg_ary,masu)
+    ary = arg_ary.dup
+    k_suu = Array.new(retusu){ |a| a=masu/retusu} #kawa_suu}
+    aary = Array.new(retusu){ |a| a=[0,0,0,0]}
+    if tuuro? # 通路のときは複数列均等に分ける
+      if retusu == 1
+        aary[0] = ary
+      else
+        (1..2).each{ |s|
+          (0..retusu-2).each{ |r| 
+            aary[r][s] = [k_suu[r],ary[s]/retusu].min
+            ary[s]   -=  aary[r][s]
+            k_suu[r] -=   aary[r][s]
+          }
+          aary[retusu-1][s] = ary[s]
+        }
+      end
+    else # 通常枠は複数列端から振り分ける
+      (0..3).each{ |s| 
+        (0..retusu-1).each{ |r| 
+          aary[r][s] = [k_suu[r],ary[s]].min
+          ary[s]   -=  aary[r][s]
+          k_suu[r] -=   aary[r][s]
+        }
+      }
+    end
+    aary
   end
 
   # 何桝使われているか求める

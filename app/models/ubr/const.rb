@@ -2,6 +2,7 @@
 StatFont = [[Postscript::Gothic,1.4],[Postscript::Bold,1.8],[Postscript::Gothic,1.4]]
 module Ubr::Const
 
+Suuro2Retu = %w(2C2Z 2D1Z 1B4Z 1B2Z 1A2Z)
   @dir= File.dirname(__FILE__)
   if /www/ =~ @dir
     $LOAD_PATH << @dir
@@ -208,8 +209,8 @@ $SoukoFloors = {
       #:sufix    => %W(01    01    01    01    01   10  19   01  09  18  27  A),
       #:max      => %w(18    18    16    16    09   18  25   08  17  26  29   C),
       :contents => %w(5L1 5L2  5M1  5M2  5N1  5N2),
-      :sufix    => %w(A    A    A   A    A    A ),
-      :max      => %w(R    R    R   R    I    O ),
+      :sufix    => %w(A    A    A   A    C    A ),
+      :max      => %w(R    R    R   R    K    O ),
       :base_points => [[94,18], [94,12],  [61.5,18], [61.5,12],  # LM
                        [29.5,18],[29.5,12]],
                       # [18.5,18.7],[25.7,18.7] ,[13.7,17.5],   #
@@ -269,6 +270,5 @@ SP =[
        :stat_offset  => [60,60],:stat_font=> [1,1,0]
      }
     ]
-Suuro2Retu = %w(2C2Z 2D1Z 1B4Z 1B2Z 1A2Z)
 
 end
