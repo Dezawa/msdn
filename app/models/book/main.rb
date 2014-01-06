@@ -85,7 +85,7 @@ class Book::Main < ActiveRecord::Base
   end
 
   def self.csv_out_print(login,year)
-    csv_out(set_to_array_for_prin(login,year))    
+    csv_out(set_to_array_for_print(login,year))    
   end
 
   # 元帳データを作る。
