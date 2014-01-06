@@ -191,7 +191,7 @@ class Book::MainController < Book::Controller
         error.unshift "試用ユーザの最大データ数#{TrialLimit}を越えたので、古いものを削除しました。"
       end
       flash[:message] = 
-        if (msg =error.join("<br>\n")).size < 2800
+        if (msg =error.uniq.join("<br>\n")).size < 2800
           msg
         else
           msg[0..2700]
