@@ -166,6 +166,7 @@ module ApplicationHelper
   end
   def form_buttom(action,label,opt={})
     opt ||= {}
+    opt.merge!(method: "get") if action == :new
     hidden = opt.delete(:hidden) if opt.class==Hash
     hidden_value = opt.delete(:hidden_value) if opt.class==Hash
     logger.debug("FORM_BUTTOM: #{action}  #{opt.class}")
