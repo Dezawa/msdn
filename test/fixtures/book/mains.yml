@@ -10,7 +10,7 @@ one:
   memo: 
   owner: dezawa
 two:
-  id: '545'
+  id: '2'
   'no': '2'
   date: '2012-01-01'
   amount: '84893'
@@ -20,7 +20,7 @@ two:
   memo: 
   owner: dezawa
 No3:
-  id: '547'
+  id: '3'
   'no': '3'
   date: '2012-01-01'
   amount: '2125721'
@@ -30,7 +30,7 @@ No3:
   memo: 
   owner: dezawa
 No4:
-  id: '384'
+  id: '4'
   'no': '4'
   date: '2012-01-04'
   amount: '300'
@@ -40,7 +40,7 @@ No4:
   memo: 
   owner: dezawa
 No5:
-  id: '413'
+  id: '5'
   'no': '5'
   date: '2012-01-07'
   amount: '7934'
@@ -50,7 +50,7 @@ No5:
   memo: 10月分
   owner: dezawa
 No6:
-  id: '444'
+  id: '6'
   'no': '6'
   date: '2012-01-07'
   amount: '4725'
@@ -60,7 +60,7 @@ No6:
   memo: 11月分
   owner: dezawa
 No7:
-  id: '527'
+  id: '7'
   'no': '7'
   date: '2012-01-07'
   amount: '3614'
@@ -70,7 +70,7 @@ No7:
   memo: 11月分
   owner: dezawa
 No8:
-  id: '529'
+  id: '8'
   'no': '8'
   date: '2012-01-11'
   amount: '540'
@@ -80,7 +80,7 @@ No8:
   memo: ウベボード打ち合わせ
   owner: dezawa
 No9:
-  id: '535'
+  id: '9'
   'no': '9'
   date: '2012-01-11'
   amount: '2910'
@@ -90,7 +90,7 @@ No9:
   memo: ウベボード打ち合わせ
   owner: dezawa
 No10:
-  id: '536'
+  id: '10'
   'no': '10'
   date: '2012-01-15'
   amount: '80'
@@ -100,7 +100,7 @@ No10:
   memo: 追加製造
   owner: dezawa
 No11:
-  id: '537'
+  id: '11'
   'no': '11'
   date: '2012-01-15'
   amount: '200'
@@ -110,7 +110,7 @@ No11:
   memo: 
   owner: dezawa
 No12:
-  id: '548'
+  id: '12'
   'no': '12'
   date: '2012-01-18'
   amount: '540'
@@ -120,7 +120,7 @@ No12:
   memo: ウベボード打ち合わせ
   owner: dezawa
 No13:
-  id: '549'
+  id: '13'
   'no': '13'
   date: '2012-01-18'
   amount: '2910'
@@ -130,7 +130,7 @@ No13:
   memo: ウベボード打ち合わせ
   owner: dezawa
 No14:
-  id: '722'
+  id: '14'
   'no': '14'
   date: '2012-01-18'
   amount: '9800'
@@ -140,7 +140,7 @@ No14:
   memo: ウベボード打ち合わせ
   owner: dezawa
 No15:
-  id: '550'
+  id: '15'
   'no': '15'
   date: '2012-01-22'
   amount: '540'
@@ -150,7 +150,7 @@ No15:
   memo: 日本プラントメンテナンス協会訪問 下打ち合わせ
   owner: dezawa
 No16:
-  id: '551'
+  id: '16'
   'no': '16'
   date: '2012-01-22'
   amount: '2910'
@@ -160,7 +160,7 @@ No16:
   memo: 日本プラントメンテナンス協会訪問 下打ち合わせ
   owner: dezawa
 No17:
-  id: '561'
+  id: '17'
   'no': '17'
   date: '2012-01-28'
   amount: '30'
@@ -170,7 +170,7 @@ No17:
   memo: 
   owner: dezawa
 No18:
-  id: '552'
+  id: '18'
   'no': '18'
   date: '2012-01-29'
   amount: '2980'
@@ -180,7 +180,7 @@ No18:
   memo: FFMC業務打ち合わせ
   owner: dezawa
 No19:
-  id: '553'
+  id: '19'
   'no': '19'
   date: '2012-01-29'
   amount: '340'
@@ -190,7 +190,7 @@ No19:
   memo: FFMC業務打ち合わせ
   owner: dezawa
 No20:
-  id: '558'
+  id: '20'
   'no': '20'
   date: '2012-01-30'
   amount: '540'
@@ -200,7 +200,7 @@ No20:
   memo: ウベボード 打ち合わせ交通費
   owner: dezawa
 No21:
-  id: '559'
+  id: '21'
   'no': '21'
   date: '2012-01-30'
   amount: '2910'
@@ -210,7 +210,7 @@ No21:
   memo: ウベボード 打ち合わせ交通費
   owner: dezawa
 No22:
-  id: '562'
+  id: '22'
   'no': '22'
   date: '2012-01-30'
   amount: '2240'
@@ -220,7 +220,7 @@ No22:
   memo: ウベボード 打ち合わせ交通費
   owner: dezawa
 No23:
-  id: '531'
+  id: '23'
   'no': '23'
   date: '2012-01-31'
   amount: '3614'
@@ -230,7 +230,7 @@ No23:
   memo: 1月分
   owner: dezawa
 No24:
-  id: '570'
+  id: '24'
   'no': '24'
   date: '2012-01-31'
   amount: '4725'
@@ -240,7 +240,7 @@ No24:
   memo: 2月分
   owner: dezawa
 No25:
-  id: '571'
+  id: '25'
   'no': '25'
   date: '2012-01-31'
   amount: '7964'
@@ -250,17 +250,17 @@ No25:
   memo: 1月分
   owner: dezawa
 No26:
-  id: '563'
+  id: '26'
   'no': '26'
   date: '2012-01-31'
   amount: '84000'
   karikata: '6'
   kasikata: '11'
   tytle: ウベボード 保守費用
-  memo: 2012/12〜2012/2
+  memo: 2012/12〜2013/2
   owner: dezawa
 No27:
-  id: '564'
+  id: '27'
   'no': '27'
   date: '2012-01-31'
   amount: '840'
@@ -270,7 +270,7 @@ No27:
   memo: 
   owner: dezawa
 No28:
-  id: '595'
+  id: '28'
   'no': '28'
   date: '2012-01-31'
   amount: '0'
@@ -280,7 +280,7 @@ No28:
   memo: 
   owner: dezawa
 No29:
-  id: '556'
+  id: '29'
   'no': '29'
   date: '2012-02-01'
   amount: '540'
@@ -290,7 +290,7 @@ No29:
   memo: FFMC業務打ち合わせ
   owner: dezawa
 No30:
-  id: '557'
+  id: '30'
   'no': '30'
   date: '2012-02-01'
   amount: '2910'
@@ -300,7 +300,7 @@ No30:
   memo: FFMC業務打ち合わせ
   owner: dezawa
 No31:
-  id: '583'
+  id: '31'
   'no': '31'
   date: '2012-02-02'
   amount: '7780'
@@ -310,7 +310,7 @@ No31:
   memo: 宇部興産千葉工場打ち合わせ
   owner: dezawa
 No32:
-  id: '750'
+  id: '32'
   'no': '32'
   date: '2012-02-02'
   amount: '3670'
@@ -320,7 +320,7 @@ No32:
   memo: 1520+2150
   owner: dezawa
 No33:
-  id: '560'
+  id: '33'
   'no': '33'
   date: '2012-02-04'
   amount: '80'
@@ -330,7 +330,7 @@ No33:
   memo: 
   owner: dezawa
 No34:
-  id: '565'
+  id: '34'
   'no': '34'
   date: '2012-02-05'
   amount: '10712'
@@ -340,7 +340,7 @@ No34:
   memo: ! "10月分\t"
   owner: dezawa
 No35:
-  id: '566'
+  id: '35'
   'no': '35'
   date: '2012-02-05'
   amount: '4725'
@@ -350,7 +350,7 @@ No35:
   memo: ! "11月分\t"
   owner: dezawa
 No36:
-  id: '567'
+  id: '36'
   'no': '36'
   date: '2012-02-05'
   amount: '3614'
@@ -360,7 +360,7 @@ No36:
   memo: 11月分
   owner: dezawa
 No37:
-  id: '568'
+  id: '37'
   'no': '37'
   date: '2012-02-08'
   amount: '80'
@@ -370,7 +370,7 @@ No37:
   memo: 2012/12〜２
   owner: dezawa
 No38:
-  id: '569'
+  id: '38'
   'no': '38'
   date: '2012-02-08'
   amount: '200'
@@ -380,7 +380,7 @@ No38:
   memo: 
   owner: dezawa
 No39:
-  id: '572'
+  id: '39'
   'no': '39'
   date: '2012-02-12'
   amount: '180'
@@ -390,7 +390,7 @@ No39:
   memo: 
   owner: dezawa
 No40:
-  id: '575'
+  id: '40'
   'no': '40'
   date: '2012-02-12'
   amount: '2910'
@@ -400,7 +400,7 @@ No40:
   memo: 日本プラントメンテナンス協会
   owner: dezawa
 No41:
-  id: '576'
+  id: '41'
   'no': '41'
   date: '2012-02-12'
   amount: '540'
@@ -410,7 +410,7 @@ No41:
   memo: 日本プラントメンテナンス協会
   owner: dezawa
 No42:
-  id: '577'
+  id: '42'
   'no': '42'
   date: '2012-02-12'
   amount: '5070'
@@ -420,7 +420,7 @@ No42:
   memo: 
   owner: dezawa
 No43:
-  id: '573'
+  id: '43'
   'no': '43'
   date: '2012-02-14'
   amount: '2910'
@@ -430,7 +430,7 @@ No43:
   memo: 宇部千葉工場訪問下打ち会わせ
   owner: dezawa
 No44:
-  id: '574'
+  id: '44'
   'no': '44'
   date: '2012-02-14'
   amount: '540'
@@ -440,7 +440,7 @@ No44:
   memo: 宇部千葉工場訪問下打ち会わせ
   owner: dezawa
 No45:
-  id: '578'
+  id: '45'
   'no': '45'
   date: '2012-02-18'
   amount: '168'
@@ -450,7 +450,7 @@ No45:
   memo: 
   owner: dezawa
 No46:
-  id: '579'
+  id: '46'
   'no': '46'
   date: '2012-02-18'
   amount: '350'
@@ -460,7 +460,7 @@ No46:
   memo: 
   owner: dezawa
 No47:
-  id: '580'
+  id: '47'
   'no': '47'
   date: '2012-02-19'
   amount: '105'
@@ -470,7 +470,7 @@ No47:
   memo: 
   owner: dezawa
 No48:
-  id: '581'
+  id: '48'
   'no': '48'
   date: '2012-02-20'
   amount: '2000'
@@ -480,7 +480,7 @@ No48:
   memo: 株式会社 ミタ
   owner: dezawa
 No49:
-  id: '582'
+  id: '49'
   'no': '49'
   date: '2012-02-26'
   amount: '540'
@@ -490,7 +490,7 @@ No49:
   memo: 宇部興産千葉工場打ち合わせ
   owner: dezawa
 No50:
-  id: '596'
+  id: '50'
   'no': '50'
   date: '2012-02-26'
   amount: '7780'
@@ -500,7 +500,7 @@ No50:
   memo: 宇部千葉打ち合わせ
   owner: dezawa
 No51:
-  id: '584'
+  id: '51'
   'no': '51'
   date: '2012-02-26'
   amount: '7770'
@@ -510,7 +510,7 @@ No51:
   memo: 
   owner: dezawa
 No52:
-  id: '732'
+  id: '52'
   'no': '52'
   date: '2012-02-27'
   amount: '1520'
@@ -520,7 +520,7 @@ No52:
   memo: ＊
   owner: dezawa
 No53:
-  id: '734'
+  id: '53'
   'no': '53'
   date: '2012-02-27'
   amount: '2340'
@@ -530,7 +530,7 @@ No53:
   memo: ＊
   owner: dezawa
 No54:
-  id: '657'
+  id: '54'
   'no': '54'
   date: '2012-02-27'
   amount: '8450'
@@ -540,7 +540,7 @@ No54:
   memo: 
   owner: dezawa
 No55:
-  id: '593'
+  id: '55'
   'no': '55'
   date: '2012-02-28'
   amount: '6364'
@@ -550,7 +550,7 @@ No55:
   memo: 2月分
   owner: dezawa
 No56:
-  id: '594'
+  id: '56'
   'no': '56'
   date: '2012-02-28'
   amount: '7941'
@@ -560,7 +560,7 @@ No56:
   memo: 
   owner: dezawa
 No57:
-  id: '618'
+  id: '57'
   'no': '57'
   date: '2012-02-28'
   amount: '4725'
@@ -570,7 +570,7 @@ No57:
   memo: 3月分
   owner: dezawa
 No58:
-  id: '586'
+  id: '58'
   'no': '58'
   date: '2012-03-05'
   amount: '8982'
@@ -580,7 +580,7 @@ No58:
   memo: 
   owner: dezawa
 No59:
-  id: '587'
+  id: '59'
   'no': '59'
   date: '2012-03-05'
   amount: '4725'
@@ -590,7 +590,7 @@ No59:
   memo: 1月分
   owner: dezawa
 No60:
-  id: '588'
+  id: '60'
   'no': '60'
   date: '2012-03-05'
   amount: '3614'
@@ -600,7 +600,7 @@ No60:
   memo: 
   owner: dezawa
 No61:
-  id: '585'
+  id: '61'
   'no': '61'
   date: '2012-03-06'
   amount: '1780'
@@ -610,7 +610,7 @@ No61:
   memo: 
   owner: dezawa
 No62:
-  id: '589'
+  id: '62'
   'no': '62'
   date: '2012-03-13'
   amount: '90'
@@ -620,7 +620,7 @@ No62:
   memo: UBR提案書送付
   owner: dezawa
 No63:
-  id: '590'
+  id: '63'
   'no': '63'
   date: '2012-03-15'
   amount: '540'
@@ -630,7 +630,7 @@ No63:
   memo: 
   owner: dezawa
 No64:
-  id: '591'
+  id: '64'
   'no': '64'
   date: '2012-03-15'
   amount: '2910'
@@ -640,7 +640,7 @@ No64:
   memo: 
   owner: dezawa
 No65:
-  id: '592'
+  id: '65'
   'no': '65'
   date: '2012-03-19'
   amount: '80'
@@ -650,7 +650,7 @@ No65:
   memo: UBR提案書再送付
   owner: dezawa
 No66:
-  id: '597'
+  id: '66'
   'no': '66'
   date: '2012-03-22'
   amount: '540'
@@ -660,7 +660,7 @@ No66:
   memo: 宇部興産千葉工場打ち合わせ
   owner: dezawa
 No67:
-  id: '598'
+  id: '67'
   'no': '67'
   date: '2012-03-22'
   amount: '2910'
@@ -670,7 +670,7 @@ No67:
   memo: 宇部千葉打ち合わせ
   owner: dezawa
 No68:
-  id: '599'
+  id: '68'
   'no': '68'
   date: '2012-03-26'
   amount: '540'
@@ -680,7 +680,7 @@ No68:
   memo: 宇部中央病院関連打ち合わせ
   owner: dezawa
 No69:
-  id: '600'
+  id: '69'
   'no': '69'
   date: '2012-03-26'
   amount: '500'
@@ -690,7 +690,7 @@ No69:
   memo: 宇部中央病院関連打ち合わせ
   owner: dezawa
 No70:
-  id: '601'
+  id: '70'
   'no': '70'
   date: '2012-03-26'
   amount: '1700'
@@ -700,17 +700,17 @@ No70:
   memo: 宇部中央病院関連打ち合わせ
   owner: dezawa
 No71:
-  id: '610'
+  id: '71'
   'no': '71'
   date: '2012-03-29'
   amount: '84000'
   karikata: '6'
   kasikata: '11'
   tytle: ウベボード 保守費用
-  memo: 2012/3~5
+  memo: 2013/3~5
   owner: dezawa
 No72:
-  id: '611'
+  id: '72'
   'no': '72'
   date: '2012-03-29'
   amount: '840'
@@ -720,7 +720,7 @@ No72:
   memo: 
   owner: dezawa
 No73:
-  id: '617'
+  id: '73'
   'no': '73'
   date: '2012-03-31'
   amount: '6364'
@@ -730,7 +730,7 @@ No73:
   memo: 
   owner: dezawa
 No74:
-  id: '619'
+  id: '74'
   'no': '74'
   date: '2012-03-31'
   amount: '7238'
@@ -740,7 +740,7 @@ No74:
   memo: 3月分
   owner: dezawa
 No75:
-  id: '634'
+  id: '75'
   'no': '75'
   date: '2012-03-31'
   amount: '4725'
@@ -750,7 +750,7 @@ No75:
   memo: '4725'
   owner: dezawa
 No76:
-  id: '602'
+  id: '76'
   'no': '76'
   date: '2012-04-01'
   amount: '110'
@@ -760,7 +760,7 @@ No76:
   memo: 宇部中央病院資料
   owner: dezawa
 No77:
-  id: '603'
+  id: '77'
   'no': '77'
   date: '2012-04-01'
   amount: '80'
@@ -770,7 +770,7 @@ No77:
   memo: 宇部中央病院資料返送
   owner: dezawa
 No78:
-  id: '604'
+  id: '78'
   'no': '78'
   date: '2012-04-01'
   amount: '80'
@@ -780,7 +780,7 @@ No78:
   memo: ウベボードLiPS請求書
   owner: dezawa
 No79:
-  id: '612'
+  id: '79'
   'no': '79'
   date: '2012-04-05'
   amount: '80'
@@ -790,7 +790,7 @@ No79:
   memo: ウベボード 領収書
   owner: dezawa
 No80:
-  id: '613'
+  id: '80'
   'no': '80'
   date: '2012-04-05'
   amount: '200'
@@ -800,7 +800,7 @@ No80:
   memo: 
   owner: dezawa
 No81:
-  id: '614'
+  id: '81'
   'no': '81'
   date: '2012-04-05'
   amount: '7964'
@@ -810,7 +810,7 @@ No81:
   memo: 
   owner: dezawa
 No82:
-  id: '615'
+  id: '82'
   'no': '82'
   date: '2012-04-05'
   amount: '4725'
@@ -820,7 +820,7 @@ No82:
   memo: 2月分
   owner: dezawa
 No83:
-  id: '616'
+  id: '83'
   'no': '83'
   date: '2012-04-05'
   amount: '6364'
@@ -830,7 +830,7 @@ No83:
   memo: 
   owner: dezawa
 No84:
-  id: '620'
+  id: '84'
   'no': '84'
   date: '2012-04-17'
   amount: '540'
@@ -840,7 +840,7 @@ No84:
   memo: 宇部中央病院関連打ち合わせ
   owner: dezawa
 No85:
-  id: '621'
+  id: '85'
   'no': '85'
   date: '2012-04-17'
   amount: '2640'
@@ -850,7 +850,7 @@ No85:
   memo: 宇部中央病院関連打ち合わせ
   owner: dezawa
 No86:
-  id: '622'
+  id: '86'
   'no': '86'
   date: '2012-04-20'
   amount: '5557'
@@ -860,7 +860,7 @@ No86:
   memo: 
   owner: dezawa
 No87:
-  id: '635'
+  id: '87'
   'no': '87'
   date: '2012-04-30'
   amount: '6364'
@@ -870,7 +870,7 @@ No87:
   memo: 
   owner: dezawa
 No88:
-  id: '651'
+  id: '88'
   'no': '88'
   date: '2012-04-30'
   amount: '4725'
@@ -880,7 +880,7 @@ No88:
   memo: 
   owner: dezawa
 No89:
-  id: '652'
+  id: '89'
   'no': '89'
   date: '2012-04-30'
   amount: '7908'
@@ -890,7 +890,7 @@ No89:
   memo: 
   owner: dezawa
 No90:
-  id: '636'
+  id: '90'
   'no': '90'
   date: '2012-05-07'
   amount: '7941'
@@ -900,7 +900,7 @@ No90:
   memo: 
   owner: dezawa
 No91:
-  id: '637'
+  id: '91'
   'no': '91'
   date: '2012-05-07'
   amount: '4725'
@@ -910,7 +910,7 @@ No91:
   memo: 
   owner: dezawa
 No92:
-  id: '638'
+  id: '92'
   'no': '92'
   date: '2012-05-07'
   amount: '6364'
@@ -920,7 +920,7 @@ No92:
   memo: 
   owner: dezawa
 No93:
-  id: '738'
+  id: '93'
   'no': '93'
   date: '2012-05-24'
   amount: '3870'
@@ -930,7 +930,7 @@ No93:
   memo: ＊1520+2340
   owner: dezawa
 No94:
-  id: '623'
+  id: '94'
   'no': '94'
   date: '2012-05-24'
   amount: '540'
@@ -940,7 +940,7 @@ No94:
   memo: 宇部千葉打ち合わせ
   owner: dezawa
 No95:
-  id: '624'
+  id: '95'
   'no': '95'
   date: '2012-05-24'
   amount: '7780'
@@ -950,9 +950,9 @@ No95:
   memo: 宇部興産千葉工場関連打ち合わせ
   owner: dezawa
 No96:
-  id: '625'
+  id: '96'
   'no': '96'
-  date: '2012-05-24'
+  date: '2012-06-01'
   amount: '11360'
   karikata: '3'
   kasikata: '16'
@@ -960,9 +960,9 @@ No96:
   memo: 
   owner: dezawa
 No97:
-  id: '626'
+  id: '97'
   'no': '97'
-  date: '2012-06-29'
+  date: '2012-05-29'
   amount: '10000'
   karikata: '3'
   kasikata: '6'
@@ -970,7 +970,7 @@ No97:
   memo: 5/25 Shri代表母葬儀
   owner: dezawa
 No98:
-  id: '627'
+  id: '98'
   'no': '98'
   date: '2012-05-31'
   amount: '540'
@@ -980,7 +980,7 @@ No98:
   memo: UBRコンサルタント詳細打ち合わせ
   owner: dezawa
 No99:
-  id: '628'
+  id: '99'
   'no': '99'
   date: '2012-05-31'
   amount: '2550'
@@ -989,18 +989,8 @@ No99:
   tytle: 東京→小田原 往復
   memo: UBRコンサルタント詳細打ち合わせ
   owner: dezawa
-No100:
-  id: '629'
-  'no': '100'
-  date: '2012-05-31'
-  amount: '105000'
-  karikata: '6'
-  kasikata: '11'
-  tytle: ウベボード LiSP年間契約料
-  memo: 2012/5〜
-  owner: dezawa
 101:
-  id: '2'
+  id: '102'
   "no": '2'
   date: '2012-01-02'
   amount: '301'
@@ -1010,7 +1000,7 @@ No100:
   memo: 12月分
   owner: ubeboard
 102:
-  id: '83'
+  id: '183'
   "no": '3'
   date: '2000-01-01'
   amount: '0'
@@ -1020,7 +1010,7 @@ No100:
   memo: nasi
   owner: dezawa
 103:
-  id: '84'
+  id: '184'
   "no": '1'
   date: '2000-01-01'
   amount: '0'
@@ -1030,7 +1020,7 @@ No100:
   memo: 
   owner: dezawa
 104:
-  id: '85'
+  id: '185'
   "no": '2'
   date: '2000-01-01'
   amount: '0'
@@ -1040,7 +1030,7 @@ No100:
   memo: 
   owner: dezawa
 105:
-  id: '86'
+  id: '186'
   "no": '86'
   date: '2012-01-01'
   amount: '157500'
@@ -1050,7 +1040,7 @@ No100:
   memo: 
   owner: aaron
 106:
-  id: '95'
+  id: '195'
   "no": '4'
   date: '2000-01-01'
   amount: '0'

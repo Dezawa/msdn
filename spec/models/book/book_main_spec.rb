@@ -32,19 +32,20 @@ describe Book::Main do
 
   describe "所有者、日付を指定して伝票を読む" do
       fixtures "book/mains"
-    it "dezawa,2012で100ある" do
-      book_this_year.should have(100).items
+    it "dezawa,2012で99ある" do
+      book_this_year.should have(99).items
     end
     it "最後の伝票の日付は2012,5,31" do
       book_this_year.last.date.should == Date.new(2012,5,31)
     end
-    it "最後の伝票のnoは100" do
-      book_this_year.last.no.should == 100
+    it "最後の伝票のnoは99" do
+      book_this_year.last.no.should == 99
     end
 
-    it "renumber すると最後の伝票の日付は2012,6,29" do
+    # 伝票No 96 が6/1
+    it "renumber すると最後の伝票の日付は2012,6,1" do
       Book::Main.renumber("dezawa",Date.new(2012,1,1))
-      book_this_year.last.date.should == Date.new(2012,6,29)
+      book_this_year.last.date.should == Date.new(2012,6,1)
     end     
   end
 
@@ -53,14 +54,14 @@ describe Book::Main do
     before(:all) do
       @output = Book::Main.set_to_array_for_print("dezawa",Date.new(2012,1,1))      
     end
-    it("表題含めて101ある"){ @output.should have(101).items  }
+    it("表題含めて100ある"){ @output.should have(100).items  }
     it("表題は"){ @output.first.should =~ %w(番号 日付 貸方 借方 備考 メモ 金額)}
   end
 
   describe "dezawaの文書を参照・編集可能か" do
     fixtures "book/mains","book/permissions"
     before(:all) do
-      @book = Book::Main.find(545)
+      @book = Book::Main.find(5)
     end
     %w(dezawa  aaron  quentin  ubeboard guest).zip([true,true,false,nil,nil]).
       each{ |user,editable|

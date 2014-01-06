@@ -78,7 +78,7 @@ describe Book::MainController,"一覧画面にて on 2012年" do
 
   it "1件めID=1 の削除" do
     expect{delete "destroy", id: 1}.to change{Book::Main.count}.
-      from(106).to(105)
+      from(105).to(104)
     expect(response).to redirect_to("/book/main")
   end
 
