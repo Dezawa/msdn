@@ -167,7 +167,7 @@ class Book::Main < ActiveRecord::Base
     def self.motocho(login,year)
     table = [[nil,"総勘定元帳",nil,year.year,"年度"]]
     table << [nil]
-    Book::Kamoku.all(:order => "bunrui").each{|kamoku|
+    Book::Kamoku.order("bunrui").each{|kamoku|
       books=book_make(kamoku.id,login,year)
       if books.size>0
         table << [nil,kamoku.kamoku,nil,year.year,"年度"]
