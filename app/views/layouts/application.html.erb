@@ -31,7 +31,7 @@ urls  = %w(/lips/free /lips/member /users/sign_in /logout /change_password)
       
 -%>
 <table class="menuline" border=0 bordercolor="#FFFFFF" width="100%" bgcolor="#e0d0Ff"><tr><td>
-<table border=1 cellspacing=0><tr>
+<table border=1 cellspacing=0 id="menu"><tr>
    <% names.each{|name,url,option| option ||= {} -%>
    <td width="90" align="center" ><font size=1><%= link_to_unless_current(name,url,{:id => url}.merge(option)) %></td>
    <% } %>
