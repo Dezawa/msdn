@@ -24,7 +24,7 @@ jQuery(function($) {
 </div>
 <hr>
 <%= flash[:message] %>
-<table border=1 cellspacing=0>
+<table border=1 cellspacing=0 id='index'>
 <% @labels[0..-2].each{|menu| %>
    <%=  menu.show self %> 
 <% } %>
@@ -33,8 +33,8 @@ jQuery(function($) {
 </div>
 </table>
 <div align=center>
- <%= link_to("振替伝票一覧 印刷用CSV","/book/main/csv_out_print")%><br>
- <%= link_to("勘定元帳一覧 CSV","/book/keeping/csv_motocho")%><br>
+ <%= link_to("振替伝票一覧 印刷用CSV","/book/main/csv_out_print",id: "main/csv_out_print")%><br>
+ <%= link_to("勘定元帳一覧 CSV","/book/keeping/csv_motocho",id: "csv_motocho")%><br>
  　　各科目の元帳の表示は、勘定科目、貸借対照表、清算表 の画面で科目名からリンクしています。
 </div>
 <p></p>
