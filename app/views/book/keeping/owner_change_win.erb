@@ -5,7 +5,7 @@
 <font color=RED><%= flash[:error] %></font>
 <table border=1><%= label_line_option %>
 <% @arrowed.each do |obj|  -%>
-  <tr><% @labels.each{|html_cell| -%>
+  <tr id="<%= obj.owner %>"><% @labels.each{|html_cell| -%>
   <%= html_cell.td %><%= html_cell.disp_field obj -%></td>  <%- } -%>
   <td>  <% if @owner.owner != obj.owner -%>
 <a href="owner_change?owner=<%= obj.owner %>">選択</a> <% end %> </td>
