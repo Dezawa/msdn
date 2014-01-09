@@ -34,6 +34,21 @@ class Book::KeepingController <  Book::Controller
     logger.debug "BookKeeping:INDEX @owner = #{@owner.login}/#{@owner.owner} session[:book_keeping_year]=#{session[:book_keeping_year]}"
   end
 
+
+  def year_change
+    session[:book_keeping_owner] ||= @owner
+    unless params[:value].blank?
+      @year = session[:book_keeping_year] = Time.parse(params[:value]+"/1/1 JST") 
+    end
+    @owner_choices = @arrowed.map{|a| ["#{a.owner} #{a.permission_string}",a.owner]}
+    #@year_owner= {"param_owner" => @owner[1]}
+    @labels = Labels 
+
+    logger.debug "BookKeeping:year_change session[:book_keeping_year]=#{session[:book_keeping_year]}"
+    #redirect_to :action => :index
+   render :partial => "index"
+  end
+
  def error
   end
 
@@ -58,15 +73,6 @@ class Book::KeepingController <  Book::Controller
         redirect_to  :action => :index     
     end
     #nder :partial => "menu_list" 
-  end
-
-  def year_change
-    unless params[:value].blank?
-      @year = session[:book_keeping_year] = Time.parse(params[:value]+"/1/1 JST") 
-    end
-
-    logger.debug "BookKeeping:year_change session[:book_keeping_year]=#{session[:book_keeping_year]}"
-    redirect_to :action => :index
   end
 
   # 科目一覧を表示し、そこから元帳を選ぶ
