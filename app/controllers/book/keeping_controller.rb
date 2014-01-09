@@ -26,12 +26,27 @@ class Book::KeepingController <  Book::Controller
     ]
   # メニューを出す
   def index
-    session[:BK_year]  ||= @year
-    session[:BK_owner] ||= @owner.id
+    session["BK_year"]  ||= @year
     @owner_choices = @arrowed.map{|a| ["#{a.owner} #{a.permission_string}",a.owner]}
-    #@year_owner= {"param_owner" => @owner[1]}
+    # @year_owner= {"param_owner" => @owner[1]}
     @labels = Labels 
+    logger.debug("BKeepig index => #{session["BK_year"]}年")
     logger.debug "BookKeeping:INDEX @owner = #{@owner.inspect}"
+  end
+
+  def year_change
+    unless params[:year].blank?
+      @year = session["BK_year"] = Time.parse(params[:year]+"/1/1 JST") 
+    end
+    @owner_choices = @arrowed.map{|a| ["#{a.owner} #{a.permission_string}",a.owner]}
+    # @year_owner= {"param_owner" => @owner[1]}
+
+    @labels = Labels 
+
+    logger.debug "BookKeeping:year_change session[BK_year]=#{session["BK_year"]}"
+    #redirect_to :action => :index
+   render :partial => "index" #"index_sub"
+   #render :text => @year 
   end
 
  def error
@@ -57,14 +72,6 @@ class Book::KeepingController <  Book::Controller
         redirect_to  :action => :index     
     end
     #nder :partial => "menu_list" 
-  end
-
-  # 年度をメニューにて対象年度を変更した時のaction
-  def year_change
-    unless params[:year].blank?
-      @year = session[:BK_year] = Time.parse(params[:year]+"/1/1") 
-    end
-    redirect_to :action => :index
   end
 
   # 科目一覧を表示し、そこから元帳を選ぶ
