@@ -24,7 +24,7 @@ ActionController::Routing::Routes.draw do |map|
   # 簿記
   map.connect '/book/:controller/:action'  ,:path_prefix => 'book'
   map.connect '/book/:controller'  ,:path_prefix => 'book'
-
+  map.connect '/book/keeping/:action' ,:controller => 'book/keeping'
   map.resources :book_main       ,:controller => 'book/main'
   map.resources :book_permission ,:controller => 'book/permission'
   map.resources :book_kamoku     ,:controller => 'book/kamoku'
