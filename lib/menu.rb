@@ -31,9 +31,12 @@ class Menu < ActionView::Base
     @model  = arg_model
     @label  = arg_label
     @option = data # || { }
-    @buttonlabel ||= "CSVで登録"
+    @buttonlabel = "CSVで登録"
       #@action= arg_action
   end
+
+  def  buttonlabel;  @buttonlabel || "CSVで登録" ;end
+
 #  end
 #  hash_initializer *Attr_names
 
@@ -67,7 +70,7 @@ class Menu < ActionView::Base
                        end
     size = (@option[:size] rescue 30)
     view.form_tag( "/#{model}/#{csv_upload_action}", :multipart => true,:method => :post) +
-       " <td><input name='commit' type='submit' value='#{buttonlabel}' />\n"+
+      " <td><input name='commit' type='submit' value='#{buttonlabel}' />\n"+
       " <input size=#{size} name='csvfile' type='file'></td></form>"
     #"<form action='/#{model}/#{csv_upload_action}' enctype='multipart/form-data' method='post'>\n" + 
     #      " <td><input name='commit' type='submit' value='CSVで登録' />\n"+
