@@ -4,18 +4,36 @@ require 'spec_helper'
 def visit_book_keeping(username = nil,password=nil)
   username ||= "dezawa"
   password ||= "ug8sau6m"
+  #visit "/users/sign_out"
+  #if page.body =~ /Log out/
+  #  click_button("Log out")
+  #end
+  find_link("Log out").click if /Log out/ =~ page.body
+  
   visit "/users/sign_in" 
-  fill_in 'user_username', with: username
-  fill_in 'user_password', with: password
-  click_button 'Sign in'
+  if has_button?("Sign in")
+    fill_in 'user_password', with: password
+    fill_in 'user_username', with: username
+    click_button 'Sign in'
+  end
   visit "/book/keeping"
 end
 def year_change(year = 2012)
   find_field("year_owner_year").select(year.to_s)
 end
+def dcookies
+  return Capybara.cookies 
+  Capcurrent_session.driver.browser.
+    current_session.instance_variable_get(:@rack_mock_session).cookie_jar
+  Capybara
+    .current_session # Capybara::Session
+    .driver          # Capybara::RackTest::Driver
+    .request         # Rack::Request
+    .cookies         # { "author" => "me" }
+end
 
 def change_owner(owner)
-  click_link("変更")
+  current_path.should click_link("変更")
   current_path.should == "/book/keeping/owner_change_win"
   
   within("tr##{owner}") do
@@ -23,8 +41,58 @@ def change_owner(owner)
   end
 end
 
+describe "メインで2012年にした後"  ,js: true do
+    fixtures :users,:user_options
+    fixtures :user_options_users
+    fixtures "book/mains","book/kamokus","book/permissions"
+
+  before do
+    visit_book_keeping
+    year_change
+  end
+
+  specify "2012年にできる" do
+    page.should have_content("複式簿記：メイン:2012年度")
+  end
+
+  specify  "振替伝票 一覧"  do
+    page.should have_content("複式簿記：メイン:2012年度")
+    
+    visit "/book/main"
+    current_path.should == "/book/main"
+    page.should have_content("振替伝票 一覧")
+    page.should have_content("99 99 2012-05-31 2550 旅費交通費 事業主借 東京→小田原 往復")
+  end
+end
+
+describe "メインで2012年にした後"  ,js: true do
+    fixtures :users,:user_options
+    fixtures :user_options_users
+    fixtures "book/mains","book/kamokus","book/permissions"
+
+  before do
+    visit_book_keeping
+    year_change
+  end
+
+  specify "貸借対照表"  do
+    page.should have_content("複式簿記：メイン:2012年度")
+    visit "/book/keeping/taishaku"
+    current_path.should == "/book/keeping/taishaku"
+    page.should have_content("利益 -51889")
+  end
+
+  specify "科目一覧"  do    
+    visit "/book/kamoku"
+    current_path.should == "/book/kamoku"
+    page.should have_content("3 経費 514 接待交際費")
+  end
+end
+
+
 describe 'トップページ' do  
-  specify 'ログインを求められ,パスワードが正しくないとまたログインへ' do                   visit "/book/keeping"                         
+  specify 'ログインを求められ,パスワードが正しくないとまたログインへ' do
+    visit "/book/keeping"                         
     fill_in 'user_password', with: 'ug8sau6'
     fill_in 'user_username', with: 'dezawa'
     click_button 'Sign in'
@@ -38,7 +106,8 @@ describe 'トップページ' do
     #   end  
   end  
 
-  specify 'ログイン成功すると簿記へ' do                                                    visit "/book/keeping"
+  specify 'ログイン成功すると簿記へ' do
+    visit "/book/keeping"
     fill_in 'user_username', with: 'dezawa'
     fill_in 'user_password', with: 'ug8sau6m'
     click_button 'Sign in'
@@ -50,10 +119,11 @@ describe "トップ上での操作" do
   specify "年度初期値は#{Time.now.beginning_of_year}, 2012に変更する" do
     visit_book_keeping
     current_path.should == "/book/keeping"
-    expect{ find_field("year_owner_year").select("2012")
-    }.to change{find_field("year_owner_year").value}.
+    #    expect{ find_field("year_owner_year").select("2012")
+    expect{year_change }.to change{find_field("year_owner_year").value}.
       from(Time.now.year.to_s).to( "2012")
     current_path.should == "/book/keeping"
+    # 
   end
   specify "簿記所有者を変更する" do
     visit_book_keeping
@@ -154,14 +224,3 @@ describe "owner aaronにすると" do
   end
 end
 
-describe "貸借対照表" do
-  fixtures :users,:user_options, :user_options_users
-  fixtures "book/mains","book/kamokus","book/permissions"
-
-  specify "dd" do
-    visit_book_keeping
-    year_change
-    visit "/book/keeping/taishaku"
-    current_path.should == "/book/keeping/taishaku"
-  end
-end
