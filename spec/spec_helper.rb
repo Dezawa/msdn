@@ -54,8 +54,13 @@ RSpec.configure do |config|
   #############################
   config.include Devise::TestHelpers, :type => :controller  
 end
+require 'capybara/poltergeist'
+  Capybara.javascript_driver = :poltergeist
 
-
+Capybara.register_driver :poltergeist do |app|
+  Capybara::Poltergeist::Driver.new(app, :inspector => true,
+                                    :phantomjs_options => ["--cookies-file=#{::Rails.root}/spec/requests/cookies.txt"])
+end
  TTT = [true]*3
  TTF=[true, true,false]
  TFF=[true,false,false]
