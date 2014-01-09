@@ -89,6 +89,7 @@ Msdn::Application.routes.draw do
     resources :keeping, :kamoku, :main, :permission
     post "keeping/owner_change_win" => "keeping#owner_change_win"
     post "keeping/owner_change" => "keeping#owner_change"
+    post "keeping/year_change" => "keeping#year_change"
   end
   
 
