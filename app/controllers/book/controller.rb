@@ -3,16 +3,14 @@
 
 class Book::Controller <  ApplicationController
   include Actions
-  #include BookPermit
   before_action :authenticate_user! 
-  #before_filter :login_required 
   before_action {|ctrl| ctrl.set_permit %w(複式簿記試用 複式簿記利用 複式簿記メンテ)}
   #before_action :set_instanse_variable
   before_action(:except => :error) {|ctrl|  ctrl.require_allowed "/book/keeping/error" }
  
   def set_instanse_variable
     logger.debug "BookCtrl SET_INSTANSE_VARIABLE "
-    @year = session[:BK_year] || Time.now.beginning_of_year
+    @year = session["BK_year"] || Time.now.beginning_of_year
     @arrowed = []
     if current_user
       myself = Book::Permission.create_myself(current_user)      if @editor
@@ -21,12 +19,19 @@ class Book::Controller <  ApplicationController
     end
     @arrowed.sort!{|a,b|  (b.permission <=> a.permission)*2 + (a.login <=> b.login)}
     @arrowed.unshift(myself) if myself
-    permittion_id = session[:BK_owner] 
-    logger.debug "BookCtrl SET_INSTANSE_VARIABLE : @arrowed.first=#{@arrowed.first.inspect},session[:BK_owner] =#{session[:BK_owner].inspect} permittion_id=#{permittion_id} ========"
-    @owner =  (permittion_id ? 
-               Book::Permission.find(permittion_id) : 
-               @arrowed.first) || 
+
+    logger.debug "BookCtrl SET_INSTANSE_VARIABLE : permittion_id = session[:BK_owner]=#{session[:BK_owner]}"
+   permittion_id = session[:BK_owner] 
+    @owner  = (permittion_id ? 
+                                   Book::Permission.find(permittion_id) : 
+                                   @arrowed.first) || 
       Book::Permission.create_nobody #owner
+#    session[:BK_owner] ||= @owner 
+#   logger.debug "BookCtrl SET_INSTANSE_VARIABLE : "+
+#      "@arrowed.first=#{@arrowed.first.login}/#{@arrowed.first.owner}, "+
+#      "session[:BK_owner] =#{session[:BK_owner].login}/#{session[:BK_owner].owner}. "+
+#      "YEAR = #{session[:BK_year]}"
+
     logger.debug "BookCtrl SET_INSTANSE_VARIABLE : @owner = #{@owner.login} #{@owner.owner}"
 
     @Links=Book::KeepingController::Links

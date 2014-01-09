@@ -67,9 +67,9 @@ class Book::MainController < Book::Controller
   def set_const
     @Model= Book::Main
 
-    @year = (year = session[:BK_year] || Time.now) #.year
+#    @year = (year = session["BK_year"] || Time.now) #.year
     #pp "@year=#{@year}"
-    @year_beginning =  @year.beginning_of_year
+    year= @year_beginning =  @year.beginning_of_year
     @year_end       =  @year.end_of_year
     @year_full = year
     @TYTLE = "#{@owner.owner}の 複式簿記：振替伝票"
