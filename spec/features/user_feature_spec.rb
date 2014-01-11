@@ -21,15 +21,12 @@ describe "dezawaのとき"   do
     expect(page).to have_no_link "MSDN Top"
   end
 
-  User.all.pluck(:username).each{|username|
-    specify "ユーザ#{username}のメニューリンクは" do
-      User.find(user_id).user_options.map(&:label).
-        each{|label| 
-        specify label+"へのリンクがある" do
-          expect(page).to have_link label
-        end
-      }
-    end
+  User.all.each{|user|
+    user.user_options.pluck(:label).each{|label|
+      specify "ユーザ#{user.username}のメニューは"+label+"へのリンクがある" do
+        expect(page).to have_link label
+      end
+    }
   }
 end
 
