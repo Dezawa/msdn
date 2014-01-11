@@ -7,6 +7,11 @@ class Book::Kamoku < ActiveRecord::Base
   extend CsvIo
   self.table_name = 'book_kamokus'
   attr_accessor   :no,:book_id,:book
+
+   validates_presence_of :code ,:message=> "分類は必須項目です"
+   validates_presence_of :bunrui ,:message=> "順は必須項目です。"
+   validates_presence_of :kamoku ,:message=> "課目は必須項目です"
+
   @@kamokus=nil
   # 開始残高の id を返す
   def self.kaisizandaka 
