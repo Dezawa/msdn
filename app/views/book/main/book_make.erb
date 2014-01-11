@@ -4,14 +4,14 @@
 <div align=center><h3><%= @TYTLE  %>　(<%= @year.year %>年度)</h3>
 <%= flash[:message] %>
 <%= @errorse -%>
-<table border=1><%= label_line%>
+<table border=1 id='index_table'><%= label_line%>
 <% @models.each do |obj| id = obj.id -%>
 <tr><% @labels.each{|html_cell| -%>
 <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
 <td><%= link_to 'Edit', :action => :edit ,
 	:page => @page,:id => obj.id,
 	:back=>"book_make" , :back_params => "kamoku_id,#{@kamoku_id}"%>
-<tr> 
+</tr> 
 <% end -%>
 </table>
 <br />
