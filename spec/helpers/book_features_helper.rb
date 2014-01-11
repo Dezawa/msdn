@@ -32,10 +32,15 @@ def dcookies
 end
 
 def change_owner(owner)
-  current_path.should click_link("変更")
+   click_link("変更")
   current_path.should == "/book/keeping/owner_change_win"
   
   within("tr##{owner}") do
     click_link("選択")
   end
+end
+
+def page_check(current,all)                  
+  expect(page.body).to have_content(" #{all} 次へ 件/ページ")
+  expect(page.has_no_link?(" #{current} ")).to be_true
 end
