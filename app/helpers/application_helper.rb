@@ -436,13 +436,13 @@ module ApplicationHelper
 
   def disp_errors(objects)
     # [ AR.Error, AR.Error ,,,]
-    msg=safe_join(objects.map{|obj|
-      next if obj.errors.size == 0
-      id=obj.id
-      safe_join(obj.errors.map{|er| "ID=#{id}:#{er[0]} #{er[1]}" }.
-                compact,"<br>\n")
-    }.compact,"<br>\n")
-    "<font color=Red>#{msg}</font>".html_safe
+    msg=safe_join(
+                  objects.map{|obj|
+                    next if obj.errors.size == 0
+                    safe_join(obj.errors.values.flatten,"<br>".html_safe)
+                  }.compact,
+                  "<br>\n".html_safe)
+    "<div id='errors'><font color=Red>#{msg}</font></div>".html_safe
   end
 
   def t(sym,lang=nil)
