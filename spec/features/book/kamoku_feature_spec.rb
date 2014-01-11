@@ -185,3 +185,31 @@ describe "aaronにてlogin" ,js: true  do
   end
 
 end
+
+describe "課目一覧から元帳へ" ,js: true  do
+    fixtures :users,:user_options
+    fixtures :user_options_users
+    fixtures "book/mains","book/kamokus","book/permissions"
+
+ before do
+    visit_book_keeping
+    year_change
+    page.should have_content("複式簿記：メイン:2012年度")
+    expect(page).to have_content("dezawaの簿記")
+    find('table#index').click_link("勘定科目")
+  end
+
+  after do
+    click_link "ログアウト"
+  end
+
+  specify "売上" do
+    click_link("売上")
+    expect(current_path).to eq "/book/main/book_make"
+    expect(page).to have_content("売上　(2012年度)")
+    within('table#index_table') do
+      expect(page.all('tr').count).to eq 3
+    end
+
+  end  
+end
