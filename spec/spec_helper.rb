@@ -1,10 +1,19 @@
 # -*- coding: euc-jp -*-
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'
+Dir.glob("spec/**/*steps.rb") { |f| load f, true }
+
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun'
-## require 'factory_girl'
+
+require 'capybara/dsl'
+require 'capybara/rspec'
+require 'capybara/webkit'
+require 'capybara/poltergeist'
+require 'turnip'
+require 'turnip/capybara'
+require 'factory_girl'
 
 
 $LOAD_PATH << File.join(File.dirname(__FILE__),"helpers")

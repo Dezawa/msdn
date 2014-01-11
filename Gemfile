@@ -57,6 +57,8 @@ group :development, :test do
   gem 'guard-rspec'
   gem 'factory_girl_rails'
   gem 'poltergeist'   # needs sudo apt-get install phantomjs 
-# gem 'spring' # これを新しく追加 
+  gem 'turnip'
+  # gem 'spring' # これを新しく追加 
 end
+
 
