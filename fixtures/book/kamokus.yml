@@ -1,0 +1,146 @@
+---
+one:
+  id: '2'
+  code: '2'
+  bunrui: '210'
+  kamoku: 未払金
+two:
+  id: '6'
+  code: '1'
+  bunrui: '110'
+  kamoku: 普通預金
+No3:
+  id: '19'
+  code: '5'
+  bunrui: '511'
+  kamoku: 旅費交通費
+No4:
+  id: '13'
+  code: '5'
+  bunrui: '512'
+  kamoku: 通信費
+No5:
+  id: '16'
+  code: '2'
+  bunrui: '280'
+  kamoku: 事業主借
+No6:
+  id: '21'
+  code: '5'
+  bunrui: '508'
+  kamoku: 租税公課
+No7:
+  id: '15'
+  code: '5'
+  bunrui: '509'
+  kamoku: 荷造運賃
+No8:
+  id: '14'
+  code: '5'
+  bunrui: '517'
+  kamoku: 消耗品費
+No9:
+  id: '20'
+  code: '5'
+  bunrui: '525'
+  kamoku: 資料・教育
+No10:
+  id: '7'
+  code: '5'
+  bunrui: '531'
+  kamoku: 雑費
+No11:
+  id: '11'
+  code: '4'
+  bunrui: '410'
+  kamoku: 売上
+No12:
+  id: '3'
+  code: '5'
+  bunrui: '514'
+  kamoku: 接待交際費
+No13:
+  id: '17'
+  code: '5'
+  bunrui: '526'
+  kamoku: 紹介料
+No14:
+  id: '22'
+  code: '1'
+  bunrui: '100'
+  kamoku: 現金
+No15:
+  id: '18'
+  code: '0'
+  bunrui: '0'
+  kamoku: 開始残高
+No16:
+  id: '8'
+  code: '1'
+  bunrui: '140'
+  kamoku: 受取手形
+No17:
+  id: '23'
+  code: '1'
+  bunrui: '150'
+  kamoku: 売掛金
+No18:
+  id: '24'
+  code: '1'
+  bunrui: '160'
+  kamoku: 棚卸資産
+No19:
+  id: '10'
+  code: '1'
+  bunrui: '180'
+  kamoku: 工具器具備品
+No20:
+  id: '12'
+  code: '1'
+  bunrui: '190'
+  kamoku: 事業主貸
+No21:
+  id: '25'
+  code: '2'
+  bunrui: '270'
+  kamoku: 買掛金
+No22:
+  id: '4'
+  code: '3'
+  bunrui: '310'
+  kamoku: 元入金
+No23:
+  id: '26'
+  code: '4'
+  bunrui: '420'
+  kamoku: 雑収入
+No24:
+  id: '27'
+  code: '4'
+  bunrui: '430'
+  kamoku: 自家消費
+No25:
+  id: '28'
+  code: '5'
+  bunrui: '510'
+  kamoku: 仕入
+No26:
+  id: '5'
+  code: '5'
+  bunrui: '510'
+  kamoku: 水道光熱費
+No27:
+  id: '29'
+  code: '5'
+  bunrui: '518'
+  kamoku: 減価償却費
+No28:
+  id: '1'
+  code: '5'
+  bunrui: '522'
+  kamoku: 利子割引料
+No29:
+  id: '30'
+  code: '5'
+  bunrui: '523'
+  kamoku: 地代家賃
