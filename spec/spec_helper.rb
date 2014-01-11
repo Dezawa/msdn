@@ -9,7 +9,7 @@ require 'rspec/autorun'
 
 require 'capybara/dsl'
 require 'capybara/rspec'
-require 'capybara/webkit'
+#require 'capybara/webkit'
 require 'capybara/poltergeist'
 require 'turnip'
 require 'turnip/capybara'
