@@ -214,8 +214,8 @@ class HtmlSelect < HtmlCell
     html_options={}
     if options[:index]
       id = options[:index] if options[:index]
-      html_options[:id] = "#{domain}_#{id}[#{symbol}]"
       html_options[:name]= options[:name] || "#{domain}[#{id}][#{symbol}]"
+      html_options[:id] = html_options[:name].gsub(/[\[\/]+/,"_").gsub(/\]/,"")
     end
     if include = options[:include_blank] || include_blank
       options[:include_blank]=include
@@ -244,8 +244,8 @@ class HtmlRadio  < HtmlSelect
     html_options={}
     if options[:index]
       id = options[:index] if options[:index]
-      html_options[:id] = "#{domain}_#{id}[#{symbol}]"
       html_options[:name]="#{domain}[#{id}][#{symbol}]"
+      html_options[:id] = html_options[:name].gsub(/[\[\/]+/,"_").gsub(/\]/,"")
     end
     if include = options[:include_blank]
       html_options[:include_blank]=include
