@@ -11,13 +11,13 @@
 </td>
 <%# 各工程の稼働時間などの表 -%> <td><%= timeline %></td>
 <%# 各工程の累積稼働時間の表 -%> <td>
-<% form_for(@model) do |f| %>
+<%= form_for(@model) do |f| %>
 <%= runtimeline(true) %>
 </td>
 
 </tr></table>
 <%# 個別製造計画の表を描く -%>
-
+個別製造計画の表を描く
 <table><tr><td><font size=2>製造計画</td>
 <td style='font-size:120%;'>優先順で立案<%= check_box(@model,:name => 'ube_skd[jun_only]') %></td>
 <td>立案開始日 <%= raw edit_md_date(:ube_skd,:replan_from,@model,:size => 3) %></td>
