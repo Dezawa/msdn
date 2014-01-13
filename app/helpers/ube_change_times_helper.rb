@@ -2,8 +2,9 @@
 module UbeChangeTimesHelper
 
   def chtime_table(ope_names,chtimes,&block)
-    html = "<tr><td></td>".html_safe
-    ope_names.each{|ope_to| html += "<td>#{ope_to}</td>\n".html_safe }
+    html = ope_names.inject("<tr><td></td>".html_safe){|ret,ope_name|
+       ret + "<td>#{ope_name}</td>\n".html_safe 
+    }+"</tr>\n".html_safe
     ope_names.each{|ope_from|
       html += "<tr><td>#{ope_from}</td>".html_safe
       ope_names.each{|ope_to| chtime,id = chtimes[[ope_from,ope_to]]
@@ -11,7 +12,7 @@ module UbeChangeTimesHelper
       }
       html += "</tr>\n".html_safe
     }
-    
+    html
   end
 
   def chtime_write(ope_names,chtimes)
