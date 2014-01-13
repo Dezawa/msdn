@@ -24,29 +24,38 @@ module UbeSkdHelper
   end
 
   #TimeLine
-  def timeline
-     "<table border =1 ><tr><td>".html_safe + 
-      @labels[0].join("</td><td>".html_safe) +"</tr>\n".html_safe +
-      @labels[1..-1].map{|lbl| 
-      "<tr><td>".html_safe + lbl[0].html_safe  +
-      "</td><td align=right>".html_safe+
-      lbl[1..5].map{|l|  @model[l] }.join("</td><td align=right>").html_safe+
+  def table_title
+    "<table border =1 ><tr><td>".html_safe + 
+      safe_join(@labels[0],"</td><td>".html_safe) +
+      "</tr>\n".html_safe
+  end
+
+  def timeline_row(lbl)
+    "<tr><td>".html_safe + lbl[0].html_safe  + "</td>".html_safe +
+      "<td align=right>".html_safe+
+      safe_join(lbl[1..5].map{|l|  @model[l] },"</td><td align=right>".html_safe ) +
       "</td>".html_safe+
       "<td>#{lbl[6]||'　'}</td>".html_safe
-    }.join("</tr>\n".html_safe)+"</table>\n".html_safe
+  end
+
+  def timeline
+      table_title +
+      safe_join(@labels[1..-1].map{|lbl| timeline_row(lbl)
+                },"</tr>\n".html_safe) +
+      "</table>\n".html_safe
   end
 
   def runtimeline(edit=nil)
-     "<table border =1 ><tr><td>".html_safe +
-      @RunTimeLabels[0].join("</td><td>").html_safe +
+     "<table border =1 id='runtimeline'><tr><td>".html_safe +
+      safe_join(@RunTimeLabels[0],"</td><td>".html_safe) +
       "</tr>\n".html_safe + #Label行
-      #@RunTimeLabels[1,2].map{|lbl|  dspline(lbl,edit,1)    }.join+
-      #@RunTimeLabels[3..-1].map{|lbl|  dspline(lbl,edit,1000) }.join+
+      ## @RunTimeLabels[1,2].map{|lbl|  dspline(lbl,edit,1)    }.join+
+      #  @RunTimeLabels[3..-1].map{|lbl|  dspline(lbl,edit,1000) }.join+
       @RunTimeLabels[1..-1].map{|lbl|  dspline(lbl,edit)    }.join.html_safe+
       "</table>\n".html_safe
   end
 
-  def dspline(lbl,edit)
+  def dspline(lbl,edit,opt=nil)
     run = @model[lbl[1]] ? @model[lbl[1]].to_s.sub(/(\d+)(?=\d{3}$)/, '\\1,') : "　"
     curnt=@model[lbl[2]] ? @model[lbl[2]].to_s.sub(/(\d+)(?=\d{3}$)/, '\\1,') : "　"
     limit=@model[lbl[3]] ? @model[lbl[3]].to_s.sub(/(\d+)(?=\d{3}$)/, '\\1,') : "　"
