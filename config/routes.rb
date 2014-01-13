@@ -80,7 +80,8 @@ Msdn::Application.routes.draw do
     ]
   ].
     each{|controller,actions| set_routes(controller,actions) }
-    
+   
+  
 
   #### resources namespaces #####
   resources :user_options,:users,:holydays,:lips
@@ -93,7 +94,10 @@ Msdn::Application.routes.draw do
   end
   
 
-
+  %w(edit_only sort_edit lips_load doc_out doc_out_all input_result update_result csv_download).
+    each{|action| 
+    get "ubeboard/skd/#{action}" => "ubeboard/skd##{action}"
+  }
   ubeboard_resources = [:skd,:maintain,:holyday,:product,:operation,
                         :change_times,:meigara,:meigara_shortname,:constant,
                         :named_changes,:plan]
