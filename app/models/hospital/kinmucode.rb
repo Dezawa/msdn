@@ -21,8 +21,8 @@
 #  nenkyuu"
 require 'pp'
 class Hospital::Kinmucode < ActiveRecord::Base
-  extend Function::CsvIo
-  set_table_name 'hospital_kinmucodes'
+  extend CsvIo
+  self.table_name  = 'hospital_kinmucodes'
   #belongs_to :kinmukubun,:class_name => "Hospital::inmukubun"
   @@From_0123 = nil
 

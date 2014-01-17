@@ -10,10 +10,10 @@
 #               ::  割り当て作業はこの @shift で行い、saveまえにday\d\dに書き出す。
 #               ::  @days[]にHospital::Kinmu は要らなくなるかも
 class Hospital::Monthly < ActiveRecord::Base
-  extend Function::CsvIo
+  extend CsvIo
   #extend Forwardable
 
-  set_table_name 'hospital_monthlies'
+  self.table_name = 'hospital_monthlies'
   attr_writer :days
   attr_accessor :shift,:nurce
 

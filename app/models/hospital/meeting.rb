@@ -1,6 +1,6 @@
 class Hospital::Meeting < ActiveRecord::Base
-  extend Function::CsvIo
-  set_table_name 'hospital_meetings'
+  extend CsvIo
+  self.table_name = 'hospital_meetings'
   attr_writer :startday
 
   def startday   ; start.strftime("%d");end

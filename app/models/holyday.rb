@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 class Holyday < ActiveRecord::Base
-  extend Function::CsvIo
+  extend CsvIo
 
   def self.holydays
     @holydays ||= Holyday.all.map(&:day)

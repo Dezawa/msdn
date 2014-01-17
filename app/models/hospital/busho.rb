@@ -1,6 +1,6 @@
 class Hospital::Busho < ActiveRecord::Base
-  extend Function::CsvIo
-  set_table_name 'bushos'
+  extend CsvIo
+  self.table_name = 'hospital_bushos'
   def self.names
     all.map{|obj| [obj.name,obj.id]}
   end
