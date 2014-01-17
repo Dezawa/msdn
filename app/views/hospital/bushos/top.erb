@@ -1,0 +1,9 @@
+<h3>勤務割当</h3>
+ <div>
+    <%= label_tag 'month', '月度' %>
+    <%= text_field_tag 'month', @month %>
+ </div>
+ <div>
+    <%= label_tag 'busho', '部署' %>
+    <%= select("busho",:name,@correction) %>
+ </div>
