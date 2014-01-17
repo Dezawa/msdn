@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140117020929) do
+ActiveRecord::Schema.define(version: 20140117103023) do
 
   create_table "book_kamokus", force: true do |t|
     t.text    "kamoku"
@@ -90,6 +90,7 @@ ActiveRecord::Schema.define(version: 20140117020929) do
     t.integer "code3"
     t.integer "coden"
     t.integer "busho_id"
+    t.integer "nurce_id"
   end
 
   create_table "hospital_meetings", force: true do |t|

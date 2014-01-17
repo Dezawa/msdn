@@ -23,9 +23,10 @@ class Hospital::Nurce < ActiveRecord::Base
 
   self.table_name = 'hospital_nurces'
   has_and_belongs_to_many :hospital_roles,:class_name => "Hospital::Role"
-  belongs_to :limit    ,:class_name => "Hospital::Limit"
+  has_one :limit    ,:class_name => "Hospital::Limit"
   belongs_to :busho    ,:class_name => "Hospital::Busho"
-  
+
+  attr_reader :Reguration
   LimitDefault={:code0 => 8,:code1 => 20,:code2 => 4,:code3 => 4,:coden => 1}
   CheckFail = Class.new(StandardError)
 
@@ -85,7 +86,8 @@ class Hospital::Nurce < ActiveRecord::Base
     cost
   end
 
-  def after_find
+  #def 
+  after_find do
     set_check_regulation
   end
 
@@ -224,9 +226,9 @@ class Hospital::Nurce < ActiveRecord::Base
       [
        {        },{ },
        {
-         :junya => [/([2L5][^25]*){#{limits.code2+1}}/,nil,nil,"順夜が#{limits.code2}を越えた"]
+         :junya => [/([2L5][^25]*){#{limit.code2+1}}/,nil,nil,"順夜が#{limit.code2}を越えた"]
        },{ 
-         :shinya =>[/([3M6][^36]*){#{limits.code3+1}}/,nil,nil,"深夜が#{limits.code3}を越えた"] 
+         :shinya =>[/([3M6][^36]*){#{limit.code3+1}}/,nil,nil,"深夜が#{limit.code3}を越えた"] 
        }
       ]
     @Wants = [{},{},{},{}] 
@@ -363,11 +365,11 @@ class Hospital::Nurce < ActiveRecord::Base
     {1 => 0.2, 2 => 0.5 , 0 => 1, nil => 1}[shokui_id] * value
   end
 
-  def limits
+  def ddlimits
     #limit ||= Hospital::Limit.crate
-    return limit if limit
+    return limits if limits
     create_limit(LimitDefault)
-    limit 
+    limits 
   end
 
   def assinable_roles

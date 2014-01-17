@@ -1,6 +1,7 @@
 ---
 one:
   id: '1'
+  nurce_id: '1'
   code0: '8'
   code1: '20'
   code2: '2'
@@ -8,6 +9,7 @@ one:
   coden: '1'
 two:
   id: '2'
+  nurce_id: '2'
   code0: '8'
   code1: '20'
   code2: '2'
@@ -15,6 +17,7 @@ two:
   coden: '1'
 No3:
   id: '3'
+  nurce_id: '3'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -22,6 +25,7 @@ No3:
   coden: '1'
 No4:
   id: '4'
+  nurce_id: '4'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -29,6 +33,7 @@ No4:
   coden: '1'
 No5:
   id: '5'
+  nurce_id: '5'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -36,6 +41,7 @@ No5:
   coden: '1'
 No6:
   id: '6'
+  nurce_id: '6'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -43,6 +49,7 @@ No6:
   coden: '1'
 No7:
   id: '7'
+  nurce_id: '7'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -50,6 +57,7 @@ No7:
   coden: '1'
 No8:
   id: '8'
+  nurce_id: '8'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -57,6 +65,7 @@ No8:
   coden: '1'
 No9:
   id: '9'
+  nurce_id: '9'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -64,6 +73,7 @@ No9:
   coden: '1'
 No10:
   id: '10'
+  nurce_id: '10'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -71,6 +81,7 @@ No10:
   coden: '1'
 No11:
   id: '11'
+  nurce_id: '11'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -78,6 +89,7 @@ No11:
   coden: '1'
 No12:
   id: '12'
+  nurce_id: '12'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -85,6 +97,7 @@ No12:
   coden: '1'
 No13:
   id: '13'
+  nurce_id: '13'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -92,6 +105,7 @@ No13:
   coden: '1'
 No14:
   id: '14'
+  nurce_id: '14'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -99,6 +113,7 @@ No14:
   coden: '1'
 No15:
   id: '15'
+  nurce_id: '15'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -106,6 +121,7 @@ No15:
   coden: '1'
 No16:
   id: '16'
+  nurce_id: '16'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -113,6 +129,7 @@ No16:
   coden: '1'
 No17:
   id: '17'
+  nurce_id: '17'
   code0: '8'
   code1: '20'
   code2: '2'
@@ -120,6 +137,7 @@ No17:
   coden: '1'
 No18:
   id: '18'
+  nurce_id: '18'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -127,6 +145,7 @@ No18:
   coden: '1'
 No19:
   id: '19'
+  nurce_id: '19'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -134,6 +153,7 @@ No19:
   coden: '1'
 No20:
   id: '20'
+  nurce_id: '20'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -141,6 +161,7 @@ No20:
   coden: '1'
 No21:
   id: '21'
+  nurce_id: '21'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -148,6 +169,7 @@ No21:
   coden: '1'
 No22:
   id: '22'
+  nurce_id: '22'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -155,6 +177,7 @@ No22:
   coden: '1'
 No23:
   id: '23'
+  nurce_id: '23'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -162,6 +185,7 @@ No23:
   coden: '1'
 No24:
   id: '24'
+  nurce_id: '24'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -169,6 +193,7 @@ No24:
   coden: '1'
 No25:
   id: '25'
+  nurce_id: '25'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -176,6 +201,7 @@ No25:
   coden: '1'
 No26:
   id: '26'
+  nurce_id: '26'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -183,6 +209,7 @@ No26:
   coden: '1'
 No27:
   id: '27'
+  nurce_id: '27'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -190,6 +217,7 @@ No27:
   coden: '1'
 No28:
   id: '28'
+  nurce_id: '28'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -197,6 +225,7 @@ No28:
   coden: '1'
 No29:
   id: '29'
+  nurce_id: '29'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -204,6 +233,7 @@ No29:
   coden: '1'
 No30:
   id: '30'
+  nurce_id: '30'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -211,6 +241,7 @@ No30:
   coden: '1'
 No31:
   id: '31'
+  nurce_id: '31'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -218,6 +249,7 @@ No31:
   coden: '1'
 No32:
   id: '32'
+  nurce_id: '32'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -225,6 +257,7 @@ No32:
   coden: '1'
 No33:
   id: '33'
+  nurce_id: '33'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -232,6 +265,7 @@ No33:
   coden: '1'
 No34:
   id: '34'
+  nurce_id: '34'
   code0: '8'
   code1: '20'
   code2: '2'
@@ -239,6 +273,7 @@ No34:
   coden: '1'
 No35:
   id: '35'
+  nurce_id: '35'
   code0: '8'
   code1: '20'
   code2: '2'
@@ -246,6 +281,7 @@ No35:
   coden: '1'
 No36:
   id: '36'
+  nurce_id: '36'
   code0: '8'
   code1: '20'
   code2: '2'
@@ -253,6 +289,7 @@ No36:
   coden: '1'
 No37:
   id: '37'
+  nurce_id: '37'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -260,6 +297,7 @@ No37:
   coden: '1'
 No38:
   id: '38'
+  nurce_id: '38'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -267,6 +305,7 @@ No38:
   coden: '1'
 No39:
   id: '39'
+  nurce_id: '39'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -274,6 +313,7 @@ No39:
   coden: '1'
 No40:
   id: '40'
+  nurce_id: '40'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -281,6 +321,7 @@ No40:
   coden: '1'
 No41:
   id: '41'
+  nurce_id: '41'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -288,6 +329,7 @@ No41:
   coden: '1'
 No42:
   id: '42'
+  nurce_id: '42'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -295,6 +337,7 @@ No42:
   coden: '1'
 No43:
   id: '43'
+  nurce_id: '43'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -302,6 +345,7 @@ No43:
   coden: '1'
 No44:
   id: '44'
+  nurce_id: '44'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -309,6 +353,7 @@ No44:
   coden: '1'
 No45:
   id: '45'
+  nurce_id: '45'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -316,6 +361,7 @@ No45:
   coden: '1'
 No46:
   id: '46'
+  nurce_id: '46'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -323,6 +369,7 @@ No46:
   coden: '1'
 No47:
   id: '47'
+  nurce_id: '47'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -330,6 +377,7 @@ No47:
   coden: '1'
 No48:
   id: '48'
+  nurce_id: '48'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -337,6 +385,7 @@ No48:
   coden: '1'
 No49:
   id: '49'
+  nurce_id: '49'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -344,6 +393,7 @@ No49:
   coden: '1'
 No50:
   id: '50'
+  nurce_id: '50'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -351,6 +401,7 @@ No50:
   coden: '1'
 No51:
   id: '51'
+  nurce_id: '51'
   code0: '8'
   code1: '20'
   code2: '5'
@@ -358,6 +409,7 @@ No51:
   coden: '1'
 No52:
   id: '52'
+  nurce_id: '52'
   code0: '8'
   code1: '20'
   code2: '5'
