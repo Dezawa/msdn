@@ -15,7 +15,7 @@ describe "科目" ,js: true  do
   end
 
   after do
-    click_link "ログアウト"
+    #click_link "ログアウト"
   end
 
   specify "画面がでる" do
@@ -89,7 +89,7 @@ describe "科目" ,js: true  do
   end
 
   after do
-    click_link "ログアウト"
+    #click_link "ログアウト"
   end
 
 
@@ -145,7 +145,7 @@ describe "aaronにてlogin" ,js: true  do
   end
 
   after do
-    click_link "ログアウト"
+    #click_link "ログアウト"
   end
 
 
@@ -168,7 +168,7 @@ describe "aaronにてlogin" ,js: true  do
   end
 
   after do
-    click_link "ログアウト"
+    #click_link "ログアウト"
   end
 
   specify "編集 あり、追加 なし" do
@@ -200,7 +200,7 @@ describe "課目一覧から元帳へ" ,js: true  do
   end
 
   after do
-    click_link "ログアウト"
+    #click_link "ログアウト"
   end
 
   specify "売上" do

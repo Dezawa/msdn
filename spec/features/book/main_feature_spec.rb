@@ -152,22 +152,5 @@ describe "2012年の一覧画面 " ,js: true   do
    #92 92 2012-05-07 6364 未払金 普通預金
   end
 
-  specify "から 一件削除" do
-    # 一覧で ID=93の 削除を押す
-    visit ("/book/main")
-    current_path.should eq "/book/main"
-    find_by_id('93').click_link("削除")
-
-    # 確認画面がでる
-  #  page.driver.browser.switch_to.alert.accept
-  #  current_path.should eq "/book/main"
-
-    # 一覧画面。全10頁の10頁がでる                                                                
- #   page_check(10,10)
-
-    # 削除されている                                                                               
-#    expect(page.body).to have_content("93 93 2012-05-24 3870 旅費交通費 事業主借 ")
-
-  end
 
 end

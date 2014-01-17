@@ -14,6 +14,7 @@ def visit_book_keeping(username = nil,password=nil)
     click_button 'Sign in'
   end
   visit "/book/keeping"
+  expect(current_path).to eq "/book/keeping"
 end
 def year_change(year = 2012)
   find_field("year_owner_year").select(year.to_s)

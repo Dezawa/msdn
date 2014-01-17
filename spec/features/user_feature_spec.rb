@@ -22,7 +22,8 @@ describe "dezawaのとき"   do
   end
 
   User.all.each{|user|
-    user.user_options.pluck(:label).each{|label|
+    user.user_options.select{|option| option.order > 0 }.each{|option|
+      label = option.label
       specify "ユーザ#{user.username}のメニューは"+label+"へのリンクがある" do
         expect(page).to have_link label
       end

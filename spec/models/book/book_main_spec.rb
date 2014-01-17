@@ -31,7 +31,7 @@ describe Book::Main do
   end
 
   describe "所有者、日付を指定して伝票を読む" do
-      fixtures "book/mains"
+#      fixtures "book/mains"
     it "dezawa,2012で99ある" do
       book_this_year.should have(99).items
     end
@@ -50,7 +50,7 @@ describe Book::Main do
   end
 
   describe "振替伝票の一覧を印刷用のCSVにする" do
-    fixtures "book/mains", "book/kamokus"
+ #   fixtures "book/mains","book/kamokus"
     before(:all) do
       @output = Book::Main.set_to_array_for_print("dezawa",Date.new(2012,1,1))      
     end
@@ -59,7 +59,7 @@ describe Book::Main do
   end
 
   describe "dezawaの文書を参照・編集可能か" do
-    fixtures "book/mains","book/permissions"
+ #   fixtures "book/mains","book/permissions"
     before(:all) do
       @book = Book::Main.find(5)
     end

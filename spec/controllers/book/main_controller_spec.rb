@@ -59,6 +59,10 @@ describe Book::MainController,"一覧画面にて on 2012年" do
     get :index
   end
 
+  it "全件数" do
+    expect(Book::Main.count).to eq 105
+  end
+
   it "100件あるから" do
     #assert_response :success
     assigns[:page].should eq(10),"10paqge"

@@ -1,0 +1,2 @@
+[General]
+cookies="@Variant(\0\0\0\x7f\0\0\0\x16QList<QNetworkCookie>\0\0\0\0\x1\0\0\0\x1\0\0\0R_msdn_session=2a25633ba406cb3ab222dda3224bde47; HttpOnly; domain=127.0.0.1; path=/)"
