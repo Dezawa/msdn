@@ -2,7 +2,7 @@
 module HospitalHelper
   def input_busho_month
     HtmlDate.new(:month,"年月",:size => 7,:tform => "%Y/%m").
-      edit_field(@Domain,@controller,@controller) +  
+      edit_field(@Domain,self.controller,@controller) +  
       HtmlSelect.new(:current_busho_id,"部署", :correction => Hospital::Busho.names).
       edit_field(@Domain,@controller,@controller)
   end
@@ -56,28 +56,28 @@ module HospitalHelper
    list = [5,[2,"勤務時間"],1,
            [9,"積算勤務日数"],[3,"所属部門勤務時間"],[3,"応援勤務時間"]
           ]
-   row = "<tr>"
+   row = "<tr>".html_safe
    lbl_idx=0
    list.each_with_index{|style,idx|
      case style
      when Integer   ;
        (1..style).each{
-         row += "<td rowspan=2>#{@labels[lbl_idx].label}</td>"
+         row += "<td rowspan=2>#{@labels[lbl_idx].label}</td>".html_safe
          lbl_idx += 1
        }
      when Array; 
-       row += "<td colspan=#{style[0]}>#{style[1]}</td>"
+       row += "<td colspan=#{style[0]}>#{style[1]}</td>".html_safe
        lbl_idx += style[0]
      end
    }
-   row += "</tr>\n"
+   row += "</tr>\n".html_safe
    lbl_idx=0
    list.each_with_index{|style,idx|
      case style
      when Integer   ;        lbl_idx += style
      when Array; 
        (1..style[0]).each{
-         row += "<td>#{@labels[lbl_idx].label}</td>"
+         row += "<td>#{@labels[lbl_idx].label}</td>".html_safe
          lbl_idx += 1
        }
      end
@@ -104,7 +104,7 @@ module HospitalHelper
       "<td #{color}>#{nurce.send sym}</td>"}.join + 
     [:shift0,:nenkyuu].zip([:code0,:coden]).map{|sym,code|
       color = nurce.send(sym)<nurce.limits[code]? "bgcolor='#ff70b0'" : "" 
-      "<td #{color}>#{nurce.send sym}</td>"}.join
+      "<td #{color}>#{nurce.send sym}</td>"}.join.html_safe
   end
   def day_total
     
@@ -115,7 +115,7 @@ module HospitalHelper
         color = @assign.short_role(day,shift).include?(2) ?  "bgcolor='#ff70b0'" : "" 
         "<td #{color}>"+ sum.to_s + "</td>"
       }.join + "</tr>\n"
-    }.join
+    }.join.html_safe
   end
   def total(nurces,day,sym)
     nurces.inject(0){|sum,nurce| 
@@ -136,54 +136,52 @@ module HospitalHelper
   end
 
   def hospital_define(show_or_edit)
-    case show_or_edit
-    when :show ;hospital_define_show 
-    when :edit ;hospital_define_edit 
-    end
-  end
-  def hospital_define_show
-    html = "<hr>\n#{@instances.size}<table border=1>\n<tr>" +
-      @LabelsDefine.map{|html_cell| 
-      "<td>" + html_cell.label + help(html_cell.help) +"</td>\n" unless html_cell.class == HtmlHidden
-    }.compact.join + "</tr>\n" 
-
-    body =
-      @instances.map{ |model| 
-      "<tr>" +
-      @LabelsDefine.map{ |label|
-        "<td>#{model.send(label.symbol)||'　'}</td>"  unless label.class == HtmlHidden
-      }.compact.join + "</tr>\n" + "</tr>\n"
-    }.join 
-    html + body + "</table>\n"
+    html = hospital_define_table_title
+    body = safe_join(@ItemsDefine.map{ |item|
+                       sym = item.symbol.to_s
+                       logger.debug "=== #{sym} #{@instances.map(&:attri).join(',')}"
+                       model = @instances.select{ |inst| inst.attri == sym }.first
+                       case show_or_edit 
+                       when :show ;hospital_define_show_(model)
+                       when :edit ;hospital_define_edit_(model,item)
+                       end
+                     })
+    "<hr>\n#{@instances.size}<table border=1>\n<tr>".html_safe +
+      html + body + "</table>\n".html_safe
   end
 
-  def hospital_define_edit
-    html = "<hr>\n#{@instances.size}<table border=1>\n<tr>" +
+  def hospital_define_table_title
+    (
       @LabelsDefine.map{|html_cell| 
-      "<td>" + html_cell.label + help(html_cell.help) +"</td>\n" unless html_cell.class == HtmlHidden
-    }.compact.join + "</tr>\n" 
+       "<td>" + html_cell.label + help(html_cell.help) +
+       "</td>\n" unless html_cell.class == HtmlHidden
+     }.compact.join + "</tr>\n").html_safe 
+  end
 
-    body =
-      @ItemsDefine.map{ |item| sym = item.symbol.to_s
-      logger.debug "=== #{sym} #{@instances.map(&:attribute).join(',')}"
-      model = @instances.select{ |inst| inst.attribute == sym }.first
-      "<tr>" +
+  def hospital_define_show_(model)
+    ("<tr>" +
+     @LabelsDefine.map{ |label|
+       "<td>#{model.send(label.symbol)||'　'}</td>"  unless label.class == HtmlHidden
+     }.compact.join + "</tr>\n").html_safe
+  end
+
+
+  def hospital_define_edit_(model,item)
+    ("<tr>" +
       @LabelsDefine.map{ |label|
-        next if label.class == HtmlHidden
-        case label.symbol 
-        when :value
-          domain = :hospital_define
-          id =     model.id
-          index = "#{domain}_#{id}"
-          name  = "#{domain}[#{id}]"
-          option = { :index => index, :name => name ,:value => model.value}
-          "<td>#{item.edit_field_with_id(domain,model,@controller,option)}</td>" 
-        else
-           "<td>#{label.disp(model)}</td>"
-        end
-      }.compact.join + "</tr>\n" + "</tr>\n"
-    }.join 
-    html + body + "</table>\n"
+      next if label.class == HtmlHidden
+      case label.symbol 
+      when :value
+        domain = :hospital_define
+        id =     model.id
+        index = "#{domain}_#{id}"
+        name  = "#{domain}[#{id}]"
+        option = { :index => index, :name => name ,:value => model.value}
+        "<td>#{item.edit_field_with_id(domain,model,@controller,option)}</td>"
+      else
+        "<td>#{label.disp(model)}</td>"
+      end
+    }.compact.join + "</tr>\n</tr>\n").html_safe
   end
 
   def assign_links

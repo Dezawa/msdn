@@ -1,6 +1,6 @@
  <table border=1><tr><td></td><td>日</td>
  <% (1..@month.end_of_month.day).each{|day|  %> <td <%= day_bgcolor(day)%>><%= day %> </td> <% } %>
- <%= %w(日勤 深夜 準夜 公休 年休).map{|lbl| "<td rowspan=2><nobr>#{lbl}</td>"}.join %>
+ <%= %w(日勤 深夜 準夜 公休 年休).map{|lbl| "<td rowspan=2><nobr>#{lbl}</td>"}.join.html_safe %>
  </tr>
  <tr><td></td><td>曜日</td>
  <% (1..@month.end_of_month.day).each{|day|  %> <td <%= day_bgcolor(day)%>><%= (@month+(day-1).day).weekday %> </td> <% } %>
