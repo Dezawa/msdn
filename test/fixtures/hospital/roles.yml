@@ -1,0 +1,21 @@
+---
+one:
+  id: '1'
+  name: リーダー
+  comment: 
+two:
+  id: '2'
+  name: 看護師
+  comment: 
+No3:
+  id: '3'
+  name: 準看護師
+  comment: 
+No4:
+  id: '4'
+  name: Aチーム
+  comment: 
+No5:
+  id: '5'
+  name: Bチーム
+  comment: 

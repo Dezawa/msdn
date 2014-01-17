@@ -115,7 +115,7 @@ opt10:
 
 
 opt11:
-    url: /hospital/nurces
+    url: /hospital
     id: "11"
     authorized: !binary |
       5Yuk5YuZ5Ymy5LuY

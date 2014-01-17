@@ -1,0 +1,391 @@
+---
+one:
+  nurce_id: '1'
+  role_id: '2'
+two:
+  nurce_id: '2'
+  role_id: '2'
+No3:
+  nurce_id: '3'
+  role_id: '2'
+No4:
+  nurce_id: '4'
+  role_id: '2'
+No5:
+  nurce_id: '5'
+  role_id: '2'
+No6:
+  nurce_id: '6'
+  role_id: '2'
+No7:
+  nurce_id: '7'
+  role_id: '2'
+No8:
+  nurce_id: '8'
+  role_id: '2'
+No9:
+  nurce_id: '9'
+  role_id: '2'
+No10:
+  nurce_id: '10'
+  role_id: '2'
+No11:
+  nurce_id: '11'
+  role_id: '2'
+No12:
+  nurce_id: '12'
+  role_id: '2'
+No13:
+  nurce_id: '13'
+  role_id: '2'
+No14:
+  nurce_id: '14'
+  role_id: '2'
+No15:
+  nurce_id: '15'
+  role_id: '2'
+No16:
+  nurce_id: '16'
+  role_id: '2'
+No17:
+  nurce_id: '17'
+  role_id: '2'
+No18:
+  nurce_id: '18'
+  role_id: '2'
+No19:
+  nurce_id: '19'
+  role_id: '2'
+No20:
+  nurce_id: '20'
+  role_id: '2'
+No21:
+  nurce_id: '21'
+  role_id: '2'
+No22:
+  nurce_id: '22'
+  role_id: '2'
+No23:
+  nurce_id: '23'
+  role_id: '2'
+No24:
+  nurce_id: '24'
+  role_id: '2'
+No25:
+  nurce_id: '25'
+  role_id: '2'
+No26:
+  nurce_id: '26'
+  role_id: '2'
+No27:
+  nurce_id: '27'
+  role_id: '2'
+No28:
+  nurce_id: '28'
+  role_id: '2'
+No29:
+  nurce_id: '29'
+  role_id: '2'
+No30:
+  nurce_id: '30'
+  role_id: '2'
+No31:
+  nurce_id: '31'
+  role_id: '2'
+No32:
+  nurce_id: '32'
+  role_id: '2'
+No33:
+  nurce_id: '33'
+  role_id: '2'
+No34:
+  nurce_id: '3'
+  role_id: '1'
+No35:
+  nurce_id: '4'
+  role_id: '1'
+No36:
+  nurce_id: '5'
+  role_id: '1'
+No37:
+  nurce_id: '6'
+  role_id: '1'
+No38:
+  nurce_id: '7'
+  role_id: '1'
+No39:
+  nurce_id: '8'
+  role_id: '1'
+No40:
+  nurce_id: '9'
+  role_id: '1'
+No41:
+  nurce_id: '10'
+  role_id: '1'
+No42:
+  nurce_id: '11'
+  role_id: '1'
+No43:
+  nurce_id: '12'
+  role_id: '1'
+No44:
+  nurce_id: '13'
+  role_id: '1'
+No45:
+  nurce_id: '14'
+  role_id: '1'
+No46:
+  nurce_id: '15'
+  role_id: '1'
+No47:
+  nurce_id: '16'
+  role_id: '1'
+No48:
+  nurce_id: '17'
+  role_id: '5'
+No49:
+  nurce_id: '18'
+  role_id: '5'
+No50:
+  nurce_id: '19'
+  role_id: '5'
+No51:
+  nurce_id: '20'
+  role_id: '5'
+No52:
+  nurce_id: '21'
+  role_id: '5'
+No53:
+  nurce_id: '22'
+  role_id: '5'
+No54:
+  nurce_id: '23'
+  role_id: '5'
+No55:
+  nurce_id: '24'
+  role_id: '4'
+No56:
+  nurce_id: '25'
+  role_id: '4'
+No57:
+  nurce_id: '26'
+  role_id: '4'
+No58:
+  nurce_id: '27'
+  role_id: '4'
+No59:
+  nurce_id: '28'
+  role_id: '4'
+No60:
+  nurce_id: '29'
+  role_id: '4'
+No61:
+  nurce_id: '30'
+  role_id: '4'
+No62:
+  nurce_id: '31'
+  role_id: '4'
+No63:
+  nurce_id: '32'
+  role_id: '4'
+No64:
+  nurce_id: '33'
+  role_id: '4'
+No65:
+  nurce_id: '3'
+  role_id: '4'
+No66:
+  nurce_id: '4'
+  role_id: '4'
+No67:
+  nurce_id: '5'
+  role_id: '4'
+No68:
+  nurce_id: '6'
+  role_id: '4'
+No69:
+  nurce_id: '7'
+  role_id: '4'
+No70:
+  nurce_id: '8'
+  role_id: '4'
+No71:
+  nurce_id: '9'
+  role_id: '4'
+No72:
+  nurce_id: '10'
+  role_id: '5'
+No73:
+  nurce_id: '11'
+  role_id: '5'
+No74:
+  nurce_id: '12'
+  role_id: '5'
+No75:
+  nurce_id: '13'
+  role_id: '5'
+No76:
+  nurce_id: '14'
+  role_id: '5'
+No77:
+  nurce_id: '15'
+  role_id: '5'
+No78:
+  nurce_id: '16'
+  role_id: '5'
+No79:
+  nurce_id: '34'
+  role_id: '1'
+No80:
+  nurce_id: '34'
+  role_id: '2'
+No81:
+  nurce_id: '35'
+  role_id: '1'
+No82:
+  nurce_id: '35'
+  role_id: '2'
+No83:
+  nurce_id: '35'
+  role_id: '4'
+No84:
+  nurce_id: '36'
+  role_id: '1'
+No85:
+  nurce_id: '36'
+  role_id: '2'
+No86:
+  nurce_id: '36'
+  role_id: '5'
+No87:
+  nurce_id: '37'
+  role_id: '2'
+No88:
+  nurce_id: '37'
+  role_id: '4'
+No89:
+  nurce_id: '38'
+  role_id: '1'
+No90:
+  nurce_id: '38'
+  role_id: '2'
+No91:
+  nurce_id: '38'
+  role_id: '4'
+No92:
+  nurce_id: '39'
+  role_id: '1'
+No93:
+  nurce_id: '39'
+  role_id: '2'
+No94:
+  nurce_id: '39'
+  role_id: '4'
+No95:
+  nurce_id: '40'
+  role_id: '1'
+No96:
+  nurce_id: '40'
+  role_id: '2'
+No97:
+  nurce_id: '40'
+  role_id: '4'
+No98:
+  nurce_id: '41'
+  role_id: '1'
+No99:
+  nurce_id: '41'
+  role_id: '2'
+No100:
+  nurce_id: '41'
+  role_id: '4'
+No101:
+  nurce_id: '42'
+  role_id: '2'
+No102:
+  nurce_id: '42'
+  role_id: '4'
+No103:
+  nurce_id: '42'
+  role_id: '5'
+No104:
+  nurce_id: '43'
+  role_id: '2'
+No105:
+  nurce_id: '43'
+  role_id: '4'
+No106:
+  nurce_id: '43'
+  role_id: '5'
+No107:
+  nurce_id: '44'
+  role_id: '2'
+No108:
+  nurce_id: '44'
+  role_id: '4'
+No109:
+  nurce_id: '44'
+  role_id: '5'
+No110:
+  nurce_id: '45'
+  role_id: '2'
+No111:
+  nurce_id: '45'
+  role_id: '4'
+No112:
+  nurce_id: '45'
+  role_id: '5'
+No113:
+  nurce_id: '46'
+  role_id: '2'
+No114:
+  nurce_id: '46'
+  role_id: '5'
+No115:
+  nurce_id: '47'
+  role_id: '1'
+No116:
+  nurce_id: '47'
+  role_id: '2'
+No117:
+  nurce_id: '47'
+  role_id: '5'
+No118:
+  nurce_id: '48'
+  role_id: '1'
+No119:
+  nurce_id: '48'
+  role_id: '2'
+No120:
+  nurce_id: '48'
+  role_id: '5'
+No121:
+  nurce_id: '49'
+  role_id: '1'
+No122:
+  nurce_id: '49'
+  role_id: '2'
+No123:
+  nurce_id: '49'
+  role_id: '5'
+No124:
+  nurce_id: '50'
+  role_id: '1'
+No125:
+  nurce_id: '50'
+  role_id: '2'
+No126:
+  nurce_id: '50'
+  role_id: '5'
+No127:
+  nurce_id: '51'
+  role_id: '2'
+No128:
+  nurce_id: '51'
+  role_id: '5'
+No129:
+  nurce_id: '52'
+  role_id: '2'
+No130:
+  nurce_id: '52'
+  role_id: '5'
