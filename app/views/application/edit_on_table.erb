@@ -1,6 +1,4 @@
-<% if @Links %> <%= links @Links  %>
 　　ユーザ：<%= current_user.username %><hr>
-<% end %>
 <h3><%= @TYTLE %> 編集 <%= @TYTLE_post_edit %></h3>
 <%= disp_errors @models %>
 <%=    form_tag(:action => :update_on_table)+submit_tag('更新') %>
