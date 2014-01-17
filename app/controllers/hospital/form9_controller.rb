@@ -11,7 +11,7 @@ class Hospital::Form9Controller < Hospital::Controller
     @labels= [HtmlText.new(:name,"部署名")
              ]
     @AfterIndex = :hospital_define
-    @LabelsDefine = [ HtmlText.new(:name,"項目",:ro=>true),HtmlHidden.new(:attribute,"隠し",:ro=>true),
+    @LabelsDefine = [ HtmlText.new(:name,"項目",:ro=>true),HtmlHidden.new(:attri,"隠し",:ro=>true),
                      HtmlText.new(:value,"値",:ro=>true) ,HtmlText.new(:comment,"コメント",:ro=>true)
                    ]
     @ItemsDefine =
