@@ -12,14 +12,6 @@ class Hospital::NurcesController <  Hospital::Controller
       HtmlSelectWithBlank.new(:shokui_id,"職位",:correction => Hospital::Const::Shokui),
       HtmlSelect.new(:shokushu_id,"職種",:correction => Hospital::Const::Shokushu),
       HtmlSelect.new(:kinmukubun_id,"勤務区分",   :correction => Hospital::Const::Kinmukubun),
-      HtmlDate.new(:assign_date,"配属年月日",:tform=>"%Y-%m-%d",:size =>8),
-      HtmlSelectWithBlank.new(:idou,"異動" ,          :correction => Hospital::Const::Idou),
-      HtmlSelectWithBlank.new(:pre_busho_id,"前部署", :correction => Hospital::Busho.names),
-      HtmlSelectWithBlank.new(:pre_shokui_id,"前職位",:correction => Hospital::Const::Shokui),
-      HtmlSelectWithBlank.new(:pre_shokushu_id,"前職種",
-                              :correction => Hospital::Const::Shokushu),
-      HtmlSelectWithBlank.new(:pre_kinmukubun_id,"前勤務区分",
-                              :correction => Hospital::Const::Kinmukubun)
     ]
 
   def set_instanse_variable
