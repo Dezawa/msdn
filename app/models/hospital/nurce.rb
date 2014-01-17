@@ -86,7 +86,7 @@ class Hospital::Nurce < ActiveRecord::Base
   end
 
   def after_find
-    set_check_reg 
+    set_check_regulation
   end
 
   def cost(sft_str,tight)
@@ -218,7 +218,7 @@ class Hospital::Nurce < ActiveRecord::Base
   }
   
 
-  def set_check_reg 
+  def set_check_regulation
     
     @Reguration = 
       [
@@ -234,8 +234,8 @@ class Hospital::Nurce < ActiveRecord::Base
     [@Reguration ,    @Wants ,  @Reguration_keys] # retern for TDD
   end
 
-  def check_reg
-    @check_reg ||=
+  def check_regulation
+    @check_regulation ||=
       [@Reguration ,@Wants,Reguration[ Hospital::Define.koutai3?],Wants[ Hospital::Define.koutai3?] ]
   end
 
@@ -583,9 +583,9 @@ end
 
   def check(day,sft_str,imidiate=true)
     ret = []
-    check_reg.each{|reguretion|
+    check_regulation.each{|regulation|
       [0,sft_str.to_i].each{|s|
-        reguretion[s].each_pair{|item,reg_arry|
+        regulation[s].each_pair{|item,reg_arry|
           d = check_sub(day,item,reg_arry)
           if d
             ret << [item,d]
@@ -608,9 +608,9 @@ end
 
   def error_check
     ret = []
-    #[@Reguration,@Wants,Reguration,Wants].each{|reguretion|
-    check_reg.each{|reguretion|
-      reguretion.each{|reg_hash| # { :after_nights =>  [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
+    #[@Reguration,@Wants,Reguration,Wants].each{|regulation|
+    check_regulation.each{|regulation|
+      regulation.each{|reg_hash| # { :after_nights =>  [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
         reg_hash.values.each{|reg_arry|  # [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
           reg,back,length,msg = reg_arry # 
           if back
