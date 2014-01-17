@@ -22,7 +22,9 @@ Msdn::Application.routes.draw do
   get     "change_password" => "users#change_password"
   post    "password_update" => "users#password_update"
   put     "users/new" => "users#create"
-
+  get     "hospital"                     => "hospital/bushos#top"
+  get     "hospital/holydays/index"            => "holydays#index"
+  get     "hospital/holydays"            => "holydays#index"
   ### Lips ##
   get     "lips" => "lips#calc"
   post    "lips" => "lips#calc"
@@ -42,7 +44,10 @@ Msdn::Application.routes.draw do
   #### EditTable #########
   actions = [%w(add_on_table edit_on_table csv_out),
              %w(add_on_table edit_on_table update_on_table change_per_page)]
-  %w(user_options users book/main book/kamoku holydays  ).
+  %w(user_options users book/main book/kamoku holydays 
+     hospital/kinmucodes hospital/meetings hospital/needs hospital/nurces hospital/roles
+     hospital/bushos
+  ).
     each{|controller| 
        set_routes(controller,actions)
     }
@@ -75,9 +80,24 @@ Msdn::Application.routes.draw do
      [%w(index occupy_pdf reculc show_pdf),
       %w( csv_upload)]
     ],
-    ["ubeboard/lips",
-     [%w(member),[]]
-    ]
+   ["ubeboard/lips",
+    [%w(member),[]]
+   ],
+   ["hospital/roles",
+    [%w(show_assign assign set_busho),%w(assign update_assign)]
+   ],
+   ["hospital/meetings",
+    [%w(show_assign set_busho_month),[]]
+   ],
+   ["hospital/form9",
+    [%w(calc),[]]
+   ],
+   ["hospital/monthly",
+    [%w(hope_regist show_assign assign hope_update clear_assign set_busho_month error_disp),
+     %w(hope_update)]
+   ],
+   ["hospital/nurces",[%w(set_busho),[]]],
+   ["hospital/needs",[%w(set_busho),[]]]
   ].
     each{|controller,actions| set_routes(controller,actions) }
    
@@ -114,6 +134,16 @@ Msdn::Application.routes.draw do
     set_routes("skd",actions)
   end
   
+  hospital_resources = [:bushos ,:nurces ,:kinmucodes, :roles, :needs, :meetings ,:monthly,:form9,
+                       ]
+#:kinmucode_null.rb,:
+#      kinmucode.rb       meeting.rb      nurce.rb.123
+#const.rb      kinmu.rb           monthly.rb      role.rb
+#define.rb     limit.rb           need.rb         want.rb
+
+  namespace :hospital do
+    resources *hospital_resources
+  end
     
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
