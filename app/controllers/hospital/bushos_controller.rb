@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Hospital::BushoController < Hospital::Controller
+class Hospital::BushosController < Hospital::Controller
   before_filter :set_instanse_variable
 
   def set_instanse_variable
@@ -11,7 +11,7 @@ class Hospital::BushoController < Hospital::Controller
     @labels= [HtmlText.new(:name,"部署名")
              ]
     @AfterIndex = :hospital_define
-    @LabelsDefine = [ HtmlText.new(:name,"項目",:ro=>true),HtmlHidden.new(:attribute,"隠し",:ro=>true),
+    @LabelsDefine = [ HtmlText.new(:name,"項目",:ro=>true),HtmlHidden.new(:attri,"隠し",:ro=>true),
                      HtmlText.new(:value,"値",:ro=>true) ,HtmlText.new(:comment,"コメント",:ro=>true)
                    ]
     @ItemsDefine =
@@ -30,19 +30,28 @@ end
 
   def index
     @instances = Hospital::Define.all
-    regesterd = @instances.map(&:attribute)
+    regesterd = @instances.map(&:attri)
     need      = @ItemsDefine.map{ |l| l.symbol.to_s }
     lack = (need - regesterd)
     creeat = @ItemsDefine.map{ |label|
       if lack.include?(label.symbol.to_s)
          Hospital::Define.create( :name => label.label,
-                                  :attribute => label.symbol.to_s,
+                                  :attri => label.symbol.to_s,
                                   :comment   => label.comment
                                   )
       end
     }.compact
     @instances += creeat
     super
+  end
+
+  def top
+    @month = session[:hospital_year] || 
+      Time.now.beginning_of_month.next_month.strftime("%Y/%m")
+    @label = @labels.first
+    @correction = (@models = @Model.all).pluck(:name)
+    @current_busho_id = session[:hospital_busho] || @models.first.id
+    @model  = @Model.find(@current_busho_id)
   end
 
   def edit_on_table
