@@ -39,7 +39,7 @@ class Book::Main < ActiveRecord::Base
   }
 
   def no_check
-    no || self[:no] = Book::Main.maximum(:no) + 1
+    no || self[:no] = (Book::Main.maximum(:no)||0) + 1
   end
   
   def self.new(*args)
@@ -75,12 +75,9 @@ class Book::Main < ActiveRecord::Base
   # なお、csv_out はモジュール CsvIo で記述
   def self.set_to_array_for_print(login,year)
     models= self.this_year_of_owner( login,year)
-    columns = %w(no date karikata kasikata tytle memo amount)
+    columns = [:no,:date,:kari_kamoku_name,:kasi_kamoku_name,:tytle,:memo,:amount]
     ary = [ %w(番号 日付 貸方 借方 備考 メモ 金額)]
-    models.each{|model|  ary << columns.map{|clm|
-        %w(karikata kasikata).include?(clm) ?  Book::Kamoku.kamokus.rassoc(model[clm])[0] : model[clm]
-      }
-    }
+    models.each{|model|  ary << columns.map{|clm| model.send(clm)   }   }
     ary
   end
 
@@ -311,13 +308,13 @@ true
     @kari ||= Book::Kamoku.find(karikata)
   end
 
-  def kari_kamoku_name ; kari_kamoku ? kari_kamoku.kamoku : nil ;end
+  def kari_kamoku_name ; kari_kamoku.kamoku  ;end
 
   # 借方の科目を返す
   def kasiKata
     @kasi ||= Book::Kamoku.find(kasikata)
   end
-  def kasi_kamoku_name ; kasi_kamoku ? kasi_kamoku.kamoku : nil ;end
+  def kasi_kamoku_name ;  kasi_kamoku.kamoku ;end
 
   # 持ち主かどうか
   def editable_by_user?
