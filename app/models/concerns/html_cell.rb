@@ -174,7 +174,8 @@ class HtmlDate < HtmlCell
   def edit(domain,obj,controller,opt)
     if ro(controller) ; disp(obj)
     else
-      str = obj.send(symbol) ; str = str ? str.strftime(tform||"%y/%m/%d %H:%M"):""
+      str = obj.send(symbol) 
+      str = str ? str.strftime(tform||"%y/%m/%d %H:%M"):""
       text_field(domain,symbol,opt.merge(:value=>str))
     end
   end
