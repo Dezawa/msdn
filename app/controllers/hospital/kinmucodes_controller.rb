@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Hospital::KinmucodeController < Hospital::Controller
+class Hospital::KinmucodesController < Hospital::Controller
   before_filter :set_instanse_variable
 
   Labels= [HtmlText.new(:id,"ID",:ro => true),

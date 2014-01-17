@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Hospital::RoleController < Hospital::Controller
+class Hospital::RolesController < Hospital::Controller
   before_filter :set_instanse_variable
 
   def set_instanse_variable
