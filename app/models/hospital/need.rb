@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class Hospital::Need < ActiveRecord::Base
-  extend Function::CsvIo
-  set_table_name 'hospital_needs'
+  extend CsvIo
+  self.table_name = 'hospital_needs'
   
   def self.names
     all.map{|obj| [obj.name,obj.id]}
@@ -13,7 +13,7 @@ class Hospital::Need < ActiveRecord::Base
   end
 
   def self.of_datetype_for_busho(month,what_day,busho_id)
-    self.all(:conditions => ["busho_id = ? and daytype in (1,?)",busho_id,what_day])
+    self.where( ["busho_id = ? and daytype in (1,?)",busho_id,what_day])
   end
 
   def self.what_day(day)

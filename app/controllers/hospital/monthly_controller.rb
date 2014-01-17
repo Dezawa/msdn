@@ -22,8 +22,8 @@ class Hospital::MonthlyController < Hospital::Controller
   (1..6).each{|kinmukubun_id|
     AssignCorrection[kinmukubun_id] = 
     Hospital::Kinmucode.
-    all(:conditions => ["kinmukubun_id = ? or kinmukubun_id = 7",kinmukubun_id]).
-    map{|kc| [kc.code,kc.id]}
+    where( ["kinmukubun_id = ? or kinmukubun_id = 7",kinmukubun_id]).
+    to_a.map{|kc| [kc.code,kc.id]}
   }
 
   def hope_regist

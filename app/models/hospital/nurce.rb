@@ -18,13 +18,12 @@
 # monthly(month=nil) を通して今処理している月の勤務データHospital::Monthlyのインスタンスを
 # @monmthに置く
 class Hospital::Nurce < ActiveRecord::Base
-  extend Function::CsvIo
+  extend CsvIo
   #extend Hospital::Nurce::Const
 
-  set_table_name 'nurces'
+  self.table_name = 'hospital_nurces'
   has_and_belongs_to_many :hospital_roles,:class_name => "Hospital::Role"
   belongs_to :limit    ,:class_name => "Hospital::Limit"
-  belongs_to :pre_busho,:class_name => "Hospital::Busho"
   belongs_to :busho    ,:class_name => "Hospital::Busho"
   
   LimitDefault={:code0 => 8,:code1 => 20,:code2 => 4,:code3 => 4,:coden => 1}
@@ -242,7 +241,7 @@ class Hospital::Nurce < ActiveRecord::Base
 
 
   def self.by_busho(busho_id,option = {})
-    all( option.merge({:conditions => ["busho_id = ?",busho_id]}))
+    where(  ["busho_id = ?",busho_id] )
   end
 
   def busho_name ; busho ? busho.name : ""          ;end
@@ -259,7 +258,7 @@ class Hospital::Nurce < ActiveRecord::Base
     return @monthly if @monthly && ( @monthly.month == month || !month)
     @month = month
     @monthly = Hospital::Monthly.
-      find_or_create_by_nurce_id_and_month(id,month)
+      find_or_create_by(nurce_id: id, month: month)
     @monthly.nurce=self
     @lastday=@month.end_of_month.day
     @monthly
