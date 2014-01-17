@@ -25,6 +25,7 @@ Tmp/ubr/
 *.old
 *~
 \#*\#
+\#*
 
 Gemfile.lock
 tmp/cache
