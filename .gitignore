@@ -33,3 +33,4 @@ tmp/pids
 public/lips/tmp/*csv
 tmp
 vendor
+.#*
