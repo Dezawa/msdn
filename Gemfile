@@ -50,7 +50,7 @@ gem "capybara"
 #gem "capybara-webkit"
 
 gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
-
+gem 'database_cleaner'
 group :development, :test do
   gem "rspec" 
   gem 'rspec-rails'
