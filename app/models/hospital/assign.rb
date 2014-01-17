@@ -174,7 +174,7 @@ class Hospital::Assign
       @HospitalRolecount = Hospital::Role.count
       @RoleShift = (1..@HospitalRolecount).to_a.product(%w(1 2 3))
     end
-    @basename = File.join( RAILS_ROOT,"tmp","hospital",
+    @basename = File.join( Rails.root,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
     clear_stat
   end
@@ -1048,7 +1048,7 @@ class Hospital::Assign
       nd[[2,"0"]] = [0,
                      @nurces.select{|nurce| nurce.shokushu_id == 1}.size -  # 看護師の人数
                      @shifts[1..-1].                                         # 全shiftの
-                     inject(0){|s,shift| s + nd[[2,shift]].first } ]  # 看護師必要人数合計
+                     inject(0){|s,shift| s + (nd[[2,shift]] || [0]).first } ]  # 看護師必要人数合計
       #dbgout("FOR_DEBUG(#{__LINE__}) 看護師の休みの上限:#{nd[[2,0]]}")
       nd
     }
