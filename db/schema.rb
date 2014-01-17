@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140109050733) do
+ActiveRecord::Schema.define(version: 20140117020929) do
 
   create_table "book_kamokus", force: true do |t|
     t.text    "kamoku"
@@ -45,6 +45,138 @@ ActiveRecord::Schema.define(version: 20140109050733) do
     t.integer "year"
     t.date    "day"
     t.string  "name"
+  end
+
+  create_table "hospital_bushos", force: true do |t|
+    t.string "name"
+  end
+
+  create_table "hospital_defines", force: true do |t|
+    t.string "name"
+    t.string "attri"
+    t.string "value"
+    t.string "comment"
+  end
+
+  create_table "hospital_kinmucodes", force: true do |t|
+    t.string  "code"
+    t.integer "kinmukubun_id"
+    t.integer "with_mousiokuri"
+    t.float   "main_daytime"
+    t.float   "main_nignt"
+    t.float   "sub_daytime"
+    t.float   "sub_night"
+    t.string  "name"
+    t.string  "color"
+    t.string  "start"
+    t.string  "finish"
+    t.float   "main_next"
+    t.float   "sub_next"
+    t.float   "am",              default: 0.0
+    t.float   "night",           default: 0.0
+    t.float   "midnight",        default: 0.0
+    t.float   "am2",             default: 0.0
+    t.float   "night2",          default: 0.0
+    t.float   "midnight2",       default: 0.0
+    t.float   "nenkyuu"
+    t.float   "pm",              default: 0.0
+    t.float   "pm2",             default: 0.0
+  end
+
+  create_table "hospital_limits", force: true do |t|
+    t.integer "code0"
+    t.integer "code1"
+    t.integer "code2"
+    t.integer "code3"
+    t.integer "coden"
+    t.integer "busho_id"
+  end
+
+  create_table "hospital_meetings", force: true do |t|
+    t.integer  "busho_id"
+    t.date     "month"
+    t.integer  "number"
+    t.string   "name"
+    t.datetime "start"
+    t.float    "length"
+    t.boolean  "kaigi",    default: true
+  end
+
+  create_table "hospital_monthlies", force: true do |t|
+    t.date    "month"
+    t.integer "day00"
+    t.integer "day01"
+    t.integer "day02"
+    t.integer "day03"
+    t.integer "day04"
+    t.integer "day05"
+    t.integer "day06"
+    t.integer "day07"
+    t.integer "day08"
+    t.integer "day09"
+    t.integer "day10"
+    t.integer "day11"
+    t.integer "day12"
+    t.integer "day13"
+    t.integer "day14"
+    t.integer "day15"
+    t.integer "day16"
+    t.integer "day17"
+    t.integer "day18"
+    t.integer "day19"
+    t.integer "day20"
+    t.integer "day21"
+    t.integer "day22"
+    t.integer "day23"
+    t.integer "day24"
+    t.integer "day25"
+    t.integer "day26"
+    t.integer "day27"
+    t.integer "day28"
+    t.integer "day29"
+    t.integer "day30"
+    t.integer "day31"
+    t.integer "nurce_id"
+  end
+
+  create_table "hospital_needs", force: true do |t|
+    t.integer "daytype"
+    t.integer "busho_id"
+    t.integer "role_id"
+    t.integer "kinmucode_id"
+    t.integer "minimun"
+    t.integer "maximum"
+  end
+
+  create_table "hospital_nurces", force: true do |t|
+    t.string  "name"
+    t.integer "number"
+    t.integer "busho_id"
+    t.integer "shokui_id"
+    t.integer "shokushu_id"
+    t.integer "kinmukubun_id"
+    t.integer "limit_id"
+  end
+
+  create_table "hospital_nurces_roles", id: false, force: true do |t|
+    t.integer "nurce_id"
+    t.integer "role_id"
+  end
+
+  create_table "hospital_roles", force: true do |t|
+    t.string "name"
+    t.string "comment"
+  end
+
+  create_table "hospital_wants", force: true do |t|
+    t.integer "kinmucode_id"
+    t.integer "minimum"
+    t.integer "maximum"
+  end
+
+  create_table "nurces_roles", id: false, force: true do |t|
+    t.integer "nurce_id"
+    t.integer "role_id"
   end
 
   create_table "sessions", force: true do |t|
