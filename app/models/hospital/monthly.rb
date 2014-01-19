@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # 各看護師達の各月の勤務内容を登録する
-# month  ::  
+# month  ::  Date
 # nurce_id ::
 # day00～day31  ::  各日の勤務code(Hospital::Kinmucode#id)を nil,(1～80)+{0|1000|2000}
 #               ::  で登録する。+1000は弱い要望、+2000は強い要望。未割り当ては　nil
@@ -18,9 +18,10 @@ class Hospital::Monthly < ActiveRecord::Base
   attr_accessor :shift,:nurce
 
   #def_delegators @days,:[],:each,:map
-  def after_find
+  #def 
+
+  after_find do
     store_days
-    #day2shift
   end
 
   # monthly_controller では直接 day\d\d にしまうことにする。
@@ -28,7 +29,9 @@ class Hospital::Monthly < ActiveRecord::Base
   #def before_save 
   #  :restore_days
   #end
-  def after_create ; store_days;end
+  after_create do
+     store_days
+  end
 
   def store_days
     @days = ("day00".."day%02d"%lastday).
