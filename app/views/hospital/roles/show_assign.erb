@@ -12,9 +12,9 @@
 <% @nurces.each{|nurce| roles= nurce.roles_by_id %>
 
 <tr><td><%= nurce.id %></td><td><nobr><%= nurce.name %></td>
-   <% @roles.each{|role|  %> <td><%= roles[role.id] ? "○" : "&nbsp;" %> <%}%>
+   <% @roles.each{|role|  %> <td><%= nurce.role_id?(role.id) ? "○":  "&nbsp;".html_safe %> <%}%>
    <% @labels.each{|html_cell| -%>
-  <%= html_cell.td %><%= html_cell.disp_field nurce.limits %></td><% }%>
+  <%= html_cell.td %><%= html_cell.disp_field nurce.limit %></td><% }%>
 </tr><%}%>
 </table>
 

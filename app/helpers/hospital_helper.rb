@@ -99,23 +99,23 @@ module HospitalHelper
       "<input  id='#{id}' name='#{name}' type='hidden' value='0' />"
   end
   def nurce_total(nurce)
-    [:shift1,:shift3,:shift2].zip([:code1,:code3,:code2]).map{|sym,code|
-      color = nurce.send(sym)>nurce.limits[code] ? "bgcolor='#ff70b0'" : "" 
-      "<td #{color}>#{nurce.send sym}</td>"}.join + 
-    [:shift0,:nenkyuu].zip([:code0,:coden]).map{|sym,code|
-      color = nurce.send(sym)<nurce.limits[code]? "bgcolor='#ff70b0'" : "" 
-      "<td #{color}>#{nurce.send sym}</td>"}.join.html_safe
+    ([:shift1,:shift3,:shift2].zip([:code1,:code3,:code2]).map{|sym,code|
+       color = nurce.send(sym)>nurce.limit[code] ? "bgcolor='#ff70b0'" : "" 
+       "<td #{color}>#{nurce.send sym}</td>"}.join + 
+     [:shift0,:nenkyuu].zip([:code0,:coden]).map{|sym,code|
+       color = nurce.send(sym)<nurce.limit[code]? "bgcolor='#ff70b0'" : "" 
+       "<td #{color}>#{nurce.send sym}</td>"}.join).html_safe
   end
+
   def day_total
-    
-    [["日勤",:daytime,1],["準夜",:night,2],["深夜",:midnight,3]].map{|lbl,sym,shift|
+    ([["日勤",:daytime,1],["準夜",:night,2],["深夜",:midnight,3]].map{|lbl,sym,shift|
       "<tr><td>　</td><td>#{lbl}</td>"+
       (1..@month.end_of_month.day).map{|day|
         sum = total(@nurces,day,sym)
         color = @assign.short_role(day,shift).include?(2) ?  "bgcolor='#ff70b0'" : "" 
         "<td #{color}>"+ sum.to_s + "</td>"
       }.join + "</tr>\n"
-    }.join.html_safe
+    }.join).html_safe
   end
   def total(nurces,day,sym)
     nurces.inject(0){|sum,nurce| 
