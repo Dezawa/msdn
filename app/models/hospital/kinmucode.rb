@@ -23,7 +23,47 @@ require 'pp'
 class Hospital::Kinmucode < ActiveRecord::Base
   extend CsvIo
   self.table_name  = 'hospital_kinmucodes'
-  #belongs_to :kinmukubun,:class_name => "Hospital::inmukubun"
+
+  validate :validate_one_day_is_one_day ,:validate_day_or_night_time_is_one_day ,
+           :validate_am_pm_is_harf_day ,:validate_nenkyuu_is_one_or_harf_day
+  def validate_one_day_is_one_day
+    unless sum( nenkyuu ,am,pm,night,midnight,am2,pm2, night2,midnight2) == 1.0 ||
+        /拘/ =~ code  || name == "二交代" && /夜|明/ =~ code 
+      errors.add(:am,"ID=#{id}:一日の合計が1でない") 
+    end
+  end
+
+  def validate_day_or_night_time_is_one_day
+    unless [0.0, 0.5, 1.0].include? sum( am,pm,am2,pm2)
+      errors.add(:am,"ID=#{id}:日勤の合計が0,0.5,1でない") 
+    end    
+    [night,midnight,night2,midnight2].each{|night|
+      unless [0.0, 1.0].include? sum( night )
+        errors.add(:am,"ID=#{id}:夜勤が0.0,1.0でない")
+      end
+    }  
+  end
+
+  def validate_am_pm_is_harf_day
+    unless [0.0,0.5].include? sum( am,am2)
+      errors.add(:am,"ID=#{id}:AM勤が0,0.5でない")
+    end
+    unless [0.0,0.5].include? sum( pm,pm2)
+      errors.add(:am,"ID=#{id}:PM勤が0,0.5でない")
+    end
+  end
+
+  def validate_nenkyuu_is_one_or_harf_day
+    unless nenkyuu.nil?  || nenkyuu == 0.0 || nenkyuu == 0.5 || nenkyuu == 1.0
+      errors.add(:am,"ID=#{id}:休みが0,0.5,1.0でない")
+    end
+  end
+
+  def sum(*args)
+    args.inject(0){|sum,v| sum + (v ? v : 0)}
+  end
+
+
   @@From_0123 = nil
 
   CodeSym = { 
@@ -38,6 +78,9 @@ class Hospital::Kinmucode < ActiveRecord::Base
     :Koukyu => 67  , :L2  => 4, :L3  => 5, :Night  => 82 , :Ake => 81
   } 
   @@Code = { }
+
+  def name ;    Hospital::Const::Kinmukubun.rassoc(kinmukubun_id)[0];  end
+
   def self.code(sym)
     @@Code[sym] ||= self.find_by(code: CodeSym[sym]).id rescue SymVal[sym]
   end
@@ -78,7 +121,8 @@ class Hospital::Kinmucode < ActiveRecord::Base
 
   # 割振りを休日準深勤務に応じ　0123　に置き換える。以外は　nil
   def to_0123
-    ToFrom0123[[nenkyuu,am,pm,night,midnight,am2,pm2,night2,midnight2]]
+    ToFrom0123[[nenkyuu||0.0,am||0.0, pm||0.0, night||0.0, midnight||0.0,
+                am2||0.0, pm2||0.0, night2||0.0, midnight2||0.0]]
   end
 
   # 0123 と 5 から勤務コードを得る。
