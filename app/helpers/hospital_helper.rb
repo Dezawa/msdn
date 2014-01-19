@@ -45,7 +45,7 @@ module HospitalHelper
     kinmu  = monthly.days[day]
     kinmucode_id  = kinmu.kinmucode_id
     color_code    = kinmu.want
-    HtmlSelectWithBlank.new(day.to_sym ,"",
+    HtmlSelectWithBlank.new(("day%02d"%day).to_sym ,"",
                    :correction => Hospital::Kinmucode.code_for_hope(kinmukubun_id)
                    ).
       edit_field_with_id(domain,nurce,@controller, :value => kinmucode_id,
