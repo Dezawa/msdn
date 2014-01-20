@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
 module HospitalHelper
   def input_busho_month
-    #HtmlDate.new(:month,"年月",:size => 7,:tform => "%Y/%m").
-    #  edit_field(@Domain,self.controller,@controller) +  
     text_field(:busho_getudo,:yyyymm,size: 5)+
       select(:busho_getudo,:busho_id,Hospital::Busho.names)
-    #HtmlSelect.new(:current_busho_id,"部署", :correction => Hospital::Busho.names).
-    #  edit_field(@Domain,@controller,@controller)
   end
 
   def input_busho
     select(:busho_getudo,:busho_id,Hospital::Busho.names)
-#    HtmlSelect.new(:current_busho_id,"部署",
- #                  :correction => Hospital::Busho.names,:value => @current_busho_id).
-  #    edit_field(@Domain,@controller,@controller)
   end
 
   def kinmucode_selector_for_meeting(domain,meeting,nurce)
