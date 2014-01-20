@@ -37,11 +37,14 @@ class Hospital::NurcesController <  Hospital::Controller
     #@Create = {:owner => current_user.username }
     #@on_cell_edit = true
   end
+
+  def set_busho
+    super
+    redirect_to :action => :index
+  end
+
   def csv_out(filename=nil)
     models = Hospital::Nurce.all
     csv_out_comm(models,filename)
-
-    
-
   end
 end

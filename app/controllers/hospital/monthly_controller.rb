@@ -123,16 +123,14 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
 
   end
 
-  def ddset_busho_month
-    @month = session[:hospital_year] = Time.parse(params[@Domain][:month]+"/1 JST").to_date
-    @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
+  def set_busho_month
+    super
     redirect_to :action => :show_assign
   end
 
 
-  def ddset_busho_month
-    @month = session[:hospital_year] = Time.parse(params[@Domain][:month]+"/1 JST").to_date
-    @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
+  def set_busho
+    super
     redirect_to :action => :show_assign
   end
 

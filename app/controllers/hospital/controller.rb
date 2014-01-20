@@ -52,20 +52,15 @@ class Hospital::Controller < ApplicationController
 
 
   def set_busho_month
-    # @month = session[:hospital_year] = Time.parse(params[@Domain][:month]+"/1 JST").to_date
-    # @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
     session[:hospital] = 
       @busho_getudo.set(params[:busho_getudo][:busho_id].to_i , 
                         Time.parse(params[:busho_getudo][:yyyymm]+"-1").to_date 
                         )
-    redirect_to :action => :index
   end
 
   def set_busho
-    # @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
     @busho_getudo.busho_id = params[:busho_getudo_busho_id].to_i 
     session[:hospital] = @busho_getudo
-    redirect_to :action => :index
   end
 
 end
