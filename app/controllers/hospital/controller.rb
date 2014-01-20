@@ -7,12 +7,12 @@ class Hospital::Controller < ApplicationController
   attr_accessor :current_busho_id,:month
   class BushoGetudo
     attr_accessor :busho_id,:month
-    def initialize(arg_busho_id,arg_month)
+    def initialize(arg_busho_id=nil,arg_month=nil)
       set(arg_busho_id,arg_month)
     end
     def set(arg_busho_id,arg_month)
-      @busho_id = arg_busho_id
-      @month    = arg_month
+      @busho_id = arg_busho_id || Hospital::Busho.first.id
+      @month    = arg_month    || Time.now.beginning_of_month.next_month.to_date
       self
     end
     def yyyymm ; month.strftime("%Y-%m"); end
@@ -42,8 +42,9 @@ class Hospital::Controller < ApplicationController
               Menu.new("様式9",:form9,:action => :index)#,
 #              Menu.new("休日",:holyday,:controller => :holydays,:action => :index)
              ]
-    @busho_getudo = session[:hospital] ||= 
-      BushoGetudo.new(1,Time.now.beginning_of_month.to_date)
+    session[:hospital] ||= BushoGetudo.new
+    session[:hospital].busho_id = 1 unless session[:hospital] && session[:hospital].busho_id > 0
+    @busho_getudo = session[:hospital]
     @month = @busho_getudo.month # session[:hospital_year] || Time.now.beginning_of_month
     @current_busho_id = @busho_getudo.busho_id #session[:hospital_busho] || 1
     @current_busho    = Hospital::Busho.find(@current_busho_id)
@@ -59,8 +60,8 @@ class Hospital::Controller < ApplicationController
   end
 
   def set_busho
-    @busho_getudo.busho_id = params[:busho_getudo_busho_id].to_i 
+    @busho_getudo.busho_id = params[:busho_getudo][:busho_id].to_i 
     session[:hospital] = @busho_getudo
+    logger.debug "session[:hospital]: #{session[:hospital].busho_id}"
   end
-
 end
