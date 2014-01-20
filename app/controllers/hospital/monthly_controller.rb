@@ -84,7 +84,7 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
   end
   
   def show_assign
-    #@nurces = Hospital::Nurce.all(:conditions=>["busho_id = ?",@current_busho_id])
+    # @nurces = Hospital::Nurce.all(:conditions=>["busho_id = ?",@current_busho_id])
     @assign = Hospital::Assign.new(@current_busho_id,@month)
     @nurces =@assign.nurces
     @files = Dir.glob(@basename+"[0-9][0-9][0-9][0-9]").sort 
@@ -123,14 +123,14 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
 
   end
 
-  def set_busho_month
+  def ddset_busho_month
     @month = session[:hospital_year] = Time.parse(params[@Domain][:month]+"/1 JST").to_date
     @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
     redirect_to :action => :show_assign
   end
 
 
-  def set_busho_month
+  def ddset_busho_month
     @month = session[:hospital_year] = Time.parse(params[@Domain][:month]+"/1 JST").to_date
     @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
     redirect_to :action => :show_assign

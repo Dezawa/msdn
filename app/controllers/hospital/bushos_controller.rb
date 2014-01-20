@@ -50,7 +50,8 @@ end
       Time.now.beginning_of_month.next_month.strftime("%Y/%m")
     @label = @labels.first
     @correction = (@models = @Model.all).pluck(:name)
-    @current_busho_id = session[:hospital_busho] || @models.first.id
+    #@current_busho_id = session[:hospital_busho] || @models.first.id
+    @current_busho_id = session[:hospital].busho_id
     @model  = @Model.find(@current_busho_id)
   end
 

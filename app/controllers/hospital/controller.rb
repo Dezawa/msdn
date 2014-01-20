@@ -5,6 +5,19 @@ class Hospital::Controller < ApplicationController
   before_action :authenticate_user! 
   before_filter :set_instanse_variable
   attr_accessor :current_busho_id,:month
+  class BushoGetudo
+    attr_accessor :busho_id,:month
+    def initialize(arg_busho_id,arg_month)
+      set(arg_busho_id,arg_month)
+    end
+    def set(arg_busho_id,arg_month)
+      @busho_id = arg_busho_id
+      @month    = arg_month
+      self
+    end
+    def yyyymm ; month.strftime("%Y-%m"); end
+  end
+
   def _TableAddEditChangeBusho 
       [[:add_edit_buttoms], ["　　　"],
        [:form,:set_busho,"部署変更",:input_busho]]
@@ -29,21 +42,29 @@ class Hospital::Controller < ApplicationController
               Menu.new("様式9",:form9,:action => :index)#,
 #              Menu.new("休日",:holyday,:controller => :holydays,:action => :index)
              ]
-    @month = session[:hospital_year] || Time.now.beginning_of_month
-    @current_busho_id = session[:hospital_busho] || 1
+    @busho_getudo = session[:hospital] ||= 
+      BushoGetudo.new(1,Time.now.beginning_of_month.to_date)
+    @month = @busho_getudo.month # session[:hospital_year] || Time.now.beginning_of_month
+    @current_busho_id = @busho_getudo.busho_id #session[:hospital_busho] || 1
     @current_busho    = Hospital::Busho.find(@current_busho_id)
     @current_busho_id_name = @current_busho.name
   end
 
 
   def set_busho_month
-    @month = session[:hospital_year] = Time.parse(params[@Domain][:month]+"/1 JST").to_date
-    @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
+    # @month = session[:hospital_year] = Time.parse(params[@Domain][:month]+"/1 JST").to_date
+    # @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
+    session[:hospital] = 
+      @busho_getudo.set(params[:busho_getudo][:busho_id].to_i , 
+                        Time.parse(params[:busho_getudo][:yyyymm]+"-1").to_date 
+                        )
     redirect_to :action => :index
   end
 
   def set_busho
-    @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
+    # @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
+    @busho_getudo.busho_id = params[:busho_getudo_busho_id].to_i 
+    session[:hospital] = @busho_getudo
     redirect_to :action => :index
   end
 
