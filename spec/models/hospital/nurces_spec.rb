@@ -33,6 +33,7 @@ TEST_DATA =
       [2, "2"]=>5, [4, "2"]=>5, [5, "2"]=>5,
       [2, "3"]=>5, [4, "3"]=>5, [5, "3"]=>5},
     shift_remain: {"0"=>8.0, "1"=>20.0, "2"=>5, "3"=>5},
+    shift_remain2: {"0"=>7.0, "1"=>19.0, "2"=>4, "3"=>4},
     used2: {[2, "0"]=>1, [4, "0"]=>1, [5, "0"]=>1, 
       [2, "1"]=>1, [4, "1"]=>1, [5, "1"]=>1,
       [2, "2"]=>1, [4, "2"]=>1, [5, "2"]=>1,
@@ -41,6 +42,8 @@ TEST_DATA =
       [2, "1"]=>19, [4, "1"]=>19, [5, "1"]=>19,
       [2, "2"]=>4, [4, "2"]=>4, [5, "2"]=>4,
       [2, "3"]=>4, [4, "3"]=>4, [5, "3"]=>4},
+    shift:  "________________________________",
+    shift2: "_______________1230_____________"
   },
   
   1 => {
@@ -65,12 +68,27 @@ TEST_DATA =
     remain: {[2, "0"]=>8,[2, "1"]=>17, [2, "2"]=>1, [2, "3"]=>1},
     shift_remain: {"0"=>8.0, "1"=>17.0, "2"=>1, "3"=>1},
     used2:   {[2, "0"] => 1, [2, "1"] => 4, [2, "2"] => 2, [2, "3"] => 2},
-    remain2:  {[2, "0"] => 7, [2, "1"] => 16, [2, "2"] => 0, [2, "3"] => 0}
+    remain2:  {[2, "0"] => 7, [2, "1"] => 16, [2, "2"] => 0, [2, "3"] => 0},
+    shift_remain2: {"0"=>7.0, "1"=>16.0, "2"=>0, "3"=>0},
+    shift:  "__231___1_1_____________________",
+    shift2: "__231___1_1____1230_____________"
   }
 }
 
 This_month = Time.now.beginning_of_month.to_date
 Next_month = Time.now.beginning_of_month.next_month.to_date
+
+describe"ID=!,2013/3のデータで" do
+  before do
+    @nurce = Hospital::Nurce.find(1)
+    @nurce.monthly(Date.new(2013,3,1))
+  end
+
+  it "月度集計は" do
+    expect([:shift1,:shift2,:shift3].map{|sht| @nurce.send sht}).to eq [3.0,1.0,1.0]
+  end
+end
+
 
 TEST_DATA.each{|id,td|
   describe "ID=#{id}の看護師を読み込むと" do
@@ -146,7 +164,6 @@ TEST_DATA.each{|id,td|
         from(td[:from_to1][0]).to(td[:from_to1][1])
       
     end
-
     it "ID=#{id} 割付クリアすると、wantが1,2以外が_になる"  do
       @nurce.clear_assign
       expect(@nurce.shifts).to eq td[:clear]
@@ -164,24 +181,23 @@ TEST_DATA.each{|id,td|
       expect(@nurce.role_used).to eq td[:used]
       expect(@nurce.role_remain).to eq td[:remain]
       expect(@nurce.shift_remain).to eq td[:shift_remain]
+      #expect(@nurce.role_shift).to eq []
     end
 
     it "ID=#{id} 割付したときに、割付済み、残り は変わる" do
       #      234...8.0
       #   "__231___1_1_____________________"                              
-      used   ={[2, "0"]=>0, [2, "1"]=>3, [2, "2"]=>1, [2, "3"]=>1}
-      remain ={[2, "0"]=> 8, [2, "1"]=>17, [2, "2"]=>1, [2, "3"]=>1}
-
-      used2   = {[2, "0"] => 1, [2, "1"] => 4, [2, "2"] => 2, [2, "3"] => 2}
-      remain2 = {[2, "0"] => 7, [2, "1"] => 16, [2, "2"] => 0, [2, "3"] => 0}
 
       expect(@nurce.role_used).to eq td[:used]
       expect(@nurce.role_remain).to eq td[:remain]
+      expect(@nurce.shift_remain).to eq td[:shift_remain]
+      expect(@nurce.shifts).to eq td[:shift]
+      @nurce.set_shift_days(15,"1230")
 
-      @nurce.set_shift_days(11,"1230")
+      expect(@nurce.shifts).to eq td[:shift2]
       expect(@nurce.role_used).to eq td[:used2]
       expect(@nurce.role_remain).to eq td[:remain2]
-      
+      expect(@nurce.shift_remain).to eq td[:shift_remain2]      
     end
     
   end
