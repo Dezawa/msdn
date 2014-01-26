@@ -94,9 +94,9 @@ Msdn::Application.routes.draw do
    ],
    ["hospital/monthly",
     [%w(hope_regist show_assign assign hope_update clear_assign set_busho_month error_disp),
-     %w(hope_update)]
+     %w(hope_update set_busho_month set_busho)]
    ],
-   ["hospital/nurces",[%w(set_busho),[]]],
+   ["hospital/nurces",[%w(set_busho _month),%w(set_busho)]],
    ["hospital/needs",[%w(set_busho),[]]]
   ].
     each{|controller,actions| set_routes(controller,actions) }
