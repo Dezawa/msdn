@@ -120,14 +120,18 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
 
   end
 
+
   def set_busho_month
-    super
+    session[:hospital] = 
+      @busho_getudo.set(params[:busho_getudo][:busho_id].to_i , 
+                        Time.parse(params[:busho_getudo][:yyyymm]+"-1").to_date 
+                        )
     redirect_to :action => :show_assign
   end
 
 
   def set_busho
-    super
+    set_busho_sub
     redirect_to :action => :show_assign
   end
 

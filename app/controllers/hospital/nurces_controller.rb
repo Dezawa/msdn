@@ -38,7 +38,7 @@ class Hospital::NurcesController <  Hospital::Controller
     #@on_cell_edit = true
   end
 
-  def set_busho
+  def dddset_busho
     super
     redirect_to :action => :index
   end

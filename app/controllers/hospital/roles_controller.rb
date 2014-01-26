@@ -35,8 +35,8 @@ class Hospital::RolesController < Hospital::Controller
                   ["　　　"],
                   [:form,:set_busho,"部署変更",:input_busho]]
   end
-  def set_busho
-    @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
+  def dddset_busho
+    super
     redirect_to :action => :show_assign
   end
 

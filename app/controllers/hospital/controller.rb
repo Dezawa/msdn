@@ -52,16 +52,13 @@ class Hospital::Controller < ApplicationController
   end
 
 
-  def set_busho_month
-    session[:hospital] = 
-      @busho_getudo.set(params[:busho_getudo][:busho_id].to_i , 
-                        Time.parse(params[:busho_getudo][:yyyymm]+"-1").to_date 
-                        )
-  end
-
-  def set_busho
+  def set_busho_sub
     @busho_getudo.busho_id = params[:busho_getudo][:busho_id].to_i 
     session[:hospital] = @busho_getudo
-    logger.debug "session[:hospital]: #{session[:hospital].busho_id}"
+    #logger.debug "session[:hospital]: #{session[:hospital].busho_id}"
+  end
+  def set_busho
+    set_busho_sub
+    redirect_to :action => :show_assign
   end
 end
