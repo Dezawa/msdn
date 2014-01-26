@@ -44,6 +44,15 @@ delegate :logger, :to=>"ActiveRecord::Base"
   def kinmucode_want 
     @kinmucode_id ?  @kinmucode_id +  @want*1000  : 0
   end
+
+  def am;  kinmucode ? (kinmucode.am  ||0) : 0 ; end
+  def pm;  kinmucode ? (kinmucode.pm  ||0) : 0 ; end
+  def am2; kinmucode ? (kinmucode.am2 ||0) : 0 ; end
+  def pm2; kinmucode ? (kinmucode.pm2 ||0) : 0 ; end
+  def night; kinmucode ? (kinmucode.night ||0) : 0 ; end
+  def night2; kinmucode ? (kinmucode.night2 ||0) : 0 ; end
+  def midnight; kinmucode ? (kinmucode.midnight ||0) : 0 ; end
+  def midnight2; kinmucode ? (kinmucode.midnight2 ||0) : 0 ; end
 end
 
 __END__

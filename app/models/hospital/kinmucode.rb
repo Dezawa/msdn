@@ -176,29 +176,27 @@ class Hospital::Kinmucode < ActiveRecord::Base
     @code_for_hope[shift] ||=
       (case shift
        when  Kubun[:nikkin] #日勤
-         self.all(:conditions => [sql,%w(0 D N),Kubun[:kyoutuu]])+
-           self.all(:conditions => [sql,%w(4□ 管),Kubun[:nikkin]])+
-           self.all(:conditions => [sql,%w(1 2 3),Kubun[:sankoutai]])+
-           self.all(:conditions => [sql,%w(S A),Kubun[:kyoutuu]])+
-           self.all(:conditions => ["kinmukubun_id = ?",Kubun[:nikkin]])
+         self.where( [sql,%w(0 D N),Kubun[:kyoutuu]])+
+           self.where( [sql,%w(4□ 管),Kubun[:nikkin]])+
+           self.where( [sql,%w(1 2 3),Kubun[:sankoutai]])+
+           self.where( [sql,%w(S A),Kubun[:kyoutuu]])+
+           self.where( ["kinmukubun_id = ?",Kubun[:nikkin]])
        when Kubun[:sankoutai]
-         self.all(:conditions => [sql,%w(0 D N),Kubun[:kyoutuu]])+
-           self.all(:conditions => [sql,%w(1 2 3),Kubun[:sankoutai]])+
-           self.all(:conditions => [sql,%w(S A),Kubun[:kyoutuu]])+
-           self.all(:conditions => ["kinmukubun_id = ?",Kubun[:kyoutuu]])
+         self.where( [sql,%w(0 D N),Kubun[:kyoutuu]])+
+           self.where( [sql,%w(1 2 3),Kubun[:sankoutai]])+
+           self.where( [sql,%w(S A),Kubun[:kyoutuu]])+
+           self.where( ["kinmukubun_id = ?",Kubun[:kyoutuu]])
        when Kubun[:part]
-         self.all(:conditions => [sql,%w(0 D N),Kubun[:kyoutuu]])+
-           self.all(:conditions => ["kinmukubun_id = ?",3])+
-           self.all(:conditions => [sql,%w(S A),Kubun[:kyoutuu]])
+         self.where( [sql,%w(0 D N),Kubun[:kyoutuu]])+
+           self.where( ["kinmukubun_id = ?",3])+
+           self.where( [sql,%w(S A),Kubun[:kyoutuu]])
        else
-         self.all(:conditions => [sql,%w(0 D N),Kubun[:kyoutuu]])+
-           self.all(:conditions => ["kinmukubun_id = ?",shift])+
-           self.all(:conditions => [sql,%w(S A),Kubun[:kyoutuu]])
+         self.where( [sql,%w(0 D N),Kubun[:kyoutuu]])+
+           self.where( ["kinmukubun_id = ?",shift])+
+           self.where( [sql,%w(S A),Kubun[:kyoutuu]])
        end
        ).uniq.map{|kinmucode| [ kinmucode.code,kinmucode.id]}
   end
-
-
 
   def daytime ; (am||0.0)+(pm||0.0) ;end
 end

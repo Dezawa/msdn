@@ -5,4 +5,14 @@ class Hospital::Role < ActiveRecord::Base
   def self.names
     all.map{|obj| [obj.name,obj.id]}
   end
+
+  def self.roles
+    @@roles ||= self.pluck(:id,:name)
+  end
+
+  def self.role_ids   ; @@role_ids ||= roles.map{ |r| r[0]};end
+  def self.roles_by_id
+    @@rolls_by_id ||= Hash[*roles.flatten]
+  end
+
 end
