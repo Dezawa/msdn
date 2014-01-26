@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140117103023) do
+ActiveRecord::Schema.define(version: 20140118140211) do
 
   create_table "book_kamokus", force: true do |t|
     t.text    "kamoku"
@@ -78,7 +78,7 @@ ActiveRecord::Schema.define(version: 20140117103023) do
     t.float   "am2",             default: 0.0
     t.float   "night2",          default: 0.0
     t.float   "midnight2",       default: 0.0
-    t.float   "nenkyuu"
+    t.float   "nenkyuu",         default: 0.0
     t.float   "pm",              default: 0.0
     t.float   "pm2",             default: 0.0
   end
