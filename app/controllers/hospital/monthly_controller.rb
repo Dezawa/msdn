@@ -93,33 +93,30 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
     @errors = params[:error]
   end
 
-  def delayed_jobs
-    condition = "handler LIKE '%Hospital::Assign\nmethod: :create_assign\nargs: \n- #{@current_busho_id}\n- #{@month.strftime('%Y-%m-%d')}\n- 2\n%'"
-    Delayed::Job.all(:conditions => condition)
-  end
-
   def assign
-    #condition = "handler LIKE '%Hospital::Assign\nmethod: :create_assign\nargs: \n- #{@current_busho_id}\n- #{@month.strftime('%Y-%m-%d')}\n- 2\n%'"
+    @assign = Hospital::Assign.create_assign(@current_busho_id,@month)
+    redirect_to :action => :show_assign,:mult => "20",:no => "0000"
+   #condition = "handler LIKE '%Hospital::Assign\nmethod: :create_assign\nargs: \n- #{@current_busho_id}\n- #{@month.strftime('%Y-%m-%d')}\n- 2\n%'"
     #delayed_jobs = Delayed::Job.all(:conditions => condition)
 
-    if delayed_jobs.size ==0
-      #@assign = Hospital::Assign.new(@current_busho_id,@month)
-      ret=Hospital::Assign.delay(:attempts => 1).create_assign(@current_busho_id,@month,2)
-      
-      sleep_untile = 60 # Hospital::Const::Timeout
-      while (@first  = Dir.glob(@basename+"0000")).size == 0 && sleep_untile > 0
-        sleep 10
-        sleep_untile -= 10
-      end
-      redirect_to :action => :show_assign,:mult => "20",:no => "0000"
-    else
-      waight_untile = delayed_jobs.first.run_at + 
-        Hospital::Const::Timeout + 
-        Hospital::Const::TimeoutMult
-      redirect_to( :action => :show_assign,:mult => "20",
-                   :error => "実行中です。#{waight_untile.strftime('%H:%M')}ころまでお待ち下さい"
-                   )
-    end
+#    if delayed_jobs.size ==0
+#      #@assign = Hospital::Assign.new(@current_busho_id,@month)
+#      ret=Hospital::Assign.delay(:attempts => 1).create_assign(@current_busho_id,@month,2)
+#      
+#      sleep_untile = 60 # Hospital::Const::Timeout
+#      while (@first  = Dir.glob(@basename+"0000")).size == 0 && sleep_untile > 0
+#        sleep 10
+#        sleep_untile -= 10
+#      end
+#      redirect_to :action => :show_assign,:mult => "20",:no => "0000"
+#    else
+#      waight_untile = delayed_jobs.first.run_at + 
+#        Hospital::Const::Timeout + 
+#        Hospital::Const::TimeoutMult
+#      redirect_to( :action => :show_assign,:mult => "20",
+#                   :error => "実行中です。#{waight_untile.strftime('%H:%M')}ころまでお待ち下さい"
+#                   )
+#    end
 
   end
 
