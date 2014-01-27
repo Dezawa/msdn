@@ -79,7 +79,6 @@ class Hospital::Monthly < ActiveRecord::Base
       self[("day%02d"%day).to_sym] = 
      (days[day].kinmucode_id ? days[day].kinmucode_id + days[day].want*1000 : nil)
     }
-print  day01+" "
     self
   end
 
