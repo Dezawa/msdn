@@ -248,7 +248,7 @@ class Hospital::Assign
     @start = Time.now
     @limit_time = @start + Hospital::Const::Timeout
     logger.info("HOSPITAL ASSIGN START ON "+Time.now.to_s)
-    basename = File.join( RAILS_ROOT,"tmp","hospital",
+    basename = File.join( Rails.root,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
     File.unlink(*Dir.glob(basename+"*"))
     dbgout("HOSPITAL ASSIGN Delete #{basename} by assign_month")
@@ -337,9 +337,9 @@ class Hospital::Assign
             @fine = Time.now ; log_stat((single ? "once" : "mult"),"") ; clear_stat
             
             #if count == 0
-              dbgout("HP ASSIGN (#{__LINE__})output to file #{ basename + "%04d"%count}")
-              open( basename + "%04d"%count ,"w"){ |fp| fp.puts dump }
-              dbgout("HP ASSIGN (#{__LINE__})output done")
+            dbgout("HP ASSIGN (#{__LINE__})output to file #{ basename + "%04d"%count}")
+            open( basename + "%04d"%count ,"w"){ |fp| fp.puts dump }
+            dbgout("HP ASSIGN (#{__LINE__})output done")
             #end
 
             #case 3の最初の解 と case 1 の場合は saveする
@@ -355,7 +355,7 @@ class Hospital::Assign
       rescue TimeoutError
         logger.info("HOSPITAL FINISHED BY TIMED OUT ==================================================")
       end
-
+      
       break if @limit_mult < Time.now
 
       dbgout("HOSPITAL AS NEXT 次候補 ")
@@ -465,6 +465,51 @@ class Hospital::Assign
     end
   end
   # shift分の再帰
+  def try_assign_shift(nurce_combinations,sft_str,day,long_patern)
+      # 現状保存
+      shifts_short_role = save_shift(nurce_combinations[sft_str],day)
+      if nurce_combinations[sft_str] == true
+        assign_log(day,sft_str,nil,__LINE__,nil,"既に埋まっている")
+        return :done
+      else
+        @count_eval[sft_str] += 1
+        # この長い割付が可能か
+        assigned = assign_test_patern(nurce_combinations[sft_str],day,sft_str,long_patern)
+        dbgout("  #{__LINE__} nurce_combinations[sft_str] #{nurce_list(nurce_combinations[sft_str])} patern=#{long_patern.join(',')} is #{assigned ? assigned.map{|a| a.first}.join(',') : false}")
+        # この長い割付はだめなので、現状復帰して次の長い割付へ
+        unless assigned
+          #@count_fail[sft_str] += 1  
+          restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
+          return :next
+        else # 可能なので割り付ける
+          return !!assign_patern(nurce_combinations[sft_str],day,sft_str,assigned)
+        end
+      end
+  end
+
+  def reentrant_next(sft_str,day,nurce_combinations,need_nurces)
+    case [sft_str,@koutai3]
+    when ["1",true],["1",false] #夜モードの時はありえない
+      return assign_by_re_entrant(day+1)
+
+    when ["2",true]
+      if nurce_combinations["3"].class == Array
+        logger.debug("====combination of shift 3 "+
+                     "#{nurce_combinations["3"].map(&:id).join(',')}") 
+      end
+      return assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"3")
+      
+    when ["3",true],["2",false]
+      ret = if @night_mode 
+              assign_by_re_entrant(day+1)
+            else
+              logger.debug("====combination of shift 1 #{nurce_combinations["1"].join(',')}")
+              assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"1")
+            end
+      return ret
+    end
+  end
+
   def assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,single=false)
     raise TimeoutError,"timed out"  if @limit_time < Time.now
     @entrant_count += 1
@@ -474,31 +519,11 @@ class Hospital::Assign
       each{|long_patern|
       @loop_count += 1
 
-      # 現状保存
-      shifts_short_role = save_shift(nurce_combinations[sft_str],day)
-      if nurce_combinations[sft_str] == true
-        assign_log(day,sft_str,nil,__LINE__,nil,"既に埋まっている")
-        ret = :done
-      else
-        @count_eval[sft_str] += 1
-        # この長い割付が可能か
-        assigned = assign_test_patern(nurce_combinations[sft_str],day,sft_str,long_patern)
-        dbgout("  #{__LINE__} nurce_combinations[sft_str] #{nurce_list(nurce_combinations[sft_str])} patern=#{long_patern.join(',')} is #{assigned ? assigned.map{|a| a.first}.join(',') : false}")
-        #dbgout("FOR_DEBUG(#{__LINE__}): assign_test_patern #{long_patern} ret=>#{nurce_list(assigned && assigned)}")
-        # この長い割付はだめなので、現状復帰して次の長い割付へ
-        unless assigned
-          #@count_fail[sft_str] += 1  
-          restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
-          next
-        else # 可能なので割り付ける
-          ret = !!assign_patern(nurce_combinations[sft_str],day,sft_str,assigned)
-        end
-      end
-
+      ret = try_assign_shift(nurce_combinations,sft_str,day,long_patern)
       case ret
+      when :next ; next
       when false # 長い割付の「割り付け時チェック」で失敗。次の長い割付へ
         @count_fail[sft_str] += 1
-        #@count_cause[:long][sft_str] += 1
         restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
         next # long_patern
         
@@ -508,22 +533,8 @@ class Hospital::Assign
         #dbgout("FOR_DEBUG(#{__LINE__}) [sft_str,@koutai3] #{[sft_str,@koutai3].join}")
 
         return true if single
-        case [sft_str,@koutai3]
-        when ["1",true],["1",false] #夜モードの時はありえない
-          ret = assign_by_re_entrant(day+1)
 
-        when ["2",true]
-          logger.debug("====combination of shift 3 #{nurce_combinations["3"].map(&:id).join(',')}") if nurce_combinations["3"].class == Array
-          ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"3")
-
-        when ["3",true],["2",false]
-          ret  = if @night_mode 
-                   assign_by_re_entrant(day+1)
-                 else
-                   logger.debug("====combination of shift 1 #{nurce_combinations["1"].join(',')}")
-                   assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"1")
-                 end
-        end
+        ret =  reentrant_next(sft_str,day,nurce_combinations,need_nurces)
         case ret
         when true; 
           dbgout("    (#{__LINE__})HP #{day}:#{sft_str}。TRUE これから後は全部OK。割付終了")
@@ -1103,7 +1114,7 @@ class Hospital::Assign
   #  nurce_set_shift にて、tnurce.set_shiftを実行した時に、
   #     role_remain を更新する
   #  Nurce#set_shiftを実行した時に shift_remain, role_remain を更新する
-  #    はて、、、 shift_remainに縮退できそうだが <- しにくい
+
   ##########################################################################
 
   def role_remain(recalc=false)
@@ -1379,7 +1390,7 @@ class Hospital::Assign
 end
 
 def logout_stat(msg)
-  open( File.join( RAILS_ROOT,"tmp","hospital","log","stat"),"a"){ |fp|
+  open( File.join( Rails.root,"tmp","hospital","log","stat"),"a"){ |fp|
     fp.puts msg
   }
 end
