@@ -5,8 +5,8 @@ require 'rubygems'
 require 'spreadsheet'
 #require '9ns100'
 
-Sheet9ns    = File.join(RAILS_ROOT,"lib","hospital","9ns100.xls")
-Sheet9nsNew = File.join(RAILS_ROOT,"tmp","hospital","form9.xls")
+Sheet9ns    = File.join(Rails.root,"lib","hospital","9ns100.xls")
+Sheet9nsNew = File.join(Rails.root,"tmp","hospital","form9.xls")
 
 Spreadsheet.client_encoding = 'UTF-8'
 
