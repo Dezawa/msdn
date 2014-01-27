@@ -1,4 +1,4 @@
-# -*- coding: euc-jp -*-
+# -*- coding: utf-8 -*-
 Msdn::Application.routes.draw do
   def set_routes(controller,actions)
     actions[0].each{|action|
@@ -93,7 +93,7 @@ Msdn::Application.routes.draw do
     [%w(calc),[]]
    ],
    ["hospital/monthly",
-    [%w(hope_regist show_assign assign hope_update clear_assign set_busho_month error_disp),
+    [%w(hope_regist show_result show_assign assign hope_update clear_assign set_busho_month error_disp),
      %w(hope_update set_busho_month set_busho)]
    ],
    ["hospital/nurces",[%w(set_busho _month),%w(set_busho)]],
