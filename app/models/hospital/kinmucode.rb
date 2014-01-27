@@ -146,11 +146,11 @@ class Hospital::Kinmucode < ActiveRecord::Base
       when "1","5"
         value = From0123[shift] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         logger.debug("Kinmucode shift=#{shift} kinmukubun_id = #{kinmukubun_id}")
-        Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
-                                                " and nenkyuu=? and am=? and pm=? and "+
-                                                "night=? and midnight=? and am2=? and "+
-                                                "pm2=? and night2=? and midnight2=? ",
-                                                kinmukubun_id,*value]
+        Hospital::Kinmucode.where( ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
+                                    " and nenkyuu=? and am=? and pm=? and "+
+                                    "night=? and midnight=? and am2=? and "+
+                                    "pm2=? and night2=? and midnight2=? ",
+                                    kinmukubun_id,*value]
                                 )[0].id
       else ; nil
       end
