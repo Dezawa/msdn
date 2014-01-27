@@ -8,20 +8,20 @@ one:
   start: '8:00'
   finish: '16:30'
   with_mousiokuri: '1'
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '8'
   main_nignt: '0.2'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 two:
   id: '2'
@@ -32,20 +32,20 @@ two:
   start: '16:00'
   finish: '24:30'
   with_mousiokuri: '1'
-  nenkyuu: 
-  am: 
-  pm: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
   night: '1'
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: '8'
   main_next: '0.2'
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No3:
   id: '3'
@@ -56,20 +56,20 @@ No3:
   start: '0:00'
   finish: '8:30'
   with_mousiokuri: '1'
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
   midnight: '1'
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '0.2'
   main_nignt: 
   main_next: '8'
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No4:
   id: '4'
@@ -80,20 +80,20 @@ No4:
   start: '16:00'
   finish: '24:00'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
   night: '1'
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: '8'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No5:
   id: '5'
@@ -104,20 +104,20 @@ No5:
   start: '0:00'
   finish: '8:30'
   with_mousiokuri: '1'
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
   midnight: '1'
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '0.2'
   main_nignt: 
   main_next: '8'
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No6:
   id: '6'
@@ -128,20 +128,20 @@ No6:
   start: '8:00'
   finish: '16:30'
   with_mousiokuri: '1'
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '6.5'
   main_nignt: '0.2'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No7:
   id: '7'
@@ -152,20 +152,20 @@ No7:
   start: '8:00'
   finish: '16:30'
   with_mousiokuri: '1'
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '7'
   main_nignt: '0.2'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No8:
   id: '8'
@@ -176,20 +176,20 @@ No8:
   start: '7:00'
   finish: '15:30'
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '7.5'
   main_nignt: '1'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No9:
   id: '9'
@@ -200,20 +200,20 @@ No9:
   start: '10:30'
   finish: '19:00'
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '5.5'
   main_nignt: '3'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No10:
   id: '10'
@@ -224,20 +224,20 @@ No10:
   start: '11:30'
   finish: '20:00'
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '4.5'
   main_nignt: '4'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No11:
   id: '11'
@@ -249,19 +249,19 @@ No11:
   finish: '16:30'
   with_mousiokuri: 
   nenkyuu: '0.5'
-  am: 
+  am: 0.0
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '3'
   main_nignt: '0.5'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No12:
   id: '12'
@@ -274,18 +274,18 @@ No12:
   with_mousiokuri: 
   nenkyuu: '0.5'
   am: '0.5'
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '5'
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No13:
   id: '13'
@@ -296,15 +296,15 @@ No13:
   start: '8:00'
   finish: '16:30'
   with_mousiokuri: '1'
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
@@ -320,20 +320,20 @@ No14:
   start: '8:00'
   finish: '16:30'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
+  nenkyuu: 0.0
+  am: 0.0
   pm: '0.5'
-  night: 
-  midnight: 
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
-  pm2: 
-  night2: 
-  midnight2: 
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: '4'
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No15:
   id: '15'
@@ -344,15 +344,15 @@ No15:
   start: '8:00'
   finish: '16:30'
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
-  pm: 
-  night: 
-  midnight: 
-  am2: 
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '4'
   main_nignt: '0.5'
   main_next: 
@@ -368,15 +368,15 @@ No16:
   start: '16:00'
   finish: '24:30'
   with_mousiokuri: '1'
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
   night2: '1'
-  midnight2: 
+  midnight2: 0.0
   main_daytime: '5'
   main_nignt: 
   main_next: 
@@ -392,20 +392,20 @@ No17:
   start: '0:00'
   finish: '8:30'
   with_mousiokuri: '1'
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
   midnight2: '1'
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: '0.2'
-  sub_night: 
+  sub_night: 0.0
   sub_next: '8'
 No18:
   id: '18'
@@ -416,15 +416,15 @@ No18:
   start: '8:00'
   finish: '16:30'
   with_mousiokuri: '1'
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
@@ -440,15 +440,15 @@ No19:
   start: '16:00'
   finish: '24:30'
   with_mousiokuri: '1'
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
   night2: '1'
-  midnight2: 
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
@@ -464,20 +464,20 @@ No20:
   start: '16:00'
   finish: '8:30'
   with_mousiokuri: '1'
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
   midnight2: '1'
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: '0.2'
-  sub_night: 
+  sub_night: 0.0
   sub_next: '8'
 No21:
   id: '21'
@@ -488,20 +488,20 @@ No21:
   start: '8:00'
   finish: '16:30'
   with_mousiokuri: '1'
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: '8'
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No22:
   id: '22'
@@ -512,20 +512,20 @@ No22:
   start: '16:00'
   finish: 
   with_mousiokuri: '1'
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
   night2: '1'
-  midnight2: 
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No23:
   id: '23'
@@ -536,20 +536,20 @@ No23:
   start: '0:00'
   finish: '24:30'
   with_mousiokuri: '1'
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
   midnight2: '1'
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: '0.2'
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No24:
   id: '24'
@@ -560,15 +560,15 @@ No24:
   start: '8:00'
   finish: '13:00'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '5'
   main_nignt: 
   main_next: 
@@ -584,20 +584,20 @@ No25:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No26:
   id: '26'
@@ -608,20 +608,20 @@ No26:
   start: '13:00'
   finish: '16:30'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
+  nenkyuu: 0.0
+  am: 0.0
   pm: '0.5'
-  night: 
-  midnight: 
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
-  pm2: 
-  night2: 
-  midnight2: 
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '3'
   main_nignt: '0.5'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No27:
   id: '27'
@@ -632,20 +632,20 @@ No27:
   start: '8:00'
   finish: '13:00'
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
-  pm: 
-  night: 
-  midnight: 
-  am2: 
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '5'
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No28:
   id: '28'
@@ -657,19 +657,19 @@ No28:
   finish: 
   with_mousiokuri: 
   nenkyuu: '0.5'
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
-  pm2: 
-  night2: 
-  midnight2: 
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No29:
   id: '29'
@@ -681,19 +681,19 @@ No29:
   finish: 
   with_mousiokuri: 
   nenkyuu: '0.5'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No30:
   id: '30'
@@ -704,20 +704,20 @@ No30:
   start: '8:00'
   finish: '16:45'
   with_mousiokuri: '1'
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '8'
   main_nignt: '0.5'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No31:
   id: '31'
@@ -728,20 +728,20 @@ No31:
   start: '8:00'
   finish: '16:45'
   with_mousiokuri: '1'
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '7'
   main_nignt: '0.5'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No32:
   id: '32'
@@ -752,20 +752,20 @@ No32:
   start: '8:00'
   finish: '16:30'
   with_mousiokuri: '1'
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '7'
   main_nignt: '0.5'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No33:
   id: '33'
@@ -776,20 +776,20 @@ No33:
   start: '16:00'
   finish: '24:30'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
   night2: '1'
-  midnight2: 
+  midnight2: 0.0
   main_daytime: 
   main_nignt: '4.5'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No34:
   id: '34'
@@ -800,20 +800,20 @@ No34:
   start: '7:30'
   finish: '16:15'
   with_mousiokuri: '1'
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '8'
   main_nignt: '0.5'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No35:
   id: '35'
@@ -825,19 +825,19 @@ No35:
   finish: '16:45'
   with_mousiokuri: 
   nenkyuu: '0.5'
-  am: 
+  am: 0.0
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '3'
   main_nignt: '0.8'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No36:
   id: '36'
@@ -850,18 +850,18 @@ No36:
   with_mousiokuri: 
   nenkyuu: '0.5'
   am: '0.5'
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '5'
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No37:
   id: '37'
@@ -872,15 +872,15 @@ No37:
   start: '8:00'
   finish: '16:45'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
@@ -896,20 +896,20 @@ No38:
   start: '8:00'
   finish: '16:45'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
+  nenkyuu: 0.0
+  am: 0.0
   pm: '0.5'
-  night: 
-  midnight: 
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
-  pm2: 
-  night2: 
-  midnight2: 
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '4'
   main_nignt: '0.8'
   main_next: 
   sub_daytime: '4'
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No39:
   id: '39'
@@ -920,15 +920,15 @@ No39:
   start: '8:00'
   finish: '16:45'
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
-  pm: 
-  night: 
-  midnight: 
-  am2: 
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '5'
   main_nignt: 
   main_next: 
@@ -944,15 +944,15 @@ No40:
   start: '8:00'
   finish: '16:45'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
@@ -968,20 +968,20 @@ No41:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No42:
   id: '42'
@@ -992,20 +992,20 @@ No42:
   start: '13:00'
   finish: '16:45'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
+  nenkyuu: 0.0
+  am: 0.0
   pm: '0.5'
-  night: 
-  midnight: 
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
-  pm2: 
-  night2: 
-  midnight2: 
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '3'
   main_nignt: '0.8'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No43:
   id: '43'
@@ -1016,20 +1016,20 @@ No43:
   start: '8:00'
   finish: '13:00'
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
-  pm: 
-  night: 
-  midnight: 
-  am2: 
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '5'
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No44:
   id: '44'
@@ -1041,19 +1041,19 @@ No44:
   finish: 
   with_mousiokuri: 
   nenkyuu: '0.5'
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
-  pm2: 
-  night2: 
-  midnight2: 
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No45:
   id: '45'
@@ -1065,19 +1065,19 @@ No45:
   finish: 
   with_mousiokuri: 
   nenkyuu: '0.5'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No46:
   id: '46'
@@ -1088,20 +1088,20 @@ No46:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '4'
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No47:
   id: '47'
@@ -1112,20 +1112,20 @@ No47:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '4.5'
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No48:
   id: '48'
@@ -1136,20 +1136,20 @@ No48:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '5'
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No49:
   id: '49'
@@ -1160,20 +1160,20 @@ No49:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '6.8'
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No50:
   id: '50'
@@ -1184,20 +1184,20 @@ No50:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '7.8'
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No51:
   id: '51'
@@ -1208,20 +1208,20 @@ No51:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No52:
   id: '52'
@@ -1232,20 +1232,20 @@ No52:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No53:
   id: '53'
@@ -1256,20 +1256,20 @@ No53:
   start: '8:00'
   finish: '16:30'
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '8'
   main_nignt: '0.5'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No54:
   id: '54'
@@ -1280,20 +1280,20 @@ No54:
   start: '16:00'
   finish: '24:00'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
   night: '1'
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '8'
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No55:
   id: '55'
@@ -1304,20 +1304,20 @@ No55:
   start: '0:00'
   finish: '8:30'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
   midnight: '1'
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '0.5'
   main_nignt: 
   main_next: '8'
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No56:
   id: '56'
@@ -1328,20 +1328,20 @@ No56:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No57:
   id: '57'
@@ -1352,20 +1352,20 @@ No57:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No58:
   id: '58'
@@ -1376,20 +1376,20 @@ No58:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No59:
   id: '59'
@@ -1400,20 +1400,20 @@ No59:
   start: '8:00'
   finish: '12:00'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '4'
   main_nignt: '0.5'
   main_next: 
   sub_daytime: '4'
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No60:
   id: '60'
@@ -1424,15 +1424,15 @@ No60:
   start: '13:00'
   finish: '16:30'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '5'
   main_nignt: 
   main_next: 
@@ -1448,20 +1448,20 @@ No61:
   start: '8:00'
   finish: '16:45'
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '8'
   main_nignt: '0.8'
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No62:
   id: '62'
@@ -1472,20 +1472,20 @@ No62:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No63:
   id: '63'
@@ -1496,20 +1496,20 @@ No63:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No64:
   id: '64'
@@ -1520,20 +1520,20 @@ No64:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No65:
   id: '65'
@@ -1544,20 +1544,20 @@ No65:
   start: '8:00'
   finish: '12:00'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '4'
   main_nignt: '0.8'
   main_next: 
   sub_daytime: '4'
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No66:
   id: '66'
@@ -1568,15 +1568,15 @@ No66:
   start: '13:00'
   finish: '16:45'
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
   am2: '0.5'
   pm2: '0.5'
-  night2: 
-  midnight2: 
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: '5'
   main_nignt: 
   main_next: 
@@ -1593,19 +1593,19 @@ No67:
   finish: 
   with_mousiokuri: 
   nenkyuu: '1'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No68:
   id: '68'
@@ -1616,20 +1616,20 @@ No68:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No69:
   id: '69'
@@ -1640,20 +1640,20 @@ No69:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No70:
   id: '70'
@@ -1664,20 +1664,20 @@ No70:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
+  nenkyuu: 0.0
   am: '0.5'
   pm: '0.5'
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No71:
   id: '71'
@@ -1689,19 +1689,19 @@ No71:
   finish: 
   with_mousiokuri: 
   nenkyuu: '1'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No72:
   id: '72'
@@ -1713,19 +1713,19 @@ No72:
   finish: 
   with_mousiokuri: 
   nenkyuu: '1'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No73:
   id: '73'
@@ -1737,19 +1737,19 @@ No73:
   finish: 
   with_mousiokuri: 
   nenkyuu: '1'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No74:
   id: '74'
@@ -1761,19 +1761,19 @@ No74:
   finish: 
   with_mousiokuri: 
   nenkyuu: '1'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No75:
   id: '75'
@@ -1785,19 +1785,19 @@ No75:
   finish: 
   with_mousiokuri: 
   nenkyuu: '1'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No76:
   id: '76'
@@ -1809,19 +1809,19 @@ No76:
   finish: 
   with_mousiokuri: 
   nenkyuu: '1'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No77:
   id: '77'
@@ -1833,19 +1833,19 @@ No77:
   finish: 
   with_mousiokuri: 
   nenkyuu: '1'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No78:
   id: '78'
@@ -1857,19 +1857,19 @@ No78:
   finish: 
   with_mousiokuri: 
   nenkyuu: '1'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No79:
   id: '79'
@@ -1881,19 +1881,19 @@ No79:
   finish: 
   with_mousiokuri: 
   nenkyuu: '1'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No80:
   id: '80'
@@ -1905,19 +1905,19 @@ No80:
   finish: 
   with_mousiokuri: 
   nenkyuu: '1'
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No81:
   id: '81'
@@ -1928,20 +1928,20 @@ No81:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
   night: '1'
   midnight: '1'
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: '8'
   main_next: '8'
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
 No82:
   id: '82'
@@ -1952,18 +1952,18 @@ No82:
   start: 
   finish: 
   with_mousiokuri: 
-  nenkyuu: 
-  am: 
-  pm: 
-  night: 
-  midnight: 
-  am2: 
-  pm2: 
-  night2: 
-  midnight2: 
+  nenkyuu: 0.0
+  am: 0.0
+  pm: 0.0
+  night: 0.0
+  midnight: 0.0
+  am2: 0.0
+  pm2: 0.0
+  night2: 0.0
+  midnight2: 0.0
   main_daytime: 
   main_nignt: 
   main_next: 
   sub_daytime: 
-  sub_night: 
+  sub_night: 0.0
   sub_next: 
