@@ -30,7 +30,7 @@ class Hospital::Const
 
   Daytype = [ ["毎日",1],["平日",2],["土日休",3]]
 
-  Timeout     = 2.minute
+  Timeout     = 4.minute
   TimeoutMult = 3.minute
   Sleep       = 30
 end
