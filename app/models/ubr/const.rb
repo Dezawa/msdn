@@ -2,7 +2,9 @@
 StatFont = [[Postscript::Gothic,1.4],[Postscript::Bold,1.8],[Postscript::Gothic,1.4]]
 module Ubr::Const
 
-Suuro2Retu = %w(2C2Z 2D1Z 1B4Z 1B2Z 1A2Z)
+  SCM_stock_stat_FILEBASE = File.join(RAILS_ROOT,"tmp","ubr","SCM_stock_stat")
+
+  Suuro2Retu = %w(2C2Z 2D1Z 1B4Z 1B2Z 1A2Z)
   @dir= File.dirname(__FILE__)
   if /www/ =~ @dir
     $LOAD_PATH << @dir
