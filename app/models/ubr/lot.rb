@@ -46,7 +46,7 @@ class Lot
     @meigara = Meigara.meigara_by_code[@meigara_code]
     unless @meigara
       @meigara = Meigara.add_meigara(@meigara_code,arg[:meigara])
-      pp [@meigara_code,lot_no,"Meigara Missing"]
+      #pp [@meigara_code,lot_no,"Meigara Missing"]
     end
     wt    = arg.delete(:weight).to_f
     w=arg.delete(:waku)
@@ -65,7 +65,7 @@ class Lot
     rescue
       $WAKUMISSING ||= []
       $WAKUMISSING.push(w).uniq!
-      pp [w,lot_no,"Waku missing"]
+      #pp [w,lot_no,"Waku missing"]
     end
   end
 
