@@ -59,8 +59,8 @@ plot 'tmp/ubr/SCM_stock_stat_products.ave' using 2:xtic(1)  with line ,\
      '' using 4 with line axes x1y2, \
      '' using 5 with line axes x1y2, \
      '' using 6 with line axes x1y2, \
-     '' using 7 with line axes x1y2, \
-     '' using 8 with line ls 18 axes x1y2
+     '' using 8 with line axes x1y2, \
+     '' using 7 with line axes x1y2
 
 
 set title "原料・再処理・長期在庫 在庫量推移" font ",14"
