@@ -23,6 +23,7 @@ class Ubr::Point
                ["4～6",/^[456][G-KO]/],
                ["2F",/^[25][ELMN]/],
                ["総合",/^0[A-G]/],
+               ["野積",/^7/],
                ["AP跡",/^0[JKL]/]
          ]
 
@@ -50,7 +51,6 @@ class Ubr::Point
       :products     =>  [date_of_file] + weights.flatten ,             # 総量
       :not_products =>  [date_of_file] + weights_not_product.flatten   # 製品以外 
     }
-pp @point[:tuuro]
   end
 
   def  tuuro
@@ -165,8 +165,7 @@ pp @point[:tuuro]
       open(Ubr::Lot::SCMFILE,"w"){ |fp| fp.write(File.read(csvpath))}
       @waku_waku     = Ubr::Waku.waku(true) #load_from_master
       Ubr::LotList.lotlist(true)
-puts csvpath
-      self.new(@waku_waku,(/201\d{5}/.match(csvpath)[0])).save
+      self.new(@waku_waku,(/201\d{5}/.match(csvpath)[0])).save if /201\d{5}/.match(csvpath)[0]
     }
     File.rename(Ubr::Lot::SCMFILE+"save",Ubr::Lot::SCMFILE)
   end
