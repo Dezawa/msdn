@@ -53,6 +53,7 @@ class Ubr::Point
     }
   end
 
+  def  tuuro
     SoukoSort.map{ |name_reg| Ubr::Waku.tuuro_weight_wakusuu(name_reg[1])}
   end
 
@@ -72,13 +73,6 @@ class Ubr::Point
      Ubr::LotList.lotlist.select{ |id,lot| @today - lot.packed > 2.year}.inject(0){ |s,l| s+l[1].weight}
     ].map{ |w| (w*0.001).to_i}
   end
-  def  weights
-    SoukoSort. #[/^[1-6]/,/^0[A-FJ]/,/^[789]/,/^0[^A-FJ]/,/^[^0-9]/].
-      map{ |souko_reg|
-      "%.2f"%(Ubr::Waku.weight_of_aria(souko_reg[1])*0.000001)
-    }
-    #total_weight = weights.inject(0){ |s,v| s+v}
-end
 
   # [ 10以上、5以上、1以上(全数)]
   def vacants_list
