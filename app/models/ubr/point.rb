@@ -21,7 +21,7 @@ class Ubr::Point
 
   SoukoSort = [["全て",/./],
           ["1～3",/^[123][A-DF]/],
-          ["4～5",/^[456]/],
+          ["4～5",/^[456][G-KO]/],
           ["2F",/^[25][ELMN]/],
           ["総合",/^0[A-GJ]/]
          ]
@@ -39,12 +39,6 @@ class Ubr::Point
       #[vacants_sum,vacants_between]
       vacants_sum
     }
-
-    weights = SoukoSort. #[/^[1-6]/,/^0[A-FJ]/,/^[789]/,/^0[^A-FJ]/,/^[^0-9]/].
-      map{ |souko_reg|
-      "%.2f"%(Ubr::Waku.weight_of_aria(souko_reg[1])*0.000001)
-    }
-    #total_weight = weights.inject(0){ |s,v| s+v}
 
     tuuro  = SoukoSort.map{ |name_reg| Ubr::Waku.tuuro_weight_wakusuu(name_reg[1])}
 
@@ -75,6 +69,13 @@ class Ubr::Point
       #Ubr::Waku.tuuro_weight_wakusuu(/^[1-6]/)+
       #Ubr::Waku.tuuro_weight_wakusuu(/^0[A-GJ]/)
   end
+  def  weights
+    SoukoSort. #[/^[1-6]/,/^0[A-FJ]/,/^[789]/,/^0[^A-FJ]/,/^[^0-9]/].
+      map{ |souko_reg|
+      "%.2f"%(Ubr::Waku.weight_of_aria(souko_reg[1])*0.000001)
+    }
+    #total_weight = weights.inject(0){ |s,v| s+v}
+end
 
   def save
     path = Ubr::Lot::SCMFILEBASE+".stat"
