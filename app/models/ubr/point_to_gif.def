@@ -2,6 +2,7 @@ set terminal gif enhanced size 800,800 enhanced font "/usr/share/fonts/truetype/
 set out 'tmp/ubr/SoukoInfo.gif'
 set multiplot layout 3,2
 set style line 9 lw 2 lt rgb "black" 
+set style line 8 lt 1
 
 set title "倉庫:穴数、通路置き量_1_～_3" font ",14"
 set label "空き枠数" at graph -0.17,0.5 center rotate 
@@ -16,31 +17,31 @@ set ytics nomirror
 set ytics
 set auto x
 set xtics nomirror rotate by -90 scale 0 
-plot 'tmp/ubr/SCM在庫一覧.ave'\
-        using 5:xtic(1)  with line ,\
-     '' using 6 with line, \
-     '' using 7 with line, \
-     '' using 24 with line ls 9 axes x1y2
+plot 'tmp/ubr/SCM_stock_stat_tuuro.ave'\
+        using 7:xtic(1)  with line ,\
+     '' using 8 with line, \
+     '' using 9 with line, \
+     '' using 10 with line ls 9 axes x1y2
 ####
 set title "倉庫:穴数、通路置き量_4_～_6" font ",14"
 set y2range [0:200]
-plot 'tmp/ubr/SCM在庫一覧.ave' using 8:xtic(1)  with line ,\
-     '' using 9 with line,\
-     '' using 10 with line, \
-     '' using 26 with line ls 9 axes x1y2 
+plot 'tmp/ubr/SCM_stock_stat_tuuro.ave' using 12:xtic(1)  with line ,\
+     '' using 13 with line,\
+     '' using 14 with line, \
+     '' using 15 with line ls 9 axes x1y2 
 
 ####
 set title "倉庫:穴数、通路置き量_2_-_2_F_5_-_2_F" font ",14"
-plot 'tmp/ubr/SCM在庫一覧.ave' using 11:xtic(1)  with line ,\
-     '' using 12 with line,\
-     '' using 13 with line, \
-     '' using 28 with line ls 9 axes x1y2 
+plot 'tmp/ubr/SCM_stock_stat_tuuro.ave' using 12:xtic(1)  with line ,\
+     '' using 13 with line,\
+     '' using 14 with line, \
+     '' using 15 with line ls 9 axes x1y2 
 ####
 set title "倉庫:穴数、通路置き量_総_合_0_A_-_G_J" font ",14"
-plot 'tmp/ubr/SCM在庫一覧.ave' using 14:xtic(1)  with line ,\
-     '' using 15 with line,\
-     '' using 16 with line, \
-     '' using 30 with line ls 9 axes x1y2 
+plot 'tmp/ubr/SCM_stock_stat_tuuro.ave' using 17:xtic(1)  with line ,\
+     '' using 18 with line,\
+     '' using 19 with line, \
+     '' using 20 with line ls 9 axes x1y2 
 
 
 set title "倉庫エリア別在庫量推移" font ",14"
@@ -53,11 +54,13 @@ set yrange [0:30   ]
 set y2range [0:6  ]
 set ytics
 set y2tics
-plot 'tmp/ubr/SCM在庫一覧.ave' using 17:xtic(1)  with line ,\
-     '' using 18 with line axes x1y2,\
-     '' using 19 with line axes x1y2, \
-     '' using 20 with line axes x1y2, \
-     '' using 21 with line axes x1y2
+plot 'tmp/ubr/SCM_stock_stat_products.ave' using 2:xtic(1)  with line ,\
+     '' using 3 with line axes x1y2,\
+     '' using 4 with line axes x1y2, \
+     '' using 5 with line axes x1y2, \
+     '' using 6 with line axes x1y2, \
+     '' using 8 with line axes x1y2, \
+     '' using 7 with line axes x1y2
 
 
 set title "原料・再処理・長期在庫 在庫量推移" font ",14"
@@ -69,11 +72,11 @@ unset y2range
 unset y2tics
 unset ytics
 set ytics
-plot 'tmp/ubr/SCM在庫一覧.ave' using 32:xtic(1)  with line ,\
-     '' using 33 with line,\
-     '' using 34 with line,\
-     '' using 35 with line,\
-     '' using 36 with line
+plot 'tmp/ubr/SCM_stock_stat_not_products.ave' using 2:xtic(1)  with line ,\
+     '' using 3 with line,\
+     '' using 4 with line,\
+     '' using 5 with line,\
+     '' using 6 with line
 
 
 

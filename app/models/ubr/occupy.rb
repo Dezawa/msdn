@@ -102,10 +102,7 @@ module Ubr
           } # floa書き出し
           
           statistics(souko_group)
-        }# grestore
-        #open(pdfpath+".ps","w"){ |fp| fp.puts to_s}
-        #`/usr/bin/ps2pdf #{pdfpath+'.ps'} #{pdfpath+'.pdf'}`
-        
+        }
         
       }#plans
     end
@@ -131,11 +128,10 @@ module Ubr
     def waku_kakidasi(souko,floor_offset)
       gsave_restore{ 
         souko.contents.each_with_index{ |_1A1,idx|
+           #logger.debug("  UBR  枠#{_1A1} idx #{ idx}  souko.sufix[idx]..souko.max => #{souko.sufix[idx]}..#{souko.max[idx]}")
           add "\n%% 枠#{_1A1}\n"
           #sfx = souko.sufix[idx].dup
           base_point = Pos.new(floor_offset||[0,0]) +  Pos.new(souko.base_points[idx]|| [0,0])
-
-          # logger.debug("  UBR #{souko_group_name} 枠#{_1A1} idx #{ idx}  souko.sufix[idx]..souko.max => #{souko.sufix[idx]}..#{souko.max[idx]}")
 
           (souko.sufix[idx]..souko.max[idx]).each{ |sfx|  #|i|
             waku = waku_waku[_1A1 + sfx]
