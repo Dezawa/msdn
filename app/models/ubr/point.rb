@@ -29,8 +29,8 @@ class Ubr::Point
 
   Extension = [:tuuro ,:products ,:not_products]
   Label = { 
-    :tuuro        => "年月日"+ 
-                      SoukoSort.map{ |name,reg| "#{name}:10桝以上穴数 5-9桝穴数 1-4桝穴数 通路置き量 通路置き枠数"
+    :tuuro        => "年月日 "+ 
+                      SoukoSort.map{ |name,reg| "10桝以上穴数 5-9桝穴数 1-4桝穴数 通路置き量 通路置き枠数"
                      }.join(" ") ,
     :products     => "年月日"+  " 重量"+ SoukoSort.map{ |name_reg| name_reg[0]}.join(" ") ,
     :not_products => "年月日  原料 SCP スネーク 再処理 長期"
