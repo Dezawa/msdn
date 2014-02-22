@@ -1,31 +1,111 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
-
+WithoutPull = true
+WithPull    = false
+Waku        = "1A2C"
 class Ubr::WakuTest < ActiveSupport::TestCase
+  fixtures :ubr_wakus
   # Replace this with your real tests.
   def setup
     @Waku    = Ubr::Waku.waku #load_from_master
-    @waku    = @Waku.values[0]
+    @waku    = @Waku[Waku]
     @lotlist = Ubr::LotList.
       lotlist(false,:file => File.join(RAILS_ROOT,"test/testdata/SCM在庫一覧.csv"))
   end
 
-  def creat_segments(count_list)
-    count_list.map{ |count| Ubr::Lot.new(:lot => "dmy", :waku => "2D1C",:count => count ) }
-    
+  must "0A02の方向は" do
+    assert_equal "↓",@Waku["0A02"].direct_to
+    assert_equal Pos[0,1],@Waku["0A02"].direction
   end
- 
-  [["1A2R",[[0,0,6,4]]],
-   ["1B2Z",[[0, 0, 31, 0], [0, 0, 31, 0]]],
-   ["2D1Z",[[0, 14, 23, 0], [0, 15, 23, 0]]]
-  ].each{ |waku_name,ary|
-    must "枠#{waku_name}のused_map" do
-      waku=@Waku[waku_name]
-      assert_equal ary, waku.used_map
-    end
-  }
+  must "0A02の型" do
+    pp [@Waku["0A02"].direction,@Waku["0A02"].palette ]
+    assert_equal :D14 , @Waku["0A02"].kata
+  end
+
+  must "0A02は通路か" do
+    assert !@Waku["0A02"].tuuro? 
+  end
+
+  must "0A02のto_s" do
+    assert_equal "0A02" ,@Waku["0A02"].to_s
+  end
+
+  must "通路枠は" do
+    assert_equal 53,Ubr::Waku.tuuro.size
+    assert_equal [
+                  "0AZZ", "0CZZ", "0DZZ", "0EZZ", "0FZZ",
+                  "1A2Z", "1A3Z", "1B2Z", "1B3Z", "1B4Z", "1B5Z", "1ZZZ",
+                  "2C2Z", "2D1Z", "2D2Z", "2E3Z", "3F1Z", "3F2Z",
+                  "4G1Z", "4H1Z", "4H2Z", "5I1Z", "5J1Z", "5L1Z","6O1Z", "6O2Z", 
+                  "7AZZ", "7BZZ", "7CZZ", "7DZZ", "7IZZ", "7JZZ", "7KZZ", "7NZZ", "7PZZ", "7SZZ", "7TZZ", "7UZZ",
+                  "7ZZZ",
+                  "9G2Z", "9G3Z", "9G4Z", "9G5Z", "9JZZ", "9L1Z", "9L2Z", "9L3Z", "9L4Z", "9L5Z", "9L6Z", "9L7Z",
+                  "9L8Z", "9LZZ"
+                 ],Ubr::Waku.tuuro.map(&:name).sort
+    assert_equal ["2C2Z", "2D1Z", "2D2Z"],Ubr::Waku.tuuro(1).map(&:name).sort
+    assert_equal ["2C2Z", "2D1Z", "2D2Z", "2E3Z"],Ubr::Waku.tuuro(/^2/).map(&:name).sort
+    assert_equal ["2C2Z", "2D1Z", "2D2Z"],Ubr::Waku.tuuro("2号倉庫").map(&:name).sort
+  end
+
+  must "#{Waku}のロット" do
+    #pp @lotlist
+    assert_equal ["B3381", "B3388"],@waku.lot_list( WithPull).map(&:lot_no)
+    assert_equal ["B3388"],@waku.lot_list( WithoutPull).map(&:lot_no)
+    assert_equal ["B3381", "B3388"],@waku.lot_list.map(&:lot_no)
+  end
+
+  must  "#{Waku}の重量" do 
+    assert_equal 28875,@waku.weight( WithPull)
+    assert_equal 26400,@waku.weight( WithoutPull)
+    assert_equal 28875,@waku.weight
+  end
+  must  "#{Waku}のパレット数" do 
+    assert_equal 30,@waku.paret_su( WithPull)
+    assert_equal 27,@waku.paret_su( WithoutPull)
+    assert_equal 30,@waku.paret_su
+  end
+  must  "1B5Mのパレット数" do 
+    assert_equal 68,@Waku["1B5M"].paret_su( WithPull)
+    assert_equal 65,@Waku["1B5M"].paret_su( WithoutPull)
+    assert_equal 68,@Waku["1B5M"].paret_su
+  end
+  must "空？" do
+    assert !@waku.empty?( WithoutPull)
+    assert !@waku.empty?( WithPull)
+    assert @Waku["1A2E"].empty?( WithoutPull)
+    assert !@Waku["1A2E"].empty?( WithPull)
+    assert !@Waku["1A2E"].empty?
+  end
+    
+  must "1A3Cの占有" do # G3516D は Y14、55袋積み、2段
+
+    waku = @Waku["1A3C"]
+    lot_main_part,lot_paper_le_1ton = waku.lot_sort_by_packed#( WithoutPull)
+   assert_equal [["G3276D", "G3516D"],[]], [lot_main_part.map(&:lot_no),lot_paper_le_1ton.map(&:lot_no) ]
+   assert_equal [[1, 20], [] ], [lot_main_part.map(&:paret_su),lot_paper_le_1ton.map(&:paret_su) ]
+    assert_equal 1,waku.stack_palet(lot_main_part[0],[0,10,0,0])
+    assert_equal 4,waku.stack_palet(lot_main_part[1],[0,9,0,0])
+    assert_equal 4,waku.stack_2dan(lot_main_part[1].paret_su,[0,9,0,0])
+   assert_equal 1,waku.occupied( WithPull)
+  end
+
+  # masu_occupyed   [空き,引き合い,引き合い無,過剰]
+  [["2C3H",[[0,2,8,0]]],
+   ["1B2Z",[[0, 4, 1, 0], [0, 5, 1, 0]]],
+   ["1A3C",[[0, 0, 9,1]]],
+   ["1B5M",[[0,0,0,5]]]
+    ].each{ |waku_name,ary|
+      must "枠#{waku_name}のused_map" do
+        waku=@Waku[waku_name]
+        assert_equal ary, waku.used_map
+      end
+    }
 end
 __END__
+    def creat_segments(count_list)
+      count_list.map{ |count| Ubr::Lot.new(:lot => "dmy", :waku => "2D1C",:count => count ) }
+      
+    end
 
   #         lot数 [Fと40袋を越える紙,40袋までの紙]
   [
