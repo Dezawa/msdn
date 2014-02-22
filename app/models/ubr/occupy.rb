@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 # -*- coding: utf-8 -*-
 require 'pp'
-require 'postscript'
+#require 'postscript'
 
 module Ubr
   @dir= File.dirname(__FILE__)
@@ -12,11 +12,11 @@ module Ubr
     $LOAD_PATH << File.join(File.dirname(__FILE__),"../System") << "~/lib/ruby"
     #  $MasterDir =  File.join(@dir,"../System/Master")
   end
-  require 'souko_plan'
-  require 'const'
-  require 'souko'
-  require 'lot'
-  require 'lot_list'
+  #require 'souko_plan'
+  #require 'const'
+  #require 'souko'
+  #require 'lot'
+  #require 'lot_list'
 
 
   # 通路置きも表示する
@@ -262,14 +262,7 @@ module Ubr
     def statistics(souko_group)
       comment("統計")
       translate(souko_group.stat_offset)
-      moveto(0,0).string("　　　総量と穴数")
-      moveto(0,1.8)
-      gsave_restore{ 
-        rmoveto(6,0).gsave_restore{string("総量")}
-        rmoveto(5.5,0).gsave_restore{string("10桝以上")}
-        rmoveto(8,0).gsave_restore{string("5-9桝")}
-        rmoveto(8,0).gsave_restore{string("1-4桝")}
-      }
+      stat_label
       souko_group.stat_names.each_with_index{ |label,idx|
         wakulist_of_this_souko = Ubr::Waku.aria(souko_group.stat_reg[idx])
         weight = wakulist_of_this_souko.inject(0){|wt,waku|  wt + waku.weight}/1000.to_i
@@ -293,6 +286,17 @@ module Ubr
       }
     end
 
+    def stat_label
+
+      moveto(0,0).string("　　　総量と穴数")
+      moveto(0,1.8)
+      gsave_restore{ 
+        rmoveto(6,0).gsave_restore{string("総量")}
+        rmoveto(5.5,0).gsave_restore{string("10桝以上")}
+        rmoveto(8,0).gsave_restore{string("5-9桝")}
+        rmoveto(8,0).gsave_restore{string("1-4桝")}
+      }
+    end
 
     
 
