@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131011205611) do
+ActiveRecord::Schema.define(:version => 20140221013640) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -174,6 +174,10 @@ ActiveRecord::Schema.define(:version => 20131011205611) do
     t.integer "maximum"
   end
 
+  create_table "kinmukubuns", :force => true do |t|
+    t.string "name"
+  end
+
   create_table "labels", :force => true do |t|
     t.string "system"
     t.string "labelid"
@@ -200,6 +204,14 @@ ActiveRecord::Schema.define(:version => 20131011205611) do
   create_table "nurces_roles", :id => false, :force => true do |t|
     t.integer "nurce_id"
     t.integer "role_id"
+  end
+
+  create_table "shokuis", :force => true do |t|
+    t.string "name"
+  end
+
+  create_table "shokushus", :force => true do |t|
+    t.string "name"
   end
 
   create_table "top_pages", :force => true do |t|
@@ -373,6 +385,20 @@ ActiveRecord::Schema.define(:version => 20131011205611) do
     t.boolean  "jun_only"
     t.datetime "replan_from"
     t.date     "plan_from"
+  end
+
+  create_table "ubr_wakus", :force => true do |t|
+    t.text    "name"
+    t.text    "areaknb"
+    t.text    "direct_to"
+    t.text    "palette"
+    t.integer "volum"
+    t.integer "dan3"
+    t.integer "dan2"
+    t.integer "dan1"
+    t.integer "retusu"
+    t.float   "pos_x"
+    t.float   "pos_y"
   end
 
   create_table "user_options", :force => true do |t|
