@@ -29,7 +29,7 @@ class Lot
   attr_accessor :grade,:meigara_code,:meigara,:lot_no,:count,:unit,:packed_date,:qa,:paret
   attr_accessor :hasuukubun
   attr_writer :segments
-  def initialize(arg)
+  def initialize(arg={ })
     Attrs.each{|atr|
       case atr
       when :weight,:waku; next
@@ -53,8 +53,14 @@ class Lot
     wk  = case w
           when Waku ; #puts w unless w
             w
-          when String;ww=Waku.by_name(w)#;puts ww# unless ww
-            ww || w
+          when String;
+            if ww=Waku.by_name(w)#;puts ww# unless ww
+              ww
+            else 
+              $WAKUMISSING ||= []
+              $WAKUMISSING.push(w).uniq! 
+              ww = Waku.new({:name => w })
+            end
           else ;  pp [w,@meigara_code] ;raise "ありえない #{w} #{@meigara_code}"
           end
     @segments = [segment = LotSegment.new(self,wt,wk,@paret,@comment_urb,@comment_qa,
@@ -196,7 +202,7 @@ class LotSegment
     if  paret == "Y-14" && /^N/ =~ @lot.keitai
       # Y-14 は輸出用紙袋55袋積み
       
-      logger.debug("Y-14 は輸出用紙袋55袋積み @weight=#{@weight} unit_weight=#{@lot.meigara.unit_weight} #{(@weight.to_f/@lot.meigara.unit_weight/55).ceil}")
+      #logger.debug("Y-14 は輸出用紙袋55袋積み @weight=#{@weight} unit_weight=#{@lot.meigara.unit_weight} #{(@weight.to_f/@lot.meigara.unit_weight/55).ceil}")
       (@weight.to_f/@lot.meigara.unit_weight/55).ceil
     else 
       (@weight.to_f/@lot.meigara.paret_weight).ceil
