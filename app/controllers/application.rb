@@ -325,7 +325,8 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     send_file(tmpfile,:filename =>  filename)
   end
   def csv_upload
-    errors= @Model.csv_upload(params[:csvfile], @CSVlabels,@CSVatrs)
+    
+    errors= @Model.csv_upload(params[:csvfile]||params[@Domain][:csvfile], @CSVlabels,@CSVatrs)
     unless errors[0]
       flash[:message] = errors[1]
       redirect_to :action => :index

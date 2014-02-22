@@ -140,12 +140,16 @@ module ApplicationHelper
       text_field( dom, :add_no,:size=>2, :value => 1 ) +  "</form></td><td>"
   end
 
+  def csv_up_buttom
+    form_tag(:action => :csv_upload,:multipart => true,:method => :post)+
+      submit_tag("CSVで登録")+
+      file_field(@Domain, :csvfile, :multiple => true)
+  end
+
   def edit_bottom
        button_to( '編集', :action => :edit_on_table,:page => @page )
   end
-  def edit_buttom
-       button_to( '編集', :action => :edit_on_table,:page => @page )
-  end
+
   #action_buttomの列を作る
   #- ［［function,action,label],,,,]
   def action_buttom(buttom)
@@ -155,6 +159,7 @@ module ApplicationHelper
     when :add_edit_buttoms ;edit_buttoms(@Domain) 
     when :add_buttom       ;add_buttom(@Domain)
     when :edit_bottom       ;edit_bottom#(@Domain)
+    when :csv_up_buttom     ;csv_up_buttom
     when :input_and_action  ;input_and_action(action,label,opt)
     else function.to_s
     end
