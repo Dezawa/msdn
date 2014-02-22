@@ -7,9 +7,9 @@ require 'ubr/const'
 module Ubr
 class Waku
   delegate :logger, :to=>"ActiveRecord::Base"
-  Aria = %w(1号倉庫 2号倉庫 3号倉庫 4号倉庫 5号倉庫 6号倉庫 2号2階 5号2階 総合倉庫 番兵).
+  Aria = %w(1号倉庫 2号倉庫 3号倉庫 4号倉庫 5号倉庫 6号倉庫 2号2階 5号2階 総合倉庫 AP跡 野積 番兵).
     #SPE倉庫 7号残 0H 番兵).
-    zip([ /^[1]/,/^2[CD]/,/^3/,/^4/,/^5[I-K]/,/^6/,/^2E/,/^5[LMN]/,/^0H/,/./])
+    zip([ /^[1]/,/^2[CD]/,/^3/,/^4/,/^5[I-K]/,/^6/,/^2E/,/^5[LMN]/,/^0[A-H]/,/^0[J-L]/,/^7/,/./])
   AriaEx = %w(SPE倉庫 7号残 0H 番兵).zip([/^7[^A-E]/,/^0H/,/./])
   Place=Aria
   Attr_str = [:name,:accessbility,:location,:aria,:kata]
@@ -249,9 +249,6 @@ class Waku
   end
   def remove(lot_segment);    @lot_list.delete(lot_segment) ;  end
   def weight(without_pull = true)
-    if @name == "1A4D" 
-      logger.debug("UBR::Waku")
-    end
     lot_list(without_pull).inject(0){|wt,segment| wt + segment.weight }
   end
 
