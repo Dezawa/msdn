@@ -6,6 +6,7 @@ ActionController::Routing::Routes.draw do |map|
   # UBR
 #  map.connect '/ubr/倉庫状況.pdf'  ,:url => '/public/ubr/倉庫状況.pdf'
   map.connect '/ubr/:controller/:action'  ,:path_prefix => 'ubr'#,:action => /[^0-9]+/
+  map.resources :ubr_waku       ,:controller => 'ubr/waku'
 
   # 病院
   map.connect '/hospital/:controller/:action'  ,:path_prefix => 'hospital'
