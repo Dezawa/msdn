@@ -13,10 +13,10 @@ class Waku < ActiveRecord::Base
   delegate :logger, :to=>"ActiveRecord::Base"
 
   Direction = { "↑"=>Pos[0,-1],"↓" =>Pos[0,1], "→" => Pos[1,0],"←" => Pos[-1,0]}
-  Aria = %w(1号倉庫 2号倉庫 3号倉庫 4号倉庫 5号倉庫 6号倉庫 2号2階 5号2階 総合倉庫 AP跡 番兵).
+  Aria = %w(1号倉庫 2号倉庫 3号倉庫 4号倉庫 5号倉庫 6号倉庫 2号2階 5号2階 総合倉庫 AP跡 野積 番兵).
     #SPE倉庫 7号残 0H 番兵).
-    zip([ /^[1]/,/^2[CD]/,/^3/,/^4/,/^5[I-K]/,/^6/,/^2E/,/^5[LMN]/,/^0[A-H]/,/^0[J-L]/,/./])
-  #AriaEx = %w(SPE倉庫 7号残 0H 番兵).zip([/^7[^A-E]/,/^0H/,/./])
+    zip([ /^[1]/,/^2[CD]/,/^3/,/^4/,/^5[I-K]/,/^6/,/^2E/,/^5[LMN]/,/^0[A-H]/,/^0[J-L]/,/^7/,/./])
+  AriaEx = %w(SPE倉庫 7号残 0H 番兵).zip([/^7[^A-E]/,/^0H/,/./])
   Place=Aria
   Kata      = { 
     ["↑","N"] => :UN, ["↓","N"] => :DN, 
@@ -156,21 +156,21 @@ class Waku < ActiveRecord::Base
   end
 
   def initialize(*args)
-    arg = {:kawa_suu => 10, :lot_list => []}.merge(args[0])
-    Attr_str.each do | attr_name|
-      instance_variable_set "@#{attr_name}",arg.delete(attr_name)
-    end
-    @lot_list = arg.delete(:lot_list)
-    @direction = arg.delete(:direction)
-    @pos_x = arg.delete(:pos_x)
-    @pos_y = arg.delete(:pos_y)
-    @pos_xy = Pos[@pos_x,@pos_y]    
-    Attr_num.each do | attr_name|
-      instance_variable_set "@#{attr_name}",arg.delete(attr_name).to_i
-    end
+    #arg = {:kawa_suu => 10, :lot_list => []}.merge(args[0])
+    #Attr_str.each do | attr_name|
+    #  instance_variable_set "@#{attr_name}",arg.delete(attr_name)
+    #end
+    #@lot_list = arg.delete(:lot_list)
+    #@direction = arg.delete(:direction)
+    #@pos_x = arg.delete(:pos_x)
+    #@pos_y = arg.delete(:pos_y)
+    #@pos_xy = Pos[@pos_x,@pos_y]    
+    #Attr_num.each do | attr_name|
+     # instance_variable_set "@#{attr_name}",arg.delete(attr_name).to_i
+    #end
 
-    @location = Place[Place.index{|p| p[1] =~ @name}][0]
-    @aria = Aria[Aria.index{|p| p[1] =~ @name}][0]
+    #@location = Place[Place.index{|p| p[1] =~ @name}][0]
+    #@aria = Aria[Aria.index{|p| p[1] =~ @name}][0]
   end
 
   ######## Ube::Lotとの関連
@@ -190,6 +190,7 @@ class Waku < ActiveRecord::Base
   def add(lot_segment);    @lot_list << lot_segment
   end
   def remove(lot_segment);    @lot_list.delete(lot_segment) ;  end
+
   def weight(without_pull = false)
     lot_list(without_pull).inject(0){|wt,segment| wt + segment.weight }
   end

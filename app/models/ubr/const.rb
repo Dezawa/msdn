@@ -122,7 +122,7 @@ $SoukoFloors = {
                       ] ,
       :label_pos => [ [15,-1],[11,-1.2],[-3.5,3],[1.2,2.2],[15,-1],[11,-0.5],[11,2.2]  ]
       ),
-  "0B" =>   Ubr::SoukoFloor.
+  "0E" =>   Ubr::SoukoFloor.
   new( 
       :outline    => [[xb-xw,yb-yn],[x8-xw,y4-yn]],
       :walls => [ [ [x9-4-xb,y4-yb],[x7-xb,y4-yb],            # 入り口左からSWでっぱり
@@ -325,18 +325,18 @@ SP =[
      },
      { :name => "総合倉庫",:landscape => true,
        :offset     =>[25,25] ,                              # 用紙左上から建物基準点までの mm
-       :floor_offset => { "0A" => [xa,ya], "0B" => [xb,yb], "0C" => [xc,yc]},
-       :stat_names   => %w(0A 0B 0C 0D 0E),
-       :stat_reg     => [/^0A/,/^0B/,/^0C/,/^0D/,/^0E/],
+       :floor_offset => { "0A" => [xa,ya], "0E" => [xb,yb], "0C" => [xc,yc]},
+       :stat_names   => %w(0A 0B 0C 0D 0E 野積),
+       :stat_reg     => [/^0A/,/^0B/,/^0C/,/^0D/,/^0E/,/^7/],
        :stat_offset  => [60,60],:stat_font=> [1,1,0]
      },
-     { :name => "AP跡",:landscape => true,
-       :offset     =>[25,25] ,                              # 用紙左上から建物基準点までの mm
-       :floor_offset => { "0K" => [0,0], "0L" => [0,50]},
-       :stat_names   => %w(0L 0L),
-       :stat_reg     => [/^0K/,/^0L/],
-       :stat_offset  => [60,60],:stat_font=> [1,1,0]
-     }
-    ]
+   # { :name => "AP跡",:landscape => true,
+   #   :offset     =>[25,25] ,                              # 用紙左上から建物基準点までの mm
+   #   :floor_offset => { "0K" => [0,0], "0L" => [0,50]},
+   #   :stat_names   => %w(0L 0L),
+   #   :stat_reg     => [/^0K/,/^0L/],
+   #   :stat_offset  => [60,60],:stat_font=> [1,1,0]
+   # }
+   ]
 
 end
