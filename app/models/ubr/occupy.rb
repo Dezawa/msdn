@@ -262,6 +262,43 @@ module Ubr
     def statistics(souko_group)
       comment("統計")
       translate(souko_group.stat_offset)
+      stat_label
+      souko_group.stat_names.each_with_index{ |label,idx|
+        wakulist_of_this_souko = Ubr::Waku.aria(souko_group.stat_reg[idx])
+        weight = wakulist_of_this_souko.inject(0){|wt,waku|  wt + waku.weight}/1000.to_i
+        vacants = [0]+ Ubr::Waku.empty_number_by_masusuu(souko_group.stat_reg[idx],[10,5,1])
+        rmoveto(0,1.6)
+        gsave_restore{
+          stat_eria_label(label)
+          stat_total_weight(weight)
+          stat_vacants(souko_group,vacants)
+        }
+      }
+    end
+
+    def stat_total_weight(weight)
+      rmoveto(9,0).gsave_restore{right("#{weight.to_i}")}
+    end
+
+    def stat_eria_label(label)
+          gsave_restore{string(label)}
+    end
+
+    def  stat_vacants(souko_group,vacants)
+      (0..2).each{ |i| 
+        rmoveto(7,0).gsave_restore{
+          right("%3d"%(vacants[i+1]-vacants[i]),
+                :font => StatFont[souko_group.stat_font[i]][0],
+                :point   => StatFont[souko_group.stat_font[i]][1]
+                #:fontset => StatFont[souko_group.stat_font[i]]
+                )
+        }
+        gsave_restore{rmoveto(0.2,0).string("本",:fontset => StatFont[2])
+        }
+      }
+    end
+
+    def stat_label
       moveto(0,0).string("　　　総量と穴数")
       moveto(0,1.8)
       gsave_restore{ 
@@ -270,34 +307,7 @@ module Ubr
         rmoveto(8,0).gsave_restore{string("5-9桝")}
         rmoveto(8,0).gsave_restore{string("1-4桝")}
       }
-      souko_group.stat_names.each_with_index{ |label,idx|
-        wakulist_of_this_souko = Ubr::Waku.aria(souko_group.stat_reg[idx])
-        weight = wakulist_of_this_souko.inject(0){|wt,waku|  wt + waku.weight}/1000.to_i
-        vacants = [0]+ Ubr::Waku.empty_number_by_masusuu(souko_group.stat_reg[idx],[10,5,1])
-        rmoveto(0,1.6)
-        gsave_restore{
-          gsave_restore{string(label)}
-          rmoveto(9,0).gsave_restore{right("#{weight.to_i}")}
-          (0..2).each{ |i| 
-            rmoveto(7,0).gsave_restore{
-              right("%3d"%(vacants[i+1]-vacants[i]),
-                    :font => StatFont[souko_group.stat_font[i]][0],
-                    :point   => StatFont[souko_group.stat_font[i]][1]
-                    #:fontset => StatFont[souko_group.stat_font[i]]
-                    )
-            }
-            gsave_restore{rmoveto(0.2,0).string("本",:fontset => StatFont[2])
-            }
-          }
-        }
-      }
     end
-
-
-    
-
-
-
 
     def past(waku)
       
