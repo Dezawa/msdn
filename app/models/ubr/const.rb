@@ -326,17 +326,17 @@ SP =[
      { :name => "総合倉庫",:landscape => true,
        :offset     =>[25,25] ,                              # 用紙左上から建物基準点までの mm
        :floor_offset => { "0A" => [xa,ya], "0B" => [xb,yb], "0C" => [xc,yc]},
-       :stat_names   => %w(0A 0B 0C 0D 0E),
-       :stat_reg     => [/^0A/,/^0B/,/^0C/,/^0D/,/^0E/],
+       :stat_names   => %w(0A 0B 0C 0D 0E 野積),
+       :stat_reg     => [/^0A/,/^0B/,/^0C/,/^0D/,/^0E/,/^7/],
        :stat_offset  => [60,60],:stat_font=> [1,1,0]
      },
-     { :name => "AP跡",:landscape => true,
-       :offset     =>[25,25] ,                              # 用紙左上から建物基準点までの mm
-       :floor_offset => { "0K" => [0,0], "0L" => [0,50]},
-       :stat_names   => %w(0L 0L),
-       :stat_reg     => [/^0K/,/^0L/],
-       :stat_offset  => [60,60],:stat_font=> [1,1,0]
-     }
-    ]
+   # { :name => "AP跡",:landscape => true,
+   #   :offset     =>[25,25] ,                              # 用紙左上から建物基準点までの mm
+   #   :floor_offset => { "0K" => [0,0], "0L" => [0,50]},
+   #   :stat_names   => %w(0L 0L),
+   #   :stat_reg     => [/^0K/,/^0L/],
+   #   :stat_offset  => [60,60],:stat_font=> [1,1,0]
+   # }
+   ]
 
 end
