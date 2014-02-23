@@ -18,7 +18,7 @@ module Ubr
   class SoukoFloor 
     Attrs =[:name,  :outline , :walls,:pillars ] #, :contents ,:sufix,:label_pos,:base_points,  :max]
     attr_reader *Attrs
-    attr_reader :contents ,:sufix,:label_pos,:base_points,  :max
+    #attr_reader :contents ,:sufix,:label_pos,:base_points,  :max
     def initialize(args={ })
       argss = { 
         :name=>"NON",  :outline => [],
@@ -28,13 +28,13 @@ module Ubr
       Attrs.each{| attr_name|
         instance_variable_set  "@#{attr_name}",argss.delete(attr_name) 
       }
-      blocks = Ubr::WakuBlock[@name]
-      @contents   = blocks.map(&:content)
-      @sufix      = blocks.map(&:sufix)
-      @max        = blocks.map(&:max)
-      @label_pos  = blocks.map(&:label_pos)
-      @base_points= blocks.map(&:base_point)
+      @blocks = Ubr::WakuBlock[@name]
     end
-  end
-
+    def contents    ;  @blocks.map(&:content)     ; end
+    def sufix       ;  @blocks.map(&:sufix)       ; end
+    def max         ;  @blocks.map(&:max)         ; end
+    def label_pos   ;  @blocks.map(&:label_pos)   ; end
+    def base_points ;  @blocks.map(&:base_point)  ; end
+  
+  end # of class
 end
