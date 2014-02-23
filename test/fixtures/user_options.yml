@@ -79,8 +79,15 @@ No11:
 No12:
   id: '12'
   label: 倉庫管理
-  url: /hospital_nurces
+  url: /ubr/main
   order: '1000'
   authorized: UBR
   comment: 倉庫管理
+No13:
+  id: '13'
+  label: 倉庫管理メンテ
+  url: /hospital_nurces
+  order: '0'
+  authorized: UBRメンテ
+  comment: 倉庫管理メンテ
 
