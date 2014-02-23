@@ -11,9 +11,8 @@ class Ubr::WakuDistryTest < ActiveSupport::TestCase
                              :dan1 => 0,
                              :kawa_suu => 10,
                              :retusu    => 3,
-                             :direction => "↑",
-                             :kata => Ubr::Waku::Kata[["↑", "N"]],
-                             :volum3 => 90
+                             :direct_to => "↑",
+                             :palette =>  "N"
                              )
     #@waku    = @Waku["5K1A"]
   end
