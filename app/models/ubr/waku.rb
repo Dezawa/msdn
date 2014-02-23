@@ -6,6 +6,7 @@ require 'csv'
 #require 'ubr/const'
 module Ubr
 class Waku < ActiveRecord::Base
+  extend Function::CsvIo
   case RAILS_GEM_VERSION
   when /^2/ ;set_table_name 'ubr_wakus'
   when /^[34]/ ; self.tabele_name =  'ubr_wakus'
@@ -153,24 +154,6 @@ class Waku < ActiveRecord::Base
         colmname.succ!
       }
     }
-  end
-
-  def initialize(*args)
-    #arg = {:kawa_suu => 10, :lot_list => []}.merge(args[0])
-    #Attr_str.each do | attr_name|
-    #  instance_variable_set "@#{attr_name}",arg.delete(attr_name)
-    #end
-    #@lot_list = arg.delete(:lot_list)
-    #@direction = arg.delete(:direction)
-    #@pos_x = arg.delete(:pos_x)
-    #@pos_y = arg.delete(:pos_y)
-    #@pos_xy = Pos[@pos_x,@pos_y]    
-    #Attr_num.each do | attr_name|
-     # instance_variable_set "@#{attr_name}",arg.delete(attr_name).to_i
-    #end
-
-    #@location = Place[Place.index{|p| p[1] =~ @name}][0]
-    #@aria = Aria[Aria.index{|p| p[1] =~ @name}][0]
   end
 
   ######## Ube::Lotとの関連
