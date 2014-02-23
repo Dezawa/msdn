@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140221013640) do
+ActiveRecord::Schema.define(:version => 20140223122808) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -385,6 +385,17 @@ ActiveRecord::Schema.define(:version => 20140221013640) do
     t.boolean  "jun_only"
     t.datetime "replan_from"
     t.date     "plan_from"
+  end
+
+  create_table "ubr_waku_blocks", :force => true do |t|
+    t.text  "souko"
+    t.text  "content"
+    t.text  "sufix"
+    t.text  "max"
+    t.float "label_pos_x"
+    t.float "label_pos_y"
+    t.float "base_point_x"
+    t.float "base_point_y"
   end
 
   create_table "ubr_wakus", :force => true do |t|

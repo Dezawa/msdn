@@ -187,8 +187,8 @@ class Waku < ActiveRecord::Base
 
   #  [空き,引き合い,引き合い無,過剰]
   def used_map
-    without = occupied(true)  # 引き合い含まず
-    within  = occupied(false) # 引き合い込み
+    without = occupied(WithoutPull)  # 引き合い含まず
+    within  = occupied(WithPull) # 引き合い込み
     if tuuro? # 通路のときはmasu数は無限なので、占有数だけあることにする
       masu     = within #.to_f/retusu).ceil 
     else
@@ -204,7 +204,8 @@ class Waku < ActiveRecord::Base
   end
 
   # ary（空き、埋まり、引き合い、溢れ） をretusu列に分ける
-  def  destribute_ary(arg_ary,masu)
+  def destribute_ary(arg_ary,masu=nil)
+    masu ||= kawa_suu * retusu
     ary = arg_ary.dup
     k_suu = Array.new(retusu){ |a| a=masu/retusu} #kawa_suu}
     aary = Array.new(retusu){ |a| a=[0,0,0,0]}
@@ -235,7 +236,7 @@ class Waku < ActiveRecord::Base
 
   # 何桝使われているか求める
   # 3段積みフレコンと40袋積んだ紙袋パレットは、規程の段数積まれる
-  # 11型パレットは2段積み
+  # 11型パレットとY14は2段積み.
   # 包装日の順に奥から詰める。
   # ロットが異なる場合は重ねない。但し1トン以下の紙袋の場合は重ねる
   # 40袋に満たない紙袋パレットは積み過ぎると危ないので24面を上限にする
@@ -252,11 +253,10 @@ class Waku < ActiveRecord::Base
 
     # 包装日の順に奥から詰める。
     masu_need = lot_main_part.
-      inject(0){ |need,seg| f= stack_palet(seg,remain);print "%4d "%f;need + f} # stack_palet(seg,remain) }
-    print  "%4d "%masu_need
+      inject(0){ |need,seg| f= stack_palet(seg,remain);need + f} # stack_palet(seg,remain) }
+
     # 1トン以下の紙袋を詰める
     masu_need += stack_paper_palet(lot_paper_le_1ton,remain)
-    pp masu_need
     masu_need
   end
 
@@ -313,12 +313,13 @@ class Waku < ActiveRecord::Base
 
       remain[3] =  0 
     elsif parets <= 2*(remain[2]+remain[3]) + remain[1]
-      y = parets  - 2*(remain[2]-remain[3])
+      y = parets - remain[2]-remain[3] # d1 = p - 2(d2+d3), d1+d2+d3 = p-d2-d3
       remain[1] -= (y - remain[3] - remain[2])
       remain[3] = remain[2] = 0
       y
     else     
-      y = ((parets - 2*(remain[2]-remain[3]) - remain[1])/3.0).ceil
+      y = (remain[2]+remain[3]+ remain[1])+ #空き枠に収まった分
+        ((parets - 2*(remain[2]+remain[3]) - remain[1])*0.5).ceil # 足りない分
       remain[3] = remain[2] = remain[1] = 0
       y
     end
@@ -349,7 +350,6 @@ class Waku < ActiveRecord::Base
   def stack_paper_palet(lot_paper_le_1ton,remain)
     (lot_paper_le_1ton.inject(0){ |count,seg| count + seg.count}/40.0).ceil
   end
-
 
   # 空の桝が 3段桝 n3, 2段桝 n2, 1段桝 n1個あり、
   # 一杯でない桝の積み余裕が  3段桝 m3, 2段桝 m2 ある時
@@ -509,32 +509,6 @@ class Waku < ActiveRecord::Base
     used += men_list.inject(0){ |sum,men| sum+masu_used_paper_hasu(men,remain,last_masu_men) }
     (0..3).each{ |s| last_masu[s] = last_masu_men[s] }
     used
-  end
-
-  def stack_40hyou(segments,remain,last_masu)
-    used = 0
-    segments.each{ |segment|
-      used += masu_used_3stack((segment.count/40).to_i,remain,last_masu)
-    }
-    used
-  end
-
-  def masu_used_paper_hasu(men,remain,last_masu_men)
-    (1..3).each{ |s| next if last_masu_men[s] <= 0
-      last_masu_men[s] = [last_masu_men[s] - men,0].max
-      return 0
-    }
-    if remain[3]>0
-      remain[3] -= 1 
-      last_masu_men[3] = 24 - men
-    elsif remain[2]>0
-      remain[2] -= 1 
-      last_masu_men[2] = 18 - men
-    else
-      remain[1] -= 1 
-      last_masu_men[1] = 9 - men
-    end
-    1
   end
 
 

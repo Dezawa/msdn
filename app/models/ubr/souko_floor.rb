@@ -16,17 +16,24 @@ module Ubr
   #   sufix       : 枠ブロックの枠名の連番部分。ブロック先頭の枠名の物を指定。"A" とか "1" とか "01" とか
   #   max         : sufixの最後
   class SoukoFloor 
-    Attrs =[:name,  :outline , :walls,:pillars , :contents ,:sufix,:label_pos,:base_points,  :max]
+    Attrs =[:name,  :outline , :walls,:pillars ] #, :contents ,:sufix,:label_pos,:base_points,  :max]
     attr_reader *Attrs
+    attr_reader :contents ,:sufix,:label_pos,:base_points,  :max
     def initialize(args={ })
       argss = { 
-        :name=>"NON",  :outline => [], :base_points => [],  :max => 25 ,
-        :walls => [],:pillars => [],
-        :contents => [] ,:sufix => [],:label_pos => []
+        :name=>"NON",  :outline => [],
+        :walls => [],:pillars => []
+        #:contents => [] ,:sufix => [],:label_pos => [], :base_points => [],  :max => 25 
       }.merge(args)
       Attrs.each{| attr_name|
         instance_variable_set  "@#{attr_name}",argss.delete(attr_name) 
       }
+      blocks = Ubr::WakuBlock[@name]
+      @contents   = blocks.map(&:content)
+      @sufix      = blocks.map(&:sufix)
+      @max        = blocks.map(&:max)
+      @label_pos  = blocks.map(&:label_pos)
+      @base_points= blocks.map(&:base_point)
     end
   end
 

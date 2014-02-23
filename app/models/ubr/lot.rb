@@ -101,11 +101,12 @@ class Lot
   def grade_comment_qa ; [ @grade,@comment_qa] ;end
   def niugoki ; self.meigara.niugoki ;end
   def keitai
-    begin #if self.meigara.housou
-      self.meigara.housou.keitai 
-    rescue #else
-      logger.info("UBR::Lot#keitai  銘柄 #{@meigara_code},ロット #{ @lot_no} 包装未定義")
-    end
+    meigara_code[-2,2]
+    #begin #if self.meigara.housou
+    #  self.meigara.housou.keitai 
+    #rescue #else
+    #  logger.info("UBR::Lot#keitai  銘柄 #{@meigara_code},ロット #{ @lot_no} 包装未定義")
+    #end
   end
 
   def stack_limit ; #@meigara.stack_limit ; end
