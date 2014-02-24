@@ -17,7 +17,7 @@ module Ubr
     extend Function::CsvIo
     set_table_name :ubr_souko_plans
 
-    has_many :souko_floor_souko_plans,:class_name => "Ubr::SoukoFloorSoukoPlan"
+    has_many :souko_floor_souko_plans,:class_name => "Ubr::SoukoFloorSoukoPlan",:dependent => :destroy
     has_many :souko_floors,:class_name => "Ubr::SoukoFloor", :through => :souko_floor_souko_plans
 
   delegate :logger, :to=>"ActiveRecord::Base"

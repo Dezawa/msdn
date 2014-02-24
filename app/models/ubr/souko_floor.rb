@@ -6,8 +6,8 @@ module Ubr
     include Ubr::Const
     set_table_name :ubr_souko_floors
 
-    belongs_to :ubr_souko_plan,:class_name => "Ubr::SoukoPlan"
-    has_one    :souko_floor_souko_plan,:class_name => "Ubr::SoukoFloorSoukoPlan"
+    #belongs_to :ubr_souko_plan,:class_name => "Ubr::SoukoPlan"
+    has_one    :souko_floor_souko_plan,:class_name => "Ubr::SoukoFloorSoukoPlan",:dependent => :destroy
     has_one    :souko_plan,:class_name => "Ubr::SoukoPlan", :through => :souko_floor_souko_plan
 
     has_many :souko_plan_waku_blocks,:class_name => "Ubr::SoukoFloorWakuBlock"
