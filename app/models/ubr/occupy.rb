@@ -7,17 +7,9 @@ module Ubr
   @dir= File.dirname(__FILE__)
   if /www/ =~ @dir
     $LOAD_PATH << @dir
-    #  $MasterDir =  @dir
   else
     $LOAD_PATH << File.join(File.dirname(__FILE__),"../System") << "~/lib/ruby"
-    #  $MasterDir =  File.join(@dir,"../System/Master")
   end
-  #require 'souko_plan'
-  #require 'const'
-  #require 'souko'
-  #require 'lot'
-  #require 'lot_list'
-
 
   # 通路置きも表示する
   # 
@@ -93,52 +85,45 @@ module Ubr
         gsave_restore{ 
           rotate(90).translate(0,-pageWidth)  if landscape
 
-          page_header souko_group_name,souko_group
+          page_header souko_plan #souko_group_name,souko_group
           
-          souko_group.souko_floors.each{ |floor|
+          souko_plan.souko_floors.each{ |floor|
             comment("倉庫 #{floor.name}")
-            souko_kouzou(floor,floor.floor_offset)
-            waku_kakidasi(floor,floor.floor_offset)
+            souko_kouzou(floor)
+            waku_kakidasi(floor)
             
           }
-          #souko_group.floor_offset.each{|name,floor_offset|
-          #  souko = $SoukoFloors[name]
-          #  comment("倉庫 #{name}")
-          #  souko_kouzou(souko,floor_offset)
-          #  waku_kakidasi(souko,floor_offset)
-          #} # floa書き出し
-          
-          statistics(souko_group)
+          statistics(souko_plan)
         }
         
       }#plans
     end
 
     ###
-    def page_header souko_group_name,souko_group
+    def page_header souko_plan #souko_group_name,souko_group
       set_font(:point => 1.0,:font => "(GothicBBB-Medium-UniJIS-UTF8-H)").
         line_width(0.05).scale_unit(:m,shukushaku).nl
-      string(souko_group_name,:x => 10,:y => 10, :point => 2)
+      string(souko_plan.name,:x => 10,:y => 10, :point => 2)
       string("  "+date,:x => 20,:y => 10,  :point => 1.5)
       
-      add "\n%% 倉庫グループ #{souko_group_name}\n"
-      comment("paper_offset").paper_offset(souko_group.offset,:mm) 
+      add "\n%% 倉庫グループ #{souko_plan.name}\n"
+      comment("paper_offset").paper_offset(souko_plan.offset,:mm) 
     end
 
-    def souko_kouzou(souko,floor_offset)
-      outline(souko,floor_offset)
-      comment("wall").wall(souko,floor_offset)
-      comment("pillar").pillar(souko,floor_offset)
+    def souko_kouzou(souko)
+      outline(souko)
+      comment("wall").wall(souko)
+      comment("pillar").pillar(souko)
     end
 
 
-    def waku_kakidasi(souko,floor_offset)
+    def waku_kakidasi(souko)
       gsave_restore{ 
         souko.contents.each_with_index{ |_1A1,idx|
            #logger.debug("  UBR  枠#{_1A1} idx #{ idx}  souko.sufix[idx]..souko.max => #{souko.sufix[idx]}..#{souko.max[idx]}")
           add "\n%% 枠#{_1A1}\n"
           #sfx = souko.sufix[idx].dup
-          base_point = Pos.new(floor_offset||[0,0]) +  Pos.new(souko.base_points[idx]|| [0,0])
+          base_point = Pos.new(souko.floor_offset||[0,0]) +  Pos.new(souko.base_points[idx]|| [0,0])
 
           (souko.sufix[idx]..souko.max[idx]).each{ |sfx|  #|i|
             waku = waku_waku[_1A1 + sfx]
@@ -153,24 +138,24 @@ module Ubr
     end
 
     ###### sub of souko_kouzou ####
-    def outline(souko,floor_offset)
-      gsave_restore{ translate(floor_offset).
+    def outline(souko)
+      gsave_restore{ translate(souko.floor_offset).
         box_diagonal(souko.outline,:size => 0.002)}
     end
 
-    def wall(souko,floor_offset)
-      gsave_restore{ translate(floor_offset).line_width(0.2)
+    def wall(souko)
+      gsave_restore{ translate(souko.floor_offset).line_width(0.2)
         souko.walls.each{ |wall| lines wall }
       }
     end
 
-    def pillar(souko,floor_offset)
+    def pillar(souko)
       return unless souko.pillars
       souko.pillars.each{|pillers|
         xs,ys = pillers.size#.map{ |xy| xy }
         dx,dy = pillers.kankaku#.map{ |xy| xy }
-        x   = pillers.start[0]+floor_offset[0]-xs*0.5
-        y   = pillers.start[1]+floor_offset[1]-ys*0.5
+        x   = pillers.start[0]+souko.floor_offset_x-xs*0.5
+        y   = pillers.start[1]+souko.floor_offset_y-ys*0.5
         (0..pillers.kazu[0]-1).to_a.product( (0..pillers.kazu[1]-1).to_a ).each{ |ix,iy|
           next if (pillers.missing || []).include?([ix,iy])
           box_fill(x+dx*ix, y+dy*iy,xs,ys)

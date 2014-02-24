@@ -15,6 +15,8 @@ module Ubr
     #attr_reader :walls,:pillars:name #,  :outline , :walls,:pillars
 
     def outline ; [[outline_x0,outline_y0],[outline_x1,outline_y1]] ;end
+    def floor_offset_x ;souko_floor_souko_plan.floor_offset_x ; end
+    def floor_offset_y ;souko_floor_souko_plan.floor_offset_y ; end
     def floor_offset
       [souko_floor_souko_plan.floor_offset_x,souko_floor_souko_plan.floor_offset_y]
     end
