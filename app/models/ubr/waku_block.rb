@@ -6,6 +6,8 @@ class Ubr::WakuBlock < ActiveRecord::Base
   end
   delegate :logger, :to=>"ActiveRecord::Base"
 
+  belongs_to :ubr_souko_floor,:class_name => "Ubr::SoukoFloor"
+
   def self.[](key)
     self.find(:all,:conditions => ["souko = ?",key])
   end

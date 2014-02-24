@@ -1,40 +1,33 @@
 # -*- coding: utf-8 -*-
 
 module Ubr
+  class SoukoFloor < ActiveRecord::Base
+    extend Function::CsvIo
+    include Ubr::Const
+    set_table_name :ubr_souko_floors
 
-  # name        : 単なる識別子。プログラムでしか使わない。  
-  # outline     : 倉庫を囲う仮想の長方形。対角線の座標で指定 
-  # walls       : 壁。
-  # pillars     : Pillar の配列
-  # 
-  # contents    : 枠ブロックのprifix。ユニークである必要はない。
-  #             : 同じprifixでも二種のsufixを持つことがあるので
-  #             : 以下はcontentsの要素数と同じ数の定義が必要
-  #   base_points : 原点に対する枠ブロック基準点の相対位置
-  #   label_pos   : 枠ブロック名を出力する場所のbase_pointsに対する相対位置
-  #               : nilの場合は出力しない
-  #   sufix       : 枠ブロックの枠名の連番部分。ブロック先頭の枠名の物を指定。"A" とか "1" とか "01" とか
-  #   max         : sufixの最後
-  class SoukoFloor 
-    Attrs =[:name,  :outline , :walls,:pillars ] #, :contents ,:sufix,:label_pos,:base_points,  :max]
-    attr_reader *Attrs
-    #attr_reader :contents ,:sufix,:label_pos,:base_points,  :max
-    def initialize(args={ })
-      argss = { 
-        :name=>"NON",  :outline => [],
-        :walls => [],:pillars => []
-        #:contents => [] ,:sufix => [],:label_pos => [], :base_points => [],  :max => 25 
-      }.merge(args)
-      Attrs.each{| attr_name|
-        instance_variable_set  "@#{attr_name}",argss.delete(attr_name) 
-      }
-      @blocks = Ubr::WakuBlock[@name]
+    belongs_to :ubr_souko_plan,:class_name => "Ubr::SoukoPlan"
+    has_one    :souko_floor_souko_plan,:class_name => "Ubr::SoukoFloorSoukoPlan"
+    has_one    :souko_plan,:class_name => "Ubr::SoukoPlan", :through => :souko_floor_souko_plan
+
+    has_many :souko_plan_waku_blocks,:class_name => "Ubr::SoukoFloorWakuBlock"
+    has_many :waku_blocks,:class_name => "Ubr::WakuBlock"
+    #attr_reader :walls,:pillars:name #,  :outline , :walls,:pillars
+
+    def outline ; [[outline_x0,outline_y0],[outline_x1,outline_y1]] ;end
+    def floor_offset
+      [souko_floor_souko_plan.floor_offset_x,souko_floor_souko_plan.floor_offset_y]
     end
-    def contents    ;  @blocks.map(&:content)     ; end
-    def sufix       ;  @blocks.map(&:sufix)       ; end
-    def max         ;  @blocks.map(&:max)         ; end
-    def label_pos   ;  @blocks.map(&:label_pos)   ; end
-    def base_points ;  @blocks.map(&:base_point)  ; end
+
+    def walls   ;  @walls   ||=  Floors[name] ? Floors[name].walls : []    ; end
+    def pillars ;  @pillars ||=  Floors[name] ? Floors[name].pillars : []  ; end
+
+    def blocks ;@blocks ||= Ubr::WakuBlock[name]  ;end
+    def contents    ;  blocks.map(&:content)     ; end
+    def sufix       ;  blocks.map(&:sufix)       ; end
+    def max         ;  blocks.map(&:max)         ; end
+    def label_pos   ;  blocks.map(&:label_pos)   ; end
+    def base_points ;  blocks.map(&:base_point)  ; end
   
-  end # of class
+  end
 end

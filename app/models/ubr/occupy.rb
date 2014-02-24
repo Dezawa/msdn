@@ -87,19 +87,26 @@ module Ubr
     end
 
     def pages_out
-      SoukoPlan.plans.each{ |souko_group_name,souko_group,landscape|
+      SoukoPlan.plans.each{ |souko_plan| # |souko_group_name,souko_group,landscape|
+        souko_group_name,souko_group,landscape = souko_plan.name,souko_plan,souko_plan.landscape
         new_page
         gsave_restore{ 
           rotate(90).translate(0,-pageWidth)  if landscape
 
           page_header souko_group_name,souko_group
           
-          souko_group.floor_offset.each{|name,floor_offset|
-            souko = $SoukoFloors[name]
-            comment("倉庫 #{name}")
-            souko_kouzou(souko,floor_offset)
-            waku_kakidasi(souko,floor_offset)
-          } # floa書き出し
+          souko_group.souko_floors.each{ |floor|
+            comment("倉庫 #{floor.name}")
+            souko_kouzou(floor,floor.floor_offset)
+            waku_kakidasi(floor,floor.floor_offset)
+            
+          }
+          #souko_group.floor_offset.each{|name,floor_offset|
+          #  souko = $SoukoFloors[name]
+          #  comment("倉庫 #{name}")
+          #  souko_kouzou(souko,floor_offset)
+          #  waku_kakidasi(souko,floor_offset)
+          #} # floa書き出し
           
           statistics(souko_group)
         }
@@ -292,8 +299,8 @@ module Ubr
       (0..2).each{ |i| 
         rmoveto(7,0).gsave_restore{
           right("%3d"%(vacants[i+1]-vacants[i]),
-                :font => StatFont[souko_group.stat_font[i]][0],
-                :point   => StatFont[souko_group.stat_font[i]][1]
+                :font => StatFont[souko_group.stat_font][0],
+                :point   => StatFont[souko_group.stat_point][1]
                 #:fontset => StatFont[souko_group.stat_font[i]]
                 )
         }
