@@ -1,8 +1,4 @@
 <h3><%= @TYTLE %> </h3>
-<% form_for(@model) do |f| %>
-<%= hidden_field_tag "page",@page %>
-  <%= f.error_messages  %>
-  <%= f.submit '更新' %>
 <table border=1><%= label_line_option %>
 <% id = @model.id -%>
 <tr id='pro_<%= id %>' ><% @labels.each{|html_cell| -%>
@@ -10,7 +6,7 @@
  <%- } -%>
 </tr>
 </table>
-<% end %>
+
 <% @labels = @floor_labels %>
 <table border=1><%= label_line_comm 2,@floor_labels %>
 <% @floor.each do |obj|  -%>
