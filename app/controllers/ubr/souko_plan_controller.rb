@@ -28,6 +28,7 @@ class Ubr::SoukoPlanController <  Ubr::Controller
     @floor_labels= FloorLabels
     @TableHeaderMulti = [3,[2,"倉庫書き出し"],[4,"集計書き出し"],1]
     @Model = Ubr::SoukoPlan
+    @AssociationTable = Ubr::SoukoFloorSoukoPlan
     @TYTLE = "UBR：PDFページ管理"
     @Links = Links
     @Domain= @Model.name.underscore
@@ -54,8 +55,4 @@ class Ubr::SoukoPlanController <  Ubr::Controller
     @floor = @model.souko_floor_souko_plans
   end
 
-  def delete_bind
-    Ubr::SoukoFloorSoukoPlan.delete(params[:bind_id])
-    redirect_to :action => :show,:id => params[:id]
-  end
 end

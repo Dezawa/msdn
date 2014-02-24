@@ -15,10 +15,7 @@
   <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
   <% if @Edit %>
     <td><%= link_to 'Edit', :action => :edit ,:page => @page,:id => obj.id %> </td>
-  <% end %>
-  <td><%= link_to('取外し',"/ubr/souko_plan/delete_bind?id=#{@model.id}&bind_id=#{obj.id}" ,
-                         :confirm => '関係付けだけ削除します',
-                         :method => :delete) %></td>
+  <% end %><%= delete_connection_if_accepted(obj) %>
   </tr>
 <% end %>
 </table>
