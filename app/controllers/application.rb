@@ -302,6 +302,13 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     redirect_to :action => :index
   end
 
+  # have_many :through に於いて、関連だけ削除する。
+  # applycation_helper# delete_connection_if_accepted(obj) と連動
+  #  throughに使うテーブルのModelを@AssociationTableに定義する
+  def delete_bind
+    @AssociationTable.delete(params[:bind_id])
+    redirect_to :action => :show,:id => params[:id]
+  end
 
   def change_per_page
     if params[:line_per_page] && params[:line_per_page].to_i > 0
