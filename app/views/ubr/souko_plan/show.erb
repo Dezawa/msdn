@@ -1,0 +1,32 @@
+<h3><%= @TYTLE %> </h3>
+<% form_for(@model) do |f| %>
+<%= hidden_field_tag "page",@page %>
+  <%= f.error_messages  %>
+  <%= f.submit '更新' %>
+<table border=1><%= label_line_option %>
+<% id = @model.id -%>
+<tr id='pro_<%= id %>' ><% @labels.each{|html_cell| -%>
+  <%= raw html_cell.td -%><%= html_cell.disp(@model) -%></td>
+ <%- } -%>
+</tr>
+</table>
+<% end %>
+<% @labels = @floor_labels %>
+<table border=1><%= label_line_comm 2,@floor_labels %>
+<% @floor.each do |obj|  -%>
+  <tr id='<%= obj.id %>'><% @floor_labels.each{|html_cell| 
+        next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
+  <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
+  <% if @Show %>
+    <td><%= link_to '表示', obj %></td>
+  <% end %>
+  <% if @Edit %>
+    <td><%= link_to 'Edit', :action => :edit ,:page => @page,:id => obj.id %> </td>
+  <% end %>
+  <%= delete_if_accepted obj %>
+  </tr>
+<% end %>
+</table>
+<br />
+<hr>
+<%= raw @PostMessage %>

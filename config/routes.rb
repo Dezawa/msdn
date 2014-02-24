@@ -8,7 +8,9 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/ubr/:controller/:action'  ,:path_prefix => 'ubr'#,:action => /[^0-9]+/
   map.resources :ubr_waku       ,:controller => 'ubr/waku'
   map.resources :ubr_waku_block       ,:controller => 'ubr/waku'
-
+  map.resources :ubr_souko_plan       ,:controller => 'ubr/souko_plan'
+  map.resources :ubr_souko_floor       ,:controller => 'ubr/souko_floor'
+  map.resources :ubr_souko_floor_souko_plan  ,:controller => 'ubr/souko_floor'
   # 病院
   map.connect '/hospital/:controller/:action'  ,:path_prefix => 'hospital'
   map.connect '/hospital/:controller'  ,:path_prefix => 'hospital'
