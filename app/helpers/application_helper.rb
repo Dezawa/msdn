@@ -237,6 +237,37 @@ module ApplicationHelper
     }.compact.join
   end
 
+  def label_multi_lines(list)
+
+   row = "<tr>"
+   lbl_idx=0
+   list.each_with_index{|style,idx|
+     case style
+     when Integer   ;
+       (1..style).each{
+         row += "<td rowspan=2>#{@labels[lbl_idx].label}</td>"
+         lbl_idx += 1
+       }
+     when Array; 
+       row += "<td colspan=#{style[0]}>#{style[1]}</td>"
+       lbl_idx += style[0]
+     end
+   }
+   row += "</tr>\n"
+   lbl_idx=0
+   list.each_with_index{|style,idx|
+     case style
+     when Integer   ;        lbl_idx += style
+     when Array; 
+       (1..style[0]).each{
+         row += "<td>#{@labels[lbl_idx].label}</td>"
+         lbl_idx += 1
+       }
+     end
+   }
+   return row
+ end
+
   def delete_if_accepted(obj)
     if deletable
         "<td>" + link_to('削除',obj , :confirm => 'Are you sure?', :method => :delete) + "</td>"
@@ -246,6 +277,7 @@ module ApplicationHelper
   end
 
   def label_line_option(size=2,labels=nil)
+    return label_multi_lines(@TableHeaderMulti) if @TableHeaderMulti
     label_line_comm(size,labels)+
       case [ @Show,@Edit,deletable].compact.size
       when 3; "<td>　</td><td>　</td><td>　</td></tr>" 

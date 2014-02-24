@@ -16,7 +16,10 @@ class Ubr::WakuBlockController <  Ubr::Controller
 
   def set_instanse_variable
     @labels= Labels
-    @TableHeader = :waku_block_header
+    @TableHeaderMulti = 
+      [2,[2,"枠名後半"],[2,"対倉庫相対位置"],[2,"ブロック名相対位置対ブロック"] ]
+
+    # @TableHeader = :waku_block_header
     @Model = Ubr::WakuBlock
     @TYTLE = "UBR：枠ブロック"
     @Links = Links

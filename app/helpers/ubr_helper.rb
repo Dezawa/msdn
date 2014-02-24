@@ -22,37 +22,6 @@ module UbrHelper
     }.join
   end
 
- def waku_block_header
-   list = [2,[2,"枠名後半"],[2,"対倉庫相対位置"],[2,"ブロック名相対位置対ブロック"] ]
-   row = "<tr>"
-   lbl_idx=0
-   list.each_with_index{|style,idx|
-     case style
-     when Integer   ;
-       (1..style).each{
-         row += "<td rowspan=2>#{@labels[lbl_idx].label}</td>"
-         lbl_idx += 1
-       }
-     when Array; 
-       row += "<td colspan=#{style[0]}>#{style[1]}</td>"
-       lbl_idx += style[0]
-     end
-   }
-   row += "</tr>\n"
-   lbl_idx=0
-   list.each_with_index{|style,idx|
-     case style
-     when Integer   ;        lbl_idx += style
-     when Array; 
-       (1..style[0]).each{
-         row += "<td>#{@labels[lbl_idx].label}</td>"
-         lbl_idx += 1
-       }
-     end
-   }
-   return row
- end
- 
   def html_index(key)
     key.map{ |v| "<td align=right>#{v}</td>" }.join
   end
