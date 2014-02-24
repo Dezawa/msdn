@@ -17,7 +17,8 @@ class Ubr::SoukoPlanController <  Ubr::Controller
             ]
 
    FloorLabels =
-    [HtmlSelect.new(:souko_floor_id,"倉庫",:correction => Ubr::SoukoFloor.all.map{ |floor| [floor.id,floor.name]}),
+    [HtmlSelect.new(:souko_floor_id,"倉庫",
+                    :correction => Ubr::SoukoFloor.all.map{ |floor| [floor.name,floor.id]}),
      HtmlText.new(:floor_offset_x,"位置X",:align=>:right,:size => 3),
      HtmlText.new(:floor_offset_y,"位置Y",:align=>:right,:size => 3)
     ]
@@ -27,13 +28,13 @@ class Ubr::SoukoPlanController <  Ubr::Controller
     @floor_labels= FloorLabels
     @TableHeaderMulti = [3,[2,"倉庫書き出し"],[4,"集計書き出し"],1]
     @Model = Ubr::SoukoPlan
-    @TYTLE = "UBR：枠"
+    @TYTLE = "UBR：PDFページ管理"
     @Links = Links
     @Domain= @Model.name.underscore
     @SortBy    = :name
    @Show = true
     @Delete = @editor
-    @Edit =   @editor
+    #@Edit =   @editor
     @TableEdit  =  [[:add_buttom,:dmy,:dmy],[:form,:edit_on_table,"編集"],
                     [:form,:csv_out,"CSVダウンロード"],
                     [:csv_up_buttom,:dmy,:dmy]] 
@@ -48,8 +49,13 @@ class Ubr::SoukoPlanController <  Ubr::Controller
 
   def show ;
     @model = @Model.find(params[:id])
+    @tmplate = true
+    super
     @floor = @model.souko_floor_souko_plans
-end
+  end
 
-
+  def delete_bind
+    Ubr::SoukoFloorSoukoPlan.delete(params[:bind_id])
+    redirect_to :action => :show,:id => params[:id]
+  end
 end

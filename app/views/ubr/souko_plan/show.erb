@@ -13,13 +13,12 @@
   <tr id='<%= obj.id %>'><% @floor_labels.each{|html_cell| 
         next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
   <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
-  <% if @Show %>
-    <td><%= link_to '表示', obj %></td>
-  <% end %>
   <% if @Edit %>
     <td><%= link_to 'Edit', :action => :edit ,:page => @page,:id => obj.id %> </td>
   <% end %>
-  <%= delete_if_accepted obj %>
+  <td><%= link_to('取外し',"/ubr/souko_plan/delete_bind?id=#{@model.id}&bind_id=#{obj.id}" ,
+                         :confirm => '関係付けだけ削除します',
+                         :method => :delete) %></td>
   </tr>
 <% end %>
 </table>
