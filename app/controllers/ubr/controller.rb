@@ -10,4 +10,10 @@ class Ubr::Controller < ApplicationController
              Menu.new(   "ページ定義管理"  ,:souko_plan   ,:action => :index,:disable => :editor),
              Menu.new(   "倉庫定義管理"  ,:souko_floor   ,:action => :index,:disable => :editor),
             ]
+
+  def set_instanse_variable
+    @CSVatrs = Labels.map{|lbl| lbl.symbol}
+    @CSVlabels= Labels.map{|lbl| lbl.label}
+  end
+
 end

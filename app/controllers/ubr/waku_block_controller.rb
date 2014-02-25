@@ -32,6 +32,7 @@ logger.debug(@Domain)
                     [:form,:csv_out,"CSVダウンロード"],
                     [:csv_up_buttom,:dmy,:dmy]] 
     @FindOption ={:order => "souko,content,max"}
+    super
   end
 
   def index
