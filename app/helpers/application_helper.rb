@@ -142,9 +142,9 @@ module ApplicationHelper
   end
 
   def csv_up_buttom
-    form_tag(:action => :csv_upload,:multipart => true,:method => :post)+
-      submit_tag("CSVで登録")+
-      file_field(@Domain, :csvfile, :multiple => true)
+    url = "/#{@Domain}/csv_upload"
+    form_tag(url,:multipart => true,:method => :post)+
+      submit_tag("CSVで登録")+file_field(@Domain, :csvfile)
   end
 
   def edit_bottom(arg={ })
