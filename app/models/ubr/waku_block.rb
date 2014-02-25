@@ -14,8 +14,8 @@ class Ubr::WakuBlock < ActiveRecord::Base
     self.find(:all,:conditions => ["souko = ?",key])
   end
 
-  def base_point  ; [base_point_x ,base_point_y]  ;end
-  def label_pos   ; [label_pos_x  ,label_pos_y]   ;end
+  def base_point  ; [base_point_x||0.0  ,base_point_y||0.0 ]  ;end
+  def label_pos   ; [label_pos_x ||0.0  ,label_pos_y ||0.0 ]   ;end
 
 
 end
