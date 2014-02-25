@@ -256,13 +256,8 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     render  :file => 'application/cell_edit'
   end
 
-  def update_on_table
-    @page = params[:page] || 1 
-    @models= @PagenatTbl ? find_and : find #@Model.all(@conditions)#@PagenatTbl
-    @maxid    = @Model.count == 0 ? 0 : @Model.maximum(:id)
-    @modelList = params[@Domain]
+  def update_on
     @new_models = []
-    @models = []
     @errors = []
     @result = true
     @modelList.each_pair{|i,model| id=i.to_i
@@ -283,6 +278,14 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
         @models << @mdl
       end
     }
+  end
+  def update_on_table
+    @page = params[:page] || 1
+    @models = [] 
+    @models= @PagenatTbl ? find_and : find #@Model.all(@conditions)#@PagenatTbl
+    @maxid    = @Model.count == 0 ? 0 : @Model.maximum(:id)
+    @modelList = params[@Domain]
+    update_on
     if @result
       #UbeMeigara.meigaras true
       @Model.send(@Refresh,true) if @refresh #BookKamoku.kamokus true

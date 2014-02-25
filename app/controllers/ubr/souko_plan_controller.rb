@@ -54,5 +54,31 @@ class Ubr::SoukoPlanController <  Ubr::Controller
     super
     @floor = @model.souko_floor_souko_plans
   end
+  def edit_assosiation
+    @model = @Model.find(params[:id])
+    @floor = @model.souko_floor_souko_plans
+  end
 
+  def add_assosiation
+    @model = @Model.find(params[:id])
+    @floor= @model.souko_floor_souko_plans
+    #find_and
+    
+    @add_no = params[:assosiation][:add_no].to_i
+    @maxid    = @floor.size == 0 ? 1 : @AssociationTable.maximum(:id)+1
+    @new_models = @add_no.times.map{model = @AssociationTable.new }
+    @new_models.each_with_index{|model,id| model.id = id + @maxid}
+    @floor += @new_models
+    render  :action => :edit_assosiation
+
+  end
+
+  def update_assosiation
+    @models= @Model.find(params[:id]).souko_floor_souko_plans
+    @Model  = @AssociationTable
+    @maxid = @AssociationTable.count == 0 ? 0 : @AssociationTable.maximum(:id)
+    @modelList = params[:assosiation]
+    update_on
+    redirect_to :action => :show,:id => params[:id]
+  end
 end
