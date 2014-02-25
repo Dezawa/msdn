@@ -4,7 +4,7 @@ class Ubr::WakuBlockController <  Ubr::Controller
   before_filter :login_required 
 
 
-   Labels = [HtmlText.new(:souko,"倉庫名",:size =>3),
+   Labels = [
              HtmlText.new(:content  ,"枠名前半",:size =>3),
              HtmlText.new(:sufix,"開始文字",:size => 3),
              HtmlText.new(:max,"最終文字",:size => 3),
@@ -17,13 +17,14 @@ class Ubr::WakuBlockController <  Ubr::Controller
   def set_instanse_variable
     @labels= Labels
     @TableHeaderMulti = 
-      [2,[2,"枠名後半"],[2,"対倉庫相対位置"],[2,"ブロック名相対位置対ブロック"] ]
+      [1,[2,"枠名後半"],[2,"対倉庫相対位置"],[2,"ブロック名相対位置対ブロック"] ]
 
     # @TableHeader = :waku_block_header
     @Model = Ubr::WakuBlock
     @TYTLE = "UBR：枠ブロック"
     @Links = Links
     @Domain= @Model.name.underscore
+logger.debug(@Domain)
     @SortBy    = :souko
     @Delete = @editor
     @Edit =   @editor
