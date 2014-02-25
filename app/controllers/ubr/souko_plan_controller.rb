@@ -7,8 +7,8 @@ class Ubr::SoukoPlanController <  Ubr::Controller
    Labels = [HtmlText.new(:name,"ページタイトル",:size =>7),
              HtmlText.new(:stat_name_list,"統計出力枠名",:size => 20),
              HtmlText.new(:stat_reg_list,"統計出力枠抽出",:size => 20),
-             HtmlText.new(:offset_x,"位置X",:align=>:right,:size => 3),
-             HtmlText.new(:offset_y,"位置Y",:align=>:right,:size => 3),
+             HtmlText.new(:offset_x,"X",:align=>:right,:size => 3),
+             HtmlText.new(:offset_y,"Y",:align=>:right,:size => 3),
              HtmlText.new(:stat_offset_x,"位置X",:align=>:right,:size => 3),
              HtmlText.new(:stat_offset_y,"位置Y",:align=>:right,:size => 3),
              HtmlText.new(:stat_font,"font code",:align=>:right,:size => 1),
@@ -26,11 +26,12 @@ class Ubr::SoukoPlanController <  Ubr::Controller
   def set_instanse_variable
     @labels= Labels
     @AssosiationLabels= FloorLabels
-    @TableHeaderMulti = [3,[2,"倉庫書き出し"],[4,"集計書き出し"],1]
+    @TableHeaderMulti = [3,[2,"描画原点"],[4,"集計書き出し"],1]
     @Model = Ubr::SoukoPlan
     @ThroughTable = Ubr::SoukoFloorSoukoPlan
     @assosiation = :souko_floor_souko_plans
     @TYTLE = "UBR：PDFページ管理"
+    @AfterIndexHtml = "<p>描画原点：X,Y： 紙の左上からの mm"
     @Links = Links
     @Domain= @Model.name.underscore
     @SortBy    = :name
