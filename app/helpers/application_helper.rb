@@ -124,17 +124,18 @@ module ApplicationHelper
     end
   end
   # 追加、編集ボタンの表示
-  def add_edit_buttoms(dom)
-    buttoms =  edit_buttoms(dom)
+  def add_edit_buttoms(dom,arg={ })
+    buttoms =  edit_buttoms(dom,arg)
     "<table><tr><td>"+ buttoms + "</td></tr></table>"
   end
 
 
-  def edit_buttoms(dom)
-    add_buttom(dom)+edit_bottom
+  def edit_buttoms(dom,arg={ })
+    add_buttom(dom,arg)+edit_bottom(arg)
   end
-  def add_buttom(dom)
-    form_tag(:action => :add_on_table) + 
+  def add_buttom(dom,arg={ })
+    option = { :action => (arg.delete(:add_action) || :add_on_table)}.merge(arg)
+    form_tag(option) + #:action => :add_on_table) + 
       "<input type='hidden' name='page' value='#{@page}'>"+
       submit_tag("追加")+
       text_field( dom, :add_no,:size=>2, :value => 1 ) +  "</form></td><td>"
@@ -146,8 +147,9 @@ module ApplicationHelper
       file_field(@Domain, :csvfile, :multiple => true)
   end
 
-  def edit_bottom
-       button_to( '編集', :action => :edit_on_table,:page => @page )
+  def edit_bottom(arg={ })
+    action  =  (arg.delete(:edit_action) || :edit_on_table)
+    button_to( '編集', { :action => action,:page => @page}.merge(arg) )
   end
 
   #action_buttomの列を作る
