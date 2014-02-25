@@ -10,7 +10,7 @@ module Ubr
     has_one    :souko_floor_souko_plan,:class_name => "Ubr::SoukoFloorSoukoPlan",:dependent => :destroy
     has_one    :souko_plan,:class_name => "Ubr::SoukoPlan", :through => :souko_floor_souko_plan
 
-    has_many :souko_plan_waku_blocks,:class_name => "Ubr::SoukoFloorWakuBlock"
+   # has_many :souko_plan_waku_blocks,:class_name => "Ubr::SoukoFloorWakuBlock"
     has_many :waku_blocks,:class_name => "Ubr::WakuBlock"
     #attr_reader :walls,:pillars:name #,  :outline , :walls,:pillars
 
@@ -25,11 +25,11 @@ module Ubr
     def pillars ;  @pillars ||=  Floors[name] ? Floors[name].pillars : []  ; end
 
     def blocks ;@blocks ||= Ubr::WakuBlock[name]  ;end
-    def contents    ;  blocks.map(&:content)     ; end
-    def sufix       ;  blocks.map(&:sufix)       ; end
-    def max         ;  blocks.map(&:max)         ; end
-    def label_pos   ;  blocks.map(&:label_pos)   ; end
-    def base_points ;  blocks.map(&:base_point)  ; end
+    def contents    ;  waku_blocks.map(&:content)     ; end
+    def sufix       ;  waku_blocks.map(&:sufix)       ; end
+    def max         ;  waku_blocks.map(&:max)         ; end
+    def label_pos   ;  waku_blocks.map(&:label_pos)   ; end
+    def base_points ;  waku_blocks.map(&:base_point)  ; end
   
   end
 end
