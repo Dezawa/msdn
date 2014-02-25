@@ -279,13 +279,10 @@ module ApplicationHelper
   end
 
   def delete_connection_if_accepted(obj)
-    if deletable
-        "<td>" + link_to('取外し',"/ubr/souko_plan/delete_bind?id=#{@model.id}&bind_id=#{obj.id}" ,
+      url = "/#{@Domain}/delete_bind?id=#{@model.id}&bind_id=#{obj.id}"
+        "<td>" + link_to('取外し',url,
                          :confirm => '関係付けだけ削除します',
                          :method => :delete) + "</td>"
-    else
-      ""
-    end
   end
 
   def label_line_option(size=2,labels=nil)

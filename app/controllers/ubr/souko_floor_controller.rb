@@ -10,16 +10,25 @@ class Ubr::SoukoFloorController <  Ubr::Controller
              HtmlText.new(:outline_x1,"外枠右下X",:align=>:right,:size => 5),
              HtmlText.new(:outline_y1,"外枠右下Y",:align=>:right,:size => 5)
             ]
-
+  
+  AssosiationLabels =
+    [HtmlText.new(:content  ,"枠名前半",:size =>3),
+     HtmlText.new(:sufix,"開始文字",:size => 3),
+     HtmlText.new(:max,"最終文字",:size => 3)
+    ]
+    
   def set_instanse_variable
     @labels= Labels
-    #TableHeaderMulti = [3,[2,"倉庫書き出し"],[4,"集計書き出し"],1]
+    #@TableHeaderMulti = [2,[2,"枠名後半"],[2,"対倉庫相対位置"],[2,"ブロック名相対位置対ブロック"] ]
     @Model = Ubr::SoukoFloor
+    @AssociationTable = Ubr::WakuBlock
+    @AssosiationLabels = AssosiationLabels
+    @assosiation = :waku_blocks
     @Links = Links
     @Domain= @Model.name.underscore
     @SortBy    = :name
     @Delete = @editor
-    @Edit =   @editor
+    @Show =   @editor
     @TableEdit  =  [[:add_buttom,:dmy,:dmy],[:form,:edit_on_table,"編集"],
                     [:form,:csv_out,"CSVダウンロード"],
                     [:csv_up_buttom,:dmy,:dmy]] 
@@ -32,5 +41,15 @@ class Ubr::SoukoFloorController <  Ubr::Controller
     super
   end
 
+  def show ;
+    @model = @Model.find(params[:id])
+    @assosiations = @model.waku_blocks
+    @AssosiationLabels = AssosiationLabels
+    super
+  end
 
+  def delete_bind_from(id,bind_id)
+    model = @Model.find(id)
+      model.waku_blocks.delete(bind_id)
+end
 end

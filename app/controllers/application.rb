@@ -263,10 +263,11 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     @modelList.each_pair{|i,model| id=i.to_i
       logger.debug("Update_on_table:#{i} #{id}#{@maxid} #{model}")
       if id >@maxid
-        @model=@Model.new(model)
-        @new_models << @model
         next if model.map{|k,v| v}.join == ""
-        unless @model.save 
+        @model=@Model.new(model)
+        if @model.save 
+          @new_models << @model
+        else
           @result = false 
           @errors <<  @model.errors if @model.errors.size>0
         end
@@ -309,8 +310,45 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
   # applycation_helper# delete_connection_if_accepted(obj) と連動
   #  throughに使うテーブルのModelを@AssociationTableに定義する
   def delete_bind
-    @AssociationTable.delete(params[:bind_id])
+    if @ThroughTable
+      @ThroughTable.delete(params[:bind_id])
+    else
+      @Model.find(params[:id]).send(@assosiation).delete(@AssociationTable.find(params[:bind_id]))
+    end
     redirect_to :action => :show,:id => params[:id]
+  end
+
+  def edit_assosiation
+    @model = @Model.find(params[:id])
+    @assosiations = @model.send(@assosiation)
+    render  :file => 'application/edit_association',:layout => 'application'
+  end
+
+
+  def update_assosiation
+    model  = @Model.find(params[:id])
+    @models= model.send( @assosiation)
+    @Model  = @ThroughTable || @AssociationTable
+    @maxid = @Model.count == 0 ? 0 : @Model.maximum(:id)
+    @modelList = params[:assosiation]
+    update_on
+    model.send( @assosiation) << @new_models
+    redirect_to :action => :show,:id => params[:id]
+  end
+
+  def add_assosiation
+    @model = @Model.find(params[:id])
+    assoc_table = @ThroughTable || @AssociationTable
+    @assosiations= @model.send(@assosiation)
+    #find_and
+    
+    @add_no = params[:assosiation][:add_no].to_i
+    @maxid    = @assosiations.size == 0 ? 1 : assoc_table.maximum(:id)+1
+    @new_models = @add_no.times.map{model = assoc_table.new }
+    @new_models.each_with_index{|model,id| model.id = id + @maxid}
+    @assosiations += @new_models
+    render  :file => 'application/edit_association',:layout => 'application'
+
   end
 
   def change_per_page
