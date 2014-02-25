@@ -29,5 +29,6 @@
 <%= will_page %>
 <br />
 <%= send(@AfterIndex,:show) if @AfterIndex %>
+<%= @AfterIndexHtml %>
 <%= on_cell_edit() if @on_cell_edit%>
 <token name ='<%= form_authenticity_token %>'></token>
