@@ -10,7 +10,8 @@
  when Array ; action_buttoms @TableEdit 
  end %>
 <%= will_page = pagenation @models %>
-<table border=1 id="IndexTable"><%= @TableHeader ? send(@TableHeader) : label_line_option %>
+<%= select_box if @Select%>
+  <table border=1 id="IndexTable"><%= @TableHeader ? send(@TableHeader) : label_line_option %>
 <% @models.each do |obj|  -%>
   <tr id='<%= obj.id %>'><% @labels.each{|html_cell| 
         next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
