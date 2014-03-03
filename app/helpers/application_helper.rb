@@ -144,7 +144,7 @@ module ApplicationHelper
   def csv_up_buttom
     url = "/#{@Domain}/csv_upload"
     form_tag(url,:multipart => true,:method => :post)+
-      submit_tag("CSVで登録")+file_field(@Domain, :csvfile)
+      submit_tag("CSVで登録")+file_field(@Domain, :csvfile)+"</form>"
   end
 
   def edit_bottom(arg={ })
@@ -195,21 +195,11 @@ module ApplicationHelper
       "<td>"+action_buttom(buttom) + "</td>"
     }.join("\n") + "</tr></table>"
   end
-  def ddaction_buttoms(buttoms)
-    "<table><tr>"+
-    buttoms.map{|function,action,label,opt|
-      "<td>"+
-      case function
-      when :form ;form_tag(:action => action)+ 
-          "<input type='hidden' name='page' value='#{@page}'>"+
-          (opt ? send(opt) : "") +
-          submit_tag(label)+"</form>"
-      when :add_edit_buttoms ;edit_buttoms(@Domain) 
-      when :add_buttom       ;add_buttom(@Domain)
-      when :edit_bottom       ;edit_bottom#(@Domain)
-      else function.to_s
-      end + "</td>"
-    }.join("\n") + "</tr></table>"
+
+  def select_box
+    form_tag(:action => :index) +
+      text_field(@Domain,:select_box,:value => @Select) +
+      submit_tag("検索")
   end
 
   def option_tags(tags)
