@@ -12,8 +12,6 @@ class Ubr::Controller < ApplicationController
             ]
 
   def set_instanse_variable
-    @CSVatrs = Labels.map{|lbl| lbl.symbol}
-    @CSVlabels= Labels.map{|lbl| lbl.label}
   end
 
 end

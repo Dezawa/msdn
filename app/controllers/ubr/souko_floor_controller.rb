@@ -32,6 +32,8 @@ class Ubr::SoukoFloorController <  Ubr::Controller
     @TableEdit  =  [[:add_buttom,:dmy,:dmy],[:form,:edit_on_table,"編集"],
                     [:form,:csv_out,"CSVダウンロード"],
                     [:csv_up_buttom,:dmy,:dmy]] 
+    @CSVatrs = Labels.map{|lbl| lbl.symbol}
+    @CSVlabels= Labels.map{|lbl| lbl.label}
   end
 
   def index

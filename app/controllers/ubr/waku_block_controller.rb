@@ -32,6 +32,8 @@ logger.debug(@Domain)
                     [:form,:csv_out,"CSVダウンロード"],
                     [:csv_up_buttom,:dmy,:dmy]] 
     @FindOption ={:order => "souko,content,max"}
+    @CSVatrs = Labels.map{|lbl| lbl.symbol}
+    @CSVlabels= Labels.map{|lbl| lbl.label}
     super
   end
 

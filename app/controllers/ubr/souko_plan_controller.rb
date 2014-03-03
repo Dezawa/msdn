@@ -40,7 +40,9 @@ class Ubr::SoukoPlanController <  Ubr::Controller
     #@Edit =   @editor
     @TableEdit  =  [[:add_buttom,:dmy,:dmy],[:form,:edit_on_table,"編集"],
                     [:form,:csv_out,"CSVダウンロード"],
-                    [:csv_up_buttom,:dmy,:dmy]] 
+                    [:csv_up_buttom,:dmy,:dmy]]  
+    @CSVatrs = Labels.map{|lbl| lbl.symbol}
+    @CSVlabels= Labels.map{|lbl| lbl.label}
     super
   end
 
