@@ -58,7 +58,7 @@ class Waku < ActiveRecord::Base
     end
   end
 
-  def self.tuuro(idx_or_name=nil)
+  def self.tuuro(idx_or_name=nil,withoutpull=true)
     case idx_or_name
     when nil
       waku.values.select{ |w| /Z$/ =~ w.name } 
@@ -513,13 +513,13 @@ class Waku < ActiveRecord::Base
 
 
   ## stat
-  def self.tuuro_used(idx_or_name=nil)
-    tuuro(idx_or_name).select{ |waku| waku.weight > 0}
+  def self.tuuro_used(idx_or_name=nil,withoutpull=true)
+    tuuro(idx_or_name,withoutpull).select{ |waku| waku.weight > 0}
   end
 
-  def self.tuuro_weight_wakusuu(idx_or_name=nil)
-    [(tuuro_used(idx_or_name).inject(0){ |w,waku| w += waku.weight}*0.001).to_i,
-     tuuro_used(idx_or_name).count]
+  def self.tuuro_weight_wakusuu(idx_or_name=nil,withoutpull=true)
+    [(tuuro_used(idx_or_name,withoutpull).inject(0){ |w,waku| w += waku.weight(withoutpull)}*0.001).to_i,
+     tuuro_used(idx_or_name,withoutpull).count]
   end
 
  

@@ -54,7 +54,7 @@ class Ubr::Point
   end
 
   def  tuuro
-    SoukoSort.map{ |name_reg| Ubr::Waku.tuuro_weight_wakusuu(name_reg[1])}
+    SoukoSort.map{ |name_reg| Ubr::Waku.tuuro_weight_wakusuu(name_reg[1],WithoutPull)}
   end
 
 
