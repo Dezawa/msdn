@@ -30,15 +30,15 @@ class Ubr::WakuController <  Ubr::Controller
     # @Pagenation = 20
     @CSVatrs = Labels.map{|lbl| lbl.symbol}
     @CSVlabels= Labels.map{|lbl| lbl.label}
+    @Select ="1A"
     super
   end
 
   def index
-    if select = params[@Domain][:select_box]
-      select += "%" unless select =~ /%$/
-      @Select = session[@Domain + "_select"] = select      
-      @FindOption = {:conditions => ["name like ?",select] } #,params[:prefix] ]    }
-    end
+    select = (params[@Domain] && params[@Domain][:select_box] ) ?  params[@Domain][:select_box] : @Select
+    select += "%" unless select =~ /%$/
+    @Select = session[@Domain + "_select"] = select      
+    @FindOption = {:conditions => ["name like ?",select] } #,params[:prefix] ]    }
     super
   end
 
