@@ -34,7 +34,7 @@ module Ubr
     @@SoukoPlan = [] # ]Hash.new{ |h,k| h[k]=[]}
 
     def self.plans
-      return @@SoukoPlan if @@SoukoPlan.size >0 
+      #return @@SoukoPlan if @@SoukoPlan.size >0 
 @@SoukoPlan = self.all
       ##SP.each{ |souko_group| @@SoukoPlan [souko_group[:name]] = self.new(souko_group) }
       #Ubr::Const::SP.each{ |souko_group| 
