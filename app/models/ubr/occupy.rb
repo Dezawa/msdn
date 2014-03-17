@@ -39,9 +39,9 @@ module Ubr
     :H14 => Pos[1.6,1.2], :V14 => Pos[1.2,1.6],
     :U14 => Pos[1.6,1.2], :L14 => Pos[1.2,1.6],
     :D14 => Pos[1.6,1.2], :R14 => Pos[1.2,1.6],
-    :H11 => Pos[1.2,1.1], :V11 => Pos[1.1,1.2],
-    :U11 => Pos[1.2,1.1], :L11 => Pos[1.1,1.2],
-    :D11 => Pos[1.2,1.1], :R11 => Pos[1.1,1.2],
+    :H11 => Pos[1.2,1.2], :V11 => Pos[1.2,1.2],
+    :U11 => Pos[1.2,1.2], :L11 => Pos[1.2,1.2],
+    :D11 => Pos[1.2,1.2], :R11 => Pos[1.2,1.2],
     :HS => Pos[93,93],:VS => Pos[93,93]}
 
   # 枡の色分け  白黒でも４色分かるように気をつける
@@ -259,7 +259,7 @@ module Ubr
         ### 要修正。 アクティブな枠だけカウントするか全枠かを決めること
         wakulist_of_this_souko = Ubr::Waku.aria(souko_group.stat_reg[idx])
         weight = Ubr::Waku.weight_of_aria(souko_group.stat_reg[idx])*0.001
-        weight = wakulist_of_this_souko.inject(0){|wt,waku|  wt + waku.weight}/1000.to_i
+        weight = wakulist_of_this_souko.inject(0){|wt,waku|  wt + waku.weight(WithPull)}/1000.to_i
 
         #logger.debug  "枠一覧 #{souko_group.stat_reg[idx]} "+wakulist_of_this_souko.map(&:name).join(" ") if idx >3
         vacants = [0]+ Ubr::Waku.empty_number_by_masusuu(souko_group.stat_reg[idx],[10,5,1])
