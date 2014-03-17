@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140223122808) do
+ActiveRecord::Schema.define(:version => 20140224074911) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -174,10 +174,6 @@ ActiveRecord::Schema.define(:version => 20140223122808) do
     t.integer "maximum"
   end
 
-  create_table "kinmukubuns", :force => true do |t|
-    t.string "name"
-  end
-
   create_table "labels", :force => true do |t|
     t.string "system"
     t.string "labelid"
@@ -204,14 +200,6 @@ ActiveRecord::Schema.define(:version => 20140223122808) do
   create_table "nurces_roles", :id => false, :force => true do |t|
     t.integer "nurce_id"
     t.integer "role_id"
-  end
-
-  create_table "shokuis", :force => true do |t|
-    t.string "name"
-  end
-
-  create_table "shokushus", :force => true do |t|
-    t.string "name"
   end
 
   create_table "top_pages", :force => true do |t|
@@ -383,19 +371,52 @@ ActiveRecord::Schema.define(:version => 20140223122808) do
     t.integer  "limit_dryero"
     t.integer  "limit_dryern"
     t.boolean  "jun_only"
-    t.datetime "replan_from"
     t.date     "plan_from"
   end
 
+  create_table "ubr_souko_floor_souko_plans", :force => true do |t|
+    t.integer "souko_floor_id"
+    t.integer "souko_plan_id"
+    t.float   "floor_offset_x"
+    t.float   "floor_offset_y"
+  end
+
+  create_table "ubr_souko_floor_waku_blocks", :id => false, :force => true do |t|
+    t.integer "souko_floor_id"
+    t.integer "waku_block_id"
+  end
+
+  create_table "ubr_souko_floors", :force => true do |t|
+    t.text  "name"
+    t.float "outline_x0"
+    t.float "outline_y0"
+    t.float "outline_x1"
+    t.float "outline_y1"
+  end
+
+  create_table "ubr_souko_plans", :force => true do |t|
+    t.text    "name"
+    t.text    "stat_name_list"
+    t.text    "stat_reg_list"
+    t.float   "offset_x"
+    t.float   "offset_y"
+    t.float   "stat_offset_x"
+    t.float   "stat_offset_y"
+    t.float   "stat_font"
+    t.float   "stat_point"
+    t.boolean "landscape"
+  end
+
   create_table "ubr_waku_blocks", :force => true do |t|
-    t.text  "souko"
-    t.text  "content"
-    t.text  "sufix"
-    t.text  "max"
-    t.float "label_pos_x"
-    t.float "label_pos_y"
-    t.float "base_point_x"
-    t.float "base_point_y"
+    t.integer "souko_floor_id"
+    t.text    "souko"
+    t.text    "content"
+    t.text    "sufix"
+    t.text    "max"
+    t.float   "label_pos_x"
+    t.float   "label_pos_y"
+    t.float   "base_point_x"
+    t.float   "base_point_y"
   end
 
   create_table "ubr_wakus", :force => true do |t|
