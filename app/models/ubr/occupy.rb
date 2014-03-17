@@ -259,7 +259,7 @@ module Ubr
         ### 要修正。 アクティブな枠だけカウントするか全枠かを決めること
         wakulist_of_this_souko = Ubr::Waku.aria(souko_group.stat_reg[idx])
         weight = Ubr::Waku.weight_of_aria(souko_group.stat_reg[idx])*0.001
-        weight = wakulist_of_this_souko.inject(0){|wt,waku|  wt + waku.weight}/1000.to_i
+        weight = wakulist_of_this_souko.inject(0){|wt,waku|  wt + waku.weight(WithPull)}/1000.to_i
 
         #logger.debug  "枠一覧 #{souko_group.stat_reg[idx]} "+wakulist_of_this_souko.map(&:name).join(" ") if idx >3
         vacants = [0]+ Ubr::Waku.empty_number_by_masusuu(souko_group.stat_reg[idx],[10,5,1])
