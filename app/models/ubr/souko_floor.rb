@@ -9,6 +9,7 @@ module Ubr
     #belongs_to :ubr_souko_plan,:class_name => "Ubr::SoukoPlan"
     has_one    :souko_floor_souko_plan,:class_name => "Ubr::SoukoFloorSoukoPlan",:dependent => :destroy
     has_one    :souko_plan,:class_name => "Ubr::SoukoPlan", :through => :souko_floor_souko_plan
+    has_many    :pillars,:class_name => "Ubr::Pillar"
 
    # has_many :souko_plan_waku_blocks,:class_name => "Ubr::SoukoFloorWakuBlock"
     has_many :waku_blocks,:class_name => "Ubr::WakuBlock"
@@ -22,7 +23,7 @@ module Ubr
     end
 
     def walls   ;  @walls   ||=  Floors[name] ? Floors[name].walls : []    ; end
-    def pillars ;  @pillars ||=  Floors[name] ? Floors[name].pillars : []  ; end
+    #def pillars ;  @pillars ||=  Floors[name] ? Floors[name].pillars : []  ; end
 
     def blocks ;@blocks ||= Ubr::WakuBlock[name]  ;end
     def contents    ;  waku_blocks.map(&:content)     ; end

@@ -1,0 +1,249 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+# one:
+#   column: value
+#
+# two:
+#   column: value
+AC0J1:
+   name: 0J-1
+   souko_floor_id: 12
+   kazu_x:  2
+   kazu_y:  2
+   start_x: 0.7
+   start_y: 8.6
+   kankaku_x:  36.36
+   kankaku_y:  9.0
+   size_x:  1.5
+   size_y:  1.5
+AC0J2:
+   name:  0J-2
+   souko_floor_id: 12
+   kazu_x:  2
+   kazu_y:  2
+   start_x: 0.7
+   start_y: 8.6
+   kankaku_x:  36.36
+   kankaku_y:  9.0
+   size_x:  1.5
+   size_y:  1.5
+S6:
+  name:  6
+  souko_floor_id:  8
+  kankaku_x:  5.500000
+  kankaku_y:  6.000000
+  start_x:  0.000000
+  start_y:  10.000000
+  kazu_x:  7
+  kazu_y:  1
+  size_x:  0.35
+  size_y:  0.45
+S3-1:
+  name:  3-1
+  souko_floor_id:  4
+  kankaku_x:  5.000000
+  kankaku_y:  15
+  start_x:  0.000000
+  start_y:  2.500000
+  kazu_x:  2
+  kazu_y:  3
+  size_x:  0.9
+  size_y:  0.8
+S3-2:
+  name:  3-2
+  souko_floor_id:  4
+  kankaku_x:  5.500000
+  kankaku_y:  15
+  start_x:  10.000000
+  start_y:  2.500000
+  kazu_x:  2
+  kazu_y:  3
+  size_x:  0.9
+  size_y:  0.8
+S3-3:
+  name:  3-3
+  souko_floor_id:  4
+  kankaku_x:  6.000000
+  kankaku_y:  15
+  start_x:  22.000000
+  start_y:  2.500000
+  kazu_x:  3
+  kazu_y:  3
+  size_x:  0.9
+  size_y:  0.8
+S3-4:
+  name: 3-4
+  souko_floor_id:  4
+  kankaku_x:  6.000000
+  kankaku_y:  7.500000
+  start_x:  34.000000
+  start_y:  2.500000
+  kazu_x:  1
+  kazu_y:  5
+  size_x:  0.9
+  size_y:  0.8
+S2-1:
+  name:  2-1
+  souko_floor_id:  2
+  kankaku_x:  10.000000
+  kankaku_y:  8.000000
+  start_x:  30.000000
+  start_y:  15.000000
+  kazu_x:  6
+  kazu_y:  1
+  size_x:  0.9
+  size_y:  0.8
+S2-2:
+  name: 2-2
+  souko_floor_id:  2
+  kankaku_x:  10.000000
+  kankaku_y:  16.000000
+  start_x:  10.000000
+  start_y:  7.000000
+  kazu_x:  8
+  kazu_y:  2
+  size_x:  0.9
+  size_y:  0.8
+S1-1:
+  name:  1-1
+  souko_floor_id:  1
+  kankaku_x:  10.000000
+  kankaku_y:  8.000000
+  start_x:  40.000000
+  start_y:  6.500000
+  kazu_x:  5
+  kazu_y:  1
+  size_x:  0.4
+  size_y:  0.5
+S1-2:
+  name:  1-2
+  souko_floor_id:  1
+  kankaku_x:  10.000000
+  kankaku_y:  14.000000
+  start_x:  10.000000
+  start_y:  19.500000
+  kazu_x:  8
+  kazu_y:  2
+  size_x:  0.4
+  size_y:  0.5
+S52F:
+  name: 5-2F
+  souko_floor_id:  7
+  kankaku_x:  6.000000
+  kankaku_y:  6.000000
+  start_x:  6.000000
+  start_y:  12.000000
+  kazu_x:  4
+  kazu_y:  2
+  size_x:  0.7
+  size_y:  0.7
+S5-1:
+  name: 5
+  souko_floor_id:  6
+  kankaku_x:  6.000000
+  kankaku_y:  6.000000
+  start_x:  0.000000
+  start_y:  0.000000
+  kazu_x:  6
+  kazu_y:  6
+  size_x:  0.7
+  size_y:  0.7
+S5-2:
+  name: 5
+  souko_floor_id:  6
+  kankaku_x:  6.500000
+  kankaku_y:  6.000000
+  start_x:  36.000000
+  start_y:  0.000000
+  kazu_x:  10
+  kazu_y:  6
+  size_x:  0.7
+  size_y:  0.7
+AC0L1:
+  name: 0L
+  souko_floor_id:  14
+  kankaku_x:  17.400000
+  kankaku_y:  3.100000
+  start_x:  11.300000
+  start_y:  3.100000
+  kazu_x:  2
+  kazu_y:  6
+  size_x:  0.6
+  size_y:  0.5
+AC0L2:
+  name: 0L
+  souko_floor_id:  14
+  kankaku_x:  17.400000
+  kankaku_y:  3.100000
+  start_x:  28.7
+  start_y:  21.7
+  kazu_x:  1
+  kazu_y:  2
+  size_x:  0.6
+  size_y:  0.5
+AC0L3:
+  name: 0L
+  souko_floor_id:  14
+  kankaku_x:  5.800000
+  kankaku_y:  9.300000
+  start_x:  5.500000
+  start_y:  9.300000
+  kazu_x:  7
+  kazu_y:  2
+  size_x:  0.6
+  size_y:  0.5
+AC0K1:
+  name: 0K
+  souko_floor_id:  13
+  kankaku_x:  36.360000
+  kankaku_y:  9.000000
+  start_x:  0.750000
+  start_y:  8.600000
+  kazu_x:  2
+  kazu_y:  2
+  size_x:  1.5
+  size_y:  0.4
+AC0K2:
+  name: 0K
+  souko_floor_id:   13
+  kankaku_x:  9.090000
+  kankaku_y:  9.000000
+  start_x:  10.590000
+  start_y:  8.600000
+  kazu_x:  3
+  kazu_y:  2
+  size_x:  1.5
+  size_y:  0.4
+AC0K3:
+  name: 0K
+  souko_floor_id:  13
+  kankaku_x:  9.090000
+  kankaku_y:  0.000000
+  start_x:  9.840000
+  start_y:  0.750000
+  kazu_x:  3
+  kazu_y:  1
+  size_x:  0.4
+  size_y:  1.5
+AC0K4:
+  name: 0K
+  souko_floor_id:  13
+  kankaku_x:  9.090000
+  kankaku_y:  9.000000
+  start_x:  11.340000
+  start_y:  8.600000
+  kazu_x:  3
+  kazu_y:  2
+  size_x:  0.4
+  size_y:  3.0
+AC0K5:
+  name: 0K
+  souko_floor_id:  13
+  kankaku_x:  9.125000
+  kankaku_y:  9.000000
+  start_x:  5.500000
+  start_y:  8.600000
+  kazu_x:  4
+  kazu_y:  2
+  size_x:  0.4
+  size_y:  0.4
