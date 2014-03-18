@@ -145,7 +145,12 @@ module Ubr
 
     def wall(souko)
       gsave_restore{ translate(souko.floor_offset).line_width(0.2)
-        souko.walls.each{ |wall| lines wall }
+        souko.walls.each{ |wall| 
+          moveto wall.x0,wall.y0
+          [[:dx1,:dy1],[:dx2,:dy2],[:dx3,:dy3],[:dx1,:dy4] ].
+          each{ |dx,dy| rlineto wall[dx],wall[dy] if wall[dx] }
+          stroke
+        }
       }
     end
 

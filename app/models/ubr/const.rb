@@ -108,7 +108,7 @@ Converator = [[80.7,30.5],[80.7,32.5],[83.7,32.5],[83.7,30.5],[80.7,30.5]]
                        x7=15.68;xb=x7+2.32; x8 =xb+30.33;x6=x8+29; x5=xe-4.065-25
                        x9= xb+5
 
-Floors = { 
+FFFloors = { 
   "0A" =>   Ubr::Floor.
   new(:name       => "0A",:id => 9,
       :walls => [ [ [0,yc-ya],[x2-xa,yc-ya],[x2-xa,yn-ya],[x3l-xa,yn-ya],
@@ -125,6 +125,7 @@ Floors = {
                     [x7-xb,y8-yb],[xb-xb,y8-yb],[xb-xb,yb-yb], # 膨らみからNW
 		    [x8-xb,yb-yb],[x8-xb,y4-yb],[x9-xb,y4-yb]]             # 東壁から入口
                 ] 
+
       ),
   "0C" =>   Ubr::Floor.
   new(:name => "0C",:id => 10,
