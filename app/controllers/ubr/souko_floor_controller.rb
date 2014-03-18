@@ -47,7 +47,10 @@ class Ubr::SoukoFloorController <  Ubr::Controller
     @model = @Model.find(params[:id])
     @assosiations = @model.waku_blocks
     @AssosiationLabels = AssosiationLabels
-    super
+    @WallLabels = Ubr::WallController::Labels
+    @PillarLabels = Ubr::PillarController::Labels
+    @model = @Model.find(params[:id])
+
   end
 
   def delete_bind_from(id,bind_id)
