@@ -411,6 +411,15 @@ def lines(poses,opt={ })
   }
   
 end
+def rlines(poses,opt={ })
+  gsave_restore{ 
+    line_width(opt[:size])
+    moveto(poses[0])
+    poses[1..-1].each{ |pos| rlineto(pos[0],pos[1])}
+    stroke
+  }
+  
+end
 
 def line(x0,y0,x1,y1,opt={:size => nil,:scale =>Pos.new(1,1)})
   size,s = case opt
@@ -428,6 +437,12 @@ def lineto(x0,y0,opt={:size => nil,:scale =>Pos.new(1,1)})
   line_width(opt[:size])
   s = opt[:scale]
   @page << "%.3f %.3f lineto "%[x0*s.x,y0*s.y] 
+  self
+end
+def rlineto(x0,y0,opt={:size => nil,:scale =>Pos.new(1,1)})
+  line_width(opt[:size])
+  s = opt[:scale]
+  @page << "%.3f %.3f rlineto "%[x0*s.x,y0*s.y] 
   self
 end
 
