@@ -32,16 +32,16 @@ plot 'tmp/ubr/SCM_stock_stat_tuuro.ave' using 12:xtic(1)  with line ,\
 
 ####
 set title "倉庫:穴数、通路置き量_2_-_2_F_5_-_2_F" font ",14"
-plot 'tmp/ubr/SCM_stock_stat_tuuro.ave' using 12:xtic(1)  with line ,\
-     '' using 13 with line,\
-     '' using 14 with line, \
-     '' using 15 with line ls 9 axes x1y2 
-####
-set title "倉庫:穴数、通路置き量_総_合_0_A_-_G_J" font ",14"
 plot 'tmp/ubr/SCM_stock_stat_tuuro.ave' using 17:xtic(1)  with line ,\
      '' using 18 with line,\
      '' using 19 with line, \
      '' using 20 with line ls 9 axes x1y2 
+####
+set title "倉庫:穴数、通路置き量_総_合_0_A_-_G_J" font ",14"
+plot 'tmp/ubr/SCM_stock_stat_tuuro.ave' using 22:xtic(1)  with line ,\
+     '' using 23 with line,\
+     '' using 24 with line, \
+     '' using 25 with line ls 9 axes x1y2 
 
 
 set title "倉庫エリア別在庫量推移" font ",14"
