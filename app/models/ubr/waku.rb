@@ -215,7 +215,7 @@ class Waku < ActiveRecord::Base
       else
         (1..2).each{ |s|
           (0..retusu-2).each{ |r| 
-            aary[r][s] = [k_suu[r],ary[s]/retusu].min
+            aary[r][s] = [k_suu[r],ary[s]/(retusu-r)].min
             ary[s]   -=  aary[r][s]
             k_suu[r] -=   aary[r][s]
           }
