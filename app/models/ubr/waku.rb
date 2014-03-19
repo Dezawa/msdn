@@ -91,6 +91,9 @@ class Waku < ActiveRecord::Base
   def to_s      ; self.name ; end
   def pos_xy    ; @pos_xy ||= Pos[pos_x,pos_y]  ;end
 
+    def masu_xy ; Masu[kata] ;end
+    def delta_xy;masu_xy*direction;end
+    def waku_xy(offset=Pos([0,0])) ; pos_xy + offset+[-masu_xy.x,0] ;end
 
 
   def self.load(file = "Master/Waku.csv") # 名前 川数

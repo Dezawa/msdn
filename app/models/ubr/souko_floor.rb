@@ -34,8 +34,9 @@ module Ubr
       page = Ubr::Occupy.new({ :macros => [:rectangre,:centering,:right], 
                            :paper => "A4p",:y0_is_up => true,
                                :Shukushaku => 500.0})
-      page.new_page.scale_unit(:m,page.shukushaku).nl
-      page.souko_kouzou(self,[20,10])
+      page.new_page. line_width(0.05).scale_unit(:m,page.shukushaku).nl
+      page.souko_kouzou(self,[5,10])
+      page.waku_kakidasi(self,[5,10],false)
       page.to_gif(RAILS_ROOT+"/tmp/ubr/Floor%d"%id)
     end
   

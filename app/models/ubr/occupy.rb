@@ -122,18 +122,17 @@ module Ubr
       comment("pillar").pillar(floor,offset)
     end
 
-
-    def waku_kakidasi(souko)
+    def waku_kakidasi(souko,offset=nil,used_map=true)
       gsave_restore{ 
         souko.contents.each_with_index{ |_1A1,idx|
            #logger.debug("  UBR  枠#{_1A1} idx #{ idx}  souko.sufix[idx]..souko.max => #{souko.sufix[idx]}..#{souko.max[idx]}")
           add "\n%% 枠#{_1A1}\n"
           #sfx = souko.sufix[idx].dup
-          base_point = Pos.new(souko.floor_offset||[0,0]) +  Pos.new(souko.base_points[idx]|| [0,0])
+          base_point = Pos.new(offset || souko.floor_offset||[0,0]) +  Pos.new(souko.base_points[idx]|| [0,0])
 
           (souko.sufix[idx]..souko.max[idx]).each{ |sfx|  #|i|
             waku = waku_waku[_1A1 + sfx]
-            waku_out(sfx,waku,base_point) # [詰、引、過]
+            waku_out(sfx,waku,base_point,used_map) # [詰、引、過]
             #sfx.succ!
           } # end of 枠書き出し
           waku_name(_1A1,base_point+souko.label_pos[idx] ) if souko.label_pos[idx]
@@ -143,6 +142,7 @@ module Ubr
 
     end
 
+
     ###### sub of souko_kouzou ####
     def outline(souko,offset=nil)
       gsave_restore{ 
@@ -151,7 +151,7 @@ module Ubr
     end
 
     def wall(souko,offset=nil)
-      gsave_restore{ translate(offset || souko.floor_offset).line_width(0.4)
+      gsave_restore{ translate(offset || souko.floor_offset).line_width(0.2)
         souko.walls.each{ |wall| 
           moveto wall.x0,wall.y0
           [[:dx1,:dy1],[:dx2,:dy2],[:dx3,:dy3],[:dx4,:dy4] ].
@@ -181,34 +181,37 @@ module Ubr
     end
 
     ##### sub of waku_kakidasi #####
-    def waku_out(sfx,waku,base_point)
+
+
+    def waku_out(sfx,waku,base_point,used_map=true)
       return unless waku && waku.direction
       waku.enable = true 
       
-      masu_xy = Masu[waku.kata]
-      delta_xy =  masu_xy*waku.direction
-      waku_xy =  waku.pos_xy + base_point+[-masu_xy.x,0]
+      masu_xy  = waku.masu_xy  #"Masu[waku.kata]
+      delta_xy = waku.delta_xy # masu_xy*waku.direction
+      waku_xy  = waku.waku_xy base_point # waku.pos_xy + base_point+[-masu_xy.x,0]
       # masu     = waku.kawa_suu
 
-      waku_out_sub(waku,waku_xy,masu_xy,delta_xy)
-      waku_weight(waku,waku_xy,masu_xy,delta_xy)
+      waku_out_sub(waku,base_point,used_map) #,waku_xy,masu_xy,delta_xy)
+      waku_weight(waku,waku_xy,masu_xy,delta_xy) if used_map
       waku_label(sfx,waku_xy,masu_xy)
 
     end
 
-    def waku_out_sub(waku,waku_xy,masu_xy,delta_xy)
-      aary = waku.used_map
+    def waku_out_sub(waku,base_point,used_map=true)
+      aary = used_map ? waku.used_map : [[waku.kawa_suu ,0,0,0]]*waku.retusu
       gsave_restore{
         aary.each{ |ary|
           gsave_restore{ 
             (waku.tuuro? ? [3,2,1,0] : [0,1,2,3]).each{ |idx|
               next unless ary[idx] && ary[idx]>0
               repeat(ary[idx]){ 
-                box_fill(waku_xy,masu_xy,Color[idx]).translate(delta_xy.x,delta_xy.y)
+                box_fill(waku.waku_xy(base_point),waku.masu_xy,Color[idx])
+                translate(waku.delta_xy.x,waku.delta_xy.y)
               }
             }
           } #grestore 
-          translate( masu_xy*waku.drift_by_mult_retu)        
+          translate( waku.masu_xy*waku.drift_by_mult_retu)        
         }
       }
     end
