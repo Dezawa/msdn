@@ -30,6 +30,14 @@ module Ubr
     def label_pos   ;  waku_blocks.map(&:label_pos)   ; end
     def base_points ;  waku_blocks.map(&:base_point)  ; end
   
+    def show
+      page = Ubr::Occupy.new({ :macros => [:rectangre,:centering,:right], 
+                           :paper => "A4p",:y0_is_up => true,
+                               :Shukushaku => 500.0})
+      page.new_page.scale_unit(:m,page.shukushaku).nl
+      page.souko_kouzou(self,[20,10])
+      page.to_gif(RAILS_ROOT+"/tmp/ubr/Floor%d"%id)
+    end
   
     def wall_dump
       walls.map{ |wall|

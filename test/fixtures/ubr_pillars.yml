@@ -5,28 +5,6 @@
 #
 # two:
 #   column: value
-AC0J1:
-   name: 0J-1
-   souko_floor_id: 12
-   kazu_x:  2
-   kazu_y:  2
-   start_x: 0.7
-   start_y: 8.6
-   kankaku_x:  36.36
-   kankaku_y:  9.0
-   size_x:  1.5
-   size_y:  1.5
-AC0J2:
-   name:  0J-2
-   souko_floor_id: 12
-   kazu_x:  2
-   kazu_y:  2
-   start_x: 0.7
-   start_y: 8.6
-   kankaku_x:  36.36
-   kankaku_y:  9.0
-   size_x:  1.5
-   size_y:  1.5
 S6:
   name:  6
   souko_floor_id:  8

@@ -81,9 +81,7 @@ module Ubr
 
     def to_gif(filepath)
       open(filepath+".ps","w"){ |fp| fp.puts self.to_s}
-      `/usr/bin/ps2pdf #{pdfpath+'.ps'} #{pdfpath+'.pdf'}`
-      
-
+      `/usr/bin/convert #{filepath+'.ps'} #{filepath+'.gif'}`
     end
 
     def pages_out
@@ -119,7 +117,7 @@ module Ubr
     end
 
     def souko_kouzou(floor,offset=nil)
-      outline(floor,offset)
+      #outline(floor,offset)
       comment("wall").wall(floor,offset)
       comment("pillar").pillar(floor,offset)
     end
@@ -153,11 +151,11 @@ module Ubr
     end
 
     def wall(souko,offset=nil)
-      gsave_restore{ translate(offset || souko.floor_offset).line_width(0.2)
+      gsave_restore{ translate(offset || souko.floor_offset).line_width(0.4)
         souko.walls.each{ |wall| 
           moveto wall.x0,wall.y0
-          [[:dx1,:dy1],[:dx2,:dy2],[:dx3,:dy3],[:dx1,:dy4] ].
-          each{ |dx,dy| rlineto wall[dx],wall[dy] if wall[dx] }
+          [[:dx1,:dy1],[:dx2,:dy2],[:dx3,:dy3],[:dx4,:dy4] ].
+          each{ |dx,dy| rlineto wall[dx],wall[dy] if wall[dx] && !(wall[dx] == 0.0 && wall[dy] == 0.0) }
           stroke
         }
       }
