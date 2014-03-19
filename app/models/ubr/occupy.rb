@@ -64,10 +64,11 @@ module Ubr
       `/usr/bin/ps2pdf #{pdfpath+'.ps'} #{pdfpath+'.pdf'}`
     end
 
-    def initialize(args={})
+    def initialize(args={ :macros => [:rectangre,:centering,:right], 
+                           :paper => "A4p",:y0_is_up => true})
       super
 
-      @shukushaku = 1.0/Shukushaku
+      @shukushaku = 1.0/( args[:Shukushaku] || Shukushaku)
       @waku_waku     = Waku.waku(true) #load_from_master
       LotList.lotlist(true)
 
@@ -78,15 +79,22 @@ module Ubr
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot app/models/ubr/point_to_gif.def)`
     end
 
+    def to_gif(filepath)
+      open(filepath+".ps","w"){ |fp| fp.puts self.to_s}
+      `/usr/bin/ps2pdf #{pdfpath+'.ps'} #{pdfpath+'.pdf'}`
+      
+
+    end
+
     def pages_out
       SoukoPlan.plans.each{ |souko_plan| # |souko_group_name,souko_group,landscape|
         souko_group_name,souko_group,landscape = souko_plan.name,souko_plan,souko_plan.landscape
         new_page
         gsave_restore{ 
           rotate(90).translate(0,-pageWidth)  if landscape
-
+          #scale_unit(:m,shukushaku).nl
           page_header souko_plan #souko_group_name,souko_group
-          
+
           souko_plan.souko_floors.each{ |floor|
             comment("倉庫 #{floor.name}")
             souko_kouzou(floor)
@@ -110,10 +118,10 @@ module Ubr
       comment("paper_offset").paper_offset(souko_plan.offset,:mm) 
     end
 
-    def souko_kouzou(souko)
-      outline(souko)
-      comment("wall").wall(souko)
-      comment("pillar").pillar(souko)
+    def souko_kouzou(floor,offset=nil)
+      outline(floor,offset)
+      comment("wall").wall(floor,offset)
+      comment("pillar").pillar(floor,offset)
     end
 
 
@@ -138,13 +146,14 @@ module Ubr
     end
 
     ###### sub of souko_kouzou ####
-    def outline(souko)
-      gsave_restore{ translate(souko.floor_offset).
+    def outline(souko,offset=nil)
+      gsave_restore{ 
+        translate(offset || souko.floor_offset) 
         box_diagonal(souko.outline,:size => 0.002)}
     end
 
-    def wall(souko)
-      gsave_restore{ translate(souko.floor_offset).line_width(0.2)
+    def wall(souko,offset=nil)
+      gsave_restore{ translate(offset || souko.floor_offset).line_width(0.2)
         souko.walls.each{ |wall| 
           moveto wall.x0,wall.y0
           [[:dx1,:dy1],[:dx2,:dy2],[:dx3,:dy3],[:dx1,:dy4] ].
@@ -154,18 +163,22 @@ module Ubr
       }
     end
 
-    def pillar(souko)
+    def pillar(souko,offset=nil)
       return unless souko.pillars
+      gsave_restore{ translate(offset || souko.floor_offset)
       souko.pillars.each{|pillers|
         xs,ys = pillers.size#.map{ |xy| xy }
         dx,dy = pillers.kankaku#.map{ |xy| xy }
-        x   = pillers.start[0]+souko.floor_offset_x-xs*0.5
-        y   = pillers.start[1]+souko.floor_offset_y-ys*0.5
+        x   = pillers.start[0]-xs*0.5
+        y   = pillers.start[1]-ys*0.5
+        #x   = pillers.start[0]+souko.floor_offset_x-xs*0.5
+        #y   = pillers.start[1]+souko.floor_offset_y-ys*0.5
         (0..pillers.kazu[0]-1).to_a.product( (0..pillers.kazu[1]-1).to_a ).each{ |ix,iy|
           next if (pillers.missing || []).include?([ix,iy])
           box_fill(x+dx*ix, y+dy*iy,xs,ys)
         }
         nl
+      }
       }
     end
 
