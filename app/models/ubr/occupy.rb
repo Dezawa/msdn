@@ -193,8 +193,8 @@ module Ubr
       # masu     = waku.kawa_suu
 
       waku_out_sub(waku,base_point,used_map) #,waku_xy,masu_xy,delta_xy)
-      waku_weight(waku,waku_xy,masu_xy,delta_xy) if used_map
-      waku_label(sfx,waku_xy,masu_xy)
+      waku_weight(waku,base_point) if used_map
+      waku_label(sfx,waku,base_point )#_xy,masu_xy)
 
     end
 
@@ -221,9 +221,9 @@ module Ubr
       centering(name,base_point.merge(:point => 1.6,:font => Bold))
     end
 
-    def waku_label(sfx,waku_xy,masu_xy)
+    def waku_label(sfx,waku,base_point)#_xy,masu_xy)
       #moveto(waku_xy.x-masu_xy.x*0.5,waku_xy.y+0.8*masu_xy.y)
-      moveto(waku_xy + masu_xy*[0.5,0.87])
+      moveto(waku.waku_xy(base_point) + waku.masu_xy*[0.5,0.87])
       #gsave_restore{ scale(1,-1).
       centering(sfx,:point => 1.3,:font => Bold)
       #}
@@ -237,7 +237,7 @@ module Ubr
     #  → は+1枡から二桁、 0度ローテーション
     #  ↑ は+1枡から二桁  90度ローテーション
     #  ↓ は+2枡から二桁、90度ローテーション 但し2枡枠の時は+1枡から
-    def waku_weight(waku,waku_xy,masu_xy,delta_xy)
+    def waku_weight(waku,base_point) #,waku_xy,masu_xy,delta_xy)
       #logger.debug("UBR::OCUPY#waku_weight 1A4D =#{waku.weight}") if waku.name == "1A4D"
       case waku.kawa_suu
       when 1  ; return
@@ -248,21 +248,23 @@ module Ubr
       case waku.kata
       when :LN,:RN,:L14,:R14 ,:L11,:R11;  #  ← →
         offset = if [:LN,:L14,:L11].include?(waku.kata) && waku.weight > 99
-                   [delta_xy.x*3.1,masu_xy.y*0.9]
+                   [waku.delta_xy.x*3.1,waku.masu_xy.y*0.9]
                  else
-                   waku.kawa_suu > 2 ? [delta_xy.x*2,masu_xy.y*0.99] :[delta_xy.x,masu_xy.y*0.99]
+                   waku.kawa_suu > 2 ? [waku.delta_xy.x*2,waku.masu_xy.y*0.99] :
+                     [waku.delta_xy.x,waku.masu_xy.y*0.99]
                  end 
         angle = 0
       when :D14,:DN,:D11
-        offset = waku.kawa_suu > 2 ? [masu_xy.x*0.9,delta_xy.y*3.1]: [masu_xy.x*0.9,delta_xy.y*3.1] 
+        offset = waku.kawa_suu > 2 ? [waku.masu_xy.x*0.9,waku.delta_xy.y*3.1]:
+          [waku.masu_xy.x*0.9,waku.delta_xy.y*3.1] 
         angle = 270
       when :UN ,:U14,:U11; 
-        offset = waku.kawa_suu > 2 ? [masu_xy.x*0.9,delta_xy.y]: [masu_xy.x*0.9,0]
+        offset = waku.kawa_suu > 2 ? [waku.masu_xy.x*0.9,waku.delta_xy.y]: [waku.masu_xy.x*0.9,0]
         angle = 270
       else ;offset = [0,0];angle = 0
       end
       
-      moveto(waku_xy + offset).gsave_restore{ rotate(angle).string(weight,:point => 1.6,:font => "/Courier-Bold")}
+      moveto(waku.waku_xy(base_point) + offset).gsave_restore{ rotate(angle).string(weight,:point => 1.6,:font => "/Courier-Bold")}
       nl
       self
     end
