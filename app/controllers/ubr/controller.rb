@@ -6,9 +6,11 @@ class Ubr::Controller < ApplicationController
              Menu.new(   "在庫表示"    ,:main   ,:action => :occupy_pdf) ,
              Menu.new(   "再計算"      ,:main   ,:action => :reculc) ,
              Menu.new(   "枠管理"         ,:waku   ,:action => :index,:disable => :editor), 
-             Menu.new(   "枠ブロック管理"  ,:waku_block   ,:action => :index,:disable => :editor),
-             Menu.new(   "ページ定義管理"  ,:souko_plan   ,:action => :index,:disable => :editor),
-             Menu.new(   "倉庫定義管理"  ,:souko_floor   ,:action => :index,:disable => :editor),
+             Menu.new(   "枠ブロック"  ,:waku_block   ,:action => :index,:disable => :editor),
+             Menu.new(   "ページ定義"  ,:souko_plan   ,:action => :index,:disable => :editor),
+             Menu.new(   "倉庫定義"  ,:souko_floor   ,:action => :index,:disable => :editor),
+            Menu.new(   "壁"  ,:wall   ,:action => :index,:disable => :editor),
+            Menu.new(   "柱"  ,:pillar   ,:action => :index,:disable => :editor)
             ]
 
   def set_instanse_variable

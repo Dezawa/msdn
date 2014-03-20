@@ -32,12 +32,13 @@ class Waku < ActiveRecord::Base
     ["→","S"] => :VS, ["←","S"] => :VS
   }
 
-  attr_accessor  :enable,:kawa_suu,:direction,:aria
+  attr_accessor  :enable,:kawa_suu,:direction,:aria,:angle
   
   attr_writer :lot_list,:pos_xy
 
   def after_find
     @lot_list = []
+    @angle = %w(→ ←).include?(direct_to) ? 0 : 270
   end
 
   def self.waku(reload=false)
@@ -91,6 +92,9 @@ class Waku < ActiveRecord::Base
   def to_s      ; self.name ; end
   def pos_xy    ; @pos_xy ||= Pos[pos_x,pos_y]  ;end
 
+    def masu_xy ; Masu[kata] ;end
+    def delta_xy;masu_xy*direction;end
+    def waku_xy(offset=[0,0]) ; pos_xy + offset+[-masu_xy.x,0] ;end
 
 
   def self.load(file = "Master/Waku.csv") # 名前 川数
@@ -215,7 +219,7 @@ class Waku < ActiveRecord::Base
       else
         (1..2).each{ |s|
           (0..retusu-2).each{ |r| 
-            aary[r][s] = [k_suu[r],ary[s]/retusu].min
+            aary[r][s] = [k_suu[r],ary[s]/(retusu-r)].min
             ary[s]   -=  aary[r][s]
             k_suu[r] -=   aary[r][s]
           }

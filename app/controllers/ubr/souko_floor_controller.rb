@@ -47,11 +47,20 @@ class Ubr::SoukoFloorController <  Ubr::Controller
     @model = @Model.find(params[:id])
     @assosiations = @model.waku_blocks
     @AssosiationLabels = AssosiationLabels
-    super
+    @WallLabels = Ubr::WallController::Labels
+    @PillarLabels = Ubr::PillarController::Labels
+    @model = @Model.find(params[:id])
+
+  end
+
+  def show_floor
+    floor = @Model.find(params[:id])
+    floor.show
+    send_file RAILS_ROOT+"/tmp/ubr/Floor%d.gif"%params[:id], :type => 'image/pdf', :disposition => 'inline'
   end
 
   def delete_bind_from(id,bind_id)
     model = @Model.find(id)
       model.waku_blocks.delete(bind_id)
-end
+  end
 end

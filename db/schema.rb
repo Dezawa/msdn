@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140224074911) do
+ActiveRecord::Schema.define(:version => 20140318003752) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -374,6 +374,19 @@ ActiveRecord::Schema.define(:version => 20140224074911) do
     t.date     "plan_from"
   end
 
+  create_table "ubr_pillars", :force => true do |t|
+    t.string  "name"
+    t.integer "souko_floor_id"
+    t.integer "kazu_x"
+    t.integer "kazu_y"
+    t.float   "start_x"
+    t.float   "start_y"
+    t.float   "kankaku_x"
+    t.float   "kankaku_y"
+    t.float   "size_x"
+    t.float   "size_y"
+  end
+
   create_table "ubr_souko_floor_souko_plans", :force => true do |t|
     t.integer "souko_floor_id"
     t.integer "souko_plan_id"
@@ -431,6 +444,21 @@ ActiveRecord::Schema.define(:version => 20140224074911) do
     t.integer "retusu"
     t.float   "pos_x"
     t.float   "pos_y"
+  end
+
+  create_table "ubr_walls", :force => true do |t|
+    t.integer "souko_floor_id"
+    t.float   "name"
+    t.float   "x0"
+    t.float   "y0"
+    t.float   "dx1"
+    t.float   "dy1"
+    t.float   "dx2"
+    t.float   "dy2"
+    t.float   "dx3"
+    t.float   "dy3"
+    t.float   "dx4"
+    t.float   "dy4"
   end
 
   create_table "user_options", :force => true do |t|

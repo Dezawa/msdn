@@ -56,26 +56,34 @@ module Ubr
 
     def self.main(pdfpath = nil)
       pdfpath ||= ARGV[0] || "./Ubr_occupy"
+      Waku.waku(true)
+      LotList.lotlist(true)
       @page = Occupy.new({ :macros => [:rectangre,:centering,:right], 
                            :paper => "A4p",:y0_is_up => true,
                            :pdfpath => pdfpath })
       @page.pages_out
       open(pdfpath+".ps","w"){ |fp| fp.puts @page.to_s}
       `/usr/bin/ps2pdf #{pdfpath+'.ps'} #{pdfpath+'.pdf'}`
-    end
 
-    def initialize(args={})
-      super
-
-      @shukushaku = 1.0/Shukushaku
-      @waku_waku     = Waku.waku(true) #load_from_master
-      LotList.lotlist(true)
-
-      @filename = open(Ubr::Lot::SCMFILEBASE).gets.chop rescue nil
-      @date = @filename || LotList.lotlist.list.map{ |id,lot| lot.packed_date}.max
-      date_of_file = /201\d{5}/.match(@filename)[0]
+      date_of_file = /201\d{5}/.match(@page.date)[0]
       Ubr::Point.new(@waku_waku ,date_of_file ).save
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot app/models/ubr/point_to_gif.def)`
+    end
+
+    def initialize(args={ :macros => [:rectangre,:centering,:right], 
+                           :paper => "A4p",:y0_is_up => true})
+      super
+
+      @shukushaku = 1.0/( args[:Shukushaku] || Shukushaku)
+      @waku_waku     = Waku.waku#(true) #load_from_master
+      #LotList.lotlist(true)
+      @filename = open(Ubr::Lot::SCMFILEBASE).gets.chop rescue nil
+      @date = @filename #||  LotList.lotlist.list.map{ |id,lot| lot.packed_date}.max
+    end
+
+    def to_gif(filepath)
+      open(filepath+".ps","w"){ |fp| fp.puts self.to_s}
+      `/usr/bin/convert #{filepath+'.ps'} #{filepath+'.gif'}`
     end
 
     def pages_out
@@ -84,9 +92,9 @@ module Ubr
         new_page
         gsave_restore{ 
           rotate(90).translate(0,-pageWidth)  if landscape
-
+          #scale_unit(:m,shukushaku).nl
           page_header souko_plan #souko_group_name,souko_group
-          
+
           souko_plan.souko_floors.each{ |floor|
             comment("倉庫 #{floor.name}")
             souko_kouzou(floor)
@@ -110,24 +118,23 @@ module Ubr
       comment("paper_offset").paper_offset(souko_plan.offset,:mm) 
     end
 
-    def souko_kouzou(souko)
-      outline(souko)
-      comment("wall").wall(souko)
-      comment("pillar").pillar(souko)
+    def souko_kouzou(floor,offset=nil)
+      #outline(floor,offset)
+      comment("wall").wall(floor,offset)
+      comment("pillar").pillar(floor,offset)
     end
 
-
-    def waku_kakidasi(souko)
+    def waku_kakidasi(souko,offset=nil,used_map=true)
       gsave_restore{ 
         souko.contents.each_with_index{ |_1A1,idx|
            #logger.debug("  UBR  枠#{_1A1} idx #{ idx}  souko.sufix[idx]..souko.max => #{souko.sufix[idx]}..#{souko.max[idx]}")
           add "\n%% 枠#{_1A1}\n"
           #sfx = souko.sufix[idx].dup
-          base_point = Pos.new(souko.floor_offset||[0,0]) +  Pos.new(souko.base_points[idx]|| [0,0])
+          base_point = Pos.new(offset || souko.floor_offset||[0,0]) +  Pos.new(souko.base_points[idx]|| [0,0])
 
           (souko.sufix[idx]..souko.max[idx]).each{ |sfx|  #|i|
             waku = waku_waku[_1A1 + sfx]
-            waku_out(sfx,waku,base_point) # [詰、引、過]
+            waku_out(sfx,waku,base_point,used_map) # [詰、引、過]
             #sfx.succ!
           } # end of 枠書き出し
           waku_name(_1A1,base_point+souko.label_pos[idx] ) if souko.label_pos[idx]
@@ -137,62 +144,76 @@ module Ubr
 
     end
 
+
     ###### sub of souko_kouzou ####
-    def outline(souko)
-      gsave_restore{ translate(souko.floor_offset).
+    def outline(souko,offset=nil)
+      gsave_restore{ 
+        translate(offset || souko.floor_offset) 
         box_diagonal(souko.outline,:size => 0.002)}
     end
 
-    def wall(souko)
-      gsave_restore{ translate(souko.floor_offset).line_width(0.2)
-        souko.walls.each{ |wall| lines wall }
+    def wall(souko,offset=nil)
+      gsave_restore{ translate(offset || souko.floor_offset).line_width(0.2)
+        souko.walls.each{ |wall| 
+          moveto wall.x0,wall.y0
+          [[:dx1,:dy1],[:dx2,:dy2],[:dx3,:dy3],[:dx4,:dy4] ].
+          each{ |dx,dy| rlineto wall[dx],wall[dy] if wall[dx] && !(wall[dx] == 0.0 && wall[dy] == 0.0) }
+          stroke
+        }
       }
     end
 
-    def pillar(souko)
+    def pillar(souko,offset=nil)
       return unless souko.pillars
+      gsave_restore{ translate(offset || souko.floor_offset)
       souko.pillars.each{|pillers|
         xs,ys = pillers.size#.map{ |xy| xy }
         dx,dy = pillers.kankaku#.map{ |xy| xy }
-        x   = pillers.start[0]+souko.floor_offset_x-xs*0.5
-        y   = pillers.start[1]+souko.floor_offset_y-ys*0.5
+        x   = pillers.start[0]-xs*0.5
+        y   = pillers.start[1]-ys*0.5
+        #x   = pillers.start[0]+souko.floor_offset_x-xs*0.5
+        #y   = pillers.start[1]+souko.floor_offset_y-ys*0.5
         (0..pillers.kazu[0]-1).to_a.product( (0..pillers.kazu[1]-1).to_a ).each{ |ix,iy|
           next if (pillers.missing || []).include?([ix,iy])
           box_fill(x+dx*ix, y+dy*iy,xs,ys)
         }
         nl
       }
+      }
     end
 
     ##### sub of waku_kakidasi #####
-    def waku_out(sfx,waku,base_point)
+
+
+    def waku_out(sfx,waku,base_point,used_map=true)
       return unless waku && waku.direction
       waku.enable = true 
       
-      masu_xy = Masu[waku.kata]
-      delta_xy =  masu_xy*waku.direction
-      waku_xy =  waku.pos_xy + base_point+[-masu_xy.x,0]
+      masu_xy  = waku.masu_xy  #"Masu[waku.kata]
+      delta_xy = waku.delta_xy # masu_xy*waku.direction
+      waku_xy  = waku.waku_xy base_point # waku.pos_xy + base_point+[-masu_xy.x,0]
       # masu     = waku.kawa_suu
 
-      waku_out_sub(waku,waku_xy,masu_xy,delta_xy)
-      waku_weight(waku,waku_xy,masu_xy,delta_xy)
-      waku_label(sfx,waku_xy,masu_xy)
+      waku_out_sub(waku,base_point,used_map) #,waku_xy,masu_xy,delta_xy)
+      waku_weight(waku,base_point) if used_map
+      waku_label(sfx,waku,base_point )#_xy,masu_xy)
 
     end
 
-    def waku_out_sub(waku,waku_xy,masu_xy,delta_xy)
-      aary = waku.used_map
+    def waku_out_sub(waku,base_point,used_map=true)
+      aary = used_map ? waku.used_map : [[waku.kawa_suu ,0,0,0]]*waku.retusu
       gsave_restore{
         aary.each{ |ary|
           gsave_restore{ 
             (waku.tuuro? ? [3,2,1,0] : [0,1,2,3]).each{ |idx|
               next unless ary[idx] && ary[idx]>0
               repeat(ary[idx]){ 
-                box_fill(waku_xy,masu_xy,Color[idx]).translate(delta_xy.x,delta_xy.y)
+                box_fill(waku.waku_xy(base_point),waku.masu_xy,Color[idx])
+                translate(waku.delta_xy.x,waku.delta_xy.y)
               }
             }
           } #grestore 
-          translate( masu_xy*waku.drift_by_mult_retu)        
+          translate( waku.masu_xy*waku.drift_by_mult_retu)        
         }
       }
     end
@@ -202,9 +223,9 @@ module Ubr
       centering(name,base_point.merge(:point => 1.6,:font => Bold))
     end
 
-    def waku_label(sfx,waku_xy,masu_xy)
+    def waku_label(sfx,waku,base_point)#_xy,masu_xy)
       #moveto(waku_xy.x-masu_xy.x*0.5,waku_xy.y+0.8*masu_xy.y)
-      moveto(waku_xy + masu_xy*[0.5,0.87])
+      moveto(waku.waku_xy(base_point) + waku.masu_xy*[0.5,0.87])
       #gsave_restore{ scale(1,-1).
       centering(sfx,:point => 1.3,:font => Bold)
       #}
@@ -218,7 +239,7 @@ module Ubr
     #  → は+1枡から二桁、 0度ローテーション
     #  ↑ は+1枡から二桁  90度ローテーション
     #  ↓ は+2枡から二桁、90度ローテーション 但し2枡枠の時は+1枡から
-    def waku_weight(waku,waku_xy,masu_xy,delta_xy)
+    def waku_weight(waku,base_point) #,waku_xy,masu_xy,delta_xy)
       #logger.debug("UBR::OCUPY#waku_weight 1A4D =#{waku.weight}") if waku.name == "1A4D"
       case waku.kawa_suu
       when 1  ; return
@@ -229,21 +250,21 @@ module Ubr
       case waku.kata
       when :LN,:RN,:L14,:R14 ,:L11,:R11;  #  ← →
         offset = if [:LN,:L14,:L11].include?(waku.kata) && waku.weight > 99
-                   [delta_xy.x*3.1,masu_xy.y*0.9]
+                   [waku.delta_xy.x*3.1,waku.masu_xy.y*0.9]
                  else
-                   waku.kawa_suu > 2 ? [delta_xy.x*2,masu_xy.y*0.99] :[delta_xy.x,masu_xy.y*0.99]
+                   waku.kawa_suu > 2 ? [waku.delta_xy.x*2,waku.masu_xy.y*0.99] :
+                     [waku.delta_xy.x,waku.masu_xy.y*0.99]
                  end 
-        angle = 0
       when :D14,:DN,:D11
-        offset = waku.kawa_suu > 2 ? [masu_xy.x*0.9,delta_xy.y*3.1]: [masu_xy.x*0.9,delta_xy.y*3.1] 
-        angle = 270
+        offset = waku.kawa_suu > 2 ? [waku.masu_xy.x*0.9,waku.delta_xy.y*3.1]:
+          [waku.masu_xy.x*0.9,waku.delta_xy.y*3.1] 
       when :UN ,:U14,:U11; 
-        offset = waku.kawa_suu > 2 ? [masu_xy.x*0.9,delta_xy.y]: [masu_xy.x*0.9,0]
-        angle = 270
-      else ;offset = [0,0];angle = 0
+        offset = waku.kawa_suu > 2 ? [waku.masu_xy.x*0.9,waku.delta_xy.y]: [waku.masu_xy.x*0.9,0]
+      else ;offset = [0,0]
       end
       
-      moveto(waku_xy + offset).gsave_restore{ rotate(angle).string(weight,:point => 1.6,:font => "/Courier-Bold")}
+      moveto(waku.waku_xy(base_point) + offset).
+        gsave_restore{ rotate(waku.angle).string(weight,:point => 1.6,:font => "/Courier-Bold")}
       nl
       self
     end
