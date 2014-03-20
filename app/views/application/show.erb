@@ -20,9 +20,10 @@
   <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
 <%= delete_connection_if_accepted(obj) %>
   </tr>
-<% end %>
+<%- end %>
 </table>
-<% end %>
+<%- end %>
 <br />
 <hr>
 <%= raw @PostMessage %>
+<%- if @image_source %> <img src='<%= @image_source %>'><% end %>

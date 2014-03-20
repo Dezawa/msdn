@@ -56,8 +56,14 @@ class Ubr::SoukoPlanController <  Ubr::Controller
   def show ;
     @model = @Model.find(params[:id])
     @assosiations = @model.souko_floor_souko_plans #send(@association)
-    #@AssosiationLabels = AssosiationLabels
+    @image_source = "/ubr/souko_plan/show_plan/#{params[:id]}"
     super
   end
 
+  def show_plan
+    plan = @Model.find(params[:id])
+    plan.show
+    send_file RAILS_ROOT+"/tmp/ubr/Plan%d.gif"%params[:id],
+    :type => 'image/pdf', :disposition => 'inline'
+  end
 end

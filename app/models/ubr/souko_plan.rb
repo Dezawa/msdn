@@ -43,6 +43,18 @@ module Ubr
       #@@SoukoPlan
     end
 
+    def show
+      page = Ubr::Occupy.new({ :macros => [:rectangre,:centering,:right], 
+                           :paper => "A4p",:y0_is_up => true,
+                               :Shukushaku => 600.0})
+      page.new_page.line_width(0.05).scale_unit(:m,page.shukushaku).nl
+      page.gsave_restore{ 
+        souko_floors.each{ |floor|
+          page.souko_kouzou(floor)            
+        }
+      }
+      page.to_gif(RAILS_ROOT+"/tmp/ubr/Plan%d"%id)
+    end
 
     def dinitialize(args={ })
       [:name ,:sufix,:floor,:floor_offset    , :offset,
@@ -51,5 +63,6 @@ module Ubr
         instance_variable_set  "@#{attr_name}",args.delete(attr_name) 
       }
     end
+
   end
 end
