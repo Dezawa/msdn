@@ -31,12 +31,14 @@ module Ubr
     def base_points ;  waku_blocks.map(&:base_point)  ; end
   
     def show
+
+      Waku.waku(true)
       page = Ubr::Occupy.new({ :macros => [:rectangre,:centering,:right], 
-                           :paper => "A4p",:y0_is_up => true,
-                               :Shukushaku => 500.0})
+                           :paper => "A3p",:y0_is_up => true,
+                               :Shukushaku => 400.0})
       page.new_page. line_width(0.05).scale_unit(:m,page.shukushaku).nl
-      page.souko_kouzou(self,[5,10])
-      page.waku_kakidasi(self,[5,10],false)
+      page.souko_kouzou(self,[5,5])
+      page.waku_kakidasi(self,[5,5],false)
       page.to_gif(RAILS_ROOT+"/tmp/ubr/Floor%d"%id)
     end
   

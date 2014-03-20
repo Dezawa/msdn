@@ -56,12 +56,18 @@ module Ubr
 
     def self.main(pdfpath = nil)
       pdfpath ||= ARGV[0] || "./Ubr_occupy"
+      Waku.waku(true)
+      LotList.lotlist(true)
       @page = Occupy.new({ :macros => [:rectangre,:centering,:right], 
                            :paper => "A4p",:y0_is_up => true,
                            :pdfpath => pdfpath })
       @page.pages_out
       open(pdfpath+".ps","w"){ |fp| fp.puts @page.to_s}
       `/usr/bin/ps2pdf #{pdfpath+'.ps'} #{pdfpath+'.pdf'}`
+
+      date_of_file = /201\d{5}/.match(@page.date)[0]
+      Ubr::Point.new(@waku_waku ,date_of_file ).save
+      `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot app/models/ubr/point_to_gif.def)`
     end
 
     def initialize(args={ :macros => [:rectangre,:centering,:right], 
@@ -69,14 +75,10 @@ module Ubr
       super
 
       @shukushaku = 1.0/( args[:Shukushaku] || Shukushaku)
-      @waku_waku     = Waku.waku(true) #load_from_master
-      LotList.lotlist(true)
-
+      @waku_waku     = Waku.waku#(true) #load_from_master
+      #LotList.lotlist(true)
       @filename = open(Ubr::Lot::SCMFILEBASE).gets.chop rescue nil
-      @date = @filename || LotList.lotlist.list.map{ |id,lot| lot.packed_date}.max
-      date_of_file = /201\d{5}/.match(@filename)[0]
-      Ubr::Point.new(@waku_waku ,date_of_file ).save
-      `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot app/models/ubr/point_to_gif.def)`
+      @date = @filename #||  LotList.lotlist.list.map{ |id,lot| lot.packed_date}.max
     end
 
     def to_gif(filepath)
@@ -253,18 +255,16 @@ module Ubr
                    waku.kawa_suu > 2 ? [waku.delta_xy.x*2,waku.masu_xy.y*0.99] :
                      [waku.delta_xy.x,waku.masu_xy.y*0.99]
                  end 
-        angle = 0
       when :D14,:DN,:D11
         offset = waku.kawa_suu > 2 ? [waku.masu_xy.x*0.9,waku.delta_xy.y*3.1]:
           [waku.masu_xy.x*0.9,waku.delta_xy.y*3.1] 
-        angle = 270
       when :UN ,:U14,:U11; 
         offset = waku.kawa_suu > 2 ? [waku.masu_xy.x*0.9,waku.delta_xy.y]: [waku.masu_xy.x*0.9,0]
-        angle = 270
-      else ;offset = [0,0];angle = 0
+      else ;offset = [0,0]
       end
       
-      moveto(waku.waku_xy(base_point) + offset).gsave_restore{ rotate(angle).string(weight,:point => 1.6,:font => "/Courier-Bold")}
+      moveto(waku.waku_xy(base_point) + offset).
+        gsave_restore{ rotate(waku.angle).string(weight,:point => 1.6,:font => "/Courier-Bold")}
       nl
       self
     end

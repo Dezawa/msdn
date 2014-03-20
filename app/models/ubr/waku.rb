@@ -32,12 +32,13 @@ class Waku < ActiveRecord::Base
     ["→","S"] => :VS, ["←","S"] => :VS
   }
 
-  attr_accessor  :enable,:kawa_suu,:direction,:aria
+  attr_accessor  :enable,:kawa_suu,:direction,:aria,:angle
   
   attr_writer :lot_list,:pos_xy
 
   def after_find
     @lot_list = []
+    @angle = %w(→ ←).include?(direct_to) ? 0 : 270
   end
 
   def self.waku(reload=false)
