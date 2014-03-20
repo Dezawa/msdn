@@ -40,18 +40,4 @@ class Ubr::PillarController <  Ubr::Controller
     super
   end
 
-  def ddindex
-    if params[:prefix]
-      @FindOption = {:conditions => "name like '#{params[:prefix]}%'" } #,params[:prefix] ]    }
-    end
-    super
-  end
-
-  def show ;
-    @model = @Model.find(params[:id])
-    @assosiations = @model.souko_floor_souko_plans #send(@association)
-    #@AssosiationLabels = AssosiationLabels
-    super
-  end
-
 end
