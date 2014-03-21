@@ -31,7 +31,9 @@ class Ubr::SoukoPlanController <  Ubr::Controller
     @ThroughTable = Ubr::SoukoFloorSoukoPlan
     @assosiation = :souko_floor_souko_plans
     @TYTLE = "UBR：PDFページ管理"
-    @AfterIndexHtml = "<p>描画原点：X,Y： 紙の左上からの mm"
+    @AfterIndexHtml = "<p>描画原点：X,Y： 紙の左上からの mm
+    <br>
+    集計書き出し　：描画原点からの mm"
     @Links = Links
     @Domain= @Model.name.underscore
     @SortBy    = :name
