@@ -31,9 +31,9 @@ class Ubr::WallController <  Ubr::Controller
     @Domain= @Model.name.underscore
     @SortBy    = :souko_floor_id
     @FindOption = { :order => "souko_floor_id"}
-    @Show = true
+    #@Show = true
     @Delete = @editor
-    #@Edit =   @editor
+    @Edit =   @editor
     @TableEdit  =  [[:add_buttom,:dmy,:dmy],[:form,:edit_on_table,"編集"],
                     [:form,:csv_out,"CSVダウンロード"],
                     [:csv_up_buttom,:dmy,:dmy]]  
