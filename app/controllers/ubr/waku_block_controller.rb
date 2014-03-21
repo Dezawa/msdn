@@ -24,7 +24,6 @@ class Ubr::WakuBlockController <  Ubr::Controller
     @TYTLE = "UBR：枠ブロック"
     @Links = Links
     @Domain= @Model.name.underscore
-logger.debug(@Domain)
     @SortBy    = :souko
     @Delete = @editor
     @Edit =   @editor
@@ -33,7 +32,7 @@ logger.debug(@Domain)
                     [:csv_up_buttom,:dmy,:dmy]] 
     @FindOption ={:order => "souko,content,max"}
     @CSVatrs = Labels.map{|lbl| lbl.symbol}
-    @CSVlabels= Labels.map{|lbl| lbl.label}
+    @CSVlabels= Labels.map{|lbl| lbl.symbol}
     super
   end
 
