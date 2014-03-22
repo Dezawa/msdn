@@ -31,6 +31,7 @@ class Ubr::WakuController <  Ubr::Controller
     @CSVatrs = Labels.map{|lbl| lbl.symbol}
     @CSVlabels= Labels.map{|lbl| lbl.label}
     @Select = session[@Domain + "_select"] || "1A"
+    @FindOption = {:conditions => ["name like ?",@Select] } #,params[:prefix] ]    }
     super
   end
 
@@ -42,10 +43,4 @@ class Ubr::WakuController <  Ubr::Controller
     @FindOption = {:conditions => ["name like ?",@Select] } #,params[:prefix] ]    }
     super
   end
-  def edit_on_table
-    @Select = session[@Domain + "_select"]    
-    @FindOption = {:conditions => ["name like ?",@Select] } #,params[:prefix] ]    }
-    super
-  end
-
 end
