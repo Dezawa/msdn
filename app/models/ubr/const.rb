@@ -1,27 +1,29 @@
 # -*- coding: utf-8 -*-
+
+# lotの検索のとき、引き合いがあるものもとるか、引き合いがないものをとるか、
+# を指定する場合に用いる。
 WithoutPull = true
 WithPull    = false
-StatFont = [[Postscript::Gothic,1.4],[Postscript::Bold,1.8],[Postscript::Gothic,1.4]]
 
+# 図表示上の統計（総量、穴数の集計）の表示に用いるフォントのセット
+# あまり意味なかったな
+StatFont = [[Postscript::Gothic,1.4],[Postscript::Bold,1.8],[Postscript::Gothic,1.4]]
 
 module Ubr::Const
 
   SCM_stock_stat_FILEBASE = File.join(RAILS_ROOT,"tmp","ubr","SCM_stock_stat")
 
-  Suuro2Retu = %w(2C2Z 2D1Z 1B4Z 1B2Z 1A2Z)
   @dir= File.dirname(__FILE__)
-  if /www/ =~ @dir
     $LOAD_PATH << @dir
     MasterDir =  @dir
-  else
-    $LOAD_PATH << File.join(File.dirname(__FILE__),"../System") << "~/lib/ruby"
-    MasterDir =  File.join(@dir,"../System/Master")
-  end
 
+  # ワンウェイなフレコンを用いる銘柄。
+  # 占有桝数を計算する時に用いる。
   Oneways = %w(G123DC700V------F7 G123DC6061------F7 
                G123DC820------F7 G123DC830------F7 
                G123DC720------F7 G123DZ691------F7)
 
+  # 2号倉庫のコンベレーターの座標。 これ Wallに移すべきかも
 Converator = [[80.7,30.5],[80.7,32.5],[83.7,32.5],[83.7,30.5],[80.7,30.5]]
 
 
