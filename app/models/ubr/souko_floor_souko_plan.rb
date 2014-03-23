@@ -9,6 +9,8 @@
 module Ubr
 
   # １ページに記載する倉庫の定義
+  #   SoukoPlanとSoukoFloorをつなぐ 結合Tableである
+  #
   #   name          : 単にID
   #   offset        : 紙原点からの印刷原点の相対位置 単位はこれのみ mm
   #   floor_offset  : ofsetからの倉庫平面図の相対位置 単位 m。
