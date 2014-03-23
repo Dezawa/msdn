@@ -33,7 +33,12 @@ class Ubr::SoukoPlanController <  Ubr::Controller
     @TYTLE = "UBR：PDFページ管理"
     @AfterIndexHtml = "<p>描画原点：X,Y： 紙の左上からの mm
     <br>
-    集計書き出し　：描画原点からの mm"
+    集計書き出し　：描画原点からの mm
+    <br>
+    <br>統計出力枠名：総量などを出力する倉庫名を\" \"(空白)で区切って並べる
+    <br>統計出力枠抽出：その倉庫名に出力する枠を選択するための正規表現式をを\" \"(空白)で区切って並べる
+    <br>　　　　　　例：^5[JIK]　   ^5：枠名の先頭文字は5。[JIK]：次の文字は JIKのどれか
+"
     @Links = Links
     @Domain= @Model.name.underscore
     @SortBy    = :name
