@@ -1,18 +1,21 @@
 # -*- coding: utf-8 -*-
 # 
 # SoukoPlan  １ページに記載する倉庫の定義
-#   SoukoFloor  倉庫   
+#      1:多 
+#   SoukoFloor  倉庫各フロアーの定義
+#       1:多
 #     WakuBlock  枠の塊  1A2 とか 3F2 とか
+#         関連は用いない。
 #       Waku       枠
 # 
 # 
 module Ubr
 
   # １ページに記載する倉庫の定義
-  #   name          : 単にID
-  #   offset        : 紙原点からの印刷原点の相対位置 単位はこれのみ mm
-  #   floor_offset  : ofsetからの倉庫平面図の相対位置 単位 m。
-  #   floor         : このページに出力する SoukoFloorの配列
+  #   name              : 紙に表示されるタイトルになる
+  #   offset_x,_y       : 紙原点からの印刷原点の相対位置の相対位置 単位 mm。
+  #   このアプリで用いる長さの単位は、この二組以外はすべて 実寸での m(メートル）
+  # このページに表示する倉庫群は 結合Table SoukoFloorSoukoPlan で定義する
   class SoukoPlan  < ActiveRecord::Base
     extend Function::CsvIo
     set_table_name :ubr_souko_plans
@@ -34,13 +37,7 @@ module Ubr
     @@SoukoPlan = [] # ]Hash.new{ |h,k| h[k]=[]}
 
     def self.plans
-      #return @@SoukoPlan if @@SoukoPlan.size >0 
-@@SoukoPlan = self.all
-      ##SP.each{ |souko_group| @@SoukoPlan [souko_group[:name]] = self.new(souko_group) }
-      #Ubr::Const::SP.each{ |souko_group| 
-      #  @@SoukoPlan << [souko_group[:name], self.new(souko_group),souko_group[:landscape]] 
-      #}
-      #@@SoukoPlan
+      @@SoukoPlan = self.all
     end
 
     def show
