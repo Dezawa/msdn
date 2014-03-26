@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 module Ubr
+  # 倉庫各フロアーの平面図定義
+  # どのページに表示するかは 結合Table SoukoFlooSouko_plan にて
+  #  ページ上のoffsetと共に指定する。
   class SoukoFloor < ActiveRecord::Base
     extend Function::CsvIo
     include Ubr::Const
@@ -25,7 +28,9 @@ module Ubr
     def max         ;  waku_blocks.map(&:max)         ; end
     def label_pos   ;  waku_blocks.map(&:label_pos)   ; end
     def base_points ;  waku_blocks.map(&:base_point)  ; end
-  
+
+    # SoukoFloorController#showにて、倉庫の平面図をgifで表示するが
+    # そのgifを作る
     def show
       Waku.waku(true)
       page = Ubr::Occupy.new({ :macros => [:rectangre,:centering,:right], 
