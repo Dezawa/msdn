@@ -9,7 +9,7 @@ class Ubr::WakuTest < ActiveSupport::TestCase
     @Waku    = Ubr::Waku.waku true #load_from_master
     @waku    = @Waku[Waku]
     @Lotlist = Ubr::LotList.
-      lotlist(true,:file => File.join(RAILS_ROOT,"test/testdata/SCM在庫一覧.csv"))
+      lotlist(true,:file => File.join(RAILS_ROOT,"test/testdata/SCMstocklist.csv"))
 #puts "@Lotlist.size=#{@Lotlist.size}"
   end
 
@@ -31,22 +31,32 @@ class Ubr::WakuTest < ActiveSupport::TestCase
   end
 
   must "通路枠は" do
-    assert_equal 53,Ubr::Waku.tuuro.size
+    assert_equal 54,Ubr::Waku.tuuro.size
     assert_equal [
                   "0AZZ", "0CZZ", "0DZZ", "0EZZ", "0FZZ",
                   "1A2Z", "1A3Z", "1B2Z", "1B3Z", "1B4Z", "1B5Z", "1ZZZ",
                   "2C2Z", "2D1Z", "2D2Z", "2E3Z", "3F1Z", "3F2Z",
-                  "4G1Z", "4H1Z", "4H2Z", "5I1Z", "5J1Z", "5L1Z","6O1Z", "6O2Z", 
-                  "7AZZ", "7BZZ", "7CZZ", "7DZZ", "7IZZ", "7JZZ", "7KZZ", "7NZZ", "7PZZ", "7SZZ", "7TZZ", "7UZZ",
-                  "7ZZZ",
-                  "9G2Z", "9G3Z", "9G4Z", "9G5Z", "9JZZ", "9L1Z", "9L2Z", "9L3Z", "9L4Z", "9L5Z", "9L6Z", "9L7Z",
+                  "4G1Z", "4H1Z", "4H2Z", "5I1Z", "5J1Z", "5K1Z", "5L1Z","6O1Z", "6O2Z", 
+                  "7AZZ", "7BZZ", "7CZZ", "7DZZ", "7IZZ", "7JZZ", "7KZZ", "7NZZ", 
+                  "7PZZ", "7SZZ", "7TZZ", "7UZZ", "7ZZZ",
+                  "9G2Z", "9G3Z", "9G4Z", "9G5Z", "9JZZ", 
+                  "9L1Z", "9L2Z", "9L3Z", "9L4Z", "9L5Z", "9L6Z", "9L7Z",
                   "9L8Z", "9LZZ"
                  ],Ubr::Waku.tuuro.map(&:name).sort
     assert_equal ["2C2Z", "2D1Z", "2D2Z"],Ubr::Waku.tuuro(1).map(&:name).sort
     assert_equal ["2C2Z", "2D1Z", "2D2Z", "2E3Z"],Ubr::Waku.tuuro(/^2/).map(&:name).sort
     assert_equal ["2C2Z", "2D1Z", "2D2Z"],Ubr::Waku.tuuro("2号倉庫").map(&:name).sort
   end
-
+  
+  wakus = %w(1A2C 1B5M 2C3C )
+  #        [WithPull,WithoutPull,OnlyExport,無指定]
+  lotsize = [[2,1,1,2],[9,8,1,9],[2,0,1,2]]
+  paletsize=[[30,27,3,30],[68,65,3,68],[39,0,12,39]]
+  weights  =[[28875,26400,2475,28875],[64925,61925,3000,64925],[38650,0,12000,38650]]
+  occupied =[[10,9,1,10],[34,32,1,34],[13,0,4,13]] 
+  #  [空き,引き合い,引き合い無,過剰]
+  used_map = [[0,1,9,0],[0,0,0,5],[0,10,0,0]]
+  #                       ↑パレット ZZZZは1段積み扱い。14パレット-5=9余分
   must "#{Waku}のロット" do
     #pp @Lotlist
     assert_equal ["B3381", "B3388"],@waku.lot_list( WithPull).map(&:lot_no)
@@ -54,21 +64,52 @@ class Ubr::WakuTest < ActiveSupport::TestCase
     assert_equal ["B3381", "B3388"],@waku.lot_list.map(&:lot_no)
   end
 
-  must  "#{Waku}の重量" do 
-    assert_equal 28875,@waku.weight( WithPull)
-    assert_equal 26400,@waku.weight( WithoutPull)
-    assert_equal 28875,@waku.weight
-  end
-  must  "#{Waku}のパレット数" do 
-    assert_equal 30,@waku.paret_su( WithPull)
-    assert_equal 27,@waku.paret_su( WithoutPull)
-    assert_equal 30,@waku.paret_su
-  end
-  must  "1B5Mのパレット数" do 
-    assert_equal 68,@Waku["1B5M"].paret_su( WithPull)
-    assert_equal 65,@Waku["1B5M"].paret_su( WithoutPull)
-    assert_equal 68,@Waku["1B5M"].paret_su
-  end
+  wakus.zip(lotsize).each{ |waku,size|
+    must  "#{waku}のlot_list" do 
+      @waku1    = @Waku[waku]           
+      assert_equal size[0],@waku1.lot_list( WithPull).size    , "#{waku}のlot_list WithPull"    
+      assert_equal size[1],@waku1.lot_list( WithoutPull).size , "#{waku}のlot_list WithoutPull" 
+      assert_equal size[2],@waku1.lot_list( OnlyExport).size  , "#{waku}のlot_list OnlyExport"  
+      assert_equal size[3],@waku1.lot_list.size               , "#{waku}のlot_list all"         
+    end
+  }
+
+  wakus.zip(weights).each{ |waku,size|
+    must  "#{waku}の重量" do 
+      @waku1    = @Waku[waku]     
+      assert_equal size[0],@waku1.weight( WithPull)     , "#{waku}の重量 WithPull"    
+      assert_equal size[1],@waku1.weight( WithoutPull)  , "#{waku}の重量 WithoutPull" 
+      assert_equal size[2],@waku1.weight( OnlyExport)    , "#{waku}の重量 OnlyExport"  
+      assert_equal size[3],@waku1.weight                , "#{waku}の重量 all"         
+    end
+  }
+  wakus.zip(paletsize).each{ |waku,size|
+    must  "#{waku}のパレット数" do 
+      @waku1    = @Waku[waku]           
+      assert_equal size[0],@waku1.paret_su( WithPull)       , "#{waku}のパレット数 WithPull"    
+      assert_equal size[1],@waku1.paret_su( WithoutPull)    , "#{waku}のパレット数 WithoutPull" 
+      assert_equal size[2],@waku1.paret_su( OnlyExport)      , "#{waku}のパレット数 OnlyExport"  
+      assert_equal size[3],@waku1.paret_su                  , "#{waku}のパレット数 all"         
+    end
+  }
+
+  wakus.zip(occupied).each{ |waku,size|
+    must  "#{waku}の占有数" do 
+      @waku1    = @Waku[waku]           
+      assert_equal size[0],@waku1.occupied( WithPull)       , "#{waku}の占有数 WithPull"    
+      assert_equal size[1],@waku1.occupied( WithoutPull)    , "#{waku}の占有数 WithoutPull" 
+      assert_equal size[2],@waku1.occupied( OnlyExport)     , "#{waku}の占有数 OnlyExport"  
+      assert_equal size[3],@waku1.occupied                  , "#{waku}の占有数 all"         
+    end
+  }
+
+  wakus.zip(used_map).each{ |waku,size|
+    must  "#{waku}の占有数" do 
+      @waku1    = @Waku[waku]           
+      assert_equal [size],@waku1.used_map       , "#{waku}のused_map"    
+    end
+  }
+
   must "空？" do
     assert !@waku.empty?( WithoutPull)
     assert !@waku.empty?( WithPull)
@@ -148,7 +189,7 @@ class Ubr::WakuTest < ActiveSupport::TestCase
       end
   }
 
-  [ [0,7],[1,3],[2,2],[3,3],[4,2],[5,2],[6,1],[7,1], [8,5]].
+  [ [0,7],[1,3],[2,2],[3,3],[4,3],[5,2],[6,1],[7,1], [8,5]].
     each{ |idx,num_of_tuuro|
     msg = "IDX #{idx} #{Ubr::Waku::Aria[idx].first} の通路枠数" 
     must msg do

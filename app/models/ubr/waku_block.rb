@@ -11,7 +11,7 @@ class Ubr::WakuBlock < ActiveRecord::Base
   belongs_to  :souko_floor,:class_name => "Ubr::SoukoFloor"
 
   def self.[](key)
-    self.find(:all,:conditions => ["souko = ?",key])
+    self.find(:all,:conditions => ["souko_floor_id = ?",key])
   end
 
   def base_point  ; [base_point_x||0.0  ,base_point_y||0.0 ]  ;end

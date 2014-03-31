@@ -4,6 +4,9 @@
 # を指定する場合に用いる。
 WithoutPull = true
 WithPull    = false
+OnlyExport  = :export # 出荷,輸出のみ
+AllPull     = false
+Export      = :export
 
 # 図表示上の統計（総量、穴数の集計）の表示に用いるフォントのセット
 # あまり意味なかったな

@@ -6,13 +6,40 @@ class Ubr::LotTest < ActiveSupport::TestCase
   # Replace this with your real tests.
   def setup
       @Waku    = Ubr::Waku.all#waku(true) #load_from_master
-      @lotlist = Ubr::LotList.lotlist(true,:file => File.join(RAILS_ROOT,"test","testdata","SCM在庫一覧.csv")).list
+      @lotlist = Ubr::LotList.lotlist(true,:file => File.join(RAILS_ROOT,"test","testdata","SCMstocklist.csv")).list
   end
+  ids = 
+      [ ["G123DC700V------F7","630314","1","-"],
+        ["G123B022--------F7","23018","1","-"],
+        ["G123YFC20H------F7","392905","1","-"],
+        ["G123QX----B16---N3","5219","Z","-"]
 
-  must "枠数" do
-    assert_equal 2090,@Waku.size
-  end
+      ]     #出荷、以外、非pull
+    segs = [ [1,0,1],
+              [1,0,2],
+             [0,1,1],
+             [0,3,2]
+            ]
+  ids.zip(segs).each{ |id,seg|
+    all = with = seg[0]+seg[1]+seg[2]
+    without    = seg[2]
+    export     = seg[0]
+    must "lot_no #{id[1]}の seg数は" do 
+      assert_equal all,@lotlist[id].segments.size
+    end
 
+    must "lot_no  #{id[1]}の Without seg数は" do 
+      assert_equal without,@lotlist[id].segments(WithoutPull).size
+    end
+
+    must "lot_no  #{id[1]}の With seg数は" do 
+      assert_equal with,@lotlist[id].segments(WithPull).size
+    end
+
+    must "lot_no  #{id[1]}の 出荷 seg数は" do 
+      assert_equal export,@lotlist[id].segments(:export).size
+    end
+  }
   must "ロット数" do
     assert_equal 1624,@lotlist.size
   end

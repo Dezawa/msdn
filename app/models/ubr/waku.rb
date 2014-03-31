@@ -59,7 +59,7 @@ class Waku < ActiveRecord::Base
     end
   end
 
-  def self.tuuro(idx_or_name=nil,withoutpull=true)
+  def self.tuuro(idx_or_name=nil,withoutpull=WithoutPull)
     case idx_or_name
     when nil
       waku.values.select{ |w| /Z$/ =~ w.name } 
@@ -160,17 +160,23 @@ class Waku < ActiveRecord::Base
     }
   end
 
+  # without_pull には、WithoutPull、WithPull、OnlyExport が来る
   ######## Ube::Lotとの関連
-  def lot_list(without_pull = false)
+  def lot_list(without_pull = WithPull)
     return @lot_list unless without_pull
-    @lot_list.select{|seg| !seg.pull? }
+    @lot_list.select{|seg| 
+      case without_pull
+      when OnlyExport ; /出荷/ =~ seg.pull
+      else            ; seg.pull == ""
+      end
+    }
   end
 
-  def paret_su(without_pull = false)
+  def paret_su(without_pull = WithPull)
     lot_list(without_pull).inject(0){|sum,seg| sum + seg.paret_su}
   end
 
-  def empty?(without_pull = false) ; 
+  def empty?(without_pull = WithPull) ; 
     without_pull ? lot_list.select{ |seg| !seg.pull? && /Z$/ !~ name }.size == 0 :
       lot_list.select{ |seg| /Z$/ !~ name }.size == 0
   end
@@ -178,7 +184,7 @@ class Waku < ActiveRecord::Base
   end
   def remove(lot_segment);    @lot_list.delete(lot_segment) ;  end
 
-  def weight(without_pull = false)
+  def weight(without_pull = WithPull)
     lot_list(without_pull).inject(0){|wt,segment| wt + segment.weight }
   end
 
@@ -248,7 +254,7 @@ class Waku < ActiveRecord::Base
   #   これにパレットの 1面を加え、1tonパレット3段だと3x9=27面となる。
   #   8面積みパレットが1or2段ある上に乗せる場合も合わせて24面を上限とする。
   #   計算は「24で除して繰り上げ」で済ませる。
-  def occupied(without_pull = false)
+  def occupied(without_pull = WithPull)
     # 1段～3段積み桝でまだ残っている数
     remain = [ 0,dan1,dan2,dan3] 
 
@@ -264,7 +270,7 @@ class Waku < ActiveRecord::Base
     masu_need
   end
 
-  def lot_sort_by_packed(without_pull=false)
+  def lot_sort_by_packed(without_pull=WithPull)
     sort_by_packed = lot_list(without_pull).sort_by{ |seg| seg.lot.packed_date}
     lot_paper_le_1ton  = 
       sort_by_packed.select{ |seg| seg.count <= 40 &&  /^N/ =~ seg.lot.keitai }
@@ -517,22 +523,22 @@ class Waku < ActiveRecord::Base
 
 
   ## stat
-  def self.tuuro_used(idx_or_name=nil,withoutpull=true)
+  def self.tuuro_used(idx_or_name=nil,withoutpull=WithoutPull)
     tuuro(idx_or_name,withoutpull).select{ |waku| waku.weight > 0}
   end
 
-  def self.tuuro_weight_wakusuu(idx_or_name=nil,withoutpull=true)
+  def self.tuuro_weight_wakusuu(idx_or_name=nil,withoutpull=WithoutPull)
     [(tuuro_used(idx_or_name,withoutpull).inject(0){ |w,waku| w += waku.weight(withoutpull)}*0.001).to_i,
      tuuro_used(idx_or_name,withoutpull).count]
   end
 
  
-  def self.weight_of_aria(idx_or_name,without_pull = false)
+  def self.weight_of_aria(idx_or_name,without_pull = WithPull)
     #                  ↓ inactiveな枠でも集計
     aria(idx_or_name,false).inject(0){ |weight,waku| weight + waku.weight(without_pull)}
   end
 
-  def self.empty(idx_or_name,without_pull = false)
+  def self.empty(idx_or_name,without_pull = WithPull)
     waku_list = 
       #(case idx_or_name
       # when Regexp
@@ -543,21 +549,21 @@ class Waku < ActiveRecord::Base
        #).select{ |waku| waku.empty?(without_pull) && /Z$/ !~ waku.name}
   end
 
-  def self.empty_by_masusuu(idx_or_name,masusuu,without_pull = false)
+  def self.empty_by_masusuu(idx_or_name,masusuu,without_pull = WithPull)
     emptys = empty(idx_or_name,without_pull)
     masusuu.map{ |masu| emptys.select{ |wk| wk.kawa_suu >= masu } }
   end
 
-  def self.empty_number_by_masusuu(idx_or_name,masusuu,without_pull = false)
+  def self.empty_number_by_masusuu(idx_or_name,masusuu,without_pull = WithPull)
     self.empty_by_masusuu(idx_or_name,masusuu,without_pull).map{ |lst| lst.size}
   end
 
-  def self.by_occupied(idx_or_name,without_pull = false)
+  def self.by_occupied(idx_or_name,without_pull = WithPull)
     waku_list = aria(idx_or_name).
       group_by{ |waku| waku.occupied(without_pull) }
   end
 
-  def self.by_volume_occupied(idx_or_name,without_pull = false)
+  def self.by_volume_occupied(idx_or_name,without_pull = WithPull)
     by_tuuro_or_not = aria(idx_or_name).group_by{ |waku| waku.tuuro? }
     
     pack_by_volum = by_tuuro_or_not[false].
@@ -573,7 +579,7 @@ class Waku < ActiveRecord::Base
     list
   end
 
-  def self.by_volume_occupied_org(idx_or_name,without_pull = false)
+  def self.by_volume_occupied_org(idx_or_name,without_pull = WithPull)
     pack_by_volum = aria(idx_or_name).
       group_by{ |waku| [ waku.volum3,waku.dan3,waku.dan2,waku.dan1] }
     list = { }

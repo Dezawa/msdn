@@ -7,7 +7,7 @@ class Ubr::SoukoTest < ActiveSupport::TestCase
   def setup
      Ubr::Waku.waku true # 複数回のsetupでlotが重複してしまう
     @lotlist = Ubr::LotList.
-      lotlist(true,:file => File.join(RAILS_ROOT,"test","testdata","SCM在庫一覧.csv")).list
+      lotlist(true,:file => File.join(RAILS_ROOT,"test","testdata","SCMstocklist.csv")).list
   end
 
   ### フレコン

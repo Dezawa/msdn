@@ -5,7 +5,7 @@ require 'pp'
 
 module Ubr
 
-WithoutPull = true
+#WithoutPull = true
 
 LotAttrs = [:grade,:meigara_code,:meigara,:lot_no,:count,
             :packed_date,:hasuukubun,:unit,:paret,:dmy
@@ -87,11 +87,18 @@ class Lot
     self
   end
 
-  def segments(without_pull=false)
-    without_pull ? @segments.dup.select{|seg| !seg.pull?} : @segments
+  # without_pull :: true     : 引き合い無いもの 
+  #              :: :export  : 出荷
+  #              :: false,nil: 引き合いあるもの
+ def segments(without_pull=WithPull)
+    case without_pull
+    when OnlyExport  ;  @segments.dup.select{|seg| seg.pull?(OnlyExport)}
+    when WithoutPull ;  @segments.dup.select{|seg| !seg.pull?}
+    else             ;  @segments.dup
+    end
   end
 
-  def to_csv(without_pull = false)
+  def to_csv(without_pull = WithPull)
     segments.sort_by{|seg| pp seg unless seg.waku
       seg.waku.name}.
       map{|seg| seg.to_csv(without_pull) }.compact.join("\n")
@@ -218,10 +225,15 @@ class LotSegment
     (paret_su.to_f/@lot.stack_limit).ceil    
   end
   def kazu ; count ;end #(@weight.to_f/@lot.meigara.housou.unit_weight).ceil ;end
-  def pull? ; @pull > "";end
-  
 
-  def to_csv(without_pull = false)
+  def pull?(exportonly = AllPull) 
+    case exportonly
+    when OnlyExport ; /出荷/ =~ @pull
+    else            ; @pull > ""
+    end
+  end
+
+  def to_csv(without_pull = WithPull)
     return nil if without_pull && pull?
     CSV.csvline(Attrs.map{|atr| send(atr)}) #unless ( without_pull && pull? )
   end
