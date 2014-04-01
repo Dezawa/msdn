@@ -197,20 +197,63 @@ class Waku < ActiveRecord::Base
 
   #  [空き,引き合い,引き合い無,過剰]
   def used_map
+    ary,masu = oppupied_map
+    destribute_ary(ary,masu)
+  end
+
+  # 過剰な量が無い場合                within <= masu
+  # |<---------  masu  --------->|
+  # |vacunt|<----  within ------>|     vacunt = masu - within
+  # |vacunt|    pull     |without|
+  # |vacunt|export|others|without|
+  #
+  # 過剰な量がある。pullまでは及ばない     pull <=   masu   < within
+  # |<----------  within ----------->|
+  # |    pull     |    fill0     |ovr|  ovr = within - masu
+  # |export|others|<--- without ---->|
+  # |export|others|    fill  |ovr|      fill = masu - (pull+ovr)
+  #
+  # 過剰な量がある。
+  #  pullまでは及ばないものの、ovr表示が食い込む
+  # |<--------------  within --------------->|
+  # |       pull       |  fill0  |<---ovr--->|  ovr = within - masu
+  # | export  | others |<----- without ----->|  fill =  masu - (pull+ovr) < 0
+  # | export  |others|<---ovr--->|              others = masu - (export+ovr)
+  #
+  # 過剰な量がある。pullも過剰
+  # |<------------  within --------->|
+  # |                            | ovr|  ovr = within - masu
+  # |<-----------  pull ---------->|without|
+  # |<----export---->|others |ovr| 
+  #
+  # 過剰な量がある。exportも過剰
+  # |<------------------  within ------------------>|
+  # |<-----------------  pull ------------->|without|
+  # |<------------export------------>|others|without|
+  # |<----------export---------->|ovr|others|without|
+  def oppupied_map
     without = occupied(WithoutPull)  # 引き合い含まず
-    within  = occupied(WithPull) # 引き合い込み
+    within  = occupied(WithPull)     # 引き合い込み
+    export  = occupied(OnlyExport)   # 出荷
     if tuuro? # 通路のときはmasu数は無限なので、占有数だけあることにする
       masu     = within #.to_f/retusu).ceil 
     else
       masu     = kawa_suu * retusu
     end
     vacunt = [ masu - within,0].max
+    others = within - without-export
+    over   = [within - masu,0].max
+    fill   = without - over
     ary = [ vacunt,                                              # 空枠
-            [masu - vacunt - without,0].max,                    # 引き合い
-            without <= masu+1 ? [masu, without].min : 0,       # 埋まり
-            without >  masu+1 ? [without-1-masu,masu].min : 0] # 超過
-    ary[2] = masu - ary[3] if ary[3]>0                           # 埋まり
-    destribute_ary(ary,masu)
+            # 出荷の正味              過剰がwithout+引き合いでは収まらん
+            #[export - [over+over-without -(within - without - export),0].max ,
+            [export -  [over+over         -(within           - export),0].max,0].max ,
+            # 引き合いの正味              過剰がwithoutでは収まらん
+            [within - without - export - [over+over-without,0].max ,0].max,  # 引き合い
+            [without-over-over,0].max ,
+           [over,masu].min  # 超過
+          ] 
+    [ary,masu,without,within,within - without,within - without - export]
   end
 
   # ary（空き、埋まり、引き合い、溢れ） をretusu列に分ける
@@ -218,12 +261,12 @@ class Waku < ActiveRecord::Base
     masu ||= kawa_suu * retusu
     ary = arg_ary.dup
     k_suu = Array.new(retusu){ |a| a=masu/retusu} #kawa_suu}
-    aary = Array.new(retusu){ |a| a=[0,0,0,0]}
+    aary = Array.new(retusu){ |a| a=[0,0,0,0,0]}
     if tuuro? # 通路のときは複数列均等に分ける
       if retusu == 1
         aary[0] = ary
       else
-        (1..2).each{ |s|
+        (1..3).each{ |s|
           (0..retusu-2).each{ |r| 
             aary[r][s] = [k_suu[r],ary[s]/(retusu-r)].min
             ary[s]   -=  aary[r][s]
@@ -233,7 +276,7 @@ class Waku < ActiveRecord::Base
         }
       end
     else # 通常枠は複数列端から振り分ける
-      (0..3).each{ |s| 
+      (0..4).each{ |s| 
         (0..retusu-1).each{ |r| 
           aary[r][s] = [k_suu[r],ary[s]].min
           ary[s]   -=  aary[r][s]
