@@ -230,13 +230,13 @@ class Hospital::Nurce < ActiveRecord::Base
 
   def busho_name ; busho ? busho.name : ""          ;end
   def pre_busho_name ; pre_busho ? pre_busho.name : "" ; end
-  def idou_name ; (a=Hospital::Const::Idou.rassoc(idou)) ? a.first : "";end
-  def shokui_name; (a=Hospital::Const::Shokui.rassoc(shokui_id)) ? a.first : "";end
-  def pre_shokui_name; (a=Hospital::Const::Shokui.rassoc(pre_shokui_id)) ? a.first : "";end
-  def shokushu_name;(a=Hospital::Const::Shokushu.rassoc(shokushu_id)) ? a.first : "";end
-  def pre_shokushu_name;(a=Hospital::Const::Shokushu.rassoc(pre_shokushu_id)) ? a.first : "";end
-  def kinmukubun_name;(a=Hospital::Const::Kinmukubun.rassoc(kinmukubun_id)) ? a.first : "";end
-  def pre_kinmukubun_name;(a=Hospital::Const::Kinmukubun.rassoc(pre_kinmukubun_id)) ? a.first : "";end
+  def idou_name ; (a=Idou.rassoc(idou)) ? a.first : "";end
+  def shokui_name; (a=Shokui.rassoc(shokui_id)) ? a.first : "";end
+  def pre_shokui_name; (a=Shokui.rassoc(pre_shokui_id)) ? a.first : "";end
+  def shokushu_name;(a=Shokushu.rassoc(shokushu_id)) ? a.first : "";end
+  def pre_shokushu_name;(a=Shokushu.rassoc(pre_shokushu_id)) ? a.first : "";end
+  def kinmukubun_name;(a=Kinmukubun.rassoc(kinmukubun_id)) ? a.first : "";end
+  def pre_kinmukubun_name;(a=Kinmukubun.rassoc(pre_kinmukubun_id)) ? a.first : "";end
 
   def monthly(month=nil)
     return @monthly if @monthly && ( @monthly.month == month || !month)
