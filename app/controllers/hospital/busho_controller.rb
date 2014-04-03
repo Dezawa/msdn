@@ -11,7 +11,7 @@ class Hospital::BushoController < Hospital::Controller
     @labels= [HtmlText.new(:name,"部署名")
              ]
     @AfterIndex = :hospital_define
-    @LabelsDefine = [ HtmlText.new(:name,"項目",:ro=>true),HtmlHidden.new(:attribute,"隠し",:ro=>true),
+    @LabelsDefine = [ HtmlText.new(:name,"項目",:ro=>true),HtmlHidden.new(:attri,"隠し",:ro=>true),
                      HtmlText.new(:value,"値",:ro=>true) ,HtmlText.new(:comment,"コメント",:ro=>true)
                    ]
     @ItemsDefine =
@@ -30,13 +30,13 @@ end
 
   def index
     @instances = Hospital::Define.all
-    regesterd = @instances.map(&:attribute)
+    regesterd = @instances.map(&:attri)
     need      = @ItemsDefine.map{ |l| l.symbol.to_s }
     lack = (need - regesterd)
     creeat = @ItemsDefine.map{ |label|
       if lack.include?(label.symbol.to_s)
          Hospital::Define.create( :name => label.label,
-                                  :attribute => label.symbol.to_s,
+                                  :attri => label.symbol.to_s,
                                   :comment   => label.comment
                                   )
       end
