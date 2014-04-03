@@ -203,6 +203,7 @@ Short_role_shift.each{|day,short_role_shift_of_day|
     @assign.night_mode =  true
     day = 1
     ready_for_day_reentrant = @assign.ready_for_day_reentrant(day)
+    expect(ready_for_day_reentrant[0]["2"].map{|c| c.map(&:id)}).to  eq []
     expect(ready_for_day_reentrant[0]["3"].map{|c| c.map(&:id)}).
       to eq [[51], [52], [46], [44], [43]]
   end

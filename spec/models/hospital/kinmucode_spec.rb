@@ -38,7 +38,7 @@ describe Hospital::Kinmucode do
       expect([@kinmucode.nenkyuu,@kinmucode.am,@kinmucode.pm,@kinmucode.night,
              @kinmucode.midnight,
              @kinmucode.am2,@kinmucode.pm2,@kinmucode.night2,@kinmucode.midnight2]).
-        to eq [nil, 0.5, 0.5, nil, nil,nil, nil, nil, nil]
+        to eq [0.0, 0.5, 0.5, 0.0, 0.0,0.0, 0.0, 0.0, 0.0]
     end
 
 

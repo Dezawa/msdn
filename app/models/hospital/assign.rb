@@ -728,7 +728,6 @@ class Hospital::Assign
   end # of case
 
   def array_merge(aryary)
-    pp aryary.map{|ns| ns.map(&:id)}
     return [] if aryary==[]
     maxsize = aryary.map{|ary| ary.size}.max
     merged = aryary[0]+[nil]*(maxsize-aryary[0].size)
@@ -904,7 +903,6 @@ class Hospital::Assign
       daily_checks[sft_str.to_i].each{|d|
         next if day+d > @lastday
         dbgout("FOR_DEBUG(#{__LINE__}) 長割後日チェック too_many?(#{day+d}日,shift:#{sft_str}) #{too_many?(day+d,sft_str)}")
-        pp [day,d,daily_checks,shift_str]
         case too_many?(day+d,sft_str)
         when -1 ; return false
         when 0

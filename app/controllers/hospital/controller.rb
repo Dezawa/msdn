@@ -59,6 +59,6 @@ class Hospital::Controller < ApplicationController
   end
   def set_busho
     set_busho_sub
-    redirect_to :action => :show_assign
+    redirect_to :action => :index #show_assign
   end
 end
