@@ -165,8 +165,8 @@ module HospitalHelper
 
     body =
       @ItemsDefine.map{ |item| sym = item.symbol.to_s
-      logger.debug "=== #{sym} #{@instances.map(&:attribute).join(',')}"
-      model = @instances.select{ |inst| inst.attribute == sym }.first
+      logger.debug "=== #{sym} #{@instances.map(&:attri).join(',')}"
+      model = @instances.select{ |inst| inst.attri == sym }.first
       "<tr>" +
       @LabelsDefine.map{ |label|
         next if label.class == HtmlHidden
