@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-class Hospital::Const
+module Hospital
+module Const
+  MultiSolution  = 2        #  3 複数解求める。最初の解も求める。これは save する
+  SingleSolution = 1        #  1 解を一つだけ求める
+  SecondAndLater = false    #  2 複数求めるが、最初の解は求めない。これは別のルーチンで求める
   class Selection
     attr_accessor :id,:name
     def initialize(id0,name0)
@@ -33,4 +37,5 @@ class Hospital::Const
   Timeout     = 2.minute
   TimeoutMult = 3.minute
   Sleep       = 30
+end
 end

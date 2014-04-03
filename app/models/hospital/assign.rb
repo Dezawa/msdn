@@ -128,6 +128,7 @@ LogPuts,LogDebug,LogInfo = 1,2,4
 #     Hospital::Assign
 class Hospital::Assign
   include Hospital::WhichPatern
+  include Hospital::Const
   delegate :logger, :to=> "ActiveRecord::Base"
   #delegate :breakpoint, :to=>"ActiveRecord::Base"
   attr_accessor :nurces,:needs,:count_role_shift,:nurce_assignd,:need_patern,:error,:roles
@@ -270,13 +271,13 @@ class Hospital::Assign
 
   # 複数解を求めるルーチン
   # 3つのケースがある
-  #  1 解を一つだけ求める
+  #  1 解を一つだけ求める                                          
   #  2 複数求めるが、最初の解は求めない。これは別のルーチンで求める
-  #  3 複数解求める。最初の解も求める。これは save する。
+  #  3 複数解求める。最初の解も求める。これは save する。           
   # single :: false,nil  case 2
   #        :: 2          case 3
-  #        :: 1          case 1
-  def assign_mult(single = false,day=1)
+  #        :: 1          case 1           
+  def assign_mult(single = SecondAndLater,day=1)
     basename = File.join( RAILS_ROOT,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
 
@@ -344,7 +345,7 @@ class Hospital::Assign
             if count == 0
               save
               dbgout("HP ASSIGN return single is #{single} #{single == 1}")
-              return true if single == 1
+              return true if single == SingleSolution
             end
           end
         end
@@ -461,7 +462,7 @@ class Hospital::Assign
     end
   end
   # shift分の再帰
-  def assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,single=false)
+  def assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,single=SecondAndLater)
     raise TimeoutError,"timed out"  if @limit_time < Time.now
     @entrant_count += 1
     # 長い割付が可能なら割り付ける
