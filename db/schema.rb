@@ -371,6 +371,7 @@ ActiveRecord::Schema.define(:version => 20140318003752) do
     t.integer  "limit_dryero"
     t.integer  "limit_dryern"
     t.boolean  "jun_only"
+    t.datetime "replan_from"
     t.date     "plan_from"
   end
 
