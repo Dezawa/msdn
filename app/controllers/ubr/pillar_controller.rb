@@ -20,7 +20,7 @@ class Ubr::PillarController <  Ubr::Controller
   def set_instanse_variable
     @labels= Labels
     #@AssosiationLabels= FloorLabels
-    @TableHeaderMulti = [4,[2,"開始位置"],[2,"間隔"],[2,"柱幅"]]
+    @TableHeaderDouble = [4,[2,"開始位置"],[2,"間隔"],[2,"柱幅"]]
     @Model = Ubr::Pillar
     #@ThroughTable = Ubr::SoukoFloorSoukoPlan
     #@assosiation = :souko_floor_souko_plans

@@ -19,7 +19,7 @@ class Ubr::SoukoFloorController <  Ubr::Controller
     
   def set_instanse_variable
     @labels= Labels
-    #@TableHeaderMulti = [2,[2,"枠名後半"],[2,"対倉庫相対位置"],[2,"ブロック名相対位置対ブロック"] ]
+    #@TableHeaderDouble = [2,[2,"枠名後半"],[2,"対倉庫相対位置"],[2,"ブロック名相対位置対ブロック"] ]
     @Model = Ubr::SoukoFloor
     @AssociationTable = Ubr::WakuBlock
     @AssosiationLabels = AssosiationLabels

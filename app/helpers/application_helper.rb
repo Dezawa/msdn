@@ -229,7 +229,7 @@ module ApplicationHelper
     }.compact.join
   end
 
-  def label_multi_lines(list)
+  def label_double_lines(list)
 
    row = "<tr>"
    lbl_idx=0
@@ -276,7 +276,7 @@ module ApplicationHelper
   end
 
   def label_line_option(size=2,labels=nil)
-    return label_multi_lines(@TableHeaderMulti) if @TableHeaderMulti
+    return label_double_lines(@TableHeaderDouble) if @TableHeaderDouble
     label_line_comm(size,labels)+
       case [ @Show,@Edit,deletable].compact.size
       when 3; "<td>　</td><td>　</td><td>　</td></tr>" 

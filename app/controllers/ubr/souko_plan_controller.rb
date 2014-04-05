@@ -26,7 +26,7 @@ class Ubr::SoukoPlanController <  Ubr::Controller
   def set_instanse_variable
     @labels= Labels
     @AssosiationLabels= FloorLabels
-    @TableHeaderMulti = [3,[2,"描画原点"],[4,"集計書き出し"],1]
+    @TableHeaderDouble = [3,[2,"描画原点"],[4,"集計書き出し"],1]
     @Model = Ubr::SoukoPlan
     @ThroughTable = Ubr::SoukoFloorSoukoPlan
     @assosiation = :souko_floor_souko_plans
