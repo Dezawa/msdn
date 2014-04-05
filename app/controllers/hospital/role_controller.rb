@@ -11,8 +11,9 @@ class Hospital::RoleController < Hospital::Controller
                   [:form,:show_assign,"所属メンバー"]]
     @Edit = true
     @Delete=true
-    @labels= [HtmlText.new(:name,"役割")
-
+    @labels= [HtmlText.new(:name,"役割"),
+              HtmlSelect.new(:bunrui,"分類",
+                             :correction => [["職位",1],["職種",2],["勤務区分",3],["資格",4]])
              ]
     @on_cell_edit = true
     super
@@ -28,7 +29,7 @@ class Hospital::RoleController < Hospital::Controller
      ]
 
   def show_assign
-    @roles  = Hospital::Role.all
+    @roles  = Hospital::Role.all(:conditions => "bunrui <> 3")
     @labels = AssignLabel 
     @nurces = Hospital::Nurce.by_busho(@current_busho_id)
     @TableEdit = [[:form,:assign,"編集"],

@@ -24,6 +24,9 @@ class Hospital::Nurce < ActiveRecord::Base
 
   set_table_name 'nurces'
   has_and_belongs_to_many :hospital_roles,:class_name => "Hospital::Role"
+  has_and_belongs_to_many :shokui,:class_name => "Hospital::Role",:conditions => "bunrui = 1"
+  has_and_belongs_to_many :shokushu,:class_name => "Hospital::Role",:conditions => "bunrui = 2"
+  has_and_belongs_to_many :kinmukubun,:class_name => "Hospital::Role",:conditions => "bunrui = 3"
   belongs_to :limit    ,:class_name => "Hospital::Limit"
   belongs_to :pre_busho,:class_name => "Hospital::Busho"
   belongs_to :busho    ,:class_name => "Hospital::Busho"
@@ -228,6 +231,10 @@ class Hospital::Nurce < ActiveRecord::Base
     all( option.merge({:conditions => ["busho_id = ?",busho_id]}))
   end
 
+  def shokui_id     ; shokui.first ? shokui.first.id         : nil ;end
+  def shokushu_id   ; shokushu.first ? shokushu.first.id     : nil ;end
+  def kinmukubun_id ; kinmukubun.first ? kinmukubun.first.id : nil ;end
+
   def busho_name ; busho ? busho.name : ""          ;end
   def pre_busho_name ; pre_busho ? pre_busho.name : "" ; end
   def idou_name ; (a=Idou.rassoc(idou)) ? a.first : "";end
@@ -413,7 +420,7 @@ def role_remain(recalc=false)
       hospital_roles.map{|role| [role.id,role.name]}.uniq #+ 
     #(shokui_id ? [shokui_id+100,shokui.name] : [])
   end
-  def role_ids   ; @role_ids ||= roles.map{ |r| r[0]};end #hospital_roles.map(&:id)  ; end
+  def role_ids   ; @role_ids ||= hospital_roles.map(&:id).uniq  ; end
 def roles_by_id
   @rolls_by_id ||= Hash[*roles.flatten]
 end

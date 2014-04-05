@@ -132,7 +132,7 @@ Items =
       sort_by{ |monthly| monthly.nurce_id}
     monthlies.each{ |monthly|
       nurce = Hospital::Nurce.find(monthly.nurce_id)
-      @sheet[ row,Items[:column_Shubetu]]  = Hospital::Const::Shokushu.rassoc(nurce.shokushu_id)[0]
+      @sheet[ row,Items[:column_Shubetu]]  = Hospital::Role.shokushu.rassoc(nurce.shokushu_id)[0]
       @sheet[ row,Items[:column_ward]]  = Hospital::Busho.find(nurce.busho_id).name
       @sheet[ row,Items[:column_nurce]]  = nurce.name
       sym = case nurce.kinmukubun_id
