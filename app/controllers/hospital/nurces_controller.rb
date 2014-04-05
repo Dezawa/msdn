@@ -75,16 +75,9 @@ class Hospital::NurcesController <  Hospital::Controller
     update_on
 
     @models.each{ |model|
-      shokui_id         = kanren_list[model.id][:shokui_id].to_i
-      shokushu_id       = kanren_list[model.id][:shokushu_id].to_i
-      kinmukubun_id     = kanren_list[model.id][:kinmukubun_id].to_i
-      if shokui_id > 0 && ( role = Hospital::Role.find(shokui_id))
-        model.shokui   = [ role ]
-      else
-        model.shokui   = []
-      end
-      model.shokushu = [Hospital::Role.find(shokushu_id)]
-      model.kinmukubun = [Hospital::Role.find(kinmukubun_id)]
+      model.shokui_id         = kanren_list[model.id][:shokui_id]
+      model.shokushu_id       = kanren_list[model.id][:shokushu_id]
+      model.kinmukubun_id     = kanren_list[model.id][:kinmukubun_id]
     }
     if @result
       #UbeMeigara.meigaras true

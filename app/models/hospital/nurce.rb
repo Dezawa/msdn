@@ -234,6 +234,30 @@ class Hospital::Nurce < ActiveRecord::Base
   def shokui_id     ; shokui.first ? shokui.first.id         : nil ;end
   def shokushu_id   ; shokushu.first ? shokushu.first.id     : nil ;end
   def kinmukubun_id ; kinmukubun.first ? kinmukubun.first.id : nil ;end
+  def shokui_id=(arg_id) 
+    if arg_id.blank? || !(role = Hospital::Role.find arg_id)
+      self.shokui=[]
+    else
+      self.shokui=[role]
+    end
+  end
+
+  def shokushu_id=(arg_id)
+      shokushu=[]
+    if arg_id.blank? || !(role = Hospital::Role.find arg_id.to_i)
+      self.shokushu=[]
+    else
+      self.shokushu=[role]
+    end
+  end
+
+  def kinmukubun_id=(arg_id) 
+    if arg_id.blank? || !(role = Hospital::Role.find arg_id)
+      self.kinmukubun=[]
+    else
+      self.kinmukubun=[role]
+    end
+  end
 
   def busho_name ; busho ? busho.name : ""          ;end
   def pre_busho_name ; pre_busho ? pre_busho.name : "" ; end
