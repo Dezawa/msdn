@@ -20,7 +20,9 @@ module Const
   TimeoutMult = 3.minute
   Sleep       = 30
 
-
+  Shift0 ,Shift1 ,Shift2 ,Shift3  = Shift0123 = [0,1,2,3]
+  Sshift0,Sshift1,Sshift2,Sshift3 = Sshift0123 = %w(0 1 2 3)
+  Sshift123  = %w(1 2 3)
     Cost = 
     [
      [], # 残り少なくなると急激にコストが上がる。タイトなroleを持つほどコストが上がる。

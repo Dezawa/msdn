@@ -62,10 +62,11 @@ class Hospital::Monthly < ActiveRecord::Base
       knm = @shift[day,1]
       current_kinmucode = days[day].kinmucode
       next if days[day].want && days[day].want>0
-      if id = Hospital::Kinmucode.from_0123(knm,kinmukubun_id)
+      if kinmucode_id = Hospital::Kinmucode.from_0123(knm,kinmukubun_id)
         #next if Hospital::Kinmucode.from_0123(knm,kinmukubun_id).
         #  include?(current_kinmucode.id)
-        days[day].kinmucode_id = id
+        days[day].kinmucode_id = kinmucode_id
+        logger.debug("Shift=#{knm},kinmucode_id=#{kinmucode_id},CODE=#{days[day].kinmucode.code}")
           #Hospital::Kinmucode.from_0123(knm,kinmukubun_id)
       else
         days[day].kinmucode_id = nil

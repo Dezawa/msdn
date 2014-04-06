@@ -10,11 +10,11 @@ class Hospital::NeedController < Hospital::Controller
     @Edit = true
     @Delete=true
     @labels= [
+              HtmlSelect.new(:role_id      ,"役割", :correction => Hospital::Role.names),
               HtmlSelect.new(:daytype     ,"曜日",   :correction => Hospital::Const::Daytype),
-              HtmlSelect.new(:role_id      ,"メンバーグループ", :correction => Hospital::Role.names),
-              HtmlSelect.new(:kinmucode_id ,"勤務コード",:correction => [1,2,3]),
-              HtmlText.new(:minimun      ,"最小人数", :size => 3),
-              HtmlText.new(:maximum      ,"最大人数", :size => 3,:event => true)
+                            HtmlSelect.new(:kinmucode_id ,"勤務コード",:correction => [1,2,3]),
+              HtmlText.new(:minimun      ,"最小", :size => 3),
+              HtmlText.new(:maximum      ,"最大", :size => 3,:event => true)
              ]
     super
 
@@ -22,7 +22,10 @@ class Hospital::NeedController < Hospital::Controller
     @TYTLE_post_edit  = @current_busho_id_name 
     @TYTLEpost = @current_busho_id_name 
     @on_cell_edit = true
-
+    @TableHeaderMulti =
+      [[3,[6,"平日"],[6,"土日休"]],
+       [3,[2,"日勤"],[2,"準夜"],[2,"深夜"],[2,"日勤"],[2,"準夜"],[2,"深夜"]]
+      ]
   end
 
 

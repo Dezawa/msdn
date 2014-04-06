@@ -8,7 +8,7 @@ class Hospital::Need < ActiveRecord::Base
   end
 
   def self.roles
-    @@roles ||= self.all(:conditions=>["minimun>0"]).map(&:role_id).uniq.sort
+    @@roles ||= self.all(:conditions => "minimun>0").map(&:role_id).uniq.sort
   end 
 
   def self.names

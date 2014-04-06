@@ -22,6 +22,7 @@
 require 'pp'
 class Hospital::Kinmucode < ActiveRecord::Base
   extend Function::CsvIo
+  include Hospital::Const
   set_table_name 'hospital_kinmucodes'
   #belongs_to :kinmukubun,:class_name => "Hospital::inmukubun"
   @@From_0123 = nil
@@ -75,6 +76,10 @@ class Hospital::Kinmucode < ActiveRecord::Base
     @@KCode[id] ||= self.find(id)
   end
 
+  def self.sanchoku
+    @@sanchoku ||= Hospital::Role.find_by_name("三交代").id
+  end
+
 
   # 割振りを休日準深勤務に応じ　0123　に置き換える。以外は　nil
   def to_0123
@@ -87,20 +92,20 @@ class Hospital::Kinmucode < ActiveRecord::Base
   #  これらは      L       M             N      O に置き換えられているはず
   def self.from_0123(shift,kinmukubun_id)
     #return @@from123[shift][kinmukubun_id] if  @@from123[shift][kinmukubun_id]
-
+    logger.debug("Shift=#{shift},kinmukubun_id=#{kinmukubun_id} #{ @@from123[shift].to_a.join(',')}")
     @@from123[shift][kinmukubun_id] ||=
       case shift
       when "2","3" ; return shift.to_i
       when "0"     ; return code(:Koukyu)
       when "L","M" ; 
-        return Hospital::Kinmucode.find_by_code_and_kinmukubun_id({"L"=>"L2","M"=>"L3"}[shift],2).id
+        return Hospital::Kinmucode.find_by_code_and_kinmukubun_id({"L"=>"L2","M"=>"L3"}[shift],sanchoku).id
       when "N","O" ; 
         code = {"N"=>"夜","O"=>"明"}[shift]
         #puts code
         return Hospital::Kinmucode.find_by_code(code).id
       when "1","5"
         value = From0123[shift] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        logger.debug("Kinmucode shift=#{shift} kinmukubun_id = #{kinmukubun_id}")
+        logger.debug("Kinmucode shift=#{shift} kinmukubun_id = #{kinmukubun_id} value=#{value.join(',')}")
         Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
                                                 " and nenkyuu=? and am=? and pm=? and "+
                                                 "night=? and midnight=? and am2=? and "+

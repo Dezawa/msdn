@@ -155,9 +155,9 @@ class Hospital::Nurce < ActiveRecord::Base
 
   Raguration_keys = { 
     true => 
-    (0..3).map{|shift| Reguration[true][shift].keys +  Wants[true][shift].keys },
+    (Shift0..Shift3).map{|shift| Reguration[true][shift].keys +  Wants[true][shift].keys },
     false => 
-    (0..2).map{|shift| Reguration[false][shift].keys +  Wants[false][shift].keys }
+    (Shift0..Shift2).map{|shift| Reguration[false][shift].keys +  Wants[false][shift].keys }
     }
 
   
@@ -176,29 +176,29 @@ class Hospital::Nurce < ActiveRecord::Base
 
   LongPatern = { 
     true => {
-      "3"=> [  # patern, reg, back,length,[調べるshift],[ [0の割り当て数見る日],[1の][2の],[3の]]
-            ["330"    , /^[^3M6][0_]_[3_][0_]/,2,5,["3"],[[2],[],[],[1]] ],
-            ["30"     , /^[2LM356]_[0_]/       ,1,3,["3"],[[1],[],[],[1]] ],
+      Sshift3 => [  # patern, reg, back,length,[調べるshift],[ [0の割り当て数見る日],[1の][2の],[3の]]
+            ["330"    , /^[^3M6][0_]_[3_][0_]/,2,5,[Sshift3],[[2],[],[],[1]] ],
+            ["30"     , /^[2LM356]_[0_]/       ,1,3,[Sshift3],[[1],[],[],[1]] ],
             ["3"      , /^_/,0,1,["3"],[[],[],[],[]]]
            ],
-      "2"=> [ #  patern, reg,                back,length,[調べるshift],[ [2の割り当て数見る日],[3の]]
-            ["220330" , /^[^2L5][0_]_[2_][0_][3_]{2}[0_]/,2,8,["3","2"],[[2,5],[],[1],[3,4]]
+      Sshift2 => [ #  patern, reg,                back,length,[調べるshift],[ [2の割り当て数見る日],[3の]]
+            ["220330" , /^[^2L5][0_]_[2_][0_][3_]{2}[0_]/,2,8,[Sshift3,Sshift2],[[2,5],[],[1],[3,4]]
             ],
-            ["220"    , /^[^2L5][0_]_[2_][0_]/,2,5,["2"],[[2],[],[1],[]] ],
-            ["20"     , /^[2L3M56]_[0_]/      ,1,3,["2"],[[1],[],[1],[]] ],
-            ["2"      , /^_/                 ,0,1,["2"],[[],[],[],[]]]
+            ["220"    , /^[^2L5][0_]_[2_][0_]/,2,5,[Sshift2],[[2],[],[1],[]] ],
+            ["20"     , /^[2L3M56]_[0_]/      ,1,3,[Sshift2],[[1],[],[1],[]] ],
+            ["2"      , /^_/                 ,0,1,[Sshift2],[[],[],[],[]]]
            ],
-       "1" => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
-             ["1"         , /^_/                 ,0,1,["1"],[[],[],[],[]]]
+       Sshift1 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
+             ["1"         , /^_/                 ,0,1,[Sshift1],[[],[],[],[]]]
             ]
        },
      false => { 
-       "2" => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
-             ["220"       , /^[^25][0_]_[2_][0_]/,2,5,["2"],[[2],[],[1],[]] ],
-             ["2"         , /^_/                 ,0,1,["2"],[[],[],[],[]]]
+       Sshift2 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
+             ["220"       , /^[^25][0_]_[2_][0_]/,2,5,[Sshift2],[[2],[],[1],[]] ],
+             ["2"         , /^_/                 ,0,1,[Sshift2],[[],[],[],[]]]
             ],
-        "1" => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]  
-             ["1"         , /^_/                 ,0,1,["1"],[[],[],[],[]]]
+        Sshift1 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]  
+             ["1"         , /^_/                 ,0,1,[Sshift1],[[],[],[],[]]]
              ]
       }     
 
@@ -217,7 +217,7 @@ class Hospital::Nurce < ActiveRecord::Base
        }
       ]
     @Wants = [{},{},{},{}] 
-    @Reguration_keys = (0..3).map{|shift| @Reguration[shift].keys + @Wants[shift].keys }
+    @Reguration_keys = (Shift0..Shift3).map{|shift| @Reguration[shift].keys + @Wants[shift].keys }
     [@Reguration ,    @Wants ,  @Reguration_keys] # retern for TDD
   end
 
@@ -319,7 +319,7 @@ class Hospital::Nurce < ActiveRecord::Base
     role_shift[day]=role_shift_of(sft_str)
     if /[0123]/ =~ sft_str
       shift_remain[sft_str] -= 1 
-      roles.each{|role_id,name| 
+      role_ids.each{|role_id| 
         role_used[[role_id,sft_str]] += 1
         role_remain[[role_id,sft_str]] -= 1
       }
@@ -388,9 +388,10 @@ class Hospital::Nurce < ActiveRecord::Base
   def assinable_roles
     return @assinable_roles if @assinable_roles
     @assinable_roles = Hash.new{|h,k| h[k]=0}
-    [ [:code1,"1"], [:code2,"2"], [:code3,"3"]].
+    [ [:code1,Sshift1], [:code2,Sshift2], [:code3,Sshift3]].
       each{|sym,sft_str|
       roles.each{|role_id,name| 
+        next unless Hospital::Need.roles.include?(role_id)
         @assinable_roles[[role_id,sft_str]] = limits[sym]
       }}
     @assinable_roles
@@ -411,12 +412,14 @@ class Hospital::Nurce < ActiveRecord::Base
 
   def role_used(recalc=false)
     return @role_used if @role_used && !recalc
+#pp role_ids
     @role_used=Hash.new{|h,k| h[k]=0}
 #    role_shift.each{|day_rs| day_rs.each{|rs| @role_used[rs] += 1}}
     [/[^0]/,/[^1478]/,/[^25]/,/[^36]/].each_with_index{|reg,shift|
       used = shifts.gsub(reg,"").size
       role_ids.each{|role| @role_used[[role,shift.to_s]] = used }
     }
+#pp @role_used
    @role_used
   end
 def role_remain(recalc=false)
@@ -430,10 +433,11 @@ def role_remain(recalc=false)
 
   def shift_remain(recalc=false)
     return @shift_remain if @shift_remain && !recalc
-    @shift_remain = Hash[*%w(0 1 2 3).
+    @shift_remain = Hash[*Sshift0123.
                          zip([limits.code0,limits.code1,limits.code2,limits.code3]).flatten]
     [ /[^0]/,  /[^1478]/ , /[^25]/ , /[^36]/].
-      each_with_index{|reg,shift| @shift_remain[shift.to_s] -= shifts.gsub(reg,"").size }
+      each_with_index{|reg,shift| 
+      @shift_remain[shift.to_s] -= shifts.gsub(reg,"").size }
     @shift_remain["0"] -= shifts.gsub(/[^9ABC]/,"").size*0.5
     @shift_remain["1"] -= shifts.gsub(/[^9ABC]/,"").size*0.5
     @shift_remain
@@ -444,10 +448,12 @@ def role_remain(recalc=false)
       hospital_roles.map{|role| [role.id,role.name]}.uniq #+ 
     #(shokui_id ? [shokui_id+100,shokui.name] : [])
   end
-  def role_ids   ; @role_ids ||= hospital_roles.map(&:id).uniq  ; end
-def roles_by_id
-  @rolls_by_id ||= Hash[*roles.flatten]
-end
+  def role_ids 
+    @role_ids ||= (hospital_roles.map(&:id).uniq & Hospital::Need.roles)
+  end
+  def roles_by_id
+    @rolls_by_id ||= Hash[*roles.flatten]
+  end
 
   def role?(rolename)
     roles[hospital_roles.find_by_name(rolename).id]
