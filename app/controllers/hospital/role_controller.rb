@@ -13,7 +13,8 @@ class Hospital::RoleController < Hospital::Controller
     @Delete=true
     @labels= [HtmlText.new(:name,"役割"),
               HtmlSelect.new(:bunrui,"分類",
-                             :correction => [["職位",1],["職種",2],["勤務区分",3],["資格",4]])
+                             :correction => [["職位",1],["職種",2],["勤務区分",3],["資格",4]]),
+              HtmlCheck.new(:need,"要否",:help => "Hospital#need")
              ]
     @on_cell_edit = true
     super
