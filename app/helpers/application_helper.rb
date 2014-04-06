@@ -221,10 +221,10 @@ module ApplicationHelper
     labels.map{|label| 
       unless label.class == HtmlHidden || label.class == HtmlPasswd || label.field_disable(controller)
         if label.link
-          "<td><nobr><a href='#{label.link}'>#{label.label}</a></nobr></td>" 
+          "<td><nobr><a href='#{label.link}'>#{label.label}</a></nobr>" 
         else
-          "<td><nobr>#{label.label}</nobr></td>" 
-        end
+          "<td><nobr>#{label.label}</nobr>" 
+        end +  help(label.help) + "</td>"
       end
     }.compact.join
   end
