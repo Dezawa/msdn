@@ -3,6 +3,14 @@ class Hospital::Need < ActiveRecord::Base
   extend Function::CsvIo
   set_table_name 'hospital_needs'
   
+  def self.need_roles
+    Hospital::Role.all(:conditions => "need = true") 
+  end
+
+  def self.roles
+    @@roles ||= self.all(:conditions=>["minimun>0"]).map(&:role_id).uniq.sort
+  end 
+
   def self.names
     all.map{|obj| [obj.name,obj.id]}
   end
@@ -27,11 +35,6 @@ class Hospital::Need < ActiveRecord::Base
   def self.combination2
         @@combination2 ||= make_combination2
   end
-
-  def self.roles
-    @@roles ||= self.all(:conditions=>["minimun>0"]).map(&:role_id).uniq.sort
-
-  end 
 
   def self.make_combination
     comb = []

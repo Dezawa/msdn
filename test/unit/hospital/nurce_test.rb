@@ -418,33 +418,33 @@ class Hospital::NurceTest < ActiveSupport::TestCase
 
   ################ 逼迫関連
   must "Costtable" do
-    assert_equal [[1, 2, 4],
-                  [1, 2, 5],
-                  [1, 4, 2],
-                  [1, 4, 5],
-                  [1, 5, 2],
-                  [1, 5, 4],
-                  [2, 1, 4],
-                  [2, 1, 5],
-                  [2, 4, 1],
-                  [2, 4, 5],
-                  [2, 5, 1],
-                  [2, 5, 4],
-                  [4, 1, 2],
-                  [4, 1, 5],
-                  [4, 2, 1],
-                  [4, 2, 5],
-                  [4, 5, 1],
-                  [4, 5, 2],
-                  [5, 1, 2],
-                  [5, 1, 4],
-                  [5, 2, 1],
-                  [5, 2, 4],
-                  [5, 4, 1],
-                  [5, 4, 2]],  Hospital::Nurce.cost_table.keys.sort,"keys of Nurce:Const"
-    assert_equal [[1,4,5],[1,4],[1,5],[4,5],[1],[4],[5]].sort,
-    Hospital::Nurce.cost_table[[1,5,4]].keys.sort,"keys of key 154 Nurce:Const"
-    assert_equal Hospital::Nurce::Cost[7], Hospital::Nurce.cost_table[[1,5,4]][[1,4,5]],"valu of key 154 Nurce:Const"
+    assert_equal [[3, 4, 9],
+                  [3, 4, 10],
+                  [3, 9, 4],
+                  [3, 9, 10],
+                  [3, 10, 4],
+                  [3, 10, 9],
+                  [4, 3, 9],
+                  [4, 3, 10],
+                  [4, 9, 3],
+                  [4, 9, 10],
+                  [4, 10, 3],
+                  [4, 10, 9],
+                  [9, 3, 4],
+                  [9, 3, 10],
+                  [9, 4, 3],
+                  [9, 4, 10],
+                  [9, 10, 3],
+                  [9, 10, 4],
+                  [10, 3, 4],
+                  [10, 3, 9],
+                  [10, 4, 3],
+                  [10, 4, 9],
+                  [10, 9, 3],
+                  [10, 9, 4]],  Hospital::Nurce.cost_table.keys.sort,"keys of Nurce:Const"
+    assert_equal [[3,9,10],[3,9],[3,10],[9,10],[3],[9],[10]].sort,
+    Hospital::Nurce.cost_table[[3,10,9]].keys.sort,"keys of key 3109 Nurce:Const"
+    assert_equal Hospital::Nurce::Cost[7], Hospital::Nurce.cost_table[[3,10,9]][[3,9,10]],"valu of key 1109 Nurce:Const"
   end
   
   must "Nurce 40 cost" do
@@ -460,11 +460,11 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     #pp nurce40.role_remain[[2,3]]
     nurce40.set_shift(20,"3")
     #pp saved[2]
-    assert_equal Hospital::Nurce::Cost[7][4], nurce40.cost("3",[1,9,2]),"shft 3 is remains 4 after set\shift"
+    assert_equal Hospital::Nurce::Cost[7][4], nurce40.cost("3",[3,9,4]),"shft 3 is remains 4 after set\shift"
     nurce40.restore_shift(saved)
     #pp nurce40.role_remain
     #pp nurce40.role_remain[[2,3]]
-    assert_equal Hospital::Nurce::Cost[7][5], nurce40.cost("3",[1,9,2]),"shft 3 is remains 5 after restore"
+    assert_equal Hospital::Nurce::Cost[7][5], nurce40.cost("3",[3,9,4]),"shft 3 is remains 5 after restore"
   end
 
   
