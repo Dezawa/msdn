@@ -194,4 +194,34 @@ module HospitalHelper
     }.join("\n")+
       ( @fine && @fine.size > 0 ? "終" :"" ) if @files
   end
+
+  # build_models { daytype => [ shift1,2,3 ] }
+  def show_needs(build_models)
+    obj = build_models[2].first
+    ret = @labels[0].td + @labels[0].disp_field( obj)+"</td>"
+    [2,3].map{ |daytype| build_models[daytype].each{|obj| 
+        @minmax_label.map{|html_cell| 
+          next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) 
+
+          ret += html_cell.td + html_cell.disp_field( obj) +"</td>"
+        }
+      }
+    }
+    ret
+  end
+
+  def edit_needs(build_models)
+    obj = build_models[2][0]
+    ret = @labels[0].td + @labels[0].disp_field( obj)+"</td>"
+    [2,3].map{ |daytype| build_models[daytype].each{|obj| 
+        @minmax_label.map{|html_cell| 
+          next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) 
+
+          ret += html_cell.td + html_cell.edit_field_with_id(@Domain, obj,controller) +"</td>"
+        }
+      }
+    }
+    ret
+  end
+
 end

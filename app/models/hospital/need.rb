@@ -3,9 +3,34 @@ class Hospital::Need < ActiveRecord::Base
   extend Function::CsvIo
   set_table_name 'hospital_needs'
   
+  def self.find_and_build(busho_id)
+    ret = Hash.new{ |h,k| h[k]={  2 => [nil,nil,nil],3=> [nil,nil,nil]}}
+    needs = all(:conditions => ["busho_id = ? ",busho_id])
+    needs.each{ |need| 
+      next unless need_role_ids.include?(need.role_id) && [2,3].include?(need.daytype)
+      ret[need.role_id][need.daytype][need.kinmucode_id-1]=need
+    }
+    need_role_ids.each{ |role_id|
+      #ret.each_pair{ |role_id,hash| 
+      [2,3].each{ |daytype|
+        [0,1,2].each{ |kinm|
+          ret[role_id][daytype][kinm] ||= 
+          self.create(:role_id => role_id,:busho_id => busho_id,:daytype => daytype,:kinmucode_id => kinm+1)
+        }
+      }
+
+    }
+logger.debug("*****Hospital::Need:find_and_build  #{ret.keys.sort.join(',')}")
+    ret
+  end
+
   def self.need_roles
     Hospital::Role.all(:conditions => "need = true") 
   end
+  def self.need_role_ids
+    need_roles.map(&:id)
+  end
+
 
   def self.roles
     @@roles ||= self.all(:conditions => "minimun>0").map(&:role_id).uniq.sort
