@@ -20,6 +20,41 @@ class Hospital::AssignTest < ActiveSupport::TestCase
     @nurces=@assign.nurces
   end
     
+  must "Kangoshi定数" do
+    assert_equal 4,@assign.Kangoshi
+  end
+  must " 看護師数" do
+    assert_equal 19,@assign.kangoshi.size
+  end
+  must "need_patarn" do
+    assert_equal [
+                  {[10, "1"]=>[1, 2],  [10, "2"]=>[1, 2],  [10, "3"]=>[1, 2],
+                    [4, "0"]=>[0, 8],  [4, "1"]=>[9, 11],  [4, "2"]=>[2, 2],  [4, "3"]=>[2, 2],  
+                    [9, "1"]=>[1, 2],  [9, "2"]=>[1, 2],   [9, "3"]=>[1, 2], 
+                    [3, "2"]=>[1, 1],  [3, "3"]=>[1, 1],  
+                    [5, "1"]=>[0, 1],  [5, "2"]=>[0, 1],   [5, "3"]=>[0, 1]},
+                  {[10, "1"]=>[1, 2],  [10, "2"]=>[1, 2],  [10, "3"]=>[1, 2],
+                    [4, "0"]=>[0, 11], [4, "1"]=>[6, 7],   [4, "2"]=>[2, 2],  [4, "3"]=>[2, 2],
+                    [9, "1"]=>[1, 2],  [9, "2"]=>[1, 2],   [9, "3"]=>[1, 2],
+                    [3, "2"]=>[1, 1],  [3, "3"]=>[1, 1],  
+                    [5, "1"]=>[0, 1],  [5, "2"]=>[0, 1],   [5, "3"]=>[0, 1]}
+                 ],@assign.need_patern
+  end
+
+  must "不足role" do
+    ret = { [3, "3"]=>[1, 1], [3, "2"]=>[1, 1],
+      [4, "3"]=>[2, 2], [4, "2"]=>[2, 2], [4, "1"]=>[9, 11], [4, "0"]=>[-1, 7],
+      [5, "3"]=>[0, 1], [5, "2"]=>[0, 1], [5, "1"]=>[0, 1],
+      [9, "3"]=>[1, 2], [9, "2"]=>[1, 2], [9, "1"]=>[1, 2],
+      [10, "3"]=>[1, 2], [10, "2"]=>[1, 2], [10, "1"]=>[1, 2]}
+    assert_equal ret,@assign.short_role_shift_of(1)
+  end
+
+  must "必要看護師ロール" do
+    assert_equal [{"1"=>9},{"1"=>[4, 9, 10]}],@assign.need_nurces_roles(1)[1..2]
+
+  end
+
   Cost = Hospital::Nurce::Cost
   log2_4 = "
   HP ASSIGN 34 _1_1__11_____________1______1
@@ -49,22 +84,23 @@ HP ASSIGN 4:3  [[37:0.5],[42:0.5],[43:0.83],[39:1.0],[38:1.0],[44:1.0]]
   must " 2/4:2 2の使用数の違う38,39のcostが同じなのはなぜ？" do
     #pp @assign.nurce_by_id([38,39]).map(&:shift_remain)
     nurces = extract_set_shifts(log2_4)
-    pp @assign.nurce_by_id([38,39]).map(&:shift_remain)
-    shift = 2
+    #pp @assign.nurce_by_id([38,39]).map(&:shift_remain)
+    shift = "2"
     margin = {[1, 2]=>14, [2, 2]=>23, [3, 2]=>0, [4, 2]=>15, [5, 2]=>24 }.to_a.sort
     assert_equal "_1____0______________________",nurces[38].shifts,"shift設定"
     #assert_equal margin,
     #  @assign.margin_of_role.select{|k,v| k[1]==shift}.sort,
     #  "残りrole総数"
-    tight = [1,4,5]
-    assert_equal tight,@assign.tight_roles(shift),"逼迫ロール"
-    assert_equal [[6,19,5,5],[8,18,4,5]], # 本当は[7,19,5,5] だが、初めからある0を二度引いてしまうから
+    tight = [3,9,10]
+    assert_equal tight,@assign.tight_roles(shift).sort,"逼迫ロール"
+    assert_equal [{"3"=>5, "2"=>5, "1"=>19.0, "0"=>6.0}, 
+                  {"3"=>5, "2"=>4, "1"=>18.0, "0"=>8.0}], # 本当は[7,19,5,5] だが、初めからある0を二度引いてしまうから
        [38,39].map{|id| nurces[id].shift_remain},   "看護師の残りシフト全体像"
 
     assert_equal [5,4], [38,39].
       map{|id| nurces[id].shift_remain[shift]},  "看護師のshift#{shift}残数"
 
-    assert_equal [[1,2,4],[1,2,4]],  [38,39].
+    assert_equal [[3,4,9],[3,4,9]],  [38,39].
       map{|id| nurces[id].role_ids}, "看護師の role"
 
     assert_equal [Cost[6][5],Cost[6][4]],[38,39].map{|id| nurces[id].cost(shift,tight) }, "看護師のcost"
@@ -98,22 +134,21 @@ HP ASSIGN  5:3 [] [] ENTRY  必要看護師数 0 不足role[] 可能看護師[]
 HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
 "
   must " 5/5 3の使用数の違う50,47のcostが同じなのはなぜ？" do
-    remain0= {[1, 2]=>46, [2, 2]=>86, [4, 2]=>47, [5, 2]=>57 }.to_a.sort
-    margin0= {[1, 2]=>15, [2, 2]=>24, [3, 2]=>0,  [4, 2]=>16, [5, 2]=>26 }.to_a.sort
-    used   = {[1, 2]=> 5, [2, 2]=>10, [4, 2]=> 5, [5, 2]=> 5 }.to_a.sort
-    remain = {[1, 2]=>41, [2, 2]=>76, [3, 2]=>0,  [4, 2]=>42, [5, 2]=>52 }.to_a.sort
-    margin = {[1, 2]=>16, [2, 2]=>24, [3, 2]=>0,  [4, 2]=>14, [5, 2]=>23 }.to_a.sort
-    require= {[1, 2]=>24, [2, 2]=>48, [4, 2]=>24, [5, 2]=>22 }.to_a.sort
+    remain0= {[3,"2"]=>50,[4,"2"]=>86,           [9,"2"]=>47,[10,"2"]=>57 }.to_a.sort
+    margin0= {[3,"2"]=>15,[4,"2"]=>29,[5,"2"]=>0,[9,"2"]=>16,[10,"2"]=>26 }.to_a.sort
+    used   = {[3,"2"]=> 5,[4,"2"]=>10,           [9,"2"]=> 5,[10,"2"]=> 5 }.to_a.sort
+    remain = {[3,"2"]=>41,[4,"2"]=>76,[5,"2"]=>0,[9,"2"]=>42,[10,"2"]=>52 }.to_a.sort
+    margin = {[3,"2"]=>16,[4,"2"]=>29,[5,"2"]=>0,[9,"2"]=>14,[10,"2"]=>23 }.to_a.sort
+    require= {[3,"2"]=>24,[4,"2"]=>48,           [9,"2"]=>22,[10,"2"]=>22 }.to_a.sort
     # 31-4 -3=24    62-8-6=48         31-7=24  31-9=22
     newmonth(5)
-    shift = 2
-
+    shift = "2"
     assert_equal remain0  ,
-      @assign.role_remain.select{|k,v| k[1]==shift}.sort,
-      "開始前利用可能ロール総数"
+      @assign.role_remain.select{|k,v| k[1]==shift}.sort,"開始前利用可能ロール総数"
+    assert_equal require  ,
+      @assign. roles_required.select{|k,v| k[1]==shift}.sort,"開始前必要ロール数"
     assert_equal margin0,
-      @assign.margin_of_role.select{|k,v| k[1]==shift}.sort,
-    "開始前余裕ロール数"
+      @assign.margin_of_role.select{|k,v| k[1]==shift}.sort,  "開始前余裕ロール数"
 
     #@nurces.each{|nurce| puts nurce.shifts+nurce.role_used[[1,3]].to_s }
     nurces = extract_set_shifts(log5_5)

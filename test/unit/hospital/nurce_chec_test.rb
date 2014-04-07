@@ -40,7 +40,7 @@ class Hospital::NurceChecTest < ActiveSupport::TestCase
     must msg0 do
       nurce37 = nurce( 37)
       nurce37.set_shift_days(day0,pat)
-      assert_equal ret,nurce37.check(day,shift,false),"*****"+msg0
+      assert_equal [], ret-nurce37.check(day,shift,false),"*****"+msg0
     end
   }
 
@@ -49,13 +49,8 @@ class Hospital::NurceChecTest < ActiveSupport::TestCase
   # 2日から233勤務を埋め込んだとき、1日に勤務3を入れると:renkinのエラー
   # ~      ^^^                      ^        ^           ^^^^^^
   [[2,"0_111220",3,"1",[[:renkin,5]],"6連勤OUT"],
-   [2,"0_11120" ,3,"1",nil,"6連勤OK"],
-   [2,"0_20"    ,3,"1",nil,"勤務間隔12時間以上OK"], #12
    [2,"0_30"    ,3,"1",[[:interval,1]],"勤務間隔12時間以上NG"], #13
    [2,"0_10"    ,3,"2",[[:interval,1]],"勤務間隔12時間以上NG"], #21
-   [2,"0_30"    ,3,"2",nil,"勤務間隔12時間以上OK"], #23
-   [2,"0_10"    ,3,"3",nil,"勤務間隔12時間以上OK"], #31
-   [2,"0_20"    ,3,"3",nil,"勤務間隔12時間以上OK"], #32
    [2,"0_302302302030203",3,"2",[[:nine_nights,2]],"夜勤9回NG"],
    [2,"0_302302302032023",4,"3",[[:nine_nights,3]],"夜勤9回NG"],
    [2,"0_30230230202020" ,3,"2",[[:junya,2]]     ,"準夜Over"],
@@ -73,7 +68,24 @@ class Hospital::NurceChecTest < ActiveSupport::TestCase
     must msg0 do
       nurce37 = nurce( 37)
       nurce37.set_shift_days(day0,pat)
-      assert_equal ret,nurce37.check_at_assign(day,shift,false),"*****"+msg0
+      assert_equal [],ret-nurce37.check_at_assign(day,shift,false),"*****"+msg0
+    end
+  }
+
+  [[2,"0_11120" ,3,"1",nil,"6連勤OK"],
+   [2,"0_20"    ,3,"1",nil,"勤務間隔12時間以上OK"], #12
+   [2,"0_30"    ,3,"2",nil,"勤務間隔12時間以上OK"], #23
+   [2,"0_10"    ,3,"3",nil,"勤務間隔12時間以上OK"], #31
+   [2,"0_20"    ,3,"3",nil,"勤務間隔12時間以上OK"], #32
+   nil
+  ].each{|day0,pat,day,shift,ret,msg|
+    next unless day0
+    #"時廣眞弓さんの先月末月初は '12011__0___'
+    msg0 ="2/#{day0}から#{pat}勤めた時,2/#{day} に#{shift} をassignするのは#{msg}"
+    must msg0 do
+      nurce37 = nurce( 37)
+      nurce37.set_shift_days(day0,pat)
+      assert_equal nil,nurce37.check_at_assign(day,shift,false),"*****"+msg0
     end
   }
 

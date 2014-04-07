@@ -5,12 +5,26 @@ class Hospital::NeedTest < ActiveSupport::TestCase
   fixtures :hospital_needs,:hospital_roles
   # Replace this with your real tests.
 
+  must "検索結果をindex用に組み立てる" do
+    ret = { 
+      #role  平日 shift1,2,3  休日
+      3  => { 1 => [[],[],[]],2 => [[],[],[]]},
+      4  => { 1 => [[],[],[]],2 => [[],[],[]]},
+      5  => { 1 => [[],[],[]],2 => [[],[],[]]},
+      9  => { 1 => [[],[],[]],2 => [[],[],[]]},
+      10 => { 1 => [[],[],[]],2 => [[],[],[]]}
+    }
+    assert_equal [3,4,5,9,10],Hospital::Need.need_role_ids,"need_role_ids"
+    assert_equal [3,4,5,9,10],Hospital::Need.find_and_build(1).keys.sort,"find_and_build(1).keys"
+    assert_equal ret,Hospital::Need.find_and_build(1)
+  end
+
   must "remake combination3 after save" do
+    assert_equal [3,4,9,10],Hospital::Need.roles,"Need.roles"
     need = Hospital::Need.new("daytype"=>1,"busho_id"=>3,"role_id"=>5,"kinmucode_id"=>2,"minimun"=>1,"maximum"=>1)
     need.save
     pp Hospital::Need.all( :conditions => ["minimun>0"]).map(&:role_id).uniq.sort
     
-    assert_equal [3,4,5,9,10],Hospital::Need.roles,"Need.roles"
     assert_equal 10*6,Hospital::Need.combination3.size
   end
   must  "a self.combination3" do
@@ -22,6 +36,6 @@ class Hospital::NeedTest < ActiveSupport::TestCase
   end
 
   must "Need_roles " do
-    assert_equal [3,4,5,8,9,10],Hospital::Need.need_roles.map(&:id).sort,"Roleに必要と登録されているlroe"
+    assert_equal [3,4,5,9,10],Hospital::Need.need_roles.map(&:id).sort,"Roleに必要と登録されているlroe"
   end
 end

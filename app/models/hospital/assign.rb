@@ -1069,7 +1069,6 @@ class Hospital::Assign
     rs=count_role_shift
     begin
       needs_all_days[day].keys.each{|need_patern|  #need_patern ===> [role,sft_str]
-logger.debug("########## ASSIGN need_patern=#{need_patern.join(',')}")
         s_r[need_patern][0] = needs_all_days[day][need_patern][0] - rs[day][need_patern]
         s_r[need_patern][1] = needs_all_days[day][need_patern][1] - rs[day][need_patern]
       }
@@ -1305,7 +1304,7 @@ logger.debug("########## ASSIGN need_patern=#{need_patern.join(',')}")
 
   def log_stat(m="once",head="HOSPITAL ASSIGN ")
     msg = "FINISHED Ver #{ID.split[2]} #{m}:#{Hospital::Busho.find(@busho_id).name} "+
-      "#{@month.month}月 繰り返し %3d回, 評価%4d回 %5.1f秒 ON "%[@entrant_count,@loop_count,@fine-@start]+
+      "#{@month.strftime('%Y/%m')}月 繰り返し %3d回, 評価%4d回 %5.1f秒 ON "%[@entrant_count,@loop_count,@fine-@start]+
       Time.now.strftime("%Y-%m-%d %H:%M:%S")
     msgstat0 = "#{head} STAT shift  評価 失敗" + @count_cause.keys.map{ |k| "%8s"%k}.join(" ") +"\n"
     msgstat1 = 

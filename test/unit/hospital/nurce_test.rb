@@ -100,22 +100,22 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     end
   }
 
-  DayR = [[3,"1"],[4,"1"],[7,"1"],[9,"1"]] # role 4,[7,7,9 にshift_str "1" がアサイン
-  JunR = [[3,"2"],[4,"2"],[7,"2"],[9,"2"]]
-  SinR = [[3,"3"],[4,"3"],[7,"3"],[9,"3"]]
-  HDyZ = [[3,"9"],[4,"9"],[7,"9"],[9,"9"]]
-  HDyG = [[3,"A"],[4,"A"],[7,"A"],[9,"A"]]
-  NonR = [[3,"3"],[4,"3"],[7,"3"],[9,"3"]]
-  DayZ = [[3,"8"],[4,"8"],[7,"8"],[9,"8"]]
-  DayG = [[3,"7"],[4,"7"],[7,"7"],[9,"7"]]
-  JunN = [[3,"5"],[4,"5"],[7,"5"],[9,"5"]]
-  SinN = [[3,"6"],[4,"6"],[7,"6"],[9,"6"]]
-  DayN = [[3,"4"],[4,"4"],[7,"4"],[9,"4"]]
-  HRdZ = [[3,"C"],[4,"C"],[7,"C"],[9,"C"]]
-  HRdG = [[3,"B"],[4,"B"],[7,"B"],[9,"B"]]
-  HDyR = [[3,"B"],[4,"B"],[7,"B"],[9, "B"]] # 半日系は病院に聞いてから
-  NonR = [[3,"F"],[4,"F"],[7,"F"],[9, "F"]]
-  HolyR= [[3,"0"],[4,"0"],[7,"0"],[9, "0"]]
+  DayR = [[3,"1"],[4,"1"],[9,"1"]] # role 4,[7,7,9 にshift_str "1" がアサイン
+  JunR = [[3,"2"],[4,"2"],[9,"2"]]
+  SinR = [[3,"3"],[4,"3"],[9,"3"]]
+  HDyZ = [[3,"9"],[4,"9"],[9,"9"]]
+  HDyG = [[3,"A"],[4,"A"],[9,"A"]]
+  NonR = [[3,"3"],[4,"3"],[9,"3"]]
+  DayZ = [[3,"8"],[4,"8"],[9,"8"]]
+  DayG = [[3,"7"],[4,"7"],[9,"7"]]
+  JunN = [[3,"5"],[4,"5"],[9,"5"]]
+  SinN = [[3,"6"],[4,"6"],[9,"6"]]
+  DayN = [[3,"4"],[4,"4"],[9,"4"]]
+  HRdZ = [[3,"C"],[4,"C"],[9,"C"]]
+  HRdG = [[3,"B"],[4,"B"],[9,"B"]]
+  HDyR = [[3,"B"],[4,"B"],[9, "B"]] # 半日系は病院に聞いてから
+  NonR = [[3,"F"],[4,"F"],[9, "F"]]
+  HolyR= [[3,"0"],[4,"0"],[9, "0"]]
   ([DayR,JunR,SinR,JunR,SinR, #1,3,3,L3,L3  1-5
     DayR,DayR,DayR,DayR,DayR, #6-10 会,会,早,遅出,遅出
     HDyZ,HDyG,DayN,DayZ,DayG, #11-15 Z,G,R1,Z/R,R/G
@@ -199,7 +199,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     kinmu=nurce.monthly.days[1]
     assert_equal [msg,nil,nil],[msg, kinmu.kinmucode_id,kinmu.shift]
     msg="2月3日のrole_shift"
-    assert_equal [msg,[[2, "0"], [4, "0"],[7,"0"], [9, "0"]]],[msg, nurce.role_shift[3]]
+    assert_equal [msg,[ [4, "0"], [9, "0"]]],[msg, nurce.role_shift[3]]
     
 
     ################# 2月1日に勤務2をset
@@ -211,7 +211,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     #shift=nurce.monthly.shift
     #assert_equal [msg,2,"2"],[msg, shift.kinmucode_id,kinmu.shift]
     msg="2月1日に勤務2をsetしたときのrole_shift"
-    assert_equal [msg,[[2, "2"], [4, "2"], [7, "2"], [9, "2"]]],[msg, nurce.role_shift(@month,true)[1]]
+    assert_equal [msg,[[4, "2"], [9, "2"]]],[msg, nurce.role_shift(@month,true)[1]]
     msg="2/1はassignされた"
     #puts nurce.monthly.shift[1,1]
     assert_equal [msg,true],[msg,nurce.assigned?(1)]
@@ -227,10 +227,6 @@ class Hospital::NurceTest < ActiveSupport::TestCase
              [4, "1"]=>3, 
              [4, "2"]=>1,
              [4,"3"]=>0,
-             [7,"0"]=>0,
-             [7, "1"]=>3, 
-             [7, "2"]=>1,
-             [7,"3"]=>0,
              [9, "1"]=>3,
              [9, "2"]=>1,
              [9,"0"]=>0,
@@ -241,9 +237,6 @@ class Hospital::NurceTest < ActiveSupport::TestCase
              [4, "1"]=>17,
              [4, "2"]=>4,
              [4, "3"]=>5,
-             [7, "1"]=>17,
-             [7, "2"]=>4,
-             [7, "3"]=>5,
              [9, "3"]=>5,
              [9, "1"]=>17,
              [9, "2"]=>4,
@@ -269,7 +262,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
   rslt0 = {
     [3,"1"]=>20,[3,"2"]=>5,[3,"3"]=>5,
     [4,"1"]=>20,[4,"2"]=>5,[4,"3"]=>5,
-    [7,"1"]=>20,[7,"2"]=>5,[7,"3"]=>5,
+    #[7,"1"]=>20,[7,"2"]=>5,[7,"3"]=>5,
     [9,"1"]=>20,[9,"2"]=>5,[9,"3"]=>5
   }
   must "Nurce 6 id 40 寺田輝子のアサイン可能なrole" do
@@ -277,33 +270,33 @@ class Hospital::NurceTest < ActiveSupport::TestCase
   end
 
   rslt1 = {
-    [3, "1"]=>3,    [4, "1"]=>3,[7, "1"]=>3,     [9, "1"]=>3,
-    [3, "2"]=>1,    [4, "2"]=>1,[7, "2"]=>1,     [9, "2"]=>1,
-    [3, "3"]=>0,    [4, "3"]=>0,[7, "3"]=>0,     [9, "3"]=>0, 
-    [3, "0"]=>0,    [4, "0"]=>0,[7, "0"]=>0,     [9, "0"]=>0  }
+    [3, "1"]=>3,    [4, "1"]=>3, [9, "1"]=>3,
+    [3, "2"]=>1,    [4, "2"]=>1, [9, "2"]=>1,
+    [3, "3"]=>0,    [4, "3"]=>0, [9, "3"]=>0, 
+    [3, "0"]=>0,    [4, "0"]=>0, [9, "0"]=>0  }
   must "Nurce 6 id 40 寺田輝子の使われたrole" do
     assert_equal rslt1, nurce(40).role_used
   end
 
   rslt2 = {
-    [3, "1"]=>17, [4, "1"]=>17,[7, "1"]=>17, [9, "1"]=>17,
-    [3, "2"]=>4,  [4, "2"]=>4 ,[7, "2"]=>4 , [9, "2"]=>4 ,
-    [3, "3"]=>5,  [4, "3"]=>5 ,[7, "3"]=>5 , [9, "3"]=>5
+    [3, "1"]=>17, [4, "1"]=>17, [9, "1"]=>17,
+    [3, "2"]=>4,  [4, "2"]=>4 , [9, "2"]=>4 ,
+    [3, "3"]=>5,  [4, "3"]=>5 , [9, "3"]=>5
   }
   must "Nurce 6 id 40 寺田輝子の残っているrole" do
     assert_equal rslt2, nurce(40).role_remain
   end
 
   rslt1_2 = {
-    [3, "1"]=>3, [4, "1"]=>3,[7, "1"]=>3,  [9, "1"]=>3,
-    [3, "3"]=>1, [4, "3"]=>1,[7, "3"]=>1,  [9, "3"]=>1,
-    [3, "2"]=>1, [4, "2"]=>1,[7, "2"]=>1, [9, "2"]=>1,
-    [3, "0"]=>0, [4, "0"]=>0,[7, "0"]=>0, [9, "0"]=>0
+    [3, "1"]=>3, [4, "1"]=>3,  [9, "1"]=>3,
+    [3, "3"]=>1, [4, "3"]=>1,  [9, "3"]=>1,
+    [3, "2"]=>1, [4, "2"]=>1, [9, "2"]=>1,
+    [3, "0"]=>0, [4, "0"]=>0, [9, "0"]=>0
   }
   rslt2_2 = {
-    [3, "1"]=>17, [4, "1"]=>17,[7, "1"]=>17, [9, "1"]=>17,
-    [3, "2"]=>4,  [4, "2"]=>4 ,[7, "2"]=>4 , [9, "2"]=>4 ,
-    [3, "3"]=>4,  [4, "3"]=>4 ,[7, "3"]=>4 , [9, "3"]=>4
+    [3, "1"]=>17, [4, "1"]=>17, [9, "1"]=>17,
+    [3, "2"]=>4,  [4, "2"]=>4 , [9, "2"]=>4 ,
+    [3, "3"]=>4,  [4, "3"]=>4 , [9, "3"]=>4
   }
   must "Nurce 6 id 40 寺田輝子に 2/2 shift3を割り振ると、usedとremainは" do
     nrc =  nurce(40)
@@ -332,16 +325,16 @@ class Hospital::NurceTest < ActiveSupport::TestCase
 
   must "roles,role_ids" do
     assert_equal [[3, "リーダー"], [4, "看護\345\270\253"], [7, "三交\344\273\243"],[9, "Aチー\343\203\240"]],nurce(40).roles
-    assert_equal [3,4,7,9],nurce(40).role_ids.sort
+    assert_equal [3,4,9],nurce(40).role_ids.sort
     [[3,true],[4,true],[5,false],[9,true],[10,false]].each{|id,rsrt|
       assert_equal rsrt,nurce(40).role_id?(id), "role_id? #{id}"
     }
   end
 
   must "石川トシ子さんの2/4 の [role,勤務]" do
-    assert_equal [[2, "3"], [4, "3"], [7, "3"], [10, "3"]],nurce(36).role_shift(@month)[4],"role_shift"
-    assert_equal [[2, 3], [4, 3],[7,3],[10, 3]],nurce(36).role_shift_of(3),"role_shift_of"
-    assert_equal [[2, 2], [4, 2],[7,2], [10, 2]],nurce(36).role_shift_of(2),"role_shift_of"
+    assert_equal [ [4, "3"],  [10, "3"]],nurce(36).role_shift(@month)[4],"role_shift"
+    assert_equal [ [4, 3],[10, 3]],nurce(36).role_shift_of(3),"role_shift_of"
+    assert_equal [ [4, 2], [10, 2]],nurce(36).role_shift_of(2),"role_shift_of"
   end
 
   [[1,1],[2,2],[3,2]].each{|shift,count|
@@ -449,7 +442,11 @@ class Hospital::NurceTest < ActiveSupport::TestCase
   
   must "Nurce 40 cost" do
     nurce40 = nurce(40)
-    assert_equal [3,4,7,9], nurce40.role_ids,"nurce40.role_ids"
+    assert_equal [3,4,9], nurce40.role_ids,"nurce40.role_ids"
+    assert_equal ({ [9, "3"]=>5, [9, "2"]=>5, [9, "1"]=>20,
+                    [3, "3"]=>5, [3, "2"]=>5, [3, "1"]=>20, 
+                    [4, "3"]=>5, [4, "2"]=>5, [4, "1"]=>20}
+                  ), nurce40.assinable_roles
     assert_equal 5,nurce40.role_remain[[4,"3"]],"role remain5"
     cost = Hospital::Nurce::Cost[6][5]
     assert_equal cost, nurce40.cost("3",[3,9,10]) ," tight 3,9,10"

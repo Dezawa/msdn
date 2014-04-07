@@ -35,19 +35,19 @@ class Hospital::NurcePaterningTest < ActiveSupport::TestCase
   #################
 
   must "need_patern " do
-    ret = [{ [1,"2"] => [1,1] ,[1,"3"] => [1,1],
-             [2,"1"] => [9,11],[2,"2"] => [2,2],[2,"3"] => [2,2],
-             [3,"1"] => [0,1] ,[3,"2"] => [0,1],[3,"3"] => [0,1],
-             [4,"1"] => [1,2] ,[4,"2"] => [1,2],[4,"3"] => [1,2],
-             [5,"1"] => [1,2] ,[5,"2"] => [1,2],[5,"3"] => [1,2],
-             [2,"0"] => [0,6]
+    ret = [{ [3,"2"]  => [1,1] ,[3,"3"]  => [1,1],
+             [4,"1"]  => [9,11],[4,"2"]  => [2,2],[4,"3"]  => [2,2],
+             [5,"1"]  => [0,1] ,[5,"2"]  => [0,1],[5,"3"]  => [0,1],
+             [9,"1"]  => [1,2] ,[9,"2"]  => [1,2],[9,"3"]  => [1,2],
+             [10,"1"] => [1,2] ,[10,"2"] => [1,2],[10,"3"] => [1,2],
+             [4,"0"]  => [0,6]
            },
-           { [1,"2"] => [1,1] ,[1,"3"] => [1,1],
-             [2,"1"] => [6,7] ,[2,"2"] => [2,2],[2,"3"] => [2,2],
-             [3,"1"] => [0,1] ,[3,"2"] => [0,1],[3,"3"] => [0,1],
-             [4,"1"] => [1,2] ,[4,"2"] => [1,2],[4,"3"] => [1,2],
-             [5,"1"] => [1,2] ,[5,"2"] => [1,2],[5,"3"] => [1,2],
-             [2,"0"] => [0,9]
+           { [3,"2"]  => [1,1] ,[3,"3"]  => [1,1],
+             [4,"1"]  => [6,7] ,[4,"2"]  => [2,2],[4,"3"]  => [2,2],
+             [5,"1"]  => [0,1] ,[5,"2"]  => [0,1],[5,"3"]  => [0,1],
+             [9,"1"]  => [1,2] ,[9,"2"]  => [1,2],[9,"3"]  => [1,2],
+             [10,"1"] => [1,2] ,[10,"2"] => [1,2],[10,"3"] => [1,2],
+             [4,"0"]  => [0,9]
            }
           ]
     assert_equal ret[0],@assign.need_patern[0],"平日のパターン"
@@ -55,19 +55,21 @@ class Hospital::NurcePaterningTest < ActiveSupport::TestCase
   end
 
   must "2/13、nurce 37～40に220,330を割り振る2/15に0が7になる。多すぎて失敗になるか" do
-    day,role,shift = 15,2,"0"
+    day,role,shift = 15,@assign.Kangoshi,"0"
     assert_equal [0,6],@assign.need(day,role,shift),"#{day}日 看護師の休暇数[下限,上限]"
     assert_equal  [-3,3],@assign.short_role_shift[day][[role,shift]],"休暇あといくつOKか"
-    assert_equal 3,@assign.count_role_shift[15][[2,"0"]],"初めの休暇数(希望数)"
+    assert_equal 3,@assign.count_role_shift[15][[@assign.Kangoshi,"0"]],"初めの休暇数(希望数)"
 
     comb_nurces=@assign.nurce_by_id([37,38,39,40])
     day = 13
     shift = "3"
     assigned = @assign.assign_test_patern(comb_nurces[0,2],day,shift,[0,0])
     assert_equal [["330",[[2],[],[],[1]]],["330",[[2],[],[],[1]]]], assigned,"二人ほどshift3にlong_patern[0,0],330を入れるのは可能"
+pp "bofore ret = @assign.assign_patern"
 ret = @assign.assign_patern(comb_nurces[0,2],day,shift,assigned)
+pp "after ret = @assign.assign_patern"
 puts @assign.dump
-    @assign.long_check_later_days(day,[[2],[],[],[1]])
+    @assign.long_check_later_days(day,[[2],[],[],[1]],"3")
     assert_equal true ,ret,"2/13 330はOK"
 
     assert_equal  [-5,1],@assign.short_role_shift[15][[2,0]],"330を入れた0のshort"
