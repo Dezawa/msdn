@@ -175,8 +175,9 @@ class Hospital::Assign
       @needs  = needs_all_days
       @count_role_shift = count_role_shift     # [[[[role,shift],[role,shift],,],[day  ],[day]],[nurce],[nurce] ]
       #@nurces.each{|nurce| nurce.monthly(@month).day2shift}
-      @HospitalRolecount = Hospital::Role.count
-      @RoleShift = (1..@HospitalRolecount).to_a.product(@shifts123)
+      @HospitalRolecount = Hospital::Need.roles.size #Hospital::Role.count
+      @RoleShift = #(1..@HospitalRolecount).to_a.product(@shifts123)
+                   Hospital::Need.roles.product(@shifts123)
     end
     @basename = File.join( RAILS_ROOT,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
@@ -1068,6 +1069,7 @@ class Hospital::Assign
     rs=count_role_shift
     begin
       needs_all_days[day].keys.each{|need_patern|  #need_patern ===> [role,sft_str]
+logger.debug("########## ASSIGN need_patern=#{need_patern.join(',')}")
         s_r[need_patern][0] = needs_all_days[day][need_patern][0] - rs[day][need_patern]
         s_r[need_patern][1] = needs_all_days[day][need_patern][1] - rs[day][need_patern]
       }

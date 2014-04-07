@@ -42,11 +42,11 @@ logger.debug("*****Hospital::Need:find_and_build  #{ret.keys.sort.join(',')}")
 
   def self.on_date_for_busho(month,day,busho_id)
     date = month+(day-1).day
-    self.all(:conditions => ["busho_id = ? and daytype in (1,?)",busho_id,what_day(date)])
+    self.all(:conditions => ["minimun>0 and busho_id = ? and daytype in (1,?)",busho_id,what_day(date)])
   end
 
   def self.of_datetype_for_busho(month,what_day,busho_id)
-    self.all(:conditions => ["busho_id = ? and daytype in (1,?)",busho_id,what_day])
+    self.all(:conditions => ["minimun>0 and busho_id = ? and daytype in (1,?)",busho_id,what_day])
   end
 
   def self.what_day(day)
