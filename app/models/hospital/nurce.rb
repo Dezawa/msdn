@@ -20,6 +20,7 @@
 class Hospital::Nurce < ActiveRecord::Base
   extend Function::CsvIo
   include Hospital::Const
+  include Hospital::Reguration
   #extend Hospital::Nurce::Const
 
   set_table_name 'nurces'
@@ -88,92 +89,6 @@ class Hospital::Nurce < ActiveRecord::Base
       raise
     end
   end
- 
-  Reguration = 
-    { 
-     true =>  #三交代
-       [ #0 全シフト
-         {   # item  => [[正規表現,何日前から見るか,何日分見るか]
-          :renkin   => [/[1-8LM]{6,}/,5,11,"連続勤務5日まで"] , ### 半日勤務をどうするか未定
-          :after_nights =>  [/[2L3M56]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
-          },
-         # 1 日勤
-          { },
-         # 2 準夜
-        {
-          :yakinrenzoku => [/([2L5]{2}.[2L5])/,3,5,"22022は避ける"],
-         },
-        # 3 深夜
-        {
-          :yakinrenzoku => [/([36]{2}.[36])/,3,5,"33033,22022は避ける"],
-        }
-       ],
-    false => #二交代
-      [ #0 全シフト
-       {   # item  => [[正規表現,何日前から見るか,何日分見るか]
-         :renkin   => [/[1-8]{6,}/,5,11,"連続勤務5日まで"] ### 半日勤務をどうするか未定
-       },
-       # 1 日勤
-       { },
-       # 2 準夜
-       {
-         :yakinrenzoku => [/([25]{2}.[25])/,3,5,"22022は避ける"],
-         :nine_nights => [/([25][^25]*){5}/,nil,nil, "夜勤は72時間 計4回まで"]
-       }
-      ]
-  }
-  Wants = { 
-    true => #三交代
-      [#0
-      {},  
-      #1
-      {
-         :interval => [/([2L5][14])|([14][3M6])/,1,3,"勤務間隔12時間以上"]
-       },
-       #2
-       {
-         :interval => [/([2L5][14])/,1,3,"勤務間隔12時間以上"]
-       },
-       #3
-       {
-         :interval => [/([14][3M6])/,1,3,"勤務間隔12時間以上"]
-       }
-      ],
-    false => #三交代
-      [#0
-       {},  
-       #1
-       {
-         :interval => [/[25][14]/,1,3,"勤務間隔12時間以上"]
-       },
-       #2
-       {
-         :interval => [/([25][14])/,1,3,"勤務間隔12時間以上"],
-         :after_nights   => [/[25]{2}[^0_]/ ,2,5," 夜勤連続の翌日公休"]
-       }
-      ]
-  }
-
-  Raguration_keys = { 
-    true => 
-    (Shift0..Shift3).map{|shift| Reguration[true][shift].keys +  Wants[true][shift].keys },
-    false => 
-    (Shift0..Shift2).map{|shift| Reguration[false][shift].keys +  Wants[false][shift].keys }
-    }
-
-  
-  #Reguration = RegurationThroughLastMonth.merge(RegurationThisMonthOnly).merge(WantsThroughLastMonth)
-  RegurationNeed = { 
-      true => 
-    [
-     {
-       :koukyuu => [/(0[^0]*){7}/, nil,nil,"公休6以上、年休１以上"],
-       :renkyuu => [/00/         , nil,nil,"連休がある"]
-     },{},{},{}
-    ],
-      false =>
-      []
-    }
 
   LongPatern = { 
     true => {
@@ -205,30 +120,6 @@ class Hospital::Nurce < ActiveRecord::Base
 
   }
   
-
-  def set_check_reg 
-    
-    @Reguration = 
-      [
-       { :kinmu_total => [/([1-8LM][^1-8LM]*){#{limit.kinmu_total+1}}/,nil,nil, "勤務は22日まで"]
-       },{
-       }, {
-         :junya => [/([2L5][^25]*){#{limits.code2+1}}/,nil,nil,"順夜が#{limits.code2}を越えた"],
-         :nine_nights => [/([2L3M56][^2356]*){#{limit.night_total+1}}/,nil,nil, "夜勤は72時間 計9回まで"]
-       },{ 
-         :shinya =>[/([3M6][^36]*){#{limits.code3+1}}/,nil,nil,"深夜が#{limits.code3}を越えた"] ,
-         :nine_nights => [/([2L3M56][^2356]*){#{limit.night_total+1}}/,nil,nil, "夜勤は72時間 計9回まで"]
-       }
-      ]
-    @Wants = [{},{},{},{}] 
-    @Reguration_keys = (Shift0..Shift3).map{|shift| @Reguration[shift].keys + @Wants[shift].keys }
-    [@Reguration ,    @Wants ,  @Reguration_keys] # retern for TDD
-  end
-
-  def check_reg
-    @check_reg ||=
-      [@Reguration ,@Wants,Reguration[ Hospital::Define.koutai3?],Wants[ Hospital::Define.koutai3?] ]
-  end
 
 
   def self.by_busho(busho_id,option = {})
@@ -323,6 +214,7 @@ class Hospital::Nurce < ActiveRecord::Base
     role_shift[day]=role_shift_of(sft_str)
     if /[0123]/ =~ sft_str
       shift_remain[sft_str] -= 1 
+      #shift_remain["1"] -= 1 unless sft_str == "1"
       role_ids.each{|role_id| 
         role_used[[role_id,sft_str]] += 1
         role_remain[[role_id,sft_str]] -= 1
@@ -440,6 +332,8 @@ def role_remain(recalc=false)
     @shift_remain = Hash[*Sshift0123.
                          zip([limits.code0,limits.code1,limits.code2,limits.code3]).flatten]
     [ /[^0]/,  /[^1478]/ , /[^25]/ , /[^36]/].
+#                         zip([limits.code0,limits.kinmu_total,limits.code2,limits.code3]).flatten]
+#    [ /[^0]/,  /[^1-8LM]/ , /[^25]/ , /[^36]/].
       each_with_index{|reg,shift| 
       @shift_remain[shift.to_s] -= shifts.gsub(reg,"").size }
     @shift_remain["0"] -= shifts.gsub(/[^9ABC]/,"").size*0.5
@@ -608,15 +502,13 @@ def role_remain(recalc=false)
 
   def check(day,sft_str,imidiate=true)
     ret = []
-    check_reg.each{|reguretion|
-      [0,sft_str.to_i].each{|s|
-        reguretion[s].each_pair{|item,reg_arry|
-          d = check_sub(day,item,reg_arry)
-          if d
-            ret << [item,d]
-            return ret if imidiate
-          end
-        }
+    [0,sft_str.to_i].each{|s|
+      check_reg[s].each_pair{|item,reg_arry|
+        d = check_sub(day,item,reg_arry)
+        if d
+          ret << [item,d]
+          return ret if imidiate
+        end
       }
     }
     ret
@@ -627,25 +519,29 @@ def role_remain(recalc=false)
     #     shift_with_last_month  0123456789
     #                     shift       12345
     #                                   +   3-1+4 = 6
-    offset,len = back ? [day-back+4,length] : [5,31] #[0,31] 
-    (reg =~ shift_with_last_month[offset,len])
+    #offset,len = back ? [day-back+4,length] : [5,31] #[0,31] 
+    #(reg =~ shift_with_last_month[offset,len])
+    if back
+      (reg =~ shift_with_last_month[day-back+4,length])
+    else
+#pp limit
+      shift_with_last_month[5,31].gsub(reg,"").size > length
+    end
   end
 
   def error_check
     ret = []
     #[@Reguration,@Wants,Reguration,Wants].each{|reguretion|
-    check_reg.each{|reguretion|
-      reguretion.each{|reg_hash| # { :after_nights =>  [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
-        reg_hash.values.each{|reg_arry|  # [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
-          reg,back,length,msg = reg_arry # 
-          if back
-            match = (reg =~ shift_with_last_month)
-            ret <<  [name,msg,[match-4,1].max,shift_with_last_month] if match && match-4+back>0
-          else
-            match = (reg =~ shifts)
-            ret <<  [name,msg,match,shift_with_last_month] if match
-          end
-        }
+    check_reg.each{|reg_hash| # { :after_nights =>  [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
+      reg_hash.values.each{|reg_arry|  # [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
+        reg,back,length,msg = reg_arry # 
+        if back
+          match = (reg =~ shift_with_last_month)
+          ret <<  [name,msg,[match-4,1].max,shift_with_last_month] if match && match-4+back>0
+        else
+          match = (reg =~ shifts)
+          ret <<  [name,msg,match,shift_with_last_month] if match
+        end
       }
     }
     ret.uniq

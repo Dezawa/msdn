@@ -15,32 +15,34 @@ class Hospital::NurceChecTest < ActiveSupport::TestCase
   #"時廣眞弓さんの先月末月初は '12011__0___'
   # 2日から233勤務を埋め込んだとき、1日に勤務3を入れると:renkinのエラー
   # ~      ^^^                      ^        ^           ^^^^^^
-  [[2,"01111220",3,1,[[:renkin,5]],"6連勤OUT"],
-   [2,"0111120" ,3,1,[],"6連勤OK"],
-   [2,"0120"    ,3,1,[],"勤務間隔12時間以上OK"], #12
-   [2,"0130"    ,3,1,[[:interval,1]],"勤務間隔12時間以上NG"], #13
-   [2,"0210"    ,3,2,[[:interval,1]],"勤務間隔12時間以上NG"], #21
-   [2,"0230"    ,3,2,[],"勤務間隔12時間以上OK"], #23
-   [2,"0310"    ,3,3,[],"勤務間隔12時間以上OK"], #31
-   [2,"0320"    ,3,3,[],"勤務間隔12時間以上OK"], #32
-   [2,"02302302302030203",3,2,[[:nine_nights,2]],"夜勤9回NG"],
-   [2,"02302302302030203",4,3,[[:nine_nights,2]],"夜勤9回NG"],
-   [2,"0230230230202020" ,3,2,[[:junya,2]]     ,"準夜Over"],
-   [2,"0230230230303030" ,4,3,[[:shinya,3]]     ,"深夜Over"],
+  [[2,"0_111220",3,1,[[:renkin,5]],"6連勤OUT"],
+   [2,"0_11120" ,3,1,[],"6連勤OK"],
+   [2,"0_20"    ,3,1,[],"勤務間隔12時間以上OK"], #12
+   [2,"0_30"    ,3,1,[[:interval,1]],"勤務間隔12時間以上NG"], #13
+   [2,"0_10"    ,3,2,[[:interval,1]],"勤務間隔12時間以上NG"], #21
+   [2,"0_30"    ,3,2,[],"勤務間隔12時間以上OK"], #23
+   [2,"0_10"    ,3,3,[],"勤務間隔12時間以上OK"], #31
+   [2,"0_20"    ,3,3,[],"勤務間隔12時間以上OK"], #32
+   [2,"0_302302302030203",3,2,[[:nine_nights,true]],"夜勤9回NG"],
+   [2,"02_02302302030203",4,3,[[:nine_nights,true]],"夜勤9回NG"],
+   [2,"0_30230230202020" ,3,2,[[:junya,true]]     ,"準夜Over"],
+   [2,"02_0230230303030" ,4,3,[[:shinya,true]]     ,"深夜Over"],
    [2,"02210"   ,3,2,[[:after_nights,2]],"夜勤連続の翌日公休NG"],
    [2,"03210"   ,3,3,[[:after_nights,2]],"夜勤連続の翌日公休NG"],
    [2,"03310"   ,3,3,[[:after_nights,2]],"夜勤連続の翌日公休NG"],
-   [2,"023123102302030203",3,2,[[:renkin, 5], [:nine_nights, 2], [:after_nights, 2]],"エラー満載"],
+   [2,"023123102302030203",3,2,[[:renkin, 5], [:nine_nights,true], [:after_nights, 2]],"エラー満載"],
    #["220",false,:nights,"夜勤連続の翌日公休OK"],
    nil
   ].each{|day0,pat,day,shift,ret,msg|
     next unless day0
     #"時廣眞弓さんの先月末月初は '12011__0___'
+    # 今月初期値は "_00_______________________10"
     msg0 ="2/#{day0}から#{pat}勤め,2/#{day} に#{shift} 勤めると#{msg}"
     must msg0 do
       nurce37 = nurce( 37)
       nurce37.set_shift_days(day0,pat)
-      assert_equal [], ret-nurce37.check(day,shift,false),"*****"+msg0
+      nurce37.set_shift_days(day,shift.to_s)
+      assert_equal [],ret-nurce37.check(day,shift,false),"*****"+msg0
     end
   }
 
@@ -51,14 +53,14 @@ class Hospital::NurceChecTest < ActiveSupport::TestCase
   [[2,"0_111220",3,"1",[[:renkin,5]],"6連勤OUT"],
    [2,"0_30"    ,3,"1",[[:interval,1]],"勤務間隔12時間以上NG"], #13
    [2,"0_10"    ,3,"2",[[:interval,1]],"勤務間隔12時間以上NG"], #21
-   [2,"0_302302302030203",3,"2",[[:nine_nights,2]],"夜勤9回NG"],
-   [2,"0_302302302032023",4,"3",[[:nine_nights,3]],"夜勤9回NG"],
-   [2,"0_30230230202020" ,3,"2",[[:junya,2]]     ,"準夜Over"],
-   [2,"0_30230230303030" ,4,"3",[[:shinya,3]]     ,"深夜Over"],
+   [2,"0_302302302030203",3,"2",[[:nine_nights,true]],"夜勤9回NG"],
+   [2,"0_302302302032023",4,"3",[[:nine_nights,true]],"夜勤9回NG"],
+   [2,"0_30230230202020" ,3,"2",[[:junya,true]]     ,"準夜Over"],
+   [2,"0_30230230303030" ,4,"3",[[:shinya,true]]     ,"深夜Over"],
    [2,"0_210"             ,3,"2",[[:after_nights,2]],"夜勤連続の翌日公休NG"],
    [2,"0_210"             ,3,"3",[[:after_nights,2]],"夜勤連続の翌日公休NG"],
    [2,"0_310"             ,3,"3",[[:after_nights,2]],"夜勤連続の翌日公休NG"],
-   [2,"0_3123102302030203",3,"2",[[:renkin, 5], [:nine_nights, 2], [:after_nights, 2]],"エラー満載"],
+   [2,"0_3123102302030203",3,"2",[[:renkin, 5], [:nine_nights, true], [:after_nights, 2]],"エラー満載"],
    #["220",false,:nights,"夜勤連続の翌日公休OK"],
    nil
   ].each{|day0,pat,day,shift,ret,msg|
@@ -84,7 +86,9 @@ class Hospital::NurceChecTest < ActiveSupport::TestCase
     msg0 ="2/#{day0}から#{pat}勤めた時,2/#{day} に#{shift} をassignするのは#{msg}"
     must msg0 do
       nurce37 = nurce( 37)
+pp nurce37.shifts
       nurce37.set_shift_days(day0,pat)
+pp nurce37.shifts
       assert_equal nil,nurce37.check_at_assign(day,shift,false),"*****"+msg0
     end
   }
@@ -96,7 +100,7 @@ class Hospital::NurceChecTest < ActiveSupport::TestCase
      ["000000001_1100000"           ,10,"3",true,[:interval],"2/10への3は勤務間隔12時間以上に抵触"],
      ["002203302_0200011_1110020"   ,10,"2",true,[:junya],"2/10への2は準夜制限に抵触"],
      ["003302203_0300011_1110300"   ,10,"3",true,[:shinya],"2/10への3は深夜制限に抵触"],
-     ["220111220_301112201330111111",10,"3",true,[:nine_nights],"2/10への3は夜勤数に抵触"],
+     ["220111220_301112201330111101",10,"3",true,[:nine_nights],"2/10への3は夜勤数に抵触"],
      nil
   ].each{|init,day,shift,ret,val,msg|
     next unless init
