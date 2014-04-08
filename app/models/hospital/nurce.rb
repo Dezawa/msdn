@@ -539,8 +539,7 @@ def role_remain(recalc=false)
           match = (reg =~ shift_with_last_month)
           ret <<  [name,msg,[match-4,1].max,shift_with_last_month] if match && match-4+back>0
         else
-          match = (reg =~ shifts)
-          ret <<  [name,msg,match,shift_with_last_month] if match
+          ret <<  [name,msg,0,shift_with_last_month] if shifts.gsub(reg,"").size > length
         end
       }
     }
