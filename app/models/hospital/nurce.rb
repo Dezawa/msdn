@@ -31,7 +31,10 @@ class Hospital::Nurce < ActiveRecord::Base
   belongs_to :pre_busho,:class_name => "Hospital::Busho"
   belongs_to :busho    ,:class_name => "Hospital::Busho"
   
-  LimitDefault={:code0 => 8,:code1 => 20,:code2 => 4,:code3 => 4,:coden => 1}
+  LimitDefault =
+    { :code0 => 8,:code1 => 20,:code2 => 4,:code3 => 4,:coden => 1,
+    :night_total => 9
+  }
   CheckFail = Class.new(StandardError)
 
   attr_accessor :month
@@ -99,12 +102,10 @@ class Hospital::Nurce < ActiveRecord::Base
          # 2 準夜
         {
           :yakinrenzoku => [/([2L5]{2}.[2L5])/,3,5,"22022は避ける"],
-          :nine_nights => [/([2L3M56][^2356]*){10}/,nil,nil, "夜勤は72時間 計9回まで"]
-        },
+         },
         # 3 深夜
         {
           :yakinrenzoku => [/([36]{2}.[36])/,3,5,"33033,22022は避ける"],
-          :nine_nights => [/([2L3M56][^2356]*){10}/,nil,nil, "夜勤は72時間 計9回まで"]
         }
        ],
     false => #二交代
@@ -209,11 +210,14 @@ class Hospital::Nurce < ActiveRecord::Base
     
     @Reguration = 
       [
-       {        },{ },
-       {
-         :junya => [/([2L5][^25]*){#{limits.code2+1}}/,nil,nil,"順夜が#{limits.code2}を越えた"]
+       { :kinmu_total => [/([1-8LM][^1-8LM]*){#{limit.kinmu_total+1}}/,nil,nil, "勤務は22日まで"]
+       },{
+       }, {
+         :junya => [/([2L5][^25]*){#{limits.code2+1}}/,nil,nil,"順夜が#{limits.code2}を越えた"],
+         :nine_nights => [/([2L3M56][^2356]*){#{limit.night_total+1}}/,nil,nil, "夜勤は72時間 計9回まで"]
        },{ 
-         :shinya =>[/([3M6][^36]*){#{limits.code3+1}}/,nil,nil,"深夜が#{limits.code3}を越えた"] 
+         :shinya =>[/([3M6][^36]*){#{limits.code3+1}}/,nil,nil,"深夜が#{limits.code3}を越えた"] ,
+         :nine_nights => [/([2L3M56][^2356]*){#{limit.night_total+1}}/,nil,nil, "夜勤は72時間 計9回まで"]
        }
       ]
     @Wants = [{},{},{},{}] 

@@ -26,7 +26,9 @@ class Hospital::RoleController < Hospital::Controller
      HtmlText.new(:code1,"日勤",:size => 2),
      HtmlText.new(:code2,"準夜",:size => 2),
      HtmlText.new(:code3,"深夜",:size => 2),
-     HtmlText.new(:coden,"年休",:size => 2)
+     HtmlText.new(:coden,"年休",:size => 2),
+     HtmlText.new(:night_total,"夜勤計",:size => 2),
+     HtmlText.new(:kinmu_total,"勤務計",:size => 2),
      ]
 
   def show_assign

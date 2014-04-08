@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140406040836) do
+ActiveRecord::Schema.define(:version => 20140407224327) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -103,6 +103,8 @@ ActiveRecord::Schema.define(:version => 20140406040836) do
     t.integer "code3"
     t.integer "coden"
     t.integer "busho_id"
+    t.integer "kinmu_total"
+    t.integer "night_total"
   end
 
   create_table "hospital_meetings", :force => true do |t|
