@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140406040836) do
+ActiveRecord::Schema.define(:version => 20140406002436) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -188,6 +188,9 @@ ActiveRecord::Schema.define(:version => 20140406040836) do
     t.integer "number"
     t.integer "busho_id"
     t.integer "pre_busho_id"
+    t.integer "shokui_id"
+    t.integer "shokushu_id"
+    t.integer "kinmukubun_id"
     t.integer "pre_shokui_id"
     t.integer "pre_shokushu_id"
     t.integer "pre_kinmukubun_id"
@@ -370,6 +373,7 @@ ActiveRecord::Schema.define(:version => 20140406040836) do
     t.integer  "limit_dryero"
     t.integer  "limit_dryern"
     t.boolean  "jun_only"
+    t.datetime "replan_from"
     t.date     "plan_from"
   end
 
