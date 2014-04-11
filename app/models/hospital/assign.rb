@@ -1271,9 +1271,9 @@ class Hospital::Assign
     (1..@lastday).map{|day| error_day(day) }.compact
   end
   def error_day(day)
-    ret = (1..3).map{|shift| 
+    ret = Sshift123.map{|shift| 
       srn = short_role_name(day,shift)
-      "#{day}日 #{['','日勤','準夜','深夜'][shift]}:#{srn.join(',')} " if srn.size > 0
+      "#{day}日 #{['','日勤','準夜','深夜'][shift.to_i]}:#{srn.join(',')} " if srn.size > 0
     }.compact
     ret.size > 0 ? ret : nil
   end
