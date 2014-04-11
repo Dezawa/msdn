@@ -34,7 +34,7 @@ module Hospital
        {
          :yakinrenzoku => [/([25]{2}.[25])/,3,5,"22022は避ける"],
          :nine_nights => [/[^25]/,nil,4, "夜勤は72時間 計4回まで"] 
-      }
+      },{ }
       ]
   }
   Wants = { 
@@ -65,7 +65,8 @@ module Hospital
        {
          :interval => [/([25][14])/,1,3,"勤務間隔12時間以上"],
          :after_nights   => [/[25]{2}[^0_]/ ,2,5," 夜勤連続の翌日公休"]
-       }
+       },
+       { }
       ]
   }
 
@@ -93,11 +94,15 @@ module Hospital
     return @check_reg if @check_reg
     @check_reg = [{},{},{},{}] 
    @check_reg.each_with_index{ |reguration,idx|
-      reguration.merge!(@Reguration[idx]).merge!(@Wants[idx]).
+#pp [@Reguration[idx],@Wants[idx],Reguration[ Hospital::Define.koutai3?][idx],Wants[ Hospital::Define.koutai3?][idx]]
+      reguration.merge!(@Reguration[idx]).
+      merge!(@Wants[idx]).
       merge!(Reguration[ Hospital::Define.koutai3?][idx]).
       merge!(Wants[ Hospital::Define.koutai3?][idx])
     }
+#pp @check_reg
 # [@Reguration ,@Wants,Reguration[ Hospital::Define.koutai3?],Wants[ Hospital::Define.koutai3?] ]
+    @check_reg
   end
 
   Raguration_keys = { 
