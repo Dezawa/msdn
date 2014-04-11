@@ -71,3 +71,8 @@ class UbeSkd
     assign_maint_plan_by_temp(plan,real_ope,[maint,assign])
   end
 end
+class Symbol
+  def <=>(other)
+    self.to_s <=> other.to_s
+end
+end

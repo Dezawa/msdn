@@ -108,11 +108,11 @@ module HospitalHelper
   end
   def day_total
     
-    [["日勤",:daytime,1],["準夜",:night,2],["深夜",:midnight,3]].map{|lbl,sym,shift|
+    [["日勤",:daytime,"1"],["準夜",:night,"2"],["深夜",:midnight,"3"]].map{|lbl,sym,shift|
       "<tr><td>　</td><td>#{lbl}</td>"+
       (1..@month.end_of_month.day).map{|day|
         sum = total(@nurces,day,sym)
-        color = @assign.short_role(day,shift).include?(2) ?  "bgcolor='#ff70b0'" : "" 
+        color = @assign.short?(day,shift) ?  "bgcolor='#ff70b0'" : "" 
         "<td #{color}>"+ sum.to_s + "</td>"
       }.join + "</tr>\n"
     }.join

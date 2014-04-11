@@ -285,7 +285,7 @@ class Hospital::Assign
     basename = File.join( RAILS_ROOT,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
 
-    @start_mult = Time.now
+    @start = @start_mult = Time.now
     @limit_mult = @start_mult + Hospital::Const::TimeoutMult
     count = -1
     @night_mode = true 
@@ -318,7 +318,7 @@ class Hospital::Assign
       end
       # set limit for this turn
       @limit_time = Time.now + Hospital::Const::Timeout
-      @start = Time.now
+      # @start = Time.now
       dbgout("HP ASSIGN (#{__LINE__})#{day}:#{sft_str} Try #{try += 1} of #{ncm}")
       @night_mode = true
       
@@ -336,7 +336,7 @@ class Hospital::Assign
             dbgout("HP ASSIGN (#{__LINE__})count up to #{count}")
             
             @fine = Time.now ; log_stat((single ? "once" : "mult"),"") ; clear_stat
-            
+            @start = Time.now
             #if count == 0
               dbgout("HP ASSIGN (#{__LINE__})output to file #{ basename + "%04d"%count}")
               open( basename + "%04d"%count ,"w"){ |fp| fp.puts dump }
@@ -1011,9 +1011,9 @@ class Hospital::Assign
     nurce.set_shift(day,shift_str)
     count_role_shift[day] = count_role_shift_of(day)
     short_role_shift[day] = short_role_shift_of(day)
-    nurce.roles.each{|role_id,name| 
+    nurce.role_ids.each{|role_id,name| 
       #role_used[[role_id,shift_str.to_i]] += 1 
-      role_remain[[role_id,shift_str.to_i]] -= 1
+      role_remain[[role_id,shift_str]] -= 1
       #      margin_of_role[[role_id,shift_str.to_i]] -= 1
     }
     shift_str
@@ -1213,12 +1213,11 @@ class Hospital::Assign
     #@short_role[day]
     #logger.debug("short_role_shift(reculc)[day].to_a #{short_role_shift(reculc)[day].to_a.join(',')}")
     short_role_shift(reculc)[day].to_a.map{|role_shift,min_max| 
-      role_shift.first if role_shift.last == sft_str && min_max.first>0}.compact.sort
+      role_shift.first if min_max.first>0 && role_shift.last == sft_str}.compact.sort
   end
-  def short?(day,sft_str,role)
-
-    short_role_shift[day].to_a.map{|role_shift,min_max| 
-      role_shift.first if role_shift.last == sft_str && min_max.first>0}.compact
+  def short?(day,sft_str)
+    short_role_shift_of(day).to_a.map{|role_shift,min_max| 
+      role_shift.first if role_shift.last == sft_str && min_max.first>0}.compact.size > 0
   end
 
   def short_role_name(day,shift)
@@ -1272,9 +1271,9 @@ class Hospital::Assign
     (1..@lastday).map{|day| error_day(day) }.compact
   end
   def error_day(day)
-    ret = (1..3).map{|shift| 
+    ret = Sshift123.map{|shift| 
       srn = short_role_name(day,shift)
-      "#{day}日 #{['','日勤','準夜','深夜'][shift]}:#{srn.join(',')} " if srn.size > 0
+      "#{day}日 #{['','日勤','準夜','深夜'][shift.to_i]}:#{srn.join(',')} " if srn.size > 0
     }.compact
     ret.size > 0 ? ret : nil
   end
@@ -1385,6 +1384,15 @@ def dbgout(msg,sw=(LogPuts|LogInfo))
 
 end
 
-
 __END__
-Hospital::Assign.new(1,Date.new(2013,2,1))
+reculc=false
+assign = Hospital::Assign.new(1,Date.new(2013,2,1))
+assign. short_role(day,sft_str) # 1211
+assign.    short_role_shift(reculc)[day] #1166
+assign.      count_role_shift[day]
+assign.      short_role_shift_of(day)  #1067
+assign.         needs_all_days[day]
+assign.short_role_shift[day] # 1216 ここに 0=>[0, 0],
+assign.short_role_shift_of(day)       #1169 ここにはない
+assign.short_role_shift(reculc)[day].to_a.map{|role_shift,min_max| 
+      role_shift.first if min_max.first>0 && role_shift.last == sft_str}
