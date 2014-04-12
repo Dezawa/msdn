@@ -503,8 +503,8 @@ def role_remain(recalc=false)
   def check(day,sft_str,imidiate=true)
     ret = []
     [0,sft_str.to_i].each{|s|
-      check_reg[s].each_pair{|item,reg_arry|
-        d = check_sub(day,item,reg_arry)
+      check_reg[s].each_pair{|item,regration|
+        d = regration.check(day,shift_with_last_month)
         if d
           ret << [item,d]
           return ret if imidiate
@@ -514,8 +514,8 @@ def role_remain(recalc=false)
     ret
   end
 
-  def check_sub(day,item,reg_arry)
-    reg,back,length,msg =reg_arry# @Reguration[item]
+  def check_sub(day,item,regration)
+    #reg,back,length,msg =regration# @Reguration[item]
     #     shift_with_last_month  0123456789
     #                     shift       12345
     #                                   +   3-1+4 = 6
