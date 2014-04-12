@@ -503,8 +503,8 @@ def role_remain(recalc=false)
   def check(day,sft_str,imidiate=true)
     ret = []
     [0,sft_str.to_i].each{|s|
-      check_reg[s].each_pair{|item,reg_arry|
-        d = check_sub(day,item,reg_arry)
+      check_reg[s].each_pair{|item,regration|
+        d = regration.check(day,shift_with_last_month)
         if d
           ret << [item,d]
           return ret if imidiate
@@ -514,8 +514,8 @@ def role_remain(recalc=false)
     ret
   end
 
-  def check_sub(day,item,reg_arry)
-    reg,back,length,msg =reg_arry# @Reguration[item]
+  def check_sub(day,item,regration)
+    #reg,back,length,msg =regration# @Reguration[item]
     #     shift_with_last_month  0123456789
     #                     shift       12345
     #                                   +   3-1+4 = 6
@@ -533,14 +533,16 @@ def role_remain(recalc=false)
     ret = []
     #[@Reguration,@Wants,Reguration,Wants].each{|reguretion|
     check_reg.each{|reg_hash| # { :after_nights =>  [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
-      reg_hash.values.each{|reg_arry|  # [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
-        reg,back,length,msg = reg_arry # 
-        if back
-          match = (reg =~ shift_with_last_month)
-          ret <<  [name,msg,[match-4,1].max,shift_with_last_month] if match && match-4+back>0
-        else
-          ret <<  [name,msg,0,shift_with_last_month] if shifts.gsub(reg,"").size > length
-        end
+      reg_hash.values.each{|regration|  # [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
+        #reg,back,length,msg = reg_arry # 
+        day=regration.error_check(day,shift_with_last_month)
+        ret << [name,regration.comment,day,shift_with_last_month]  if day
+        #if back
+        #  match = (reg =~ shift_with_last_month)
+        #  ret <<  [name,msg,[match-4,1].max,shift_with_last_month] if match && match-4+back>0
+        #else
+        #  ret <<  [name,msg,0,shift_with_last_month] if shifts.gsub(reg,"").size > length
+        #end
       }
     }
     ret.uniq

@@ -10,7 +10,13 @@ class Hospital::NurceChecTest < ActiveSupport::TestCase
     @nurces = Hospital::Nurce.all
     @month  = Date.new(2013,2,1)
   end
-
+  #######
+  def nurce(id); 
+    n = Hospital::Nurce.find id
+    n.monthly(@month)
+    n
+  end
+  
 
   #"時廣眞弓さんの先月末月初は '12011__0___'
   # 2日から233勤務を埋め込んだとき、1日に勤務3を入れると:renkinのエラー
@@ -30,7 +36,7 @@ class Hospital::NurceChecTest < ActiveSupport::TestCase
    [2,"02210"   ,3,2,[[:after_nights,2]],"夜勤連続の翌日公休NG"],
    [2,"03210"   ,3,3,[[:after_nights,2]],"夜勤連続の翌日公休NG"],
    [2,"03310"   ,3,3,[[:after_nights,2]],"夜勤連続の翌日公休NG"],
-   [2,"023123102302030203",3,2,[[:renkin, 5], [:nine_nights,true], [:after_nights, 2]],"エラー満載"],
+   [2,"023123102302030203",3,2,[  [:after_nights, 2],[:nine_nights,true],[:renkin, 5]],"エラー満載"],
    #["220",false,:nights,"夜勤連続の翌日公休OK"],
    nil
   ].each{|day0,pat,day,shift,ret,msg|
@@ -42,10 +48,11 @@ class Hospital::NurceChecTest < ActiveSupport::TestCase
       nurce37 = nurce( 37)
       nurce37.set_shift_days(day0,pat)
       nurce37.set_shift_days(day,shift.to_s)
-      assert_equal [],ret-nurce37.check(day,shift,false),"*****"+msg0
+      assert_equal ret,nurce37.check(day,shift,false).sort,"*****"+msg0
     end
   }
-
+#end
+#__END__
 
   #"時廣眞弓さんの先月末月初は '12011__0___'
   # 2日から233勤務を埋め込んだとき、1日に勤務3を入れると:renkinのエラー
@@ -143,14 +150,5 @@ pp nurce37.shifts
     end
   }
 
-
-
-  #######
-  def nurce(id); 
-    n = Hospital::Nurce.find id
-    n.monthly(@month)
-    n
-  end
-  
 
 end

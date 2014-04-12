@@ -11,6 +11,7 @@ class Hospital::Nurce < ActiveRecord::Base
 
 end
 
+
 class Hospital::NurceTest < ActiveSupport::TestCase
   fixtures :nurces,:hospital_roles,:nurces_roles,:hospital_limits
   fixtures :holydays,:hospital_needs,:hospital_monthlies
@@ -47,8 +48,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     assert_equal [2,5,6,9],nurce(3).hospital_roles.map(&:id).sort,"看護婦Id=3変更後のrole"
 
   end
-#end
-#__END__
+
   #123456789012345678901234567890123456789
   "1232311111AB487564564564477CB11151AB487".split("").each_with_index{|shift,code|
     must "To_123 of code #{code+1}" do
@@ -147,10 +147,13 @@ class Hospital::NurceTest < ActiveSupport::TestCase
   end
 
   must "set_check_reg " do
-    check_reg = nurce(40).set_check_reg
-    assert_equal [[],[],[:junya],[:shinya]],check_reg[-1]
-    assert check_reg[0][2][:junya].first =~ "222222","junya set_check_reg Over 5 error"
-    assert !(check_reg[0][2][:junya].first =~ "22222"),"junya set_check_reg under 6  error"
+    set_check_reg = nurce(40).set_check_reg
+    assert_equal [[:kinmu_total], [], [:junya,:nine_nights], [ :nine_nights,:shinya]],
+    set_check_reg[-1].map{ |r| r.sort}
+#pp  check_regset_check_reg[0][2][:junya].first
+pp set_check_reg[0][2][:junya]
+    assert set_check_reg[0][2][:junya].check(0, "000000222222"),"junya set_check_reg Over 5 error"
+    assert !(set_check_reg[0][2][:junya].check(0, "00000022222")),"junya set_check_reg under 6  error"
 
   end
 
@@ -161,15 +164,6 @@ class Hospital::NurceTest < ActiveSupport::TestCase
   must "2/1時廣眞弓さん割り当てなし" do
     assert !nurce(35).assigned?(1)
   end 
-
-  must "38,39,43,44のshift_remain" do
-    nurce38,nurce39,nurce43,nurce44 = [38,39,43,44].map{|id| nurce(id)}
-    assert_equal [{"3"=>5, "2"=>5, "1"=>20.0, "0"=>7.0},
- {"3"=>5, "2"=>5, "1"=>20.0, "0"=>8.0},
- {"3"=>5, "2"=>4, "1"=>16.0, "0"=>5.0},
- {"3"=>4, "2"=>5, "1"=>19.0, "0"=>7.0}],
-    [nurce38,nurce39,nurce43,nurce44].map(&:shift_remain)
-  end
 
   must "時廣眞弓さんの先月からの勤務状況" do
     nurce = nurce(35)
@@ -259,54 +253,6 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     assert nurce(47).assigned?(1)
   end
 
-  rslt0 = {
-    [3,"1"]=>20,[3,"2"]=>5,[3,"3"]=>5,
-    [4,"1"]=>20,[4,"2"]=>5,[4,"3"]=>5,
-    #[7,"1"]=>20,[7,"2"]=>5,[7,"3"]=>5,
-    [9,"1"]=>20,[9,"2"]=>5,[9,"3"]=>5
-  }
-  must "Nurce 6 id 40 寺田輝子のアサイン可能なrole" do
-    assert_equal rslt0, nurce(40).assinable_roles
-  end
-
-  rslt1 = {
-    [3, "1"]=>3,    [4, "1"]=>3, [9, "1"]=>3,
-    [3, "2"]=>1,    [4, "2"]=>1, [9, "2"]=>1,
-    [3, "3"]=>0,    [4, "3"]=>0, [9, "3"]=>0, 
-    [3, "0"]=>0,    [4, "0"]=>0, [9, "0"]=>0  }
-  must "Nurce 6 id 40 寺田輝子の使われたrole" do
-    assert_equal rslt1, nurce(40).role_used
-  end
-
-  rslt2 = {
-    [3, "1"]=>17, [4, "1"]=>17, [9, "1"]=>17,
-    [3, "2"]=>4,  [4, "2"]=>4 , [9, "2"]=>4 ,
-    [3, "3"]=>5,  [4, "3"]=>5 , [9, "3"]=>5
-  }
-  must "Nurce 6 id 40 寺田輝子の残っているrole" do
-    assert_equal rslt2, nurce(40).role_remain
-  end
-
-  rslt1_2 = {
-    [3, "1"]=>3, [4, "1"]=>3,  [9, "1"]=>3,
-    [3, "3"]=>1, [4, "3"]=>1,  [9, "3"]=>1,
-    [3, "2"]=>1, [4, "2"]=>1, [9, "2"]=>1,
-    [3, "0"]=>0, [4, "0"]=>0, [9, "0"]=>0
-  }
-  rslt2_2 = {
-    [3, "1"]=>17, [4, "1"]=>17, [9, "1"]=>17,
-    [3, "2"]=>4,  [4, "2"]=>4 , [9, "2"]=>4 ,
-    [3, "3"]=>4,  [4, "3"]=>4 , [9, "3"]=>4
-  }
-  must "Nurce 6 id 40 寺田輝子に 2/2 shift3を割り振ると、usedとremainは" do
-    nrc =  nurce(40)
-    assert_equal rslt1,nrc.role_used,"割り振り前 used"
-    assert_equal rslt2,nrc.role_remain,"割り振り前 remain"
-    nrc.set_shift(2,"3")
-    assert_equal rslt1_2,nrc.role_used,"割り振り後 used"
-    assert_equal rslt2_2,nrc.role_remain,"割り振り後 remain"
-  end
-
   [3,4,5,9,10].product(%w(1 2 3)).zip([true,true,true, 
                                     true,true,true, 
                                     false,false,false,
@@ -331,12 +277,6 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     }
   end
 
-  must "石川トシ子さんの2/4 の [role,勤務]" do
-    assert_equal [ [4, "3"],  [10, "3"]],nurce(36).role_shift(@month)[4],"role_shift"
-    assert_equal [ [4, 3],[10, 3]],nurce(36).role_shift_of(3),"role_shift_of"
-    assert_equal [ [4, 2], [10, 2]],nurce(36).role_shift_of(2),"role_shift_of"
-  end
-
   [[1,1],[2,2],[3,2]].each{|shift,count|
     must "shift_count" do
       nurce50 = nurce(50)
@@ -354,6 +294,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     each{|id,name,ret|
     must name+"は2/1に日勤をassignできるか" do
       nurce = nurce(id)
+pp nurce.shift_with_last_month
       assert_equal ret,nurce.check_at_assign(1,"1")
     end
   }
