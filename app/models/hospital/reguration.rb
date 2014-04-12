@@ -5,10 +5,18 @@ module Hospital
     def check(day,shift_with_last_month)
       reg_expression =~ shift_with_last_month[day-back+4,length]
     end
+    def error_check(day,shift_with_last_month)
+      day = (reg_expression =~ shift_with_last_month)
+      day ? [day-4,1].max : nil
+    end
   end
   module Total
     def check(day,shift_with_last_month)
       shift_with_last_month[5,31].gsub(reg_expression,"").size > length
+    end
+    def error_check(day,shift_with_last_month)
+      day = shift_with_last_month[5,31].gsub(reg_expression,"").size > length
+      day ? 0 : nil
     end
   end
 
@@ -21,9 +29,6 @@ module Hospital
       @back = arg_back
       @length = arg_length
       @method = arg_method
-    end
-    def check(day,shift_with_last_month)
-      reg_expression =~ shift_with_last_month[day-back+4,length]
     end
     def self.create(arg_reg,arg_back,arg_length,arg_comment,arg_method = nil)
       reg = self.new(arg_reg,arg_back,arg_length,arg_comment,arg_method)
