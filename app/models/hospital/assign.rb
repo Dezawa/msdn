@@ -181,6 +181,8 @@ class Hospital::Assign
     end
     @basename = File.join( RAILS_ROOT,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
+
+    @avoid_list = Hospital::AvoidCombination.all.map{ |ab| [ab.nurce1_id,ab.nurce2_id]}
     clear_stat
   end
 
@@ -936,7 +938,13 @@ class Hospital::Assign
 
   # 看護師群のcostの総計
   def cost_of_nurce_combination(nurces,sft_str,tight)
-    nurces.inject(2.0){|cost,nurce| cost + nurce.cost(sft_str,tight) }
+    nurces.inject(2.0){|cost,nurce| cost + nurce.cost(sft_str,tight) }*
+      AvoidWeight[[nurces_have_avoid_combination?(nurces),AvoidWeight.size-1].min]
+  end
+
+  def nurces_have_avoid_combination?(nurces)
+    nurce_ids = nurces.map(&:id)
+    @avoid_list.select{ |comb| (nurce_ids & comb)==comb}.size
   end
 
   # 現時点で逼迫しているroleのTop3のrole_idを返す
