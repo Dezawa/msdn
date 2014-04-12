@@ -13,7 +13,9 @@
                <%= hidden_field(:must,:val,:value => 0) %></form></td>
 <td>  </td>
 <td><%= action_buttom([:form,:set_busho_month,"部署・年月変更",:input_busho_month]) %></td>
-<td><%= form_tag({:action => :error_disp},:target => ["_checkblank"])+submit_tag('チェック結果表示') -%>
+<td><%#= form_tag({:action => :error_disp},{:target => ["_checkblank"],"data-rel" => "popup"})+submit_tag('チェック結果表示') -%>
+</form></td>
+<td><a href="error_disp" onClick="window.open('error_disp','_error_disp','width=300,height=300,scrollbars=yes') ; return false" >チェック結果表示</a>
 </form></td>
 </tr></table>
 <form id='assign_links_tag'><%= assign_links %></form>
