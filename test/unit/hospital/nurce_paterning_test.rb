@@ -37,14 +37,14 @@ class Hospital::NurcePaterningTest < ActiveSupport::TestCase
   must "need_patern " do
     ret = [{ [3,"2"]  => [1,1] ,[3,"3"]  => [1,1],
              [4,"1"]  => [9,11],[4,"2"]  => [2,2],[4,"3"]  => [2,2],
-             [5,"1"]  => [0,1] ,[5,"2"]  => [0,1],[5,"3"]  => [0,1],
+             #[5,"1"]  => [0,1] ,[5,"2"]  => [0,1],[5,"3"]  => [0,1],
              [9,"1"]  => [1,2] ,[9,"2"]  => [1,2],[9,"3"]  => [1,2],
              [10,"1"] => [1,2] ,[10,"2"] => [1,2],[10,"3"] => [1,2],
              [4,"0"]  => [0,6]
            },
            { [3,"2"]  => [1,1] ,[3,"3"]  => [1,1],
              [4,"1"]  => [6,7] ,[4,"2"]  => [2,2],[4,"3"]  => [2,2],
-             [5,"1"]  => [0,1] ,[5,"2"]  => [0,1],[5,"3"]  => [0,1],
+             #[5,"1"]  => [0,1] ,[5,"2"]  => [0,1],[5,"3"]  => [0,1],
              [9,"1"]  => [1,2] ,[9,"2"]  => [1,2],[9,"3"]  => [1,2],
              [10,"1"] => [1,2] ,[10,"2"] => [1,2],[10,"3"] => [1,2],
              [4,"0"]  => [0,9]
@@ -64,7 +64,8 @@ class Hospital::NurcePaterningTest < ActiveSupport::TestCase
     day = 13
     shift = "3"
     assigned = @assign.assign_test_patern(comb_nurces[0,2],day,shift,[0,0])
-    assert_equal [["330",[[2],[],[],[1]]],["330",[[2],[],[],[1]]]], assigned,"二人ほどshift3にlong_patern[0,0],330を入れるのは可能"
+    assert_equal [["330",[[2],[],[],[1]]],["330",[[2],[],[],[1]]]], 
+    assigned.map{ |as| [as.patern,as.target_days]},"二人ほどshift3にlong_patern[0,0],330を入れるのは可能"
 pp "bofore ret = @assign.assign_patern"
 ret = @assign.assign_patern(comb_nurces[0,2],day,shift,assigned)
 pp "after ret = @assign.assign_patern"

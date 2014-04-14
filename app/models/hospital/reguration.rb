@@ -50,7 +50,7 @@ module Hospital
      true =>  #三交代  #              正規表現を削除した 残りが max 以下かどうか
        [ #0 全シフト   #
          {   # 
-          :renkin       => Hospital::Regrate.create(/[1-8LM]{6,}/,5,11,"連続勤務5日まで") , ### 半日勤務をどうするか未定
+          :renkin       => Hospital::Regrate.create(/[1-8LM]{6,}/,5,11,"連続勤務5日まで"),### 半日勤務をどうするか未定
           :after_nights => Hospital::Regrate.create(/[2L3M56]{2}[^0_]/,2,5,"連続夜勤明けは休み")
           },
          # 1 日勤

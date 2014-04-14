@@ -182,7 +182,7 @@ class Hospital::Assign
     @basename = File.join( RAILS_ROOT,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
 
-    @avoid_list = Hospital::AvoidCombination.all.map{ |ab| [ab.nurce1_id,ab.nurce2_id]}
+    @avoid_list = Hospital::AvoidCombination.all.map{ |ab| [[ab.nurce1_id,ab.nurce2_id],ab.weight]}
     clear_stat
   end
 
@@ -474,7 +474,7 @@ class Hospital::Assign
     # 長い割付が可能なら割り付ける
     dbgout("FOR_DEBUG(#{__LINE__}): shift=#{sft_str} need_nurces[sft_str] #{need_nurces[sft_str]} Hospital::Nurce::LongPatern[@koutai3][Sshift2].size #{Hospital::Nurce::LongPatern[@koutai3][Sshift2].size} ")
     long_plan_combination(need_nurces[sft_str],Hospital::Nurce::LongPatern[@koutai3][sft_str].size).
-      each{|long_patern|
+      each{|idx_list_of_long_patern|  # [0,2]
       @loop_count += 1
 
       # 現状保存
@@ -484,17 +484,18 @@ class Hospital::Assign
         ret = :done
       else
         @count_eval[sft_str] += 1
-        # この長い割付が可能か
-        assigned = assign_test_patern(nurce_combinations[sft_str],day,sft_str,long_patern)
-        dbgout("  #{__LINE__} nurce_combinations[sft_str] #{nurce_list(nurce_combinations[sft_str])} patern=#{long_patern.join(',')} is #{assigned ? assigned.map{|a| a.first}.join(',') : false}")
+        # この長い割付が可能か                                                # [0,2]
+        list_of_long_patern = 
+          assign_test_patern(nurce_combinations[sft_str],day,sft_str,idx_list_of_long_patern)
+        #dbgout("  #{__LINE__} nurce_combinations[sft_str] #{nurce_list(nurce_combinations[sft_str])} patern=#{long_patern.join(',')} is #{list_of_long_patern_and_dayly_check ? list_of_long_patern_and_dayly_check.map{|a| a.first}.join(',') : false}")
         #dbgout("FOR_DEBUG(#{__LINE__}): assign_test_patern #{long_patern} ret=>#{nurce_list(assigned && assigned)}")
         # この長い割付はだめなので、現状復帰して次の長い割付へ
-        unless assigned
+        unless list_of_long_patern
           #@count_fail[sft_str] += 1  
           restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
           next
-        else # 可能なので割り付ける
-          ret = !!assign_patern(nurce_combinations[sft_str],day,sft_str,assigned)
+        else # 可能なので割り付ける           #assigned: [ [LongPatern,LongPatern],daily_checks],[] ]
+          ret = !!assign_patern(nurce_combinations[sft_str],day,sft_str,list_of_long_patern)
         end
       end
 
@@ -506,7 +507,7 @@ class Hospital::Assign
         next # long_patern
         
       when true ,:done # 成功(または既に満たされていた)時は次のshiftへ再帰
-        assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,long_patern,"SUCCESS")
+        assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,idx_list_of_long_patern,"SUCCESS")
         @longest = [day*10+10-sft_str.to_i,save_shift(@nurces,day)] if day*10+10-sft_str.to_i > longest[0]
         #dbgout("FOR_DEBUG(#{__LINE__}) [sft_str,@koutai3] #{[sft_str,@koutai3].join}")
 
@@ -696,7 +697,9 @@ class Hospital::Assign
   # これが必要なのは割りあて可能な人数が「何人か」より多い場合
   def assinable_nurces_by_cost_size_limited(as_nurce,sft_str,need_nurces,short_roles )
     limit = case sft_str
-            when Sshift2,Sshift3  ; [((need_nurces[Sshift2] + (need_nurces[Sshift3] || 0))*2).ceil,6].max
+            when Sshift2,Sshift3 
+              #[((need_nurces[Sshift2] + (need_nurces[Sshift3] || 0))*2).ceil,6].max
+              [((need_nurces[Sshift2] + (need_nurces[Sshift3] || 0))*3).ceil,6].max
             when Sshift1          ; (need_nurces[Sshift1] * 1.5).ceil
             end # of case    
     return as_nurce.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str))} if as_nurce.size <= limit
@@ -833,40 +836,66 @@ class Hospital::Assign
   # 元々は3日以上の割付パターンについて行う予定であったが、プログラムの
   # 簡潔化のために、1日の割付もここで行うことにした。
   # [long_patern]  『Hospital::Nurce::LongPatern[shift]』の何番目を試すのか、を
-  #                 看護師分用意した配列。要素はInteger
-  def assign_test_patern(nurce_list,day,sft_str,long_patern)
+  #                 看護師分用意した配列。要素はInteger [0,2]
+  def  assign_test_patern(nurce_list,day,sft_str,idx_set_of_long_patern)
+    #[ LongPatern,LongPatern]
     paterns = (0..nurce_list.size-1).map{|idx|
-      patern,daily_checks = 
+      long_patern,errorlist =  
       nurce_list[idx].long_check(day,sft_str,
-                                 Hospital::Nurce::LongPatern[@koutai3][sft_str][long_patern[idx]])
-      if patern
-        [patern ,daily_checks]
+                                 Hospital::Nurce::LongPatern[@koutai3][sft_str][idx_set_of_long_patern[idx]])
+      if long_patern
+        long_patern # ,daily_checks]
       else
         # このとき、daily_checkは[item,正規表現の配列
-        daily_checks.each{|item,reg| @count_cause[item][sft_str]+=1 }
+        errorlist.each{|item,reg| @count_cause[item][sft_str]+=1 }
         return false
       end
     }
+    #return paterns if avoid_check(nurce_list,sft_str,day,paterns)
+    #false
   end
   
   # 看護師の勤務制限は満たしていても、2日目以降の日々の制限は確認していない。
   # 長い勤務を割り当てたときに、二日目以降に重大な支障が有るか否かを確認する。
   # [day] Integer 割付の最初の日付。
-  # [shift]  1,2,3。割り付けるshift
-  # [assigned_patern]  『Hospital::Nurce::LongPatern[shift][patern_番号]』
-  def assign_patern(nurces,day,shift,assigned_patern)
+  # [sft_str]  1,2,3。割り付けるsft_str
+  # [list_of_long_patern_and_dayly_check]   #assigned: [ [LongPatern,daily_checks],[LongPatern,daily_checks],[] ]
+  #                       『Hospital::Nurce::LongPatern[sft_str][patern_番号]』
+  def assign_patern(nurces,day,sft_str,list_of_long_patern)
     (0..nurces.size-1).each{|idx|
-      nurce_set_patern(nurces[idx],day,assigned_patern[idx].first)
+      nurce_set_patern(nurces[idx],day,list_of_long_patern[idx].patern)
     }
-    long_check_later_days(day,merged_patern(assigned_patern),shift)
+    long_check_later_days(day,merged_patern(list_of_long_patern),sft_str) 
+  end
+
+  # 禁忌な組み合わせがあるか調べる     [ [LongPatern,LongPatern],daily_checks],[] ]
+  def avoid_check(nurces,sft_str,first_day,list_of_long_patern)
+    return true if sft_str == "1"
+    last_day = first_day+list_of_long_patern.map{ |long_patern| long_patern.patern.size}.max-1
+logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avoid_list=#{@avoid_list.flatten.join(',')}")
+    @shifts_night.each{ |sft_str|
+      (first_day..last_day).each{ |day| 
+        nurce_ids = nurce_ids_of_the_day_shift(nurces,day,sft_str)
+        logger.debug("#### AVOID_CHECK        nurce_ids=#{nurce_ids==[]} SIZE=#{@avoid_list.map{ |al,weight| ( nurce_ids & al)==al }}")
+        return false if @avoid_list.map{ |al,weight| al if ( nurce_ids & al)==al }.compact.size > 0 
+      }
+    }
+    true
+  end
+
+  def nurce_ids_of_the_day_shift(nurces,day,sft_str)
+    nurces.map{ |nurce| nurce.id if nurce.shifts[day,1] == sft_str}.compact
   end
 
   # long_patenの配列から2日目以降のチェック指示部分を抜きだし、
   # 同じ内容のものは一つにまとめる。チェックの重複防止
-  # [assigned_patern] 看護師各々に割り当てた long_patenの配列
-  def merged_patern(assigned_patern)
+  # [list_of_long_patern_and_dayly_check] 看護師各々に割り当てた long_patenの配列
+  #                  [ [LongPatern,daily_checks],[LongPatern,daily_checks],[] ]
+  def merged_patern(list_of_long_patern)
     @shifts_int.map{|shift| 
-      assigned_patern.inject([]){|ary,a_p| ary + a_p[1][shift]}.uniq 
+      list_of_long_patern.inject([]){|ary,long_patern|  
+        ary + long_patern.target_days[shift]
+      }.uniq 
     }
   end
 
@@ -885,7 +914,6 @@ class Hospital::Assign
       daily_checks[sft_str.to_i].each{|d|
         next if day+d > @lastday
         dbgout("FOR_DEBUG(#{__LINE__}) 長割後日チェック too_many?(#{day+d}日,shift:#{sft_str}) #{too_many?(day+d,sft_str)}")
-        pp [day,d,daily_checks,shift_str]
         case too_many?(day+d,sft_str)
         when -1 ; return false
         when 0
@@ -944,7 +972,9 @@ class Hospital::Assign
 
   def nurces_have_avoid_combination?(nurces)
     nurce_ids = nurces.map(&:id)
-    @avoid_list.select{ |comb| (nurce_ids & comb)==comb}.size
+    @avoid_list.inject(0){ |cst,comb_weight| 
+      cst + (((comb_weight[0] & nurce_ids)==comb_weight[0]) ? comb_weight[1] : 0)
+    }
   end
 
   # 現時点で逼迫しているroleのTop3のrole_idを返す
@@ -986,6 +1016,7 @@ class Hospital::Assign
   # そこで、パターンの組み合わせをメモ化することにした。
   # [number_of_nurce] 看護師の人数
   # [number_of_plan]  LongPaternの数
+  # 戻り値            [ [0,0,0],[0,0,1],,,,[1,1,1] ]
   def long_plan_combination(number_of_nurce,number_of_plan)
     @long_plan_combination ||= {}
     return @long_plan_combination[[number_of_nurce,number_of_plan]] if @long_plan_combination[[number_of_nurce,number_of_plan]]
@@ -1043,9 +1074,9 @@ class Hospital::Assign
     what_day = (date.wday%6 == 0 || Holyday.holyday?(date)) ? 1 : 0
     need_patern[what_day]
     #dbgout("FOR_DBG(#{__LINE__})  needs_all_days what_day = #{what_day} #{need_patern[what_day]}")
-    dbgout("FOR_DBG(#{__LINE__}) needs_all_days[平日] "+
-           @needs_all_days[1].to_a.map{ |k,v| "[#{k.join(',')}]=>[#{v.join(',')}]"}.join(",")
-         )
+    #dbgout("FOR_DBG(#{__LINE__}) needs_all_days[平日] "+
+    #       @needs_all_days[1].to_a.map{ |k,v| "[#{k.join(',')}]=>[#{v.join(',')}]"}.join(",")
+    #     )
     @needs_all_days
   end
 

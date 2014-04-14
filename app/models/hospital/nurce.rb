@@ -90,31 +90,36 @@ class Hospital::Nurce < ActiveRecord::Base
     end
   end
 
+  class AssignPatern
+    attr_accessor :patern, :reg, :back,:length,:checks,:target_days
+    def initialize(*args)
+      @patern, @reg, @back,@length,@checks,@target_days = args.first
+    end
+  end
   LongPatern = { 
     true => {
       Sshift3 => [  # patern, reg, back,length,[調べるshift],[ [0の割り当て数見る日],[1の][2の],[3の]]
-            ["330"    , /^[^3M6][0_]_[3_][0_]/,2,5,[Sshift3],[[2],[],[],[1]] ],
-            ["30"     , /^[2LM356]_[0_]/       ,1,3,[Sshift3],[[1],[],[],[1]] ],
-            ["3"      , /^_/,0,1,["3"],[[],[],[],[]]]
+           AssignPatern.new(["330"    , /^[^3M6][0_]_[3_][0_]/,2,5,[Sshift3],[[2],[],[],[1]] ]),
+           AssignPatern.new(["30"     , /^[2LM356]_[0_]/       ,1,3,[Sshift3],[[1],[],[],[1]] ]),
+           AssignPatern.new(["3"      , /^_/,0,1,["3"],[[],[],[],[]]])
            ],
       Sshift2 => [ #  patern, reg,                back,length,[調べるshift],[ [2の割り当て数見る日],[3の]]
-            ["220330" , /^[^2L5][0_]_[2_][0_][3_]{2}[0_]/,2,8,[Sshift3,Sshift2],[[2,5],[],[1],[3,4]]
-            ],
-            ["220"    , /^[^2L5][0_]_[2_][0_]/,2,5,[Sshift2],[[2],[],[1],[]] ],
-            ["20"     , /^[2L3M56]_[0_]/      ,1,3,[Sshift2],[[1],[],[1],[]] ],
-            ["2"      , /^_/                 ,0,1,[Sshift2],[[],[],[],[]]]
+            AssignPatern.new(["220330",/^[^2L5][0_]_[2_][0_][3_]{2}[0_]/,2,8,[Sshift3,Sshift2],[[2,5],[],[1],[3,4]]]),
+            AssignPatern.new(["220"   , /^[^2L5][0_]_[2_][0_]/,2,5,[Sshift2],[[2],[],[1],[]] ]),
+            AssignPatern.new(["20"    , /^[2L3M56]_[0_]/      ,1,3,[Sshift2],[[1],[],[1],[]] ]),
+            AssignPatern.new(["2"     , /^_/                 ,0,1,[Sshift2],[[],[],[],[]]])
            ],
        Sshift1 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
-             ["1"         , /^_/                 ,0,1,[Sshift1],[[],[],[],[]]]
+             AssignPatern.new(["1"    , /^_/                 ,0,1,[Sshift1],[[],[],[],[]]])
             ]
        },
      false => { 
        Sshift2 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
-             ["220"       , /^[^25][0_]_[2_][0_]/,2,5,[Sshift2],[[2],[],[1],[]] ],
-             ["2"         , /^_/                 ,0,1,[Sshift2],[[],[],[],[]]]
+             AssignPatern.new(["220"  , /^[^25][0_]_[2_][0_]/,2,5,[Sshift2],[[2],[],[1],[]] ]),
+             AssignPatern.new(["2"    , /^_/                 ,0,1,[Sshift2],[[],[],[],[]]])
             ],
         Sshift1 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]  
-             ["1"         , /^_/                 ,0,1,[Sshift1],[[],[],[],[]]]
+             AssignPatern.new(["1"    , /^_/                 ,0,1,[Sshift1],[[],[],[],[]]])
              ]
       }     
 
@@ -124,6 +129,9 @@ class Hospital::Nurce < ActiveRecord::Base
 
   def self.by_busho(busho_id,option = {})
     all( option.merge({:conditions => ["busho_id = ?",busho_id]}))
+  end
+  def self.correction(busho_id,option = {})
+    all( option.merge({:conditions => ["busho_id = ?",busho_id]})).map{ |nurce| [nurce.name,nurce.id]}
   end
 
   def shokui_id     ; shokui.first ? shokui.first.id         : nil ;end
@@ -470,33 +478,30 @@ def role_remain(recalc=false)
     return ret.size > 0 ? ret : nil
   end
 
-  def long_check(day,sft_str,long_patern)
-    patern,reg,back,length,checks,daily_checks = long_patern
-    offset,len = back ? [day-back+4,length] : [5,31] 
-    #pp [day,shift,id,reg,patern,shifts[day,patern.size]]
-    if reg =~ shift_with_last_month[offset,len]
-      shiftsave = shifts[day,patern.size]
-      shifts[day,patern.size] = patern
+  def long_check(day,sft_str,long_patern,imidiate=true)
+    #patern,reg,back,length,checks,daily_checks = long_patern
+    offset,len = long_patern.back ? [day - long_patern.back + 4,long_patern.length] : [5,31] 
 
-      ret,errors = long_check_sub(day,checks)
-      shifts[day,patern.size] = shiftsave
-      if ret
-        return [patern ,daily_checks]
-      else
-        return [false ,errors]
+    # そもそもそのlong_paternを入れる予知があるか見る
+    if long_patern.reg =~ shift_with_last_month[offset,len]
+      shiftsave = shifts#[day,long_patern.patern.size]
+      shifts[day,long_patern.patern.size] = long_patern.patern
+
+      ret,errors = long_check_sub(day,long_patern.checks,imidiate)
+      shifts= shiftsave #[day,long_patern.patern.size] = shiftsave
+      if ret ;        return [long_patern ]
+      else   ;        return [false ,errors]
       end
     end
     #    errors.each{|item,d| @count_cause[item] += 1
     [false,[[:no_space]]]
   end
 
-  def long_check_sub(day,checks)
+  def long_check_sub(day,checks,imidiate=true)
     ret = []
-    checks.each{|sft_str|
-      ret += check(day,sft_str)
+    checks.each{|sft_str|   ret += check(day,sft_str,imidiate)
       #return false if ret.size > 0
     }
-    #true
     [ret.size == 0,ret]
   end
 
