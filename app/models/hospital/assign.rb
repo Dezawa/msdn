@@ -865,7 +865,8 @@ class Hospital::Assign
     (0..nurces.size-1).each{|idx|
       nurce_set_patern(nurces[idx],day,list_of_long_patern[idx].patern)
     }
-    long_check_later_days(day,merged_patern(list_of_long_patern),sft_str) 
+    long_check_later_days(day,merged_patern(list_of_long_patern),sft_str) &&
+      avoid_check(nurces,sft_str,day,list_of_long_patern)
   end
 
   # 禁忌な組み合わせがあるか調べる     [ [LongPatern,LongPatern],daily_checks],[] ]
