@@ -65,6 +65,7 @@ ActiveRecord::Schema.define(:version => 20140412132841) do
   end
 
   create_table "hospital_avoid_combinations", :force => true do |t|
+    t.integer "busho_id"
     t.integer "nurce1_id"
     t.integer "nurce2_id"
     t.integer "weight"
