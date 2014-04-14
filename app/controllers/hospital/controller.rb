@@ -16,6 +16,7 @@ class Hospital::Controller < ApplicationController
     @Links = [
               Menu.new("記号一覧",:kinmucode),
               Menu.new("役割一覧",:role),
+              Menu.new("禁忌",:avoid_combination),
               Menu.new("部署登録",:busho), 
               Menu.new("必要人数",:need),
               Menu.new("個人登録",:nurces), 
