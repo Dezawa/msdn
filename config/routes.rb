@@ -26,6 +26,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :hospital_kinmucode,:controller => "hospital/kinmucode"
   map.resources :hospital_shokui,:hospital_shokushu,:hospital_kinmukubun
   map.resources :hospital_limit ,:hospital_busho  , :hospital_monthly
+  map.resources :hospital_avoid_combination,:controller => "hospital/avoid_combination"
   map.resources :labels
 
   # 簿記
