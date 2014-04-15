@@ -4,13 +4,6 @@ module Const
   MultiSolution  = 2        #  3 複数解求める。最初の解も求める。これは save する
   SingleSolution = 1        #  1 解を一つだけ求める
   SecondAndLater = false    #  2 複数求めるが、最初の解は求めない。これは別のルーチンで求める
-  class SSSelection
-    attr_accessor :id,:name
-    def initialize(id0,name0)
-      @id = id0
-      @name = name0
-    end
-  end 
 
   Idou =  [["新人",1],["中途",2],["異動",3]]
 
