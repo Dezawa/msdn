@@ -24,7 +24,7 @@ class Hospital::Controller < ApplicationController
               Menu.new("会議登録",:meeting),
               Menu.new("希望入力",:monthly,:action => :hope_regist),
               Menu.new("割付",:monthly,:action => :show_assign),
-              Menu.new("様式9",:form9,:action => :index),
+              Menu.new("様式9",:form9,:action => :calc),
               Menu.new("休日",:holyday,:controller => "../holyday",:action => :index,:page=>1,:id => Time.now.year)
              ]
     @month = session[:hospital_year] || Time.now.beginning_of_month

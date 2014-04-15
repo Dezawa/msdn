@@ -47,14 +47,14 @@ Items =
   end
 
   def calc(items)
-    item_list = { }
-    items.each{ |k,v| item_list[k.to_sym]=v}
+    #item_list = { }
+    #items.each{ |k,v| item_list[k.to_sym]=v}
     create_date
     weekly
     defines = Hash[*Hospital::Define.all.
-                   map{ |define| [define.attribute.to_sym,define.value]}.flatten]
+                   map{ |define| [define.attri.to_sym,define.value]}.flatten]
 
-    hospital_monthly(item_list.merge(defines))
+    hospital_monthly(defines)
     nurces
     save
   end
@@ -127,27 +127,27 @@ Items =
   end
 
   def nurces
-    row =  Items[:line_nurce].first ; column = Items[:column_first_weekday]
+    @row =  Items[:line_nurce].first ; column = Items[:column_first_weekday]
     monthlies =Hospital::Monthly.all(:conditions => ["month =?",@month]).
       sort_by{ |monthly| monthly.nurce_id}
     monthlies.each{ |monthly|
       nurce = Hospital::Nurce.find(monthly.nurce_id)
-      @sheet[ row,Items[:column_Shubetu]]  = Hospital::Role.shokushu.rassoc(nurce.shokushu_id)[0]
-      @sheet[ row,Items[:column_ward]]  = Hospital::Busho.find(nurce.busho_id).name
-      @sheet[ row,Items[:column_nurce]]  = nurce.name
+      @sheet[ @row,Items[:column_Shubetu]]  = Hospital::Role.shokushu.rassoc(nurce.shokushu_id)[0]
+      @sheet[ @row,Items[:column_ward]]  = Hospital::Busho.find(nurce.busho_id).name
+      @sheet[ @row,Items[:column_nurce]]  = nurce.name
       sym = case nurce.kinmukubun_id
                          when 1, 2 ,4,6  ; :column_Joukin
                          when 3          ; :column_part
                          when 5          ; :column_night_only
-                         else            ; :column_Hijouki
+                         else            ; :column_Hijoukin
                          end
-#pp [nurce.name,nurce.kinmukubun_id,sym,Items[sym],row,monthly.shift]
-     #@sheet[ row+1,Items[:column_part]] = 1
-pp [row+1,Items[sym], @sheet[ row+1,Items[sym]]]
-      @sheet[ row+1,Items[sym]] = 1
+#pp [nurce.name,nurce.kinmukubun_id,sym,Items[sym],@row,monthly.shift]
+     #@sheet[ @row+1,Items[:column_part]] = 1
+#pp [@row+1,Items[sym], @sheet[ @row+1,Items[sym]]]
+      @sheet[ @row+1,Items[sym]] = 1
 
-      monthly_shift(nurce,monthly,row)
-      row += 2
+      monthly_shift(nurce,monthly,@row)
+      @row += 2
     }
   end
 
@@ -159,15 +159,16 @@ kinmus = monthly.days
     next_night   = 0.0
     (1..@month.end_of_month.day).each{ |day|
       kinmucode =  kinmus[day].kinmucode
-      daytime = (kinmucode.main_daytime||0.0) + (kinmucode.sub_daytime||0.0)
-      @sheet[ row,clm+day] = daytime if  daytime > 0.00
-      night = next_night + (kinmucode.main_nignt||0.0) + (kinmucode.sub_night||0.0)
+      if kinmucode
+        daytime = (kinmucode.main_daytime||0.0) + (kinmucode.sub_daytime||0.0)
+        @sheet[ row,clm+day] = daytime if  daytime > 0.00
+        night = next_night + (kinmucode.main_nignt||0.0) + (kinmucode.sub_night||0.0)
 #pp @sheet[ row+1,clm+day] if night > 0.00
-      @sheet[ row+1,clm+day] = night.to_f if  night > 0.00
-      next_night =(kinmucode.main_next||0.0) + (kinmucode.sub_next||0.0)
+        @sheet[ row+1,clm+day] = night.to_f if  night > 0.00
+        next_night =(kinmucode.main_next||0.0) + (kinmucode.sub_next||0.0)
       #pp @sheet[ row+1,clm+day].class if night > 0.00
      #print day," ",kinmucode.id," ",night,":"
-
+      end
     }
     #
   end
