@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 class Hospital::Form9
+  delegate :logger, :to=> "ActiveRecord::Base"
 
 require 'rubygems'
 require 'spreadsheet'
@@ -127,28 +128,30 @@ Items =
   end
 
   def nurces
-    @row =  Items[:line_nurce].first ; column = Items[:column_first_weekday]
+    @row =  Items[:line_nurce].first
     monthlies =Hospital::Monthly.all(:conditions => ["month =?",@month]).
       sort_by{ |monthly| monthly.nurce_id}
     monthlies.each{ |monthly|
+      set_nurce_shubetu(monthly,@row)
+      @row += 2
+    }
+  end
+
+  def set_nurce_shubetu(monthly,row)
       nurce = Hospital::Nurce.find(monthly.nurce_id)
-      @sheet[ @row,Items[:column_Shubetu]]  = Hospital::Role.shokushu.rassoc(nurce.shokushu_id)[0]
-      @sheet[ @row,Items[:column_ward]]  = Hospital::Busho.find(nurce.busho_id).name
-      @sheet[ @row,Items[:column_nurce]]  = nurce.name
+      @sheet[ row,Items[:column_Shubetu]]  = Hospital::Role.shokushu.rassoc(nurce.shokushu_id)[0]
+      @sheet[ row,Items[:column_ward]]  = Hospital::Busho.find(nurce.busho_id).name
+      @sheet[ row,Items[:column_nurce]]  = nurce.name
       sym = case nurce.kinmukubun_id
-                         when 1, 2 ,4,6  ; :column_Joukin
-                         when 3          ; :column_part
+                         when 6,7  ; :column_Joukin
+                         when 8          ; :column_part
                          when 5          ; :column_night_only
                          else            ; :column_Hijoukin
                          end
-#pp [nurce.name,nurce.kinmukubun_id,sym,Items[sym],@row,monthly.shift]
-     #@sheet[ @row+1,Items[:column_part]] = 1
-#pp [@row+1,Items[sym], @sheet[ @row+1,Items[sym]]]
-      @sheet[ @row+1,Items[sym]] = 1
+logger.debug("SHEET sym=#{sym}, [row+1,Items[sym]] = [#{row+1},#{Items[sym]}]")
+      @sheet[ row+1,Items[sym]] = 1
+      monthly_shift(nurce,monthly,row)
 
-      monthly_shift(nurce,monthly,@row)
-      @row += 2
-    }
   end
 
   def monthly_shift(nurce,monthly,row)
