@@ -143,46 +143,76 @@ module HospitalHelper
   end
   def hospital_define_show
     html = "<hr>\n#{@instances.size}<table border=1>\n<tr>" +
-      @LabelsDefine.map{|html_cell| 
-      "<td>" + html_cell.label + help(html_cell.help) +"</td>\n" unless html_cell.class == HtmlHidden
-    }.compact.join + "</tr>\n" 
+      %w(項目 値 コメント _ 項目 値).map{ |l| "<td>#{l}</td>"}.join+"\n"
 
-    body =
-      @instances.map{ |model| 
-      "<tr>" +
-      @LabelsDefine.map{ |label|
-        "<td>#{model.send(label.symbol)||'　'}</td>"  unless label.class == HtmlHidden
-      }.compact.join + "</tr>\n" + "</tr>\n"
-    }.join 
+    body = ""
+    @ItemsDefine.each_with_index{ |html_cell,idx|
+      body += "<tr><td>#{html_cell.label}</td>" +
+      "<td>#{@instances[html_cell.symbol].value}</td>"+
+      "<td>#{@instances[html_cell.symbol].comment}</td><td></td>"+
+      hospital_define2_show(idx) +
+      "</tr>\n"
+    }
     html + body + "</table>\n"
+  end
+
+  def hospital_define2_show(idx)
+    body = ""
+    html_cells = @ItemsDefine2[idx]
+    return body unless html_cells
+    body += "<td>" + 
+      html_cells.map{ |html_cell| html_cell.label }.join + "</td><td>"
+
+    if html_cells.size == 1
+      body += @instances[html_cells[0].symbol].value.to_s + "</td>"
+    else
+      body += @instances[html_cells[0].symbol].value.to_s + "年" +
+        @instances[html_cells[1].symbol].value.to_s + "月～" +
+        @instances[html_cells[2].symbol].value.to_s + "年" +
+        @instances[html_cells[3].symbol].value.to_s + "月"
+    end
+    body
+  end
+
+  def hospital_define2_edit(idx)
+    name = "hospital_define[%d][value]"
+    body = ""
+    html_cells = @ItemsDefine2[idx]
+    return body unless html_cells
+    body += "<td>" + 
+      html_cells.map{ |html_cell| html_cell.label }.join + "</td><td>"
+
+    if html_cells.size == 1
+      obj = @instances[html_cells[0].symbol]
+      body += html_cells[0].edit_field_with_id("hospital_define",obj,controller,
+                                           :value => obj.value,:name => name%obj.id)
+    else
+      objs=[0,1,2,3].map{ |i| @instances[html_cells[i].symbol]}
+      body += 
+        html_cells[0].edit_field_with_id("hd",objs[0],controller,:value => objs[0].value,:name => name%objs[0].id) + "年" +
+        html_cells[1].edit_field_with_id("hd",objs[1],controller,:value => objs[1].value,:name => name%objs[1].id) + "月～" +
+        html_cells[2].edit_field_with_id("hd",objs[2],controller,:value => objs[2].value,:name => name%objs[2].id) + "年" +
+        html_cells[3].edit_field_with_id("hd",objs[3],controller,:value => objs[3].value,:name => name%objs[3].id) + "月"
+    end
+    body
   end
 
   def hospital_define_edit
     html = "<hr>\n#{@instances.size}<table border=1>\n<tr>" +
-      @LabelsDefine.map{|html_cell| 
-      "<td>" + html_cell.label + help(html_cell.help) +"</td>\n" unless html_cell.class == HtmlHidden
-    }.compact.join + "</tr>\n" 
+      %w(項目 値 コメント _ 項目 値).map{ |l| "<td>#{l}</td>"}.join+"\n"
 
-    body =
-      @ItemsDefine.map{ |item| sym = item.symbol.to_s
-      logger.debug "=== #{sym} #{@instances.map(&:attri).join(',')}"
-      model = @instances.select{ |inst| inst.attri == sym }.first
-      "<tr>" +
-      @LabelsDefine.map{ |label|
-        next if label.class == HtmlHidden
-        case label.symbol 
-        when :value
-          domain = :hospital_define
-          id =     model.id
-          index = "#{domain}_#{id}"
-          name  = "#{domain}[#{id}]"
-          option = { :index => index, :name => name ,:value => model.value}
-          "<td>#{item.edit_field_with_id(domain,model,@controller,option)}</td>" 
-        else
-           "<td>#{label.disp(model)}</td>"
-        end
-      }.compact.join + "</tr>\n" + "</tr>\n"
-    }.join 
+    body = ""
+    name = "hospital_define[%d][value]"
+    @ItemsDefine.each_with_index{ |html_cell,idx|
+      obj = @instances[html_cell.symbol]
+      body += "<tr><td>#{html_cell.label}</td>"+
+      "<td>"+ html_cell.edit_field_with_id("hospital_define",obj,controller,
+                                           :value => obj.value,:name => name%obj.id) + "</td><td>" +
+      @LabelsDefine[2].edit_field_with_id("hospital_define",obj,controller) + "</td>"+
+       "<td></td>" + hospital_define2_edit(idx)
+      }.join("\n")+
+      "</tr>\n"
+    
     html + body + "</table>\n"
   end
 

@@ -7,5 +7,6 @@ class Hospital::Define < ActiveRecord::Base
     define=Hospital::Define.all(:conditions => ["attri = ?","hospital_Koutai"])[0]
     !!(define && define.value == "三交代")      
   end
-  
+  def nil ;"" ; end
+
 end
