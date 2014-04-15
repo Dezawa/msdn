@@ -20,6 +20,10 @@ delegate :logger, :to=>"ActiveRecord::Base"
     self.kinmucode_id = id
   end
 
+  def kinmucode
+    kinmucode_id ? Hospital::Kinmucode.find(kinmucode_id) : nil
+  end
+
   def kinmucode_code
     kinmucode_id ? kinmucode.code : nil
   end
