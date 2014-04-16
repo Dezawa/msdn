@@ -486,21 +486,25 @@ class Hospital::Assign
         # この長い割付はだめなので、現状復帰して次の長い割付へ
         unless list_of_long_patern
           #@count_fail[sft_str] += 1  
-          restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
-          next
+          #restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
+          #next
+          ret = :next
         else # 可能なので割り付ける           #assigned: [ [LongPatern,LongPatern],daily_checks],[] ]
-          ret = !!assign_patern(nurce_combinations[sft_str],day,sft_str,list_of_long_patern)
+          ret = assign_patern(nurce_combinations[sft_str],day,sft_str,list_of_long_patern)
         end
       end
 
       case ret
+      when :next
+          restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
+          next
       when false # 長い割付の「割り付け時チェック」で失敗。次の長い割付へ
         @count_fail[sft_str] += 1
         #@count_cause[:long][sft_str] += 1
         restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
         next # long_patern
         
-      when true ,:done # 成功(または既に満たされていた)時は次のshiftへ再帰
+      else  # true ,:done # 成功(または既に満たされていた)時は次のshiftへ再帰
         assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,idx_list_of_long_patern,"SUCCESS")
         @longest = [day*10+10-sft_str.to_i,save_shift(@nurces,day)] if day*10+10-sft_str.to_i > longest[0]
         #dbgout("FOR_DEBUG(#{__LINE__}) [sft_str,@koutai3] #{[sft_str,@koutai3].join}")
