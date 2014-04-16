@@ -28,7 +28,8 @@ LogPuts,LogDebug,LogInfo = 1,2,4
 # 高速化準備作業
 #  #assign_month の下部構造を見る
 # 
-#  assign_month
+#  assign_month_mult
+#   assign_mult
 #    + assign_days_by_re_entrant
 #    |  + assign_days_by_re_entrant123(day)
 #    |  |  + short_role(day,3,true)   # この日のこのshiftの看護師の必要数と不足role
@@ -251,10 +252,10 @@ class Hospital::Assign
     @start = Time.now
     @limit_time = @start + Hospital::Const::Timeout
     logger.info("HOSPITAL ASSIGN START ON "+Time.now.to_s)
-    basename = File.join( RAILS_ROOT,"tmp","hospital",
+    @basename = File.join( RAILS_ROOT,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
-    File.unlink(*Dir.glob(basename+"*"))
-    dbgout("HOSPITAL ASSIGN Delete #{basename} by assign_month")
+    File.unlink(*Dir.glob(@basename+"*"))
+    dbgout("HOSPITAL ASSIGN Delete #{@basename} by assign_month")
 
     assign_mult(1)
     self
@@ -275,7 +276,7 @@ class Hospital::Assign
     self
   end 
 
-  # 複数解を求めるルーチン
+  # 複数解を求めるルーチ*ン
   # 3つのケースがある
   #  1 解を一つだけ求める                                          
   #  2 複数求めるが、最初の解は求めない。これは別のルーチンで求める
@@ -283,25 +284,32 @@ class Hospital::Assign
   # single :: false,nil  case 2
   #        :: 2          case 3
   #        :: 1          case 1           
-  def assign_mult(single = SecondAndLater,day=1)
-    basename = File.join( RAILS_ROOT,"tmp","hospital",
+  def set_instance_valiables_for_assign_loop
+    @basename = File.join( RAILS_ROOT,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
-
     @start = @start_mult = Time.now
     @limit_mult = @start_mult + Hospital::Const::TimeoutMult
-    count = -1
+  end
+
+  def size_of_combinations_of_first_day(day=1)
     @night_mode = true 
-    sft_str = Sshift2
     combinations,need_nurces,short_roles = ready_for_day_reentrant(day)
-
     shifts_short_role = save_shift(nurces,day)
-    try = 0
-    #sleep Hospital::Const::Sleep
-    ncm = [combinations[Sshift2].size,1].max *  [combinations[Sshift3].size,1].max
+    [[combinations[Sshift2].size,1].max *  [combinations[Sshift3].size,1].max,
+     combinations,need_nurces,short_roles]
+  end
 
-    ######## LOOP
+  def assign_mult(single = SecondAndLater,day=1)
+    set_instance_valiables_for_assign_loop
+    ncm,combinations,need_nurces,short_roles= size_of_combinations_of_first_day(day)
+
+    #### Loop counter
+    try = 0
+    count = -1
     count_max = 0
     nurce_combination_shift23(combinations,need_nurces,short_roles,day){ |c| count_max += 1}
+    ######## LOOP
+    sft_str = Sshift2
     nurce_combination_shift23(combinations,need_nurces,short_roles,day){|nurce_combinations|
           dbgout("single/count/数  single && count < 0 => #{ single}/#{count}/#{count_max}/#{ single && count < 0}")
 
@@ -311,16 +319,10 @@ class Hospital::Assign
       end
 
       dbgout("HP ASSIGN #{day}日entry-1")
-    dbgout("assign_mult")
       dbgout dump("  HP ASSIGN ")
 
-      unless nurce_combinations
-        assign_log(day,sft_str,nil,__LINE__, @msg)
-        return false
-      end
       # set limit for this turn
       @limit_time = Time.now + Hospital::Const::Timeout
-      # @start = Time.now
       dbgout("HP ASSIGN (#{__LINE__})#{day}:#{sft_str} Try #{try += 1} of #{ncm}")
       @night_mode = true
       
@@ -334,25 +336,14 @@ class Hospital::Assign
           tight = assign_tight_daies_first
           dbgout("HP ASSIGN (#{__LINE__})return from assign_tight_daies_first with #{tight}")
           if tight && assign_by_re_entrant(day)
-            count += 1
-            dbgout("HP ASSIGN (#{__LINE__})count up to #{count}")
-            
-            @fine = Time.now ; log_stat((single ? "once" : "mult"),"") ; clear_stat
-            @start = Time.now
+            @fine = Time.now ; log_stat((single ? "once" : "mult"),"") 
             #if count == 0
-              dbgout("HP ASSIGN (#{__LINE__})output to file #{ basename + "%04d"%count}")
-              open( basename + "%04d"%count ,"w"){ |fp| fp.puts dump }
-              dbgout("HP ASSIGN (#{__LINE__})output done")
+            dbgout("HP ASSIGN (#{__LINE__})output to file #{ @basename + "%04d"%count}")
+            open( @basename + "%04d"%count ,"w"){ |fp| fp.puts dump }
+            dbgout("HP ASSIGN (#{__LINE__})output done")
             #end
-
-            #case 3の最初の解 と case 1 の場合は saveする
-            # このとき cout==0のはず
-            dbgout("HP ASSIGN count = #{count} single =#{single} ")
-            if count == 0
-              save
-              dbgout("HP ASSIGN return single is #{single} #{single == 1}")
-              return true if single == SingleSolution
-            end
+            save
+            return true #if single == SingleSolution
           end
         end
       rescue TimeoutError
@@ -368,7 +359,7 @@ class Hospital::Assign
       day = 1
       #restore_shift(nurces,day,shifts_short_role)
     }
-    open( basename + "FINE" ,"w"){ |fp| fp.puts "ASSIGN_MULT IS FINISHED" }
+    open( @basename + "FINE" ,"w"){ |fp| fp.puts "ASSIGN_MULT IS FINISHED" }
   end
 
   #再帰で割り付ける。アルゴリズム開発の過程の名残りで、不要に１段深い呼び出しになってしまった
