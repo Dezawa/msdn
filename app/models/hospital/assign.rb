@@ -365,6 +365,86 @@ class Hospital::Assign
      combinations,need_nurces,short_roles]
   end
 
+
+  def assign_day_reentrant(day,nurce_combinations,need_nurces,sft_str)
+    ################## RE_ENTRANT START ###################
+    #nurce_combinations = [nil,nurce_comb,nil,nil]
+    # 現状保存
+    shifts_short_role = save_shift(nurce_combinations[sft_str],day)
+
+    log_eval_combination day,nurce_combinations
+    dbgout("  #{__LINE__} nurce_combinations[shift] #{nurce_list(nurce_combinations[sft_str])}")
+
+    ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str)
+    case ret
+    when true; return true # 全割付成功
+    when false;            # この看護師組み合わせでは破綻したので次の組み合わせへ
+      restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
+      return false #next
+    else      ; raise "HP #{day}:#{shift} ここにはこないはず assign_daytime_by_re_entrant123"
+    end
+  end
+
+  # shift分の再帰
+  def assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,single=SecondAndLater)
+    raise TimeoutError,"timed out"  if @limit_time < Time.now
+    @entrant_count += 1
+    # 長い割付が可能なら割り付ける
+    dbgout("FOR_DEBUG(#{__LINE__}): shift=#{sft_str} need_nurces[sft_str] #{need_nurces[sft_str]} Hospital::Nurce::LongPatern[@koutai3][Sshift2].size #{Hospital::Nurce::LongPatern[@koutai3][Sshift2].size} ")
+    long_plan_combination(need_nurces[sft_str],Hospital::Nurce::LongPatern[@koutai3][sft_str].size).
+      each{|idx_list_of_long_patern|  # [0,2]
+      @loop_count += 1
+
+      # 現状保存
+      shifts_short_role = save_shift(nurce_combinations[sft_str],day)
+
+      case assign_patern(nurce_combinations[sft_str],day,sft_str,idx_list_of_long_patern)
+      when :next
+          restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
+          next
+      when false # 長い割付の「割り付け時チェック」で失敗。次の長い割付へ
+        @count_fail[sft_str] += 1
+        #@count_cause[:long][sft_str] += 1
+        restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
+        next # long_patern
+        
+      else  # true ,:done # 成功(または既に満たされていた)時は次のshiftへ再帰
+        assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,idx_list_of_long_patern,"SUCCESS")
+        @longest = [day*10+10-sft_str.to_i,save_shift(@nurces,day)] if day*10+10-sft_str.to_i > longest[0]
+        #dbgout("FOR_DEBUG(#{__LINE__}) [sft_str,@koutai3] #{[sft_str,@koutai3].join}")
+
+        return true if single
+        case [sft_str,@koutai3]
+        when ["1",true],["1",false] #夜モードの時はありえない
+          ret = assign_by_re_entrant(day+1)
+
+        when [Sshift2,true]
+          logger.debug("====combination of shift 3 #{nurce_combinations["3"].map(&:id).join(',')}") if nurce_combinations[Shift3].class == Array
+          ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"3")
+
+        when [Sshift3,true],[Sshift2,false]
+          ret  = if @night_mode 
+                   assign_by_re_entrant(day+1)
+                 else
+                   logger.debug("====combination of shift 1 #{nurce_combinations["1"].join(',')}")
+                   assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"1")
+                 end
+        end
+        case ret
+        when true; 
+          dbgout("    (#{__LINE__})HP #{day}:#{sft_str}。TRUE これから後は全部OK。割付終了")
+          return true    # これから後は全部OK。割付終了
+        when false    # このパターンではこの後の方で破綻;
+          restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
+          next
+        else      ; raise "HP #{day}:#{sft_str} ここにはこないはず long_patern2"
+        end
+      end
+    }
+    assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,nil,"FALSE")
+    return false
+  end
+
  #再帰で割り付ける。アルゴリズム開発の過程の名残りで、不要に１段深い呼び出しになってしまった
   def assign_days_by_re_entrant(day=1)
 
@@ -441,104 +521,6 @@ class Hospital::Assign
     end
     log_combination day,combinations
     [combinations ,need_nurces, short_roles]
-  end
-
-  def assign_day_reentrant(day,nurce_combinations,need_nurces,sft_str)
-    ################## RE_ENTRANT START ###################
-    #nurce_combinations = [nil,nurce_comb,nil,nil]
-    # 現状保存
-    shifts_short_role = save_shift(nurce_combinations[sft_str],day)
-
-    log_eval_combination day,nurce_combinations
-    dbgout("  #{__LINE__} nurce_combinations[shift] #{nurce_list(nurce_combinations[sft_str])}")
-
-    ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str)
-    case ret
-    when true; return true # 全割付成功
-    when false;            # この看護師組み合わせでは破綻したので次の組み合わせへ
-      restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
-      return false #next
-    else      ; raise "HP #{day}:#{shift} ここにはこないはず assign_daytime_by_re_entrant123"
-    end
-  end
-  # shift分の再帰
-  def assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,single=SecondAndLater)
-    raise TimeoutError,"timed out"  if @limit_time < Time.now
-    @entrant_count += 1
-    # 長い割付が可能なら割り付ける
-    dbgout("FOR_DEBUG(#{__LINE__}): shift=#{sft_str} need_nurces[sft_str] #{need_nurces[sft_str]} Hospital::Nurce::LongPatern[@koutai3][Sshift2].size #{Hospital::Nurce::LongPatern[@koutai3][Sshift2].size} ")
-    long_plan_combination(need_nurces[sft_str],Hospital::Nurce::LongPatern[@koutai3][sft_str].size).
-      each{|idx_list_of_long_patern|  # [0,2]
-      @loop_count += 1
-
-      # 現状保存
-      shifts_short_role = save_shift(nurce_combinations[sft_str],day)
-      if nurce_combinations[sft_str] == true
-        assign_log(day,sft_str,nil,__LINE__,nil,"既に埋まっている")
-        ret = :done
-      else
-        @count_eval[sft_str] += 1
-        # この長い割付が可能か                                                # [0,2]
-        list_of_long_patern = 
-          assign_test_patern(nurce_combinations[sft_str],day,sft_str,idx_list_of_long_patern)
-        #dbgout("  #{__LINE__} nurce_combinations[sft_str] #{nurce_list(nurce_combinations[sft_str])} patern=#{long_patern.join(',')} is #{list_of_long_patern_and_dayly_check ? list_of_long_patern_and_dayly_check.map{|a| a.first}.join(',') : false}")
-        #dbgout("FOR_DEBUG(#{__LINE__}): assign_test_patern #{long_patern} ret=>#{nurce_list(assigned && assigned)}")
-        # この長い割付はだめなので、現状復帰して次の長い割付へ
-        unless list_of_long_patern
-          #@count_fail[sft_str] += 1  
-          #restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
-          #next
-          ret = :next
-        else # 可能なので割り付ける           #assigned: [ [LongPatern,LongPatern],daily_checks],[] ]
-          ret = assign_patern(nurce_combinations[sft_str],day,sft_str,list_of_long_patern)
-        end
-      end
-
-      case ret
-      when :next
-          restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
-          next
-      when false # 長い割付の「割り付け時チェック」で失敗。次の長い割付へ
-        @count_fail[sft_str] += 1
-        #@count_cause[:long][sft_str] += 1
-        restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
-        next # long_patern
-        
-      else  # true ,:done # 成功(または既に満たされていた)時は次のshiftへ再帰
-        assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,idx_list_of_long_patern,"SUCCESS")
-        @longest = [day*10+10-sft_str.to_i,save_shift(@nurces,day)] if day*10+10-sft_str.to_i > longest[0]
-        #dbgout("FOR_DEBUG(#{__LINE__}) [sft_str,@koutai3] #{[sft_str,@koutai3].join}")
-
-        return true if single
-        case [sft_str,@koutai3]
-        when ["1",true],["1",false] #夜モードの時はありえない
-          ret = assign_by_re_entrant(day+1)
-
-        when [Sshift2,true]
-          logger.debug("====combination of shift 3 #{nurce_combinations["3"].map(&:id).join(',')}") if nurce_combinations[Shift3].class == Array
-          ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"3")
-
-        when [Sshift3,true],[Sshift2,false]
-          ret  = if @night_mode 
-                   assign_by_re_entrant(day+1)
-                 else
-                   logger.debug("====combination of shift 1 #{nurce_combinations["1"].join(',')}")
-                   assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"1")
-                 end
-        end
-        case ret
-        when true; 
-          dbgout("    (#{__LINE__})HP #{day}:#{sft_str}。TRUE これから後は全部OK。割付終了")
-          return true    # これから後は全部OK。割付終了
-        when false    # このパターンではこの後の方で破綻;
-          restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
-          next
-        else      ; raise "HP #{day}:#{sft_str} ここにはこないはず long_patern2"
-        end
-      end
-    }
-    assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,nil,"FALSE")
-    return false
   end
 
   def assign_single_day(day,sft_str)
@@ -859,7 +841,15 @@ class Hospital::Assign
   # [sft_str]  1,2,3。割り付けるsft_str
   # [list_of_long_patern_and_dayly_check]   #assigned: [ [LongPatern,daily_checks],[LongPatern,daily_checks],[] ]
   #                       『Hospital::Nurce::LongPatern[sft_str][patern_番号]』
-  def assign_patern(nurces,day,sft_str,list_of_long_patern)
+  def assign_patern(nurces,day,sft_str,idx_list_of_long_patern)
+    return :done if nurces == true
+
+    @count_eval[sft_str] += 1
+    # この長い割付が可能か                                                # [0,2]
+    list_of_long_patern = 
+      assign_test_patern(nurces,day,sft_str,idx_list_of_long_patern)
+    return :next unless list_of_long_patern
+
     (0..nurces.size-1).each{|idx|
       nurce_set_patern(nurces[idx],day,list_of_long_patern[idx].patern)
     }
