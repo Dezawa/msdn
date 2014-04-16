@@ -399,7 +399,7 @@ class Hospital::Assign
       shifts_short_role = save_shift(nurce_combinations[sft_str],day)
 
       case assign_patern(nurce_combinations[sft_str],day,sft_str,idx_list_of_long_patern)
-      when :next
+      when :cannot_assign_this_patern
           restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
           next
       when false # 長い割付の「割り付け時チェック」で失敗。次の長い割付へ
@@ -408,28 +408,21 @@ class Hospital::Assign
         restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
         next # long_patern
         
-      else  # true ,:done # 成功(または既に満たされていた)時は次のshiftへ再帰
+      else  # 成功(または既に満たされていた)時は次のshiftへ再帰
         assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,idx_list_of_long_patern,"SUCCESS")
         @longest = [day*10+10-sft_str.to_i,save_shift(@nurces,day)] if day*10+10-sft_str.to_i > longest[0]
-        #dbgout("FOR_DEBUG(#{__LINE__}) [sft_str,@koutai3] #{[sft_str,@koutai3].join}")
 
         return true if single
-        case [sft_str,@koutai3]
-        when ["1",true],["1",false] #夜モードの時はありえない
-          ret = assign_by_re_entrant(day+1)
 
+        case [sft_str,@koutai3]
         when [Sshift2,true]
           logger.debug("====combination of shift 3 #{nurce_combinations["3"].map(&:id).join(',')}") if nurce_combinations[Shift3].class == Array
-          ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"3")
+          ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,Sshift3)
 
-        when [Sshift3,true],[Sshift2,false]
-          ret  = if @night_mode 
-                   assign_by_re_entrant(day+1)
-                 else
-                   logger.debug("====combination of shift 1 #{nurce_combinations["1"].join(',')}")
-                   assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"1")
-                 end
+        else #when [Sshift3,true],[Sshift2,false],[Sshift1,*]
+          ret  =  assign_by_re_entrant(day+1)
         end
+
         case ret
         when true; 
           dbgout("    (#{__LINE__})HP #{day}:#{sft_str}。TRUE これから後は全部OK。割付終了")
@@ -445,27 +438,27 @@ class Hospital::Assign
     return false
   end
 
- #再帰で割り付ける。アルゴリズム開発の過程の名残りで、不要に１段深い呼び出しになってしまった
-  def assign_days_by_re_entrant(day=1)
 
-    @limit_time ||= Time.now + Hospital::Const::Timeout
-    
-    #begin
-    if false
-      @night_mode = true 
-      assign_by_re_entrant(day)
-      @night_mode = false
-      assign_tight_daies_first
-      assign_by_re_entrant(day)
-    else
-      assign_first_night(1)
-    end
-    #rescue TimeoutError
-    #  logger.info("HOSPITAL FINISHED BY TIMED OUT ==================================================")
-    #end
-    restore_shift(@nurces,day,@longest[1]) if @longest
-    dbgout("HP(#{__LINE__}) longest = #{longest[0]}")
-    self
+  # 看護師の勤務制限は満たしていても、2日目以降の日々の制限は確認していない。
+  # 長い勤務を割り当てたときに、二日目以降に重大な支障が有るか否かを確認する。
+  # [day] Integer 割付の最初の日付。
+  # [sft_str]  1,2,3。割り付けるsft_str
+  # [list_of_long_patern_and_dayly_check]   #assigned: [ [LongPatern,daily_checks],[LongPatern,daily_checks],[] ]
+  #                       『Hospital::Nurce::LongPatern[sft_str][patern_番号]』
+  def assign_patern(nurces,day,sft_str,idx_list_of_long_patern)
+    return :done if nurces == true
+
+    @count_eval[sft_str] += 1
+    # この長い割付が可能か                                                # [0,2]
+    list_of_long_patern = 
+      assign_test_patern(nurces,day,sft_str,idx_list_of_long_patern)
+    return :cannot_assign_this_patern unless list_of_long_patern
+
+    (0..nurces.size-1).each{|idx|
+      nurce_set_patern(nurces[idx],day,list_of_long_patern[idx].patern)
+    }
+    long_check_later_days(day,merged_patern(list_of_long_patern),sft_str) &&
+      avoid_check(nurces,sft_str,day,list_of_long_patern)
   end
 
   def assign_by_re_entrant(day)
@@ -835,28 +828,6 @@ class Hospital::Assign
     #false
   end
   
-  # 看護師の勤務制限は満たしていても、2日目以降の日々の制限は確認していない。
-  # 長い勤務を割り当てたときに、二日目以降に重大な支障が有るか否かを確認する。
-  # [day] Integer 割付の最初の日付。
-  # [sft_str]  1,2,3。割り付けるsft_str
-  # [list_of_long_patern_and_dayly_check]   #assigned: [ [LongPatern,daily_checks],[LongPatern,daily_checks],[] ]
-  #                       『Hospital::Nurce::LongPatern[sft_str][patern_番号]』
-  def assign_patern(nurces,day,sft_str,idx_list_of_long_patern)
-    return :done if nurces == true
-
-    @count_eval[sft_str] += 1
-    # この長い割付が可能か                                                # [0,2]
-    list_of_long_patern = 
-      assign_test_patern(nurces,day,sft_str,idx_list_of_long_patern)
-    return :next unless list_of_long_patern
-
-    (0..nurces.size-1).each{|idx|
-      nurce_set_patern(nurces[idx],day,list_of_long_patern[idx].patern)
-    }
-    long_check_later_days(day,merged_patern(list_of_long_patern),sft_str) &&
-      avoid_check(nurces,sft_str,day,list_of_long_patern)
-  end
-
   # 禁忌な組み合わせがあるか調べる     [ [LongPatern,LongPatern],daily_checks],[] ]
   def avoid_check(nurces,sft_str,first_day,list_of_long_patern)
     return true if sft_str == "1"
