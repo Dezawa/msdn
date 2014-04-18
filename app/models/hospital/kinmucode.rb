@@ -71,9 +71,14 @@ class Hospital::Kinmucode < ActiveRecord::Base
                                   
   From0123 = ToFrom0123.invert
 
-  @@KCode = { }
+  @@KCode = Hash[*self.all.map{ |kc| [kc.id,kc]}.flatten]
   def self.k_code(id)
     @@KCode[id] ||= self.find(id)
+  end
+
+  @@Code = Hash[*@@KCode.to_a.map{ |id,kcode| [id,kcode.code]}.flatten]
+  def self.id2code(id)
+    @@Code[id]
   end
 
   def self.sanchoku
@@ -91,8 +96,6 @@ class Hospital::Kinmucode < ActiveRecord::Base
   #  ただし、3直の 2→L2、 3→L3、二直の 2→夜, 0→明 は入れ替える
   #  これらは      L       M             N      O に置き換えられているはず
   def self.from_0123(shift,kinmukubun_id)
-    #return @@from123[shift][kinmukubun_id] if  @@from123[shift][kinmukubun_id]
-    logger.debug("Shift=#{shift},kinmukubun_id=#{kinmukubun_id} #{ @@from123[shift].to_a.join(',')}")
     @@from123[shift][kinmukubun_id] ||=
       case shift
       when "2","3" ; return shift.to_i
@@ -105,7 +108,6 @@ class Hospital::Kinmucode < ActiveRecord::Base
         return Hospital::Kinmucode.find_by_code(code).id
       when "1","5"
         value = From0123[shift] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        logger.debug("Kinmucode shift=#{shift} kinmukubun_id = #{kinmukubun_id} value=#{value.join(',')}")
         Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
                                                 " and nenkyuu=? and am=? and pm=? and "+
                                                 "night=? and midnight=? and am2=? and "+
@@ -157,8 +159,35 @@ class Hospital::Kinmucode < ActiveRecord::Base
        end
        ).uniq.map{|kinmucode| [ kinmucode.code,kinmucode.id]}
   end
+  @@shift1 ={ }
+  @@shift2={ }
+  @@shift3={ }
+  def self.shift1(id)
+    return @@shift1[id] if  @@shift1[id] 
+    kcode=self.find(id)
+    @@shift1[id] = [:am,:pm,:am2,:pm2].inject(0){|s,sym| s +  (kcode[sym] ? kcode[sym] : 0)}
+  end
 
+  def self.shift2(id)
+     @@shift1[id] ||= (kcode=self.find(id)).night + kcode.night2 
+  end
 
+  def self.shift3(id)
+     @@shift1[id] ||= (kcode=self.find(id)).midnight + kcode.midnight2 
+  end
 
-  def daytime ; (am||0.0)+(pm||0.0) ;end
+  def self.daytime(id)
+    return @@shift1[id] if  @@shift1[id] 
+    kcode=self.find(id)
+    @@shift1[id] = [:am,:pm,:am2,:pm2].inject(0){|s,sym| s +  (kcode[sym] ? kcode[sym] : 0)}
+  end
+
+  def self.night(id)
+     @@shift1[id] ||= (kcode=self.find(id)).night + kcode.night2 
+  end
+
+  def self.midnight(id)
+     @@shift1[id] ||= (kcode=self.find(id)).midnight + kcode.midnight2 
+  end
+  
 end

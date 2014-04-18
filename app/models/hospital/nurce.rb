@@ -395,17 +395,17 @@ def role_remain(recalc=false)
 
   def shift1
     monthly.days.
-      inject(0){|sum,kinmu| sum + 
-      [:am,:pm,:am2,:pm2].inject(0){|s,sym| s + (kinmu.kinmucode ? kinmu.kinmucode[sym] : 0) }
-      }
+      inject(0){|sum,kinmu| sum + kinmu.shift1 }
+      #[:am,:pm,:am2,:pm2].inject(0){|s,sym| s +  kinmu.shift1 } #(kinmu.kinmucode ? kinmu.kinmucode[sym] : 0) }
+      #}
   end 
   def shift2
     monthly.days.
-      inject(0){|sum,kinmu| sum + (kinmu.kinmucode ? kinmu.kinmucode.night + kinmu.kinmucode.night2 : 0 )}
+      inject(0){|sum,kinmu| sum +  kinmu.shift2 } #(kinmu.kinmucode ? kinmu.kinmucode.night + kinmu.kinmucode.night2 : 0 )}
   end 
   def shift3
     monthly.days.
-      inject(0){|sum,kinmu| sum + (kinmu.kinmucode ? kinmu.kinmucode.midnight + kinmu.kinmucode.midnight2 : 0)}
+      inject(0){|sum,kinmu| sum + kinmu.shift3 } #(kinmu.kinmucode ? kinmu.kinmucode.midnight + kinmu.kinmucode.midnight2 : 0)}
   end 
   def nenkyuu
     monthly.days.

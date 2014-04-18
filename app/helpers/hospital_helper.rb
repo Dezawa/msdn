@@ -119,7 +119,7 @@ module HospitalHelper
   end
   def total(nurces,day,sym)
     nurces.inject(0){|sum,nurce| 
-      sum + (nurce.monthly.days[day].kinmucode ? nurce.monthly.days[day].kinmucode.send(sym) : 0 )}
+      sum + (nurce.monthly.days[day].kinmucode_id ? nurce.monthly.days[day].send(sym) : 0 )}
   end
 
   def what_day(date)
