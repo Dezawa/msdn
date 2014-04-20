@@ -30,6 +30,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
 
   def set_code(nurce,day,code)
     nurce.monthly.day10 = code
+    nurce.monthly.shift = nil
     nurce.monthly.store_days
   end
 
@@ -54,6 +55,9 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     must "To_123 of code #{code+1}" do
       nurce41 = nurce(41)
       set_code(nurce41,:day10,code+1); 
+      assert_equal code+1,nurce41.monthly.day10
+      assert_equal code+1,nurce41.monthly.days[10].id
+      assert_equal shift,nurce41.monthly.days[10].to_0123
       assert_equal shift,nurce41.shifts[10,1],
       "code #{code+1} #{Hospital::Kinmucode.find(code+1).name} は#{shift}"
     end
@@ -63,6 +67,10 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     must "To_123 of code #{code+1}" do
       nurce41 = nurce(41)
       set_code(nurce41,:day10,code+40); 
+      assert_equal code+40,nurce41.monthly.day10
+      assert_equal code+40,nurce41.monthly.days[10].kinmucode_id
+      assert_equal shift,nurce41.monthly.days[10].kinmucode.to_0123
+      assert_equal shift,nurce41.monthly.days[10].shift
       assert_equal shift,nurce41.shifts[10,1],
       "code #{code+40} #{Hospital::Kinmucode.find(code+40).name} は#{shift}"
     end
@@ -336,10 +344,12 @@ pp nurce.shift_with_last_month
   end
 
   must  "渡邊清美さんの2月 の 勤務" do
+pp [50,nurce(50).shifts]
     assert_equal [1.0,2.0,2.0,3,0,0,0,0],[:shift1,:shift2,:shift3,:shift0,:nenkyuu,:osode,:sankyuu,:ikukyuu].
       map{|sym| nurce(50).send sym}
   end
   must  "山野恵子の2月 の 勤務" do
+pp [43,nurce(43).shifts]#"_________00____1_0_1__1_2__1_"
     assert_equal [4.0, 1.0, 0.0, 3, 0, 0, 0, 0],[:shift1,:shift2,:shift3,:shift0,:nenkyuu,:osode,:sankyuu,:ikukyuu].
       map{|sym| nurce(43).send sym}
   end
