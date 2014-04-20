@@ -169,11 +169,13 @@ class Hospital::Kinmucode < ActiveRecord::Base
   end
 
   def self.shift2(id)
-     @@shift1[id] ||= (kcode=self.find(id)).night + kcode.night2 
+    return @@shift2[id] if  @@shift2[id] 
+     @@shift2[id] ||= (kcode=self.find(id)).night + kcode.night2 
   end
 
   def self.shift3(id)
-     @@shift1[id] ||= (kcode=self.find(id)).midnight + kcode.midnight2 
+    return @@shift3[id] if  @@shift3[id] 
+     @@shift3[id] ||= (kcode=self.find(id)).midnight + kcode.midnight2 
   end
 
   def self.daytime(id)
