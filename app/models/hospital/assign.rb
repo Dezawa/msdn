@@ -294,6 +294,7 @@ class Hospital::Assign
     @count = -1
     count_max = 0
     nurce_combination_shift23(combinations,need_nurces,short_roles,day){ |c| count_max += 1}
+
     ######## LOOP
     sft_str = Sshift2
     nurce_combination_shift23(combinations,need_nurces,short_roles,day){|nurce_combinations|
@@ -505,14 +506,13 @@ class Hospital::Assign
     if @night_mode
       @night.each{|sft_str|     #(1)
         combinations[sft_str] = 
-        nurce_combination_by_tightness(as_nurces_selected[sft_str][0..SelectedMax],
+        nurce_combination_by_tightness(as_nurces_selected[sft_str],#[0..SelectedMax],
                                        need_nurces[sft_str],short_roles[sft_str],sft_str)
       }
-      #end
     else 
       combinations["1"] = as_nurces_selected["1"].sort_by{|n| n.cost("1",tight_roles("1"))}
     end
-    log_combination day,combinations
+    log_combination __LINE__,day,combinations
     [combinations ,need_nurces, short_roles]
   end
 
@@ -590,10 +590,10 @@ class Hospital::Assign
 
   end
 
-  def log_combination(day,combinations)
+  def log_combination(line,day,combinations)
     if  @night_mode
       @night.each{|sft_str| comb=combinations[sft_str]
-        dbgout("HP ASSIGN(#{__LINE__}) #{day}:#{sft_str} tight:#{tight_roles(sft_str)} ["+
+        dbgout("HP ASSIGN(#{line}) #{day}:#{sft_str} tight:#{tight_roles(sft_str)} ["+
                comb.map{|nurces| 
                  "[" + 
                  nurces.map{|nurce| [nurce.id,nurce.cost(sft_str,tight_roles(sft_str))].join(':') }.join(",") +
@@ -920,7 +920,6 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
       # role不足
       (need_roles - (need_roles & roles_of(combination))).size <= 0
     }.sort_by{|nurces| cost_of_nurce_combination(nurces,sft_str,tight_roles(sft_str))}
-    combinations[0..SelectedMax] #(2)
     #combinations #(2)Dで削除
   end
 
