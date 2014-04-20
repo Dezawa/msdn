@@ -292,13 +292,12 @@ class Hospital::Assign
     #### Loop counter
     try = 0
     @count = -1
-    count_max = 0
-    nurce_combination_shift23(combinations,need_nurces,short_roles,day){ |c| count_max += 1}
+    count_max = combinations[Sshift2].size * combinations[Sshift3].size
 
     ######## LOOP
     sft_str = Sshift2
     nurce_combination_shift23(combinations,need_nurces,short_roles,day){|nurce_combinations|
-          dbgout("single/count/数  single && count < 0 => #{ single}/#{@count}/#{count_max}/#{ single && @count < 0}")
+      dbgout("single/count/数  single && count < 0 => #{ single}/#{@count}/#{count_max}/#{ single && @count < 0}")
 
       if !single && @count < 0 # case 2 でかつ最初の解(の可能性)
         @count += 1
@@ -813,6 +812,7 @@ class Hospital::Assign
   def  assign_test_patern(nurce_list,day,sft_str,idx_set_of_long_patern)
     #[ LongPatern,LongPatern]
     paterns = (0..nurce_list.size-1).map{|idx|
+#pp [idx,@koutai3,sft_str,Hospital::Nurce::LongPatern[@koutai3][sft_str]]
       long_patern,errorlist =  
       nurce_list[idx].long_check(day,sft_str,
                                  Hospital::Nurce::LongPatern[@koutai3][sft_str][idx_set_of_long_patern[idx]])
@@ -1022,20 +1022,20 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
   # [ [role,日準深]=>[min,max],, ,,,]
   def needs_all_days(reculc = false)
     return @needs_all_days if @needs_all_days && !reculc
+    need_patern
+    kangoshi_suu = @nurces.select{|nurce| nurce.shokushu_id == @Kangoshi}.size
+    vacation_max =need_patern.map{ |nd| 
+      nd[[@Kangoshi,Sshift0]] = [0,
+                     @nurces.select{|nurce| nurce.shokushu_id == @Kangoshi}.size -  # 看護師の人数
+                     @shifts123.                                         # 全shiftの
+                     inject(0){|s,shift| s + nd[[@Kangoshi,shift]].first } ]  # 看護師必要人数合計
+      #dbgout("FOR_DEBUG(#{__LINE__}) 看護師の休みの上限:#{nd[[2,0]]}")
+      #nd
+    }
     @needs_all_days= (0..@lastday).map{|day|
       date = @month+(day-1).day
-      #what_day = (date.wday%6 == 0 || Holyday.find_by_day(date)) ? 1 : 0
-      #need_patern[what_day]
       need_patern[(date.wday%6 == 0 || Holyday.holyday?(date)) ? 1 : 0]
     }
-    day=0
-    date = @month+(day-1).day
-    what_day = (date.wday%6 == 0 || Holyday.holyday?(date)) ? 1 : 0
-    need_patern[what_day]
-    #dbgout("FOR_DBG(#{__LINE__})  needs_all_days what_day = #{what_day} #{need_patern[what_day]}")
-    #dbgout("FOR_DBG(#{__LINE__}) needs_all_days[平日] "+
-    #       @needs_all_days[1].to_a.map{ |k,v| "[#{k.join(',')}]=>[#{v.join(',')}]"}.join(",")
-    #     )
     @needs_all_days
   end
 
@@ -1043,20 +1043,17 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
   # それを返す。
   # 戻り値 [ [ [資格,sft_str]=>[最低数、最大数], []=>[], []=>[] ],[ 土日の分] ]
   def need_patern
-    #dbgout("FOR_DEBUG(#{__LINE__}) @night=#{@night}")
-    @need_patern ||=[2,3].map{|what_day|  # 1:毎日  2:平日、  3:土日休
-      nd = Hash.new
-      Hospital::Need.of_datetype_for_busho(@month,what_day,@busho_id).
-      each{|need|            #shift_idとすべきであった
-        nd[[need.role_id,need.kinmucode_id.to_s]] = [need.minimun||0 ,need.maximum||need.minimun]
-      }
+    return @need_patern if @need_patern 
+     @need_patern = Hospital::Need.need_patern(@busho_id)
+    #[2,3].map{|what_day|  # 1:毎日  2:平日、  3:土日休
       #看護師の休みの上限＝＝これ以上休まれると人数が足りない を求める
+    @need_patern.each{ |nd| 
       nd[[@Kangoshi,Sshift0]] = [0,
                      @nurces.select{|nurce| nurce.shokushu_id == @Kangoshi}.size -  # 看護師の人数
                      @shifts123.                                         # 全shiftの
                      inject(0){|s,shift| s + nd[[@Kangoshi,shift]].first } ]  # 看護師必要人数合計
       #dbgout("FOR_DEBUG(#{__LINE__}) 看護師の休みの上限:#{nd[[2,0]]}")
-      nd
+      #nd
     }
 
   end

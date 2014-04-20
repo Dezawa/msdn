@@ -45,13 +45,28 @@ logger.debug("*****Hospital::Need:find_and_build  #{ret.keys.sort.join(',')}")
     self.all(:conditions => ["minimun>0 and busho_id = ? and daytype in (1,?)",busho_id,what_day(date)])
   end
 
-  def self.of_datetype_for_busho(month,what_day,busho_id)
+  def self.of_datetype_for_busho(what_day,busho_id)
     self.all(:conditions => ["minimun>0 and busho_id = ? and daytype in (1,?)",busho_id,what_day])
   end
 
   def self.what_day(day)
     (day.wday%6 == 0 || Holyday.holyday?(day)) ? 3 : 2
   end
+
+  # 平日か土日祝かで勤務必要数が変わる。
+  # それを返す。
+  # 戻り値 [ [ [資格,sft_str]=>[最低数、最大数], []=>[], []=>[] ],[ 土日の分] ]
+  def self.need_patern(busho_id)
+    need_patern =[2,3].map{|what_day|  # 1:毎日  2:平日、  3:土日休
+      nd = Hash.new
+      self.of_datetype_for_busho(what_day,busho_id).
+      each{|need|            #shift_idとすべきであった
+        nd[[need.role_id,need.kinmucode_id.to_s]] = [need.minimun||0 ,need.maximum||need.minimun]
+      }
+      nd
+    }
+  end
+
   ############ 逼迫role関連
   def self.combination3
         @@combination3 ||= make_combination
@@ -84,6 +99,9 @@ logger.debug("=== Need::roles =#{roles.join} comb:#{comb.join(',')}")
     @@combination3 = self.class.make_combination
     Hospital::Nurce.make_cost_table
   end
+
+
+
 end
 
 __END__
