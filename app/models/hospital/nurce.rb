@@ -175,7 +175,7 @@ class Hospital::Nurce < ActiveRecord::Base
 
   def monthly(month=nil)
     return @monthly if @monthly && ( @monthly.month == month || !month)
-    @month = month
+    @month = month if month
     @monthly = Hospital::Monthly.
       find_or_create_by_nurce_id_and_month(id,month)
     @monthly.nurce=self

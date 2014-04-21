@@ -24,6 +24,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
 
   def nurce(id); 
     n = Hospital::Nurce.find id
+    @month  = Date.new(2013,2,1)
     n.monthly(@month)
     n
   end

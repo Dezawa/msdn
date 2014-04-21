@@ -15,10 +15,12 @@ class Hospital::NurcePaterningTest < ActiveSupport::TestCase
   fixtures :hospital_kinmucodes
   # Replace this with your real tests.
   def setup
+    $HP_DEF=nil
     @month  = Date.new(2013,2,1)
     @busho_id = 1
     @assign=Hospital::Assign.new(@busho_id,@month)
     @nurces=@assign.nurces
+
  end
 # @nurces.each{|n| p [n.id,!!n.role_id?(1),n.shift_count(3),n.evaluate([1,2,4,5],3)]};1
   #######
