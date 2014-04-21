@@ -40,6 +40,11 @@ class Hospital::Nurce < ActiveRecord::Base
 
   attr_accessor :month
 
+
+  def after_find
+    set_check_reg 
+  end
+
   def self.cost_table
     @@Cost ||= make_cost_table
   end
@@ -74,10 +79,6 @@ class Hospital::Nurce < ActiveRecord::Base
         cost[cmb][[c1]]       = Cost[1]
     }
     cost
-  end
-
-  def after_find
-    set_check_reg 
   end
 
   def cost(sft_str,tight)
