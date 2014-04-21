@@ -43,13 +43,16 @@ class Hospital::Kinmucode < ActiveRecord::Base
     @@Code[sym] ||= self.find_by_code(CodeSym[sym]).id rescue SymVal[sym]
   end
 
-  Kubun=  Hash[*[:nikkin,:sankoutai,:part,:touseki,:l_kin,:gairai,:kyoutuu].
-    zip([1,2,3,4,5,6,7]).flatten]
+
+  Kubun=  { }
+  KK=Hash[:nikkin,"日勤",:sankoutai,"三交代",:part,"パート",:touseki,"透析",
+                   :l_kin,"L勤",:gairai,"外来",:kyoutuu,"共通"].
+    each_pair{ |kinmu,name|  Kubun[kinmu] = (k=Hospital::Role.find_by_name(name)) ? k.id : nil }
 
 #Hospital::Kinmucode::From0123, To0123 の見直し
 #  例えば出張は1日n勤務だが病棟の勤務人数集計ではゼロ。これに対応する
 #  shiftの表記が　十進の数字だったがこれを16進数の数字に変える
-  @@from123 = Hash.new{ |h,k| h[k]= Hash.new{ |h,k| h[k]=nil}}
+  @@from123 = Hash.new{ |h,k| h[k]= Hash.new{ |hh,kk| hh[kk]=nil}}
   ToFrom0123 = 
    {  
   # [nenky,am, pm, night,mid,  am2, pm2,nig2,midnight2]
@@ -96,24 +99,25 @@ class Hospital::Kinmucode < ActiveRecord::Base
   #  ただし、3直の 2→L2、 3→L3、二直の 2→夜, 0→明 は入れ替える
   #  これらは      L       M             N      O に置き換えられているはず
   def self.from_0123(shift,kinmukubun_id)
-    @@from123[shift][kinmukubun_id] ||=
-      case shift
+    sft_str = shift.to_s
+    @@from123[sft_str][kinmukubun_id] ||=
+      case sft_str
       when "2","3" ; return shift.to_i
       when "0"     ; return code(:Koukyu)
       when "L","M" ; 
-        return Hospital::Kinmucode.find_by_code_and_kinmukubun_id({"L"=>"L2","M"=>"L3"}[shift],sanchoku).id
+        return Hospital::Kinmucode.find_by_code_and_kinmukubun_id({"L"=>"L2","M"=>"L3"}[sft_str],sanchoku).id
       when "N","O" ; 
-        code = {"N"=>"夜","O"=>"明"}[shift]
+        code = {"N"=>"夜","O"=>"明"}[sft_str]
         #puts code
         return Hospital::Kinmucode.find_by_code(code).id
       when "1","5"
-        value = From0123[shift] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        value = From0123[sft_str] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
                                                 " and nenkyuu=? and am=? and pm=? and "+
                                                 "night=? and midnight=? and am2=? and "+
                                                 "pm2=? and night2=? and midnight2=? ",
                                                 kinmukubun_id,*value]
-                                )[0].id
+                                ).sort_by{ |k| k.id }[0].id
       else ; nil
       end
 
@@ -193,3 +197,6 @@ class Hospital::Kinmucode < ActiveRecord::Base
   end
   
 end
+__END__
+Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= 14) and nenkyuu=? and am=? and pm=? and night=? and midnight=? and am2=? and  pm2=? and night2=? and midnight2=? ", kinmukubun_id,*value])
+                                ).sort_by{ |k| k.id }[0].id
