@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 class Hospital::Need < ActiveRecord::Base
   extend Function::CsvIo
+  include Hospital::Const
   set_table_name 'hospital_needs'
   
   def self.find_and_build(busho_id)
@@ -15,10 +16,10 @@ class Hospital::Need < ActiveRecord::Base
       [2,3].each{ |daytype|
         [0,1,2].each{ |kinm|
           ret[role_id][daytype][kinm] ||= 
-          self.create(:role_id => role_id,:busho_id => busho_id,:daytype => daytype,:kinmucode_id => kinm+1)
+          self.create(:role_id => role_id,:busho_id => busho_id,:daytype => daytype,
+                      :kinmucode_id => kinm+1)
         }
       }
-
     }
 logger.debug("*****Hospital::Need:find_and_build  #{ret.keys.sort.join(',')}")
     ret
@@ -52,6 +53,17 @@ logger.debug("*****Hospital::Need:find_and_build  #{ret.keys.sort.join(',')}")
   def self.what_day(day)
     (day.wday%6 == 0 || Holyday.holyday?(day)) ? 3 : 2
   end
+  # 着目している @monthlyの各日毎に、必要な　role毎の人数を保存する
+  # [ [role,日準深]=>[min,max],, ,,,]
+  def self.needs_all_days(month,busho_id)
+    need_pat = self.need_patern(busho_id)
+    needs_all_days= (0..month.end_of_month.day).map{|day|
+      date = month+(day-1).day
+      need_pat[(date.wday%6 == 0 || Holyday.holyday?(date)) ? 1 : 0]
+    }
+    #Hospital::Need.needs_all_days(@busho_id,@month)
+    needs_all_days
+  end
 
   # 平日か土日祝かで勤務必要数が変わる。
   # それを返す。
@@ -64,6 +76,14 @@ logger.debug("*****Hospital::Need:find_and_build  #{ret.keys.sort.join(',')}")
         nd[[need.role_id,need.kinmucode_id.to_s]] = [need.minimun||0 ,need.maximum||need.minimun]
       }
       nd
+    }
+    nurse_size = Hospital::Nurce.by_busho(busho_id).
+      select{|nurce| nurce.shokushu_id == $HP_DEF.kangoshi}.size
+    need_patern.each{ |nd| 
+      nd[[$HP_DEF.kangoshi,Sshift0]] = 
+      [0,
+       nurse_size -  # 看護師の人数
+       $HP_DEF.shifts123.inject(0){|s,shift| s + nd[[$HP_DEF.kangoshi,shift]].first } ]  # 看護師必要人数合計
     }
   end
 

@@ -156,6 +156,8 @@ class Hospital::Assign
   end
 
   def initialize(arg_busho_id,arg_month)
+    $HP_DEF = Hospital::Define.create
+
     @Kangoshi = Hospital::Role.find_by_name("看護師").id
     
     @koutai3 = Hospital::Define.koutai3?
@@ -1022,21 +1024,7 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
   # [ [role,日準深]=>[min,max],, ,,,]
   def needs_all_days(reculc = false)
     return @needs_all_days if @needs_all_days && !reculc
-    need_patern
-    kangoshi_suu = @nurces.select{|nurce| nurce.shokushu_id == @Kangoshi}.size
-    vacation_max =need_patern.map{ |nd| 
-      nd[[@Kangoshi,Sshift0]] = [0,
-                     @nurces.select{|nurce| nurce.shokushu_id == @Kangoshi}.size -  # 看護師の人数
-                     @shifts123.                                         # 全shiftの
-                     inject(0){|s,shift| s + nd[[@Kangoshi,shift]].first } ]  # 看護師必要人数合計
-      #dbgout("FOR_DEBUG(#{__LINE__}) 看護師の休みの上限:#{nd[[2,0]]}")
-      #nd
-    }
-    @needs_all_days= (0..@lastday).map{|day|
-      date = @month+(day-1).day
-      need_patern[(date.wday%6 == 0 || Holyday.holyday?(date)) ? 1 : 0]
-    }
-    @needs_all_days
+    return @needs_all_days = Hospital::Need.needs_all_days(@month,@busho_id)
   end
 
   # 平日か土日祝かで勤務必要数が変わる。
@@ -1044,18 +1032,7 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
   # 戻り値 [ [ [資格,sft_str]=>[最低数、最大数], []=>[], []=>[] ],[ 土日の分] ]
   def need_patern
     return @need_patern if @need_patern 
-     @need_patern = Hospital::Need.need_patern(@busho_id)
-    #[2,3].map{|what_day|  # 1:毎日  2:平日、  3:土日休
-      #看護師の休みの上限＝＝これ以上休まれると人数が足りない を求める
-    @need_patern.each{ |nd| 
-      nd[[@Kangoshi,Sshift0]] = [0,
-                     @nurces.select{|nurce| nurce.shokushu_id == @Kangoshi}.size -  # 看護師の人数
-                     @shifts123.                                         # 全shiftの
-                     inject(0){|s,shift| s + nd[[@Kangoshi,shift]].first } ]  # 看護師必要人数合計
-      #dbgout("FOR_DEBUG(#{__LINE__}) 看護師の休みの上限:#{nd[[2,0]]}")
-      #nd
-    }
-
+    @need_patern = Hospital::Need.need_patern(@busho_id)
   end
 
   # 指定日に割り当て不足な [role,shift] の数
