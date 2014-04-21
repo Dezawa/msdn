@@ -53,7 +53,7 @@ delegate :logger, :to=>"ActiveRecord::Base"
       @kinmucode_id = id % 1000
       @want         = id / 1000
       @kinmucode    = Hospital::Kinmucode.k_code(id%1000)
-      @shift        = kinmucode.to_0123 
+      @shift        = @kinmucode.to_0123 
       @color = ["","bgcolor='orange'","bgcolor='red'"][ @want ]
     else
       @kinmucode_id = 
