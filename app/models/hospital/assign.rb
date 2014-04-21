@@ -181,7 +181,7 @@ class Hospital::Assign
                    Hospital::Need.roles.product(@shifts123)
     end
     @basename = File.join( RAILS_ROOT,"tmp","hospital",
-                          "Shift_%02d_%02d_"%[@busho_id,@month.month])
+                          "Shift_%02d_%02d_"%[@busho_id,@month.month]) if @month
 
     @avoid_list = Hospital::AvoidCombination.all.map{ |ab| [[ab.nurce1_id,ab.nurce2_id],ab.weight]}
     clear_stat
