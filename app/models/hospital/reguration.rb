@@ -116,7 +116,7 @@ module Hospital
     
     @Reguration = 
       [
-       { :kinmu_total => Hospital::Regrate.create(/[^1-8LM]/,nil,limit.kinmu_total, "勤務は22日まで",:through)
+       { :kinmu_total => Hospital::Regrate.create(/[^1-8LM]/,nil,limits.kinmu_total, "勤務は22日まで",:through)
        },{
        }, {
          :junya =>Hospital::Regrate.create( /[^25L]/,nil,limits.code2,"順夜が#{limit.code2}を越えた",:through),
