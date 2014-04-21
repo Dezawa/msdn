@@ -2,7 +2,14 @@
 require 'test_helper'
 
 class Hospital::KinmucodeTest < ActiveSupport::TestCase
-    fixtures :hospital_kinmucodes
+    fixtures :hospital_kinmucodes,:hospital_roles
+
+  Kubun=  { }
+  def setup
+  Hash[:nikkin,"日勤",:sankoutai,"三交代",:part,"パート",:touseki,"透析",
+                   :l_kin,"L勤",:gairai,"外来",:kyoutuu,"共通"].
+    each_pair{ |kinmu,name|  Hospital::Kinmucode::Kubun[kinmu] = (k=Hospital::Role.find_by_name(name)) ? k.id : nil }
+  end
 
   must "勤務コード数" do
     assert_equal 82,Hospital::Kinmucode.count
@@ -77,18 +84,20 @@ Id = {       #  0   1 2 3  5 L M N  O
 
  shifts.each_with_index{ |shift,idx| 
     kinmukubun = :nikkin; kinmukubun_id = Hospital::Kinmucode::Kubun[kinmukubun]
-      msg = "#{kinmukubun}=#{ kinmukubun_id}:#{shift}の勤務コード"
-      must msg do
+    msg = "#{kinmukubun}=#{ kinmukubun_id}:#{shift}の勤務コード"
+    must msg do
+      kinmukubun_id = Hospital::Kinmucode::Kubun[kinmukubun]
       assert_equal  Id[kinmukubun][idx],Hospital::Kinmucode.from_0123(shift,kinmukubun_id),
-        msg
+      msg
     end
     }
  shifts.each_with_index{ |shift,idx| 
     kinmukubun0 = :sankoutai; kinmukubun_id0 = Hospital::Kinmucode::Kubun[kinmukubun0]
-      msg = "#{kinmukubun0}=#{ kinmukubun_id}:#{shift}の勤務コード"
-      must msg do
-      assert_equal  Id[kinmukubun0][idx],Hospital::Kinmucode.from_0123(shift,kinmukubun_id0),
-        msg
+    msg = "#{kinmukubun0}=#{ kinmukubun_id}:#{shift}の勤務コード"
+    must msg do
+      kinmukubun_id0 = Hospital::Kinmucode::Kubun[kinmukubun0]
+      assert_equal  Id[kinmukubun0][idx],Hospital::Kinmucode.from_0123(shift.to_s,kinmukubun_id0),
+      msg
     end
     }
     
