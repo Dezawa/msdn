@@ -111,6 +111,7 @@ class Hospital::Kinmucode < ActiveRecord::Base
         #puts code
         return Hospital::Kinmucode.find_by_code(code).id
       when "1","5"
+        Kubun[:kyoutuu] ||= (k=Hospital::Role.find_by_name("共通")) ? k.id : nil 
         value = From0123[sft_str] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
                                                 " and nenkyuu=? and am=? and pm=? and "+
@@ -123,17 +124,6 @@ class Hospital::Kinmucode < ActiveRecord::Base
 
     #Hospital::Kinmucode.all(:conditions => [""])
   end
-
-  def self.from_0123_old(shift,kinmukubun_id)
-    { Kubun[:nikkin]   => { "0" => Hospital::Kinmucode.code(:Koukyu), "1" => 30, "2" => 2 , "3" => 3 ,"5" => 33},
-      Kubun[:sankoutai]=> { "0" => Hospital::Kinmucode.code(:Koukyu), "1" =>  1, "2" => 2 , "3" => 3 ,"5" => 33},
-      Kubun[:part]     => { "0" => Hospital::Kinmucode.code(:Koukyu), "1" => 46},
-      Kubun[:touseki]  => { "0" => Hospital::Kinmucode.code(:Koukyu), "1" => 51},
-      Kubun[:l_kin]    => { "0" => Hospital::Kinmucode.code(:Koukyu), "1" => 53},
-      Kubun[:gairai]   => { "0" => Hospital::Kinmucode.code(:Koukyu), "1" => 61}
-    }[kinmukubun_id][shift]
-     # from0123[kinmukubun_id][shift]
-    end
 
   # def am ; main_daytime > 5 ? 1 : 0 ;end
   def self.code_for_hope(shift)
@@ -189,11 +179,11 @@ class Hospital::Kinmucode < ActiveRecord::Base
   end
 
   def self.night(id)
-     @@shift1[id] ||= (kcode=self.find(id)).night + kcode.night2 
+     @@shift2[id] ||= (kcode=self.find(id)).night + kcode.night2 
   end
 
   def self.midnight(id)
-     @@shift1[id] ||= (kcode=self.find(id)).midnight + kcode.midnight2 
+     @@shift3[id] ||= (kcode=self.find(id)).midnight + kcode.midnight2 
   end
   
 end
