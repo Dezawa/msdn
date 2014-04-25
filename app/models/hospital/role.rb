@@ -9,6 +9,16 @@ class Hospital::Role < ActiveRecord::Base
     all.map{|obj| [obj.name,obj.id]}
   end
 
+  @@name2id =nil
+  def self.name2id
+   @@name2id ||=  Hash[*all.map{|obj| [obj.name,obj.id]}.flaten]
+  end
+
+  @@id2name = nil 
+  def self.id2name
+    @@id2name ||= Hash[*all.map{|obj| [obj.id,obj.name]}.flaten]
+  end
+
   def self.shokui
     all(:conditions => "bunrui = 1").map{ |obj| [obj.name,obj.id]}
   end
