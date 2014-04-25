@@ -144,7 +144,7 @@ class Lot
   end
 
   def packed
-    Time.local(*packed_date.split(/[^\d]/)) 
+    Time.local(*packed_date.split(/[^\d]/)) rescue Time.local(1970,1,1)
   end
 
   def period(date=nil)
