@@ -301,6 +301,18 @@ class Hospital::Nurce < ActiveRecord::Base
       }}
     @assinable_roles
   end
+  def assinable_total
+    @assinable_total = Hash.new{|h,k| h[k]=0}
+    [[:kinmu_total,"kinmu_total"],[:night_total, "night_total"]].
+      each{|sym,sft_str|
+      roles.each{|role_id,name| 
+        next unless Hospital::Need.roles.include?(role_id)
+        @assinable_total[[role_id,sft_str]] = limits[sym]
+      }}
+    @assinable_total
+  end
+
+
 
   def has_assignable_roles_atleast_one(sft_str,roles)
     #logger.debug("### roles & role_ids(#{__LINE__}) #{roles} #{roles.class} & #{role_ids}#{role_ids.class}")
