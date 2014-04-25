@@ -62,16 +62,18 @@ class Ubr::Point
   #       G123B028-----S--F7
   #       01234567890123
   def weights_not_product
-    genryou_lot = Ubr::LotList.lotlist.select{ |id,lot| /Z/ =~ lot.grade }
+    genryou_lot = Ubr::LotList.lotlist.
+      select{ |id,lot| /Z/ =~ lot.grade && /^G123(ZM085|J3519|Z670|SCP)/ !~ lot.meigara_code }
     genryou = genryou_lot.inject(0){ |s,l| s+l[1].weight}
-    scp     = genryou_lot.select{|id,l| /^G123SCP/ =~ l.meigara_code  }.inject(0){ |s,l| s+l[1].weight}
-    snake   =  genryou_lot.select{|id,l| /^G123(ZM085|J3519|Z670)/ =~ l.meigara_code  }.
+    scp     = Ubr::LotList.lotlist.select{|id,l| /^G123SCP/ =~ l.meigara_code  }.inject(0){ |s,l| s+l[1].weight}
+    snake   =  Ubr::LotList.lotlist.select{|id,l| /^G123(ZM085|J3519|Z670)/ =~ l.meigara_code  }.
       inject(0){ |s,l| s+l[1].weight}
-    [
-     genryou-snake-scp,scp,snake,
-     Ubr::LotList.lotlist.select{ |id,lot| lot.meigara_code[13,1] == "S" }.inject(0){ |s,l| s+l[1].weight},
+    saishori = 
+     Ubr::LotList.lotlist.select{ |id,lot| lot.meigara_code[13,1] == "S" }.inject(0){ |s,l| s+l[1].weight}
+    tyouki = 
      Ubr::LotList.lotlist.select{ |id,lot| @today - lot.packed > 2.year}.inject(0){ |s,l| s+l[1].weight}
-    ].map{ |w| (w*0.001).to_i}
+
+    [ genryou,scp,snake,saishori,tyouki ].map{ |w| (w*0.001).to_i}
   end
 
   # [ 10以上、5以上、1以上(全数)]
@@ -162,6 +164,7 @@ class Ubr::Point
   def self.remake
     File.rename(Ubr::Lot::SCMFILE,Ubr::Lot::SCMFILE+"save")
     Dir.glob(File.join(RAILS_ROOT,"tmp","ubr","save","*.csv")).sort.each{ |csvpath|
+      puts csvpath
       open(Ubr::Lot::SCMFILE,"w"){ |fp| fp.write(File.read(csvpath))}
       @waku_waku     = Ubr::Waku.waku(true) #load_from_master
       Ubr::LotList.lotlist(true)
