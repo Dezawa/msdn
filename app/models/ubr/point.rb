@@ -65,7 +65,7 @@ class Ubr::Point
     genryou_lot = Ubr::LotList.lotlist.select{ |id,lot| /Z/ =~ lot.grade }
     genryou = genryou_lot.inject(0){ |s,l| s+l[1].weight}
     scp     = genryou_lot.select{|id,l| /^G123SCP/ =~ l.meigara_code  }.inject(0){ |s,l| s+l[1].weight}
-    snake   =  genryou_lot.select{|id,l| /^G123(ZM085|J3159|Z670)/ =~ l.meigara_code  }.
+    snake   =  genryou_lot.select{|id,l| /^G123(ZM085|J3519|Z670)/ =~ l.meigara_code  }.
       inject(0){ |s,l| s+l[1].weight}
     [
      genryou-snake-scp,scp,snake,
