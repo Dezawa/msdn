@@ -18,26 +18,28 @@ class Hospital::Limit < ActiveRecord::Base
     month ||= Time.local(2014,3,1) #標準的な休みの数な月
 
     arrowable = arrowable_roles(busho_id,month)
-    needs     = need_roles(busho_id)
-    margin    = margin_roles(needs,allowable)
+    needs     = need_roles(busho_id,month)
+    margin    = margin_roles(needs,arrowable)
 
     insufficiency = margin.select{ |rs,mgn| mgn <  0 }
     fit           = margin.select{ |rs,mgn| mgn == 0 }
     less          = margin.select{ |rs,mgn| mgn > 0 && mgn < MarginLimit }
 
-    warning = 
-      insufficiency.inject([]){ 
-        1#Hospital::Role.
+    warning = [] 
+    [[insufficiency,"%sには%sが延べ %d人日必要なところ、%d人日不足のため、計算不能です"],
+     [less         ,"%sには%sが延べ %d人日必要なところ余裕は%d人日です。計算時間が掛かるかもしれません"]
+    ].each{ |list,msg_fmt|
+      list.each{ |rs,mgn| # {[role,sft_str] => mgn }
+        role = rs[0]
+        warning << msg_fmt % [ShiftName[rs[1]],Hospital::Role.id2name[rs[0]],needs[rs],mgn.abs]
+      }
     }
-
-
-    
-    [insufficiency,needs,margin,warning]
+    [warning,insufficiency,needs,margin]
   end
  
   def self.margin_roles(needs,allowable_roles)
     margin = Hash.new{ |h,k| h[k]=0}
-    needs.keys.each{ |rs| margin[rs] = (assinable_roles[rs]||0) - needs[rs]  }
+    needs.keys.each{ |rs| margin[rs] = (allowable_roles[rs]||0) - needs[rs]  }
     margin
   end
 
@@ -52,7 +54,7 @@ class Hospital::Limit < ActiveRecord::Base
     }
   end
 
-  def self.need_roles(busho_id)
+  def self.need_roles(busho_id,month)
     # {[role,shift] => count}
     needs_all = 
       Hospital::Need.needs_all_days(month,busho_id)[1..-1].
