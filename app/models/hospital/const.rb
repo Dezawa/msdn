@@ -2,7 +2,7 @@
 module Hospital
 module Const
   MarginLimit   = 5         #  要員数警告
-
+  
   MultiSolution  = 2        #  3 複数解求める。最初の解も求める。これは save する
   SingleSolution = 1        #  1 解を一つだけ求める
   SecondAndLater = false    #  2 複数求めるが、最初の解は求めない。これは別のルーチンで求める
@@ -22,7 +22,10 @@ module Const
   Shift0 ,Shift1 ,Shift2 ,Shift3  = Shift0123 = [0,1,2,3]
   Sshift0,Sshift1,Sshift2,Sshift3 = Sshift0123 = %w(0 1 2 3)
   Sshift123  = %w(1 2 3)
-    Cost = 
+  ShiftName  = Hash[ Shift1,"日勤", Shift2, "準夜" ,Shift3 ,"深夜",
+                     "kinmu_total" , "勤務総数","night_total","夜勤総数"] 
+
+  Cost = 
     [
      [], # 残り少なくなると急激にコストが上がる。タイトなroleを持つほどコストが上がる。
         # iランクタイト ＞ 残り1少、2ランクタイト＞残り１少、3ランクタイト<残り１少
