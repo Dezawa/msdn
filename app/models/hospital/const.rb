@@ -22,8 +22,8 @@ module Const
   Shift0 ,Shift1 ,Shift2 ,Shift3  = Shift0123 = [0,1,2,3]
   Sshift0,Sshift1,Sshift2,Sshift3 = Sshift0123 = %w(0 1 2 3)
   Sshift123  = %w(1 2 3)
-  ShiftName  = Hash[ Shift1,"日勤", Shift2, "準夜" ,Shift3 ,"深夜",
-                     "kinmu_total" , "勤務総数","night_total","夜勤総数"] 
+  ShiftName  = Hash[ Sshift1,"日勤", Sshift2, "準夜" ,Sshift3 ,"深夜",
+                     "kinmu_total" , "勤務計","night_total","夜勤計"] 
 
   Cost = 
     [
