@@ -8,6 +8,8 @@ class Hospital::RoleTest < ActiveSupport::TestCase
   def setup
      $HP_DEF = Hospital::Define.create
     @month     = Time.local(2014,3,1)
+    # 休日 11 平日 20  20*9+11*6=180+66 = 246
+    #                  4*31 = 124         124 = 370
   end
 
   
@@ -73,7 +75,7 @@ class Hospital::RoleTest < ActiveSupport::TestCase
     hospital_limit = Hospital::Limit.enough?(1,@month)
     assert_equal 3, hospital_limit[0].size
     assert_equal "夜勤計にはリーダーが延べ 62人日必要なところ、1人日不足のため、計算不能です",hospital_limit[0][0]
-    assert_equal "勤務計には看護師が延べ 373人日必要なところ余裕は3人日です。計算時間が掛かるかもしれません",hospital_limit[0][1]
+    assert_equal "勤務計には看護師が延べ 370人日必要なところ余裕は3人日です。計算時間が掛かるかもしれません",hospital_limit[0][1]
     assert_equal "夜勤計には看護師が延べ 124人日必要なところ余裕は3人日です。計算時間が掛かるかもしれません",hospital_limit[0][2]
 
   end
