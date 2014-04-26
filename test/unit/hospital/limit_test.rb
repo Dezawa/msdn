@@ -43,7 +43,7 @@ class Hospital::RoleTest < ActiveSupport::TestCase
     [9, "kinmu_total"]=>127,  [9, "night_total"]=> 23,
     [10, "kinmu_total"]=>171, [10, "night_total"]=>41,
     [3, "2"]=> 19,  [3, "3"]=> 19,
-    [4, "0"]=>  0,  [4, "1"]=>131,  [4, "2"]=>24, [4, "3"]=>24,
+    [4, "1"]=>131,  [4, "2"]=>24, [4, "3"]=>24,
     [9, "1"]=> 169, [9, "2"]=> 16,  [9, "3"]=>16,
     [10, "1"]=>209, [10, "2"]=>26, [10, "3"]=>26,
   }
@@ -72,9 +72,9 @@ class Hospital::RoleTest < ActiveSupport::TestCase
 #pp margin_roles
     hospital_limit = Hospital::Limit.enough?(1,@month)
     assert_equal 3, hospital_limit[0].size
-    assert_equal "夜勤総数にはリーダーが延べ 62人日必要なところ、1人日不足のため、計算不能です",hospital_limit[0][0]
-    assert_equal "勤務総数には看護師が延べ 373人日必要なところ余裕は3人日です。計算時間が掛かるかもしれません",hospital_limit[0][1]
-    assert_equal "夜勤総数には看護師が延べ 124人日必要なところ余裕は3人日です。計算時間が掛かるかもしれません",hospital_limit[0][2]
+    assert_equal "夜勤計にはリーダーが延べ 62人日必要なところ、1人日不足のため、計算不能です",hospital_limit[0][0]
+    assert_equal "勤務計には看護師が延べ 373人日必要なところ余裕は3人日です。計算時間が掛かるかもしれません",hospital_limit[0][1]
+    assert_equal "夜勤計には看護師が延べ 124人日必要なところ余裕は3人日です。計算時間が掛かるかもしれません",hospital_limit[0][2]
 
   end
 

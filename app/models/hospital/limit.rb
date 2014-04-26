@@ -23,7 +23,7 @@ class Hospital::Limit < ActiveRecord::Base
 
     insufficiency = margin.select{ |rs,mgn| mgn <  0 }
     fit           = margin.select{ |rs,mgn| mgn == 0 }
-    less          = margin.select{ |rs,mgn| mgn > 0 && mgn < MarginLimit }
+    less          = margin.select{ |rs,mgn| mgn >= 0 && mgn < MarginLimit }
 
     warning = [] 
     [[insufficiency,"%sには%sが延べ %d人日必要なところ、%d人日不足のため、計算不能です"],
@@ -39,7 +39,7 @@ class Hospital::Limit < ActiveRecord::Base
  
   def self.margin_roles(needs,allowable_roles)
     margin = Hash.new{ |h,k| h[k]=0}
-    needs.keys.each{ |rs| margin[rs] = (allowable_roles[rs]||0) - needs[rs]  }
+    needs.keys.each{ |rs| margin[rs] = (allowable_roles[rs]||0) - needs[rs] if needs[rs]>0 }
     margin
   end
 
