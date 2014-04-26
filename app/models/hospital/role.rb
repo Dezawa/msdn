@@ -11,12 +11,12 @@ class Hospital::Role < ActiveRecord::Base
 
   @@name2id =nil
   def self.name2id
-   @@name2id ||=  Hash[*all.map{|obj| [obj.name,obj.id]}.flaten]
+   @@name2id ||=  Hash[*all.map{|obj| [obj.name,obj.id]}.flatten]
   end
 
   @@id2name = nil 
   def self.id2name
-    @@id2name ||= Hash[*all.map{|obj| [obj.id,obj.name]}.flaten]
+    @@id2name ||= Hash[*all.map{|obj| [obj.id,obj.name]}.flatten]
   end
 
   def self.shokui
