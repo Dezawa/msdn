@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 module Hospital
 module Const
-  MarginLimit   = 5         #  要員数警告
   
   MultiSolution  = 2        #  3 複数解求める。最初の解も求める。これは save する
-  SingleSolution = 2        #  1 解を一つだけ求める
+  SingleSolution = 3        #  1 解を一つだけ求める
   SecondAndLater = false    #  2 複数求めるが、最初の解は求めない。これは別のルーチンで求める
 
 
@@ -15,8 +14,8 @@ module Const
   AvoidWeight = [ 1.0,  1.3,  1.7,  2.2,  2.9,  3.7,  4.8,   6.3,   8.2, 10.6, 13.8,
                  17.9, 23.3, 30.3, 39.4, 51.2, 66.5, 86.5, 112.5, 146.2, 190.0]
 
-  Timeout     = 1.minute
-  TimeoutMult = 1.minute
+  Timeout     = 2.minute
+  TimeoutMult = 3.minute
   Sleep       = 30
 
   Shift0 ,Shift1 ,Shift2 ,Shift3  = Shift0123 = [0,1,2,3]
@@ -24,6 +23,23 @@ module Const
   Sshift123  = %w(1 2 3)
   ShiftName  = Hash[ Sshift1,"日勤", Sshift2, "準夜" ,Sshift3 ,"深夜",
                      "kinmu_total" , "勤務計","night_total","夜勤計"] 
+
+  Kangoshi,Leader = %w(看護師 リーダー).map{ |name| Hospital::Role.find_by_name(name).id}
+  MarginLimit   = Hash.new{ |h,k| h[k] = 11}               # 夜、全 の余裕が
+  MarginLimit.merge!(Hash[ [Kangoshi,"night_total"],30 ,   #[10,10]できる
+                           [Kangoshi,"kinmu_total"],20 ,   #[8,10] も、まあまあ 28"
+                           [Leader  ,"night_total"],20 ,    #[7,10] きついNG 
+                           [Leader  ,Sshift2]      ,1 ,    #[7,13] 18",[7,12] 22" [7,11] 80"
+                           [Leader  ,Sshift3]      ,1      
+                         ] )        #  要員数警告
+
+  # 全勤務余裕      10    11  12  13 |    10    11  12  13 
+  # 夜勤余裕    10  NG    86         |
+  #              9  48    18  18     |
+  #              8  NG,28            |
+  #              7  NG    80  22  18 | 
+  #              6  NG               | 11       NG
+
 
   Cost = 
     [

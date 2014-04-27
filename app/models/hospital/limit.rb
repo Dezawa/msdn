@@ -23,7 +23,7 @@ class Hospital::Limit < ActiveRecord::Base
 
     insufficiency = margin.select{ |rs,mgn| mgn <  0 }
     fit           = margin.select{ |rs,mgn| mgn == 0 }
-    less          = margin.select{ |rs,mgn| mgn >= 0 && mgn < MarginLimit }
+    less          = margin.select{ |rs,mgn| mgn >= 0 && mgn < MarginLimit[rs] }
 
     warning = [] 
     [[insufficiency,"%sには%sが延べ %d人日必要なところ、%d人日不足のため、計算不能です"],
