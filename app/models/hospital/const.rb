@@ -4,7 +4,7 @@ module Const
   MarginLimit   = 5         #  要員数警告
   
   MultiSolution  = 2        #  3 複数解求める。最初の解も求める。これは save する
-  SingleSolution = 1        #  1 解を一つだけ求める
+  SingleSolution = 2        #  1 解を一つだけ求める
   SecondAndLater = false    #  2 複数求めるが、最初の解は求めない。これは別のルーチンで求める
 
 

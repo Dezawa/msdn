@@ -56,11 +56,13 @@ class Hospital::Limit < ActiveRecord::Base
 
   def self.need_roles(busho_id,month)
     # {[role,shift] => count}
+#pp Hospital::Need.needs_all_days(month,busho_id)[30]
     needs_all = 
-      Hospital::Need.needs_all_days(month,busho_id)[1..-1].
+      Hospital::Need.needs_all_days(month,busho_id)[1..month.end_of_month.day].
       inject(Hash.new{ |h,k| h[k]=0}){ |sum,need| need.each_pair{ |rs,minmax| sum[rs] += minmax[0]} 
       sum
     }
+#pp needs_all
     # 看護師数、その他role必要数 { role => 延べ数 }
     nobe_suu = needs_all.to_a.inject(Hash.new{ |h,k| h[k]=0}){ |sum,rs_need|
       sum[[rs_need[0][0],"kinmu_total"]] += rs_need[1] ;sum

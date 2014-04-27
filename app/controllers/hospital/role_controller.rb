@@ -32,12 +32,14 @@ class Hospital::RoleController < Hospital::Controller
      ]
 
   def show_assign
+    $HP_DEF =  Hospital::Define.create
     @roles  = Hospital::Role.all(:conditions => "bunrui <> 3")
     @labels = AssignLabel 
     @nurces = Hospital::Nurce.by_busho(@current_busho_id)
     @TableEdit = [[:form,:assign,"編集"],
                   ["　　　"],
                   [:form,:set_busho,"部署変更",:input_busho]]
+    @warn = Hospital::Limit.enough?(@current_busho,@month).first
   end
   def set_busho
     @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i

@@ -240,6 +240,10 @@ module HospitalHelper
     ret
   end
 
+  def need_warn
+    @warn.join("<br>")
+  end
+
   def edit_needs(build_models)
     obj = build_models[2][0]
     ret = @labels[0].td + @labels[0].disp_field( obj)+"</td>"
