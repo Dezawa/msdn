@@ -423,7 +423,7 @@ class Hospital::Assign
           ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,Sshift3)
 
         when [Sshift3,true],[Sshift2,false]
-          ret  =  assign_by_re_entrant(day+1)
+          ret  =  assign_night_by_re_entrant(day+1)
         when [Sshift1,true],[Sshift1,false]
           ret  =  assign_shift1_by_re_entrant(day+1)
         end
@@ -472,7 +472,7 @@ class Hospital::Assign
     dbgout dump("  HP ASSIGN ")
   end
 
-  def assign_by_re_entrant(day)
+  def assign_night_by_re_entrant(day)
     #@day = day
     return true     if day > @lastday 
     raise TimeoutError,"timed out"  if @limit_time < Time.now
@@ -481,25 +481,23 @@ class Hospital::Assign
     log_newday_entrant(day)
     combinations ,need_nurces, short_roles = ready_for_day_reentrant(day)
     return false unless combinations
-
-    sft_str = @night_mode ? Sshift2 : Sshift1
     
-    ncm = nCm(combinations[sft_str].size,need_nurces[sft_str].size)
-    comb ,need =  combinations[sft_str].size,need_nurces[sft_str].size
+    ncm = nCm(combinations[Sshift2].size,need_nurces[Sshift2].size)
+    comb ,need =  combinations[Sshift2].size,need_nurces[Sshift2].size
     try = 0 
     nurce_combination_shift23(combinations,need_nurces,short_roles,day){|nurce_combinations| 
       unless nurce_combinations
-        assign_log(day,sft_str,nil,__LINE__, @msg)
+        assign_log(day,Sshift2,nil,__LINE__, @msg)
         return false
       end
       #return false if @night_mode && not_enough_for_shift1(nurce_combinations,need_nurces,short_roles,day)
 
-      dbgout("HP AASIGN #{day}:#{sft_str} Try #{try += 1} of #{ncm} need #{comb}C#{need}")
-      return true if assign_day_reentrant(day,nurce_combinations,need_nurces,sft_str)
+      dbgout("HP AASIGN #{day}:#{Sshift2} Try #{try += 1} of #{ncm} need #{comb}C#{need}")
+      return true if assign_day_reentrant(day,nurce_combinations,need_nurces,Sshift2)
     }
     # 全組み合わせを調べてうまく行かないときは、前の日に戻る
     #     restore_shift(comb_nurces,day,shifts_short_role,shift)
-    assign_log(day,sft_str,nil,__LINE__,nil,"BACK: hk全候補終了")
+    assign_log(day,Sshift2,nil,__LINE__,nil,"BACK: hk全候補終了")
     false
   end
 
@@ -514,24 +512,22 @@ class Hospital::Assign
     combinations ,need_nurces, short_roles = ready_for_day_reentrant(day)
     return false unless combinations
 
-    sft_str = @night_mode ? Sshift2 : Sshift1
-    
-    ncm = nCm(combinations[sft_str].size,need_nurces[sft_str].size)
-    comb ,need =  combinations[sft_str].size,need_nurces[sft_str].size
+    ncm = nCm(combinations[Sshift1].size,need_nurces[Sshift1].size)
+    comb ,need =  combinations[Sshift1].size,need_nurces[Sshift1].size
     try = 0 
-    nurce_combination_shift23(combinations,need_nurces,short_roles,day){|nurce_combinations| 
+    nurce_combination_shift1(combinations,need_nurces,short_roles,day){|nurce_combinations| 
       unless nurce_combinations
-        assign_log(day,sft_str,nil,__LINE__, @msg)
+        assign_log(day,Sshift1,nil,__LINE__, @msg)
         return false
       end
       #return false if @night_mode && not_enough_for_shift1(nurce_combinations,need_nurces,short_roles,day)
 
-      dbgout("HP AASIGN #{day}:#{sft_str} Try #{try += 1} of #{ncm} need #{comb}C#{need}")
-      return true if assign_day_reentrant(day,nurce_combinations,need_nurces,sft_str)
+      dbgout("HP AASIGN #{day}:#{Sshift1} Try #{try += 1} of #{ncm} need #{comb}C#{need}")
+      return true if assign_day_reentrant(day,nurce_combinations,need_nurces,Sshift1)
     }
     # 全組み合わせを調べてうまく行かないときは、前の日に戻る
     #     restore_shift(comb_nurces,day,shifts_short_role,shift)
-    assign_log(day,sft_str,nil,__LINE__,nil,"BACK: hk全候補終了")
+    assign_log(day,Sshift1,nil,__LINE__,nil,"BACK: hk全候補終了")
     false
   end
 

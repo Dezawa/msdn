@@ -68,15 +68,13 @@ module Hospital::NurceCombination
           }
         }
       end
-    else #daytime
-      combinations[Sshift1].combination(need_nurces[Sshift1]).each{|cmb1|
-        block.call({ Sshift1 => cmb1})
-      }
     end
   end
 
-  def combination(busho_id,month)
-    
+  def nurce_combination_shift1(combinations,need_nurces,short_roles,day,&block)
+      combinations[Sshift1].combination(need_nurces[Sshift1]).each{|cmb1|
+        block.call({ Sshift1 => cmb1})
+      }
   end
 
 end
