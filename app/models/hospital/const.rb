@@ -24,14 +24,19 @@ module Const
   ShiftName  = Hash[ Sshift1,"日勤", Sshift2, "準夜" ,Sshift3 ,"深夜",
                      "kinmu_total" , "勤務計","night_total","夜勤計"] 
 
-  Kangoshi,Leader = %w(看護師 リーダー).map{ |name| Hospital::Role.find_by_name(name).id}
-  MarginLimit   = Hash.new{ |h,k| h[k] = 11}               # 夜、全 の余裕が
-  MarginLimit.merge!(Hash[ [Kangoshi,"night_total"],500 ,   #[10,10]できる
-                           [Kangoshi,"kinmu_total"],500 ,   #[8,10] も、まあまあ 28"
-                           [Leader  ,"night_total"],500 ,    #[7,10] きついNG 
-                           [Leader  ,Sshift2]      ,1 ,    #[7,13] 18",[7,12] 22" [7,11] 80"
-                           [Leader  ,Sshift3]      ,1      
-                         ] )        #  要員数警告
+  if ENV['RAILS_ENV'] == 'test'
+    Kangoshi,Leader = [4,3]
+  else
+    Kangoshi,Leader = %w(看護師 リーダー).map{ |name| Hospital::Role.find_by_name(name).id}
+  end
+    MarginLimit   = Hash.new{ |h,k| h[k] = 11}               # 夜、全 の余裕が
+    MarginLimit.merge!(Hash[ [Kangoshi,"night_total"],500 ,   #[10,10]できる
+                             [Kangoshi,"kinmu_total"],500 ,   #[8,10] も、まあまあ 28"
+                             [Leader  ,"night_total"],500 ,    #[7,10] きついNG 
+                             [Leader  ,Sshift2]      ,1 ,    #[7,13] 18",[7,12] 22" [7,11] 80"
+                             [Leader  ,Sshift3]      ,1      
+                           ] )        #  要員数警告
+  #end
 
   # 全勤務余裕      10    11  12  13 |    10 25 35  45  67   77  527人日
   # 夜勤余裕    10  NG    86         | 57                    31
