@@ -14,7 +14,7 @@ module Const
   AvoidWeight = [ 1.0,  1.3,  1.7,  2.2,  2.9,  3.7,  4.8,   6.3,   8.2, 10.6, 13.8,
                  17.9, 23.3, 30.3, 39.4, 51.2, 66.5, 86.5, 112.5, 146.2, 190.0]
 
-  Timeout     = 2.minute
+  Timeout     = 1.minute
   TimeoutMult = 3.minute
   Sleep       = 30
 
@@ -26,20 +26,20 @@ module Const
 
   Kangoshi,Leader = %w(看護師 リーダー).map{ |name| Hospital::Role.find_by_name(name).id}
   MarginLimit   = Hash.new{ |h,k| h[k] = 11}               # 夜、全 の余裕が
-  MarginLimit.merge!(Hash[ [Kangoshi,"night_total"],30 ,   #[10,10]できる
-                           [Kangoshi,"kinmu_total"],20 ,   #[8,10] も、まあまあ 28"
-                           [Leader  ,"night_total"],20 ,    #[7,10] きついNG 
+  MarginLimit.merge!(Hash[ [Kangoshi,"night_total"],500 ,   #[10,10]できる
+                           [Kangoshi,"kinmu_total"],500 ,   #[8,10] も、まあまあ 28"
+                           [Leader  ,"night_total"],500 ,    #[7,10] きついNG 
                            [Leader  ,Sshift2]      ,1 ,    #[7,13] 18",[7,12] 22" [7,11] 80"
                            [Leader  ,Sshift3]      ,1      
                          ] )        #  要員数警告
 
-  # 全勤務余裕      10    11  12  13 |    10    11  12  13 
-  # 夜勤余裕    10  NG    86         |
-  #              9  48    18  18     |
-  #              8  NG,28            |
-  #              7  NG    80  22  18 | 
-  #              6  NG               | 11       NG
-
+  # 全勤務余裕      10    11  12  13 |    10 25 35  45  67   77  527人日
+  # 夜勤余裕    10  NG    86         | 57                    31
+  #              9  48    18  18     | 50    NG 33  31  31   31
+  #              8  NG,28            | 47                    32
+  #              7  NG    80  22  18 | 46                    NG
+  #              6  NG               | 44                   160 
+  #          124人日                  217人日
 
   Cost = 
     [
