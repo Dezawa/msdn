@@ -560,7 +560,7 @@ class Hospital::Assign
     return false unless combinations
     ncm = nCm(combinations[sft_str].size,need_nurces[sft_str].size)
     try = 0 
-    nurce_combination_shift23(combinations,need_nurces,short_roles,day){|nurce_combinations|
+    nurce_combination_shift1(combinations,need_nurces,short_roles,day){|nurce_combinations|
       dbgout("HP AASIGN #{day}:#{sft_str} Try #{try += 1} of #{ncm}")
       ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,true)
       dbgout("HP AASIGN MOST TIGHT_DAY #{day}日 結果#{ ret}")
