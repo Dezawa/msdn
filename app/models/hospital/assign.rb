@@ -136,6 +136,7 @@ class Hospital::Assign
   attr_accessor :nurces,:kangoshi,:Kangoshi,:needs,:count_role_shift,:nurce_assignd,:need_patern,:error,:roles
   attr_accessor :restore_count, :entrant_count, :loop_count, :shortcut
   attr_accessor :exit_confition,:month
+  attr_accessor :night_mode
 
   # 未使用トライアル中な、combination_combination_tightness にて使われる、
   # 低コスト割付優先すべき看護師群の shift2,3の組み合わせを実際に作ってコストで
@@ -683,6 +684,8 @@ class Hospital::Assign
     @shifts_night[@night_mode].each{ |sft_str|
       need_nurces[sft_str] = short_role_shift_of_day[[@Kangoshi,sft_str]][0]
       short_roles[sft_str] = short_role(day,sft_str)
+    }
+    @shifts_night[@night_mode].each{ |sft_str|
       as_nurces_selected[sft_str] = 
       (need_nurces[sft_str]==0) ? [] :
       assinable_nurces_by_cost_size_limited(assinable_nurces(day,sft_str,short_roles[sft_str]),
@@ -778,7 +781,6 @@ class Hospital::Assign
   def  assign_test_patern(nurce_list,day,sft_str,idx_set_of_long_patern)
     #[ LongPatern,LongPatern]
     paterns = (0..nurce_list.size-1).map{|idx|
-#pp [idx,@koutai3,sft_str,Hospital::Nurce::LongPatern[@koutai3][sft_str]]
       long_patern,errorlist =  
       nurce_list[idx].long_check(day,sft_str,
                                  Hospital::Nurce::LongPatern[@koutai3][sft_str][idx_set_of_long_patern[idx]])
