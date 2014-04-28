@@ -1,8 +1,9 @@
-class Hospital::Role < ActiveRecord::Base
+module Hospital
+class Role < ActiveRecord::Base
   set_table_name 'hospital_roles'
-
   extend Function::CsvIo
 #  include Hospital::Const
+
   has_and_belongs_to_many :nurces
 
   def self.names
@@ -30,10 +31,9 @@ class Hospital::Role < ActiveRecord::Base
   end
 
 
-  def self.by_shokushu_id(shokushu_id)
-    self.find_by_name(Shokushu.rassoc(shokushu_id)[0])
-  end
-  include Hospital::Const
+ #  include Hospital::Const
   #logger.debug " [ Kangoshi,Leader ] = [#{ Kangoshi},#{Leader} #{MarginLimit}]"
+  #Defined = nil
 
+end
 end
