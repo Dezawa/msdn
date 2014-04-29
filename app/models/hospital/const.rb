@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 module Hospital
 module Const
-  
+
+  LimitOfNurceCandidateList = 6
+  Factor_of_safety_NurceCandidateList = 2
+
   MultiSolution  = 2        #  3 複数解求める。最初の解も求める。これは save する
   SingleSolution = 3        #  1 解を一つだけ求める
   SecondAndLater = false    #  2 複数求めるが、最初の解は求めない。これは別のルーチンで求める

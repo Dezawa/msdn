@@ -672,6 +672,14 @@ class Hospital::Assign
   end
 
   def need_nurces_roles(day)
+    if @night_mode
+      need_nurces_roles_night(day)
+    else 
+      need_nurces_roles_day(day)
+    end
+  end
+
+  def need_nurces_roles_night(day)
     # この日のこのshiftの看護師の必要数と不足role
     short_role(day,Sshift3,true)
     # 看護師の必要数,不足role
@@ -694,6 +702,31 @@ class Hospital::Assign
     @shifts_night[@night_mode].each{|sft_str| next unless
       entry_log(day,sft_str,__LINE__,need_nurces[sft_str],short_roles[sft_str],as_nurces_selected[sft_str])
     }
+    if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
+      [as_nurces_selected,need_nurces, short_roles]
+    else 
+      false
+    end
+  end
+  def need_nurces_roles_day(day)
+    # この日のこのshiftの看護師の必要数と不足role
+    short_role(day,Sshift3,true)
+    # 看護師の必要数,不足role
+    short_role_shift_of_day = short_role_shift_of(day)
+    need_nurces = { }   # 看護師の必要数
+    short_roles = { }   # 不足role
+    as_nurces_selected = { }   # アサイン可能看護師リスト
+    ## tryal
+    #(@night_mode ? @shifts123 : @shifts_night[@night_mode]).each{ |sft_str|
+      need_nurces[Sshift1] = short_role_shift_of_day[[@Kangoshi,Sshift1]][0]
+      short_roles[Sshift1] = short_role(day,Sshift1)
+    
+      as_nurces_selected[Sshift1] = 
+      (need_nurces[Sshift1]==0) ? [] :
+      assinable_nurces_by_cost_size_limited(assinable_nurces(day,Sshift1,short_roles[Sshift1]),
+                                            Sshift1, need_nurces, short_roles)
+
+      entry_log(day,Sshift1,__LINE__,need_nurces[Sshift1],short_roles[Sshift1],as_nurces_selected[Sshift1])
     if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
       [as_nurces_selected,need_nurces, short_roles]
     else 
@@ -728,14 +761,19 @@ class Hospital::Assign
 
   def limit_of_nurce_candidate(sft_str,need_nurces)
     case sft_str
-    when Sshift2,Sshift3 
-      #[((need_nurces[Sshift2] + (need_nurces[Sshift3] || 0))*2).ceil,6].max
-      [((need_nurces[Sshift2] + (need_nurces[Sshift3] || 0))*
-        Factor_of_safety_NurceCandidateList).ceil,
-       LimitOfNurceCandidateList].max
-    when Sshift1          ; (need_nurces[Sshift1] * 1.5).ceil
+    when Sshift2,Sshift3 ; limit_of_nurce_candidate_night(need_nurces)
+    when Sshift1         ; limit_of_nurce_candidate_day(need_nurces)
     end # of case    
  end
+
+  def limit_of_nurce_candidate_night(need_nurces)
+    [((need_nurces[Sshift2] + (need_nurces[Sshift3] || 0)) * Factor_of_safety_NurceCandidateList).ceil,
+     LimitOfNurceCandidateList].max
+  end
+
+  def  limit_of_nurce_candidate_day(need_nurces)
+    (need_nurces[Sshift1] * 1.5).ceil
+  end
 
   def array_merge(aryary)
     return [] if aryary==[]
