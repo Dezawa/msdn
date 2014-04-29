@@ -708,21 +708,34 @@ class Hospital::Assign
   #ただし必要ロールがそろう様にするために持っているロールで分ける。
   # これが必要なのは割りあて可能な人数が「何人か」より多い場合
   def assinable_nurces_by_cost_size_limited(as_nurce,sft_str,need_nurces,short_roles )
-    limit = case sft_str
-            when Sshift2,Sshift3 
-              #[((need_nurces[Sshift2] + (need_nurces[Sshift3] || 0))*2).ceil,6].max
-              [((need_nurces[Sshift2] + (need_nurces[Sshift3] || 0))*3).ceil,6].max
-            when Sshift1          ; (need_nurces[Sshift1] * 1.5).ceil
-            end # of case    
-    return as_nurce.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str))} if as_nurce.size <= limit
+    limit = limit_of_nurce_candidate(sft_str,need_nurces)
+    if as_nurce.size <= limit
+      as_nurce.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str))} 
+    else
+      gather_by_each_group_of_role(as_nurce,sft_str,short_roles[sft_str])[0,limit]
+    end
+  end
+
+  def gather_by_each_group_of_role(as_nurce,sft_str,short_role_of_this_shift)
     nurces = as_nurce.
-      group_by{ |nurce| nurce.role_ids & short_roles[sft_str]}.to_a.  # 持ってるroleで層別し
+      group_by{ |nurce| nurce.role_ids & short_role_of_this_shift}.to_a.  # 持ってるroleで層別し
       map{ |roles,nurce_list|                                # 各々の層をcostで並べる
       nurce_list.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str)) 
       }
     }
-    array_merge(nurces)[0,limit] # costの低い方から選ぶ
+    array_merge(nurces) # costの低い方から選ぶ
   end # of case
+
+  def limit_of_nurce_candidate(sft_str,need_nurces)
+    case sft_str
+    when Sshift2,Sshift3 
+      #[((need_nurces[Sshift2] + (need_nurces[Sshift3] || 0))*2).ceil,6].max
+      [((need_nurces[Sshift2] + (need_nurces[Sshift3] || 0))*
+        Factor_of_safety_NurceCandidateList).ceil,
+       LimitOfNurceCandidateList].max
+    when Sshift1          ; (need_nurces[Sshift1] * 1.5).ceil
+    end # of case    
+ end
 
   def array_merge(aryary)
     return [] if aryary==[]
