@@ -86,12 +86,18 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
     @assign.avoid_check(nurce_pair,sft_str,first_day,patern),"avoidなし"
   end
 
+  must "  avoid_list" do
+    set_avoid([[36,37]])
+    @assign = Hospital::Assign.new(@busho_id,@month)
+    assert_equal [[[36, 37], 2]],@assign.avoid_list
+  end
+
   must " #{first_day}日 shift#{sft_str} assigned_patern #{assigned_patern}のとき avoid_あり" do
     nurces = extract_set_shifts(log2_4)
     patern = assigned_patern.map{ |p| longpatern[p]}
+    set_avoid([[36,37]])
     @assign = Hospital::Assign.new(@busho_id,@month)
     nurce_pair = [36,37].map{ |id| nurce_by_id(id,nurces)}
-    set_avoid([36,37])
     assert_equal false,
     @assign.avoid_check(nurce_pair,sft_str,first_day,patern),"avoidあり"
   end
