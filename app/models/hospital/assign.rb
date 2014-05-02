@@ -453,7 +453,7 @@ class Hospital::Assign
   #                       『Hospital::Nurce::LongPatern[sft_str][patern_番号]』
   def assign_patern(nurces,day,sft_str,idx_list_of_long_patern)
     return :done if nurces == true
-
+pp nurces[0].shifts
     @count_eval[sft_str] += 1
     unless list_of_long_patern = assign_patern_if_possible(nurces,day,sft_str,idx_list_of_long_patern)
       return :cannot_assign_this_patern
@@ -464,8 +464,10 @@ class Hospital::Assign
 
   def assign_patern_if_possible(nurces,day,sft_str,idx_list_of_long_patern)
     # この長い割付が可能か                                                # [0,2]
+pp nurces[0].shifts
     list_of_long_patern = 
       assign_test_patern(nurces,day,sft_str,idx_list_of_long_patern)
+pp nurces[0].shifts
     return false unless list_of_long_patern
 
     (0..nurces.size-1).each{|idx|
@@ -848,6 +850,7 @@ class Hospital::Assign
       else
         # このとき、daily_checkは[item,正規表現の配列
         errorlist.each{|item,reg| @count_cause[item][sft_str]+=1 }
+pp ["errorlist",errorlist]
         return false
       end
     }
@@ -860,12 +863,11 @@ class Hospital::Assign
     return true if sft_str == "1"
     last_day = first_day+list_of_long_patern.map{ |long_patern| long_patern.patern.size}.max-1
 logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avoid_list=#{@avoid_list.flatten.join(',')}")
-puts dump
     @shifts_night.each{ |sft_str|
       (first_day..last_day).each{ |day| 
         nurce_ids = nurce_ids_of_the_day_shift(nurces,day,sft_str)
         logger.debug("#### AVOID_CHECK        nurce_ids=#{nurce_ids==[]} SIZE=#{@avoid_list.map{ |al,weight| ( nurce_ids & al)==al }}")
-        return false if @avoid_list.map{ |al,weight| al if ( nurce_ids & al)==al }.compact.size > 0 
+        return false if @avoid_list.map{ |al,weight| al unless (nurce_ids & al).size == al.size }.compact.size > 0 
       }
     }
     true
