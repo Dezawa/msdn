@@ -136,7 +136,7 @@ class Hospital::Assign
   attr_accessor :nurces,:kangoshi,:Kangoshi,:needs,:count_role_shift,:nurce_assignd,:need_patern,:error,:roles
   attr_accessor :restore_count, :entrant_count, :loop_count, :shortcut
   attr_accessor :exit_confition,:month
-  attr_accessor :night_mode
+  attr_accessor :night_mode, :avoid_list
 
   # 未使用トライアル中な、combination_combination_tightness にて使われる、
   # 低コスト割付優先すべき看護師群の shift2,3の組み合わせを実際に作ってコストで
@@ -455,16 +455,23 @@ class Hospital::Assign
     return :done if nurces == true
 
     @count_eval[sft_str] += 1
+    unless list_of_long_patern = assign_patern_if_possible(nurces,day,sft_str,idx_list_of_long_patern)
+      return :cannot_assign_this_patern
+    end
+    long_check_later_days(day,merged_patern(list_of_long_patern),sft_str) &&
+      avoid_check(nurces,sft_str,day,list_of_long_patern)
+  end
+
+  def assign_patern_if_possible(nurces,day,sft_str,idx_list_of_long_patern)
     # この長い割付が可能か                                                # [0,2]
     list_of_long_patern = 
       assign_test_patern(nurces,day,sft_str,idx_list_of_long_patern)
-    return :cannot_assign_this_patern unless list_of_long_patern
+    return false unless list_of_long_patern
 
     (0..nurces.size-1).each{|idx|
       nurce_set_patern(nurces[idx],day,list_of_long_patern[idx].patern)
     }
-    long_check_later_days(day,merged_patern(list_of_long_patern),sft_str) &&
-      avoid_check(nurces,sft_str,day,list_of_long_patern)
+    list_of_long_patern
   end
 
   def log_newday_entrant(day)
@@ -833,8 +840,9 @@ class Hospital::Assign
     #[ LongPatern,LongPatern]
     paterns = (0..nurce_list.size-1).map{|idx|
       long_patern,errorlist =  
-      nurce_list[idx].long_check(day,sft_str,
-                                 Hospital::Nurce::LongPatern[@koutai3][sft_str][idx_set_of_long_patern[idx]])
+      nurce_list[idx].
+      long_check(day,sft_str,
+                 Hospital::Nurce::LongPatern[@koutai3][sft_str][idx_set_of_long_patern[idx]])
       if long_patern
         long_patern # ,daily_checks]
       else
@@ -852,6 +860,7 @@ class Hospital::Assign
     return true if sft_str == "1"
     last_day = first_day+list_of_long_patern.map{ |long_patern| long_patern.patern.size}.max-1
 logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avoid_list=#{@avoid_list.flatten.join(',')}")
+puts dump
     @shifts_night.each{ |sft_str|
       (first_day..last_day).each{ |day| 
         nurce_ids = nurce_ids_of_the_day_shift(nurces,day,sft_str)
