@@ -4,7 +4,7 @@ require 'test_helper'
 
 class Hospital::AssignCombinationTest < ActiveSupport::TestCase
   include Hospital::Const
-  fixtures :nurces,:hospital_roles,:nurces_roles,:hospital_limits
+  fixtures :nurces,:hospital_roles,:nurces_roles,:hospital_limits,:hospital_defines
   fixtures :holydays,:hospital_needs,:hospital_monthlies
   fixtures :hospital_kinmucodes
   # Replace this with your real tests.
@@ -78,28 +78,40 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
   first_day = 8
   sft_str ="3"
 
-  must " #{first_day}日 shift#{sft_str} assigned_patern #{assigned_patern}のとき avoid_check" do
+  must " #{first_day}日 shift#{sft_str} assigned_patern #{assigned_patern}のとき avoid_なしk" do
     nurces = extract_set_shifts(log2_4)
     patern = assigned_patern.map{ |p| longpatern[p]}
     nurce_pair = [36,37].map{ |id| nurce_by_id(id,nurces)}
     assert_equal true,
     @assign.avoid_check(nurce_pair,sft_str,first_day,patern),"avoidなし"
+  end
+
+  must " #{first_day}日 shift#{sft_str} assigned_patern #{assigned_patern}のとき avoid_あり" do
+    nurces = extract_set_shifts(log2_4)
+    patern = assigned_patern.map{ |p| longpatern[p]}
+    nurce_pair = [36,37].map{ |id| nurce_by_id(id,nurces)}
     set_avoid([36,37])
     assign = Hospital::Assign.new(@busho_id,@month)
     assert_equal false,
     assign.avoid_check(nurce_pair,sft_str,first_day,patern),"avoidあり"
   end
 
-  must " #{first_day}日 shift#{sft_str} assigned_patern #{assigned_patern}のとき assign_patern" do
+  must " #{first_day}日 shift#{sft_str} assigned_patern #{assigned_patern}のとき assign_patern avoidなし" do
     nurces = extract_set_shifts(log2_4)
     patern = assigned_patern.map{ |p| longpatern[p]}
     nurce_pair = [36,37].map{ |id| nurce_by_id(id,nurces)}
     assert_equal true,
-    @assign.assign_patern(nurce_pair,first_day,sft_str,patern),"avoidなし"
+    @assign.assign_patern(nurce_pair,first_day,sft_str,assigned_patern),"avoidなし"
+  end
+
+  must " #{first_day}日 shift#{sft_str} assigned_patern #{assigned_patern}のとき assign_patern avoidあり" do
+    nurces = extract_set_shifts(log2_4)
+    patern = assigned_patern.map{ |p| longpatern[p]}
+    nurce_pair = [36,37].map{ |id| nurce_by_id(id,nurces)}
     set_avoid([36,37])
     assign = Hospital::Assign.new(@busho_id,@month)
     assert_equal false,
-    assign.assign_patern(nurce_pair,first_day,sft_str,patern),"avoidあり"
+    assign.assign_patern(nurce_pair,first_day,sft_str,assigned_patern),"avoidあり"
   end
 
   must "看護師 1,2,3,4,5 に禁忌はない" do
