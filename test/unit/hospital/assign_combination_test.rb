@@ -110,6 +110,7 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
     nurces = extract_set_shifts(log2_4)
     patern = assigned_patern.map{ |p| longpatern[p]}
     nurce_pair = [38,39].map{ |id| nurce_by_id(id,@assign.nurces)}
+    assert @assign.assign_patern_if_possible(nurces,first_day,sft_str,assigned_patern)
     assert_equal true,
     @assign.assign_patern(nurce_pair,first_day,sft_str,assigned_patern),"avoidなし"
   end
