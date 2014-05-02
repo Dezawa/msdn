@@ -5,7 +5,7 @@ class Hospital::Need < ActiveRecord::Base
   set_table_name 'hospital_needs'
   
   def self.find_and_build(busho_id)
-    ret = Hash.new{ |h,k| h[k]={  2 => [nil,nil,nil],3=> [nil,nil,nil]}}
+    ret = Hash.new{ |h,k| h[k]={  Weekday => [nil,nil,nil],Weekend=> [nil,nil,nil]}}
     needs = all(:conditions => ["busho_id = ? ",busho_id])
     needs.each{ |need| 
       next unless need_role_ids.include?(need.role_id) && [2,3].include?(need.daytype)
@@ -13,7 +13,7 @@ class Hospital::Need < ActiveRecord::Base
     }
     need_role_ids.each{ |role_id|
       #ret.each_pair{ |role_id,hash| 
-      [2,3].each{ |daytype|
+      [Weekday,Weekend].each{ |daytype|
         [0,1,2].each{ |kinm|
           ret[role_id][daytype][kinm] ||= 
           self.create(:role_id => role_id,:busho_id => busho_id,:daytype => daytype,
@@ -51,7 +51,7 @@ logger.debug("*****Hospital::Need:find_and_build  #{ret.keys.sort.join(',')}")
   end
 
   def self.what_day(day)
-    (day.wday%6 == 0 || Holyday.holyday?(day)) ? 3 : 2
+    (day.wday%6 == 0 || Holyday.holyday?(day)) ? Weekend : Weekday
   end
   # 着目している @monthlyの各日毎に、必要な　role毎の人数を保存する
   # [ [role,日準深]=>[min,max],, ,,,]
@@ -69,7 +69,7 @@ logger.debug("*****Hospital::Need:find_and_build  #{ret.keys.sort.join(',')}")
   # それを返す。
   # 戻り値 [ [ [資格,sft_str]=>[最低数、最大数], []=>[], []=>[] ],[ 土日の分] ]
   def self.need_patern(busho_id)
-    need_patern =[2,3].map{|what_day|  # 1:毎日  2:平日、  3:土日休
+    need_patern =[Weekday,Weekend].map{|what_day|  # 1:毎日  2:平日、  3:土日休
       nd = Hash.new
       self.of_datetype_for_busho(what_day,busho_id).
       each{|need|            #shift_idとすべきであった
