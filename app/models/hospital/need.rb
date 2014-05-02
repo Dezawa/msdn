@@ -4,7 +4,7 @@ class Hospital::Need < ActiveRecord::Base
   include Hospital::Const
   set_table_name 'hospital_needs'
   
-  def self.find_and_build(busho_id)
+  def self.need_list_each_role_daytype_of(busho_id)
     ret = Hash.new{ |h,k| h[k]={  Weekday => [nil,nil,nil],Weekend=> [nil,nil,nil]}}
     needs = all(:conditions => ["busho_id = ? ",busho_id])
     needs.each{ |need| 
@@ -21,7 +21,7 @@ class Hospital::Need < ActiveRecord::Base
         }
       }
     }
-logger.debug("*****Hospital::Need:find_and_build  #{ret.keys.sort.join(',')}")
+logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sort.join(',')}")
     ret
   end
 

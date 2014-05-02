@@ -7,16 +7,25 @@ class Hospital::NeedTest < ActiveSupport::TestCase
 
   must "検索結果をindex用に組み立てる" do
     ret = { 
-      #role  平日 shift1,2,3  休日
-      3  => { 1 => [[],[],[]],2 => [[],[],[]]},
-      4  => { 1 => [[],[],[]],2 => [[],[],[]]},
-      5  => { 1 => [[],[],[]],2 => [[],[],[]]},
-      9  => { 1 => [[],[],[]],2 => [[],[],[]]},
-      10 => { 1 => [[],[],[]],2 => [[],[],[]]}
+      #role => { 平日 => [ [shift1],[2],[3] ]  休日  shift1,2,3    部門１のrole必要数
+      3  => { 2 => [[nil,nil],[1,1],[1,1]] ,3 => [[nil,nil],[1,1],[1,1]]},
+      4  => { 2 => [[9,11],[2,2],[2,2]]    ,3 => [[6,7],[2,2],[2,2]]},
+      5  => { 2 => [[0,1],[0,1],[0,1]]     ,3 =>  [[0,1],[0,1],[0,1]]},
+      9  => { 2 => [[1,2],[1,2],[1,2]]     ,3 => [[1,2],[1,2],[1,2]]},
+      10 => { 2 => [[1,2],[1,2],[1,2]]     ,3 => [[1,2],[1,2],[1,2]]}
     }
     assert_equal [3,4,5,9,10],Hospital::Need.need_role_ids,"need_role_ids"
-    assert_equal [3,4,5,9,10],Hospital::Need.find_and_build(1).keys.sort,"find_and_build(1).keys"
-    assert_equal ret,Hospital::Need.need_list_each_role_daytype_of(1)
+    assert_equal [3,4,5,9,10],Hospital::Need.need_list_each_role_daytype_of(1).keys.sort,"find_and_build(1).keys"
+    # 部門１のrole必要数    ret[role_id][daytype][kinm] 
+    rslt = Hash[*Hospital::Need.need_list_each_role_daytype_of(1).
+                to_a.map{ |role,needs| 
+                  [role, Hash[*needs.to_a.map{ 
+                           |daytype,need| [daytype,
+                                           need.map{ |nd| 
+                                             [nd.minimun, nd.maximum] }
+                                          ]}.flatten(1)]]
+                }.flatten(1)]
+    assert_equal ret,rslt
   end
 
   must "remake combination3 after save" do
