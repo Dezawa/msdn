@@ -30,11 +30,11 @@ class Hospital::NeedController < Hospital::Controller
   end
 
   def index
-    @models = @Model.find_and_build @current_busho_id
+    @models = @Model.need_list_each_role_daytype_of  @current_busho_id
   end
 
   def edit_on_table
-    @models = @Model.find_and_build @current_busho_id
+    @models = @Model.need_list_each_role_daytype_of @current_busho_id
   end
     
   def update_on_table

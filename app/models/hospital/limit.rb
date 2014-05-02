@@ -65,11 +65,11 @@ class Hospital::Limit < ActiveRecord::Base
 #pp needs_all
     # 看護師数、その他role必要数 { role => 延べ数 }
     nobe_suu = needs_all.to_a.inject(Hash.new{ |h,k| h[k]=0}){ |sum,rs_need|
-      sum[[rs_need[0][0],"kinmu_total"]] += rs_need[1] ;sum
+      sum[[rs_need[0][0],:kinmu_total]] += rs_need[1] ;sum
     } 
     # 夜勤 必要role延べ数 { role => 延べ数 }。日勤は needs_all[role,shift]
     shift_role_nobe = needs_all.to_a.inject(Hash.new{ |h,k| h[k]=0}){ |sum,rs_need|
-      sum[[rs_need[0][0],"night_total"]] += rs_need[1] if $HP_DEF.night.include?(rs_need[0][1])
+      sum[[rs_need[0][0],:night_total]] += rs_need[1] if $HP_DEF.night.include?(rs_need[0][1])
       sum
     } 
       

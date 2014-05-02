@@ -16,7 +16,7 @@ class Hospital::NeedTest < ActiveSupport::TestCase
     }
     assert_equal [3,4,5,9,10],Hospital::Need.need_role_ids,"need_role_ids"
     assert_equal [3,4,5,9,10],Hospital::Need.find_and_build(1).keys.sort,"find_and_build(1).keys"
-    assert_equal ret,Hospital::Need.find_and_build(1)
+    assert_equal ret,Hospital::Need.need_list_each_role_daytype_of(1)
   end
 
   must "remake combination3 after save" do
