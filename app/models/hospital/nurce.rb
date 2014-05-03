@@ -34,7 +34,7 @@ class Hospital::Nurce < ActiveRecord::Base
   
   LimitDefault =
     { :code0 => 8,:code1 => 20,:code2 => 4,:code3 => 4,:coden => 1,
-    :night_total => 9
+    :night_total => 9,:kinmu_total => 20
   }
   CheckFail = Class.new(StandardError)
 
@@ -299,17 +299,18 @@ class Hospital::Nurce < ActiveRecord::Base
         next unless Hospital::Need.roles.include?(role_id)
         @assinable_roles[[role_id,sft_str]] = limits[sym]
       }}
+    assinable_total
     @assinable_roles
   end
   def assinable_total
-    @assinable_total = Hash.new{|h,k| h[k]=0}
-    [[:kinmu_total,"kinmu_total"],[:night_total, "night_total"]].
+    #@assinable_total = Hash.new{|h,k| h[k]=0}
+    [[:kinmu_total,:kinmu_total],[:night_total, :night_total]].
       each{|sym,sft_str|
       roles.each{|role_id,name| 
         next unless Hospital::Need.roles.include?(role_id)
-        @assinable_total[[role_id,sft_str]] = limits[sym]
+        @assinable_roles[[role_id,sft_str]] = limits[sym]
       }}
-    @assinable_total
+    @assinable_roles
   end
 
 
@@ -497,7 +498,7 @@ def role_remain(recalc=false)
 
     # そもそもそのlong_paternを入れる予知があるか見る
     if long_patern.reg =~ shift_with_last_month[offset,len]
-      shiftsave = shifts#[day,long_patern.patern.size]
+      shiftsave = shifts.dup#[day,long_patern.patern.size]
       shifts[day,long_patern.patern.size] = long_patern.patern
 
       ret,errors = long_check_sub(day,long_patern.checks,imidiate)
