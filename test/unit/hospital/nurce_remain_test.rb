@@ -33,10 +33,10 @@ class Hospital::NurceTest < ActiveSupport::TestCase
   end
 
   shift_remain = [
-                  {"3"=>5, "2"=>5, "1"=>20.0, "0"=>7.0},
-                  {"3"=>5, "2"=>5, "1"=>20.0, "0"=>8.0},
-                  {"3"=>5, "2"=>4, "1"=>16.0, "0"=>5.0},
-                  {"3"=>4, "2"=>5, "1"=>19.0, "0"=>7.0}
+                  {"3"=>5, "2"=>5, "1"=>20.0, "0"=>7.0, :kinmu_total =>22, :night_total =>9},
+                  {"3"=>5, "2"=>5, "1"=>20.0, "0"=>8.0, :kinmu_total =>22, :night_total =>9},
+                  {"3"=>5, "2"=>4, "1"=>16.0, "0"=>5.0, :kinmu_total =>17, :night_total =>8},
+                  {"3"=>4, "2"=>5, "1"=>19.0, "0"=>7.0, :kinmu_total =>20, :night_total =>8}
                  ]
   must "38,39,43,44のshift_remain" do
     nurce38,nurce39,nurce43,nurce44 = [38,39,43,44].map{|id| nurce(id)}
@@ -62,9 +62,9 @@ class Hospital::NurceTest < ActiveSupport::TestCase
   }
 
   role_used_2 = {
-    [3, "0"]=>0,[3,"1"]=>3,[3,"2"]=>1,[3,"3"]=>1, [3, :kinmu_total]=>4, [3, :night_total]=>1,
-    [4, "0"]=>0,[4,"1"]=>3,[4,"2"]=>1,[4,"3"]=>1, [4, :kinmu_total]=>4, [4, :night_total]=>1,
-    [9, "0"]=>0,[9,"1"]=>3,[9,"2"]=>1,[9,"3"]=>1, [9, :kinmu_total]=>4, [9, :night_total]=>1
+    [3, "0"]=>0,[3,"1"]=>3,[3,"2"]=>1,[3,"3"]=>1, [3, :kinmu_total]=>5, [3, :night_total]=>2,
+    [4, "0"]=>0,[4,"1"]=>3,[4,"2"]=>1,[4,"3"]=>1, [4, :kinmu_total]=>5, [4, :night_total]=>2,
+    [9, "0"]=>0,[9,"1"]=>3,[9,"2"]=>1,[9,"3"]=>1, [9, :kinmu_total]=>5, [9, :night_total]=>2
   }
   role_remain_2 = {
     [3,"1"]=>17,[3,"2"]=>4,[3,"3"]=>4, [3, :kinmu_total]=>17, [3, :night_total]=>7,
@@ -87,10 +87,10 @@ class Hospital::NurceTest < ActiveSupport::TestCase
 
   must "Nurce 6 id 40 寺田輝子に 2/2 shift3を割り振ると、usedとremainは" do
     nrc =  nurce(40)
-    assert_equal role_used,nrc.role_used,"割り振り前 used"
+    assert_equal role_used  ,nrc.role_used,"割り振り前 used"
     assert_equal role_remain,nrc.role_remain,"割り振り前 remain"
     nrc.set_shift(2,"3")
-    assert_equal role_used_2,nrc.role_used,"割り振り後 used"
+    assert_equal role_used_2  ,nrc.role_used,"割り振り後 used"
     assert_equal role_remain_2,nrc.role_remain,"割り振り後 remain"
   end
   must "石川トシ子さんの2/4 の [role,勤務]" do

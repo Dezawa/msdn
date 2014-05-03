@@ -221,16 +221,21 @@ class Hospital::Nurce < ActiveRecord::Base
       sft = sft_str.hex
     
     role_shift[day]=role_shift_of(sft_str)
-    if /[0123]/ =~ sft_str
-      shift_remain[sft_str] -= 1 
-      #shift_remain["1"] -= 1 unless sft_str == "1"
-      role_ids.each{|role_id| 
-        role_used[[role_id,sft_str]] += 1
-        role_remain[[role_id,sft_str]] -= 1
-      }
+    case sft_str
+    when "0"      ;update_remain(sft_str)
+    when "2","3"  ;update_remain(sft_str);update_remain(:night_total);update_remain(:kinmu_total)
+    when "1"      ;update_remain(sft_str);update_remain(:kinmu_total)
     end
     monthly.set_shift(day,sft_str)
     self
+  end
+
+  def update_remain(sft_str)
+    shift_remain[sft_str] -= 1 
+    role_ids.each{|role_id| 
+      role_used[[role_id,sft_str]] += 1
+      role_remain[[role_id,sft_str]] -= 1
+    }
   end
 
   def save_shift; [shifts.dup ,role_used.dup ,role_remain.dup,shift_remain.dup];end
@@ -330,18 +335,28 @@ class Hospital::Nurce < ActiveRecord::Base
 
   def role_used(recalc=false)
     return @role_used if @role_used && !recalc
-#pp role_ids
     @role_used=Hash.new{|h,k| h[k]=0}
-#    role_shift.each{|day_rs| day_rs.each{|rs| @role_used[rs] += 1}}
-    [/[^0]/,/[^1478]/,/[^25]/,/[^36]/].each_with_index{|reg,shift|
-      used = shifts.gsub(reg,"").size
-      role_ids.each{|role| @role_used[[role,shift.to_s]] = used }
+    @shift_used=Hash.new{|h,k| h[k]=0}
+
+    @shift_used["0"]  =  shifts.gsub(/[^0]/,"").size + shifts.gsub(/[^9ABC]/,"").size*0.5
+    @shift_used["1"]  = shifts.gsub(/[^1478]/,"").size + shifts.gsub(/[^9ABC]/,"").size*0.5
+    @shift_used["2"]  = shifts.gsub(/[^25]/,"").size
+    @shift_used["3"]  = shifts.gsub(/[^36]/,"").size
+    @shift_used[:night_total]  = @shift_used["2"] + @shift_used["3"]
+    @shift_used[:kinmu_total]  = @shift_used[:night_total] + @shift_used["1"]
+    
+    %w(0 1 2 3).each{ |sft_str|
+      role_ids.each{|role| @role_used[[role,sft_str]] = @shift_used[sft_str] }
     }
-#pp @role_used
+    [:kinmu_total,:night_total].each{ |sft_str|
+      role_ids.each{|role| @role_used[[role,sft_str]] = @shift_used[sft_str] }
+    }
    @role_used
   end
+
 def role_remain(recalc=false)
     return @role_remain if @role_remain && !recalc
+    role_used true
     @role_remain = Hash.new{|h,k| h[k]=0}
     assinable_roles.each_pair{|role_shift,assinable|
       @role_remain[role_shift] = assinable - role_used[role_shift]
@@ -351,15 +366,14 @@ def role_remain(recalc=false)
 
   def shift_remain(recalc=false)
     return @shift_remain if @shift_remain && !recalc
+    role_used true
     @shift_remain = Hash[*Sshift0123.
-                         zip([limits.code0,limits.code1,limits.code2,limits.code3]).flatten]
-    [ /[^0]/,  /[^1478]/ , /[^25]/ , /[^36]/].
-#                         zip([limits.code0,limits.kinmu_total,limits.code2,limits.code3]).flatten]
-#    [ /[^0]/,  /[^1-8LM]/ , /[^25]/ , /[^36]/].
-      each_with_index{|reg,shift| 
-      @shift_remain[shift.to_s] -= shifts.gsub(reg,"").size }
-    @shift_remain["0"] -= shifts.gsub(/[^9ABC]/,"").size*0.5
-    @shift_remain["1"] -= shifts.gsub(/[^9ABC]/,"").size*0.5
+                         zip([limits.code0,limits.code1,limits.code2,limits.code3]).flatten
+                        ]
+    @shift_remain[:night_total] = limits.night_total - @shift_used[:night_total]
+    @shift_remain[:kinmu_total] = limits.kinmu_total - @shift_used[:kinmu_total] 
+    ["0","1","2","3"].each{ |sft_str|  @shift_remain[sft_str] -= @shift_used[sft_str]}
+    
     @shift_remain
   end
 

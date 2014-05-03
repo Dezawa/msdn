@@ -96,8 +96,8 @@ HP ASSIGN 4:3  [[37:0.5],[42:0.5],[43:0.83],[39:1.0],[38:1.0],[44:1.0]]
     #  "残りrole総数"
     tight = [3,9,10]
     assert_equal tight,@assign.tight_roles(shift).sort,"逼迫ロール"
-    assert_equal [{"3"=>5, "2"=>5, "1"=>19.0, "0"=>6.0}, 
-                  {"3"=>5, "2"=>4, "1"=>18.0, "0"=>8.0}], # 本当は[7,19,5,5] だが、初めからある0を二度引いてしまうから
+    assert_equal [{"3"=>5, "2"=>5, "1"=>19.0, "0"=>6.0, :kinmu_total => 21, :night_total=>9}, 
+                  {"3"=>5, "2"=>4, "1"=>18.0, "0"=>8.0, :kinmu_total => 19, :night_total=>8}], # 本当は[7,19,5,5] だが、初めからある0を二度引いてしまうから
        [38,39].map{|id| nurces[id].shift_remain},   "看護師の残りシフト全体像"
 
     assert_equal [5,4], [38,39].
@@ -138,6 +138,7 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
 "
   must " 5/5 3の使用数の違う50,47のcostが同じなのはなぜ？" do
     remain0= {[3,"2"]=>50,[4,"2"]=>86,[9,"2"]=>47,[10,"2"]=>57 }.to_a.sort
+#,:kinmu_total =>18,:night_total =>8}
     margin0= {[3,"2"]=>19,[4,"2"]=>24,[9,"2"]=>16,[10,"2"]=>26 }.to_a.sort
     require0={[3,"2"]=>31,[4,"2"]=>62,[9,"2"]=>31,[10,"2"]=>31 }.to_a.sort
     used   = {[3,"2"]=> 6,[4,"2"]=>10,[9,"2"]=> 5,[10,"2"]=> 5 }.to_a.sort
@@ -166,18 +167,10 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
       @assign.role_remain.select{|k,v| k[1]==shift}.sort,
       "残りrole総数"
 
-    #assert_equal require,
-    #  @assign.roles_required.select{|k,v| k[1]==shift}.sort,
-    #  "残りrole必要総数"
-
-    #assert_equal margin,
-    #  @assign.margin_of_role.select{|k,v| k[1]==shift}.sort,
-    #"余裕ロール数"
-    #pp @assign.role_order_by_tightness(shift)
-
     tight = [3,9,10]
     assert_equal tight,@assign.tight_roles(shift).sort,"逼迫ロール"
-    assert_equal [{"3"=>5, "2"=>3, "1"=>20.0, "0"=>7.0}, {"3"=>4, "2"=>5, "1"=>20.0, "0"=>8.0}],
+    assert_equal [{"3"=>5, "2"=>3, "1"=>20.0, "0"=>7.0,:kinmu_total =>20,:night_total =>7},
+                  {"3"=>4, "2"=>5, "1"=>20.0, "0"=>8.0,:kinmu_total =>21,:night_total =>8}],
         [38,39].map{|id| nurces[id].shift_remain},   "看護師の残りシフト全体像"
     assert_equal [5,5,5,4,1],
      [50,47,49,48,36].map{|id| nurces[id].shift_remain[shift]},  "看護師のshift#{shift}残数"

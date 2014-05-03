@@ -77,11 +77,13 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     end
   }
 
-   Day = {"3"=>5, "2"=>5, "1"=>19.0, "0"=>8.0};HDy = {"3"=>5, "2"=>5, "1"=>19.5, "0"=>7.5}
-   Jun = {"3"=>5, "2"=>4, "1"=>20.0, "0"=>8.0};HHl = [7.5,20,5,5]
-   Sin = {"3"=>4, "2"=>5, "1"=>20.0, "0"=>8.0}
-   All = {"3"=>5, "2"=>5, "1"=>20.0, "0"=>8.0}
-   Holyday = {"3"=>5, "2"=>5, "1"=>20.0, "0"=>7.0}
+  Day = {"3"=>5, "2"=>5, "1"=>19.0, "0"=>8.0, :kinmu_total => 21, :night_total=>9}
+  HDy = {"3"=>5, "2"=>5, "1"=>19.5, "0"=>7.5, :kinmu_total => 21.5, :night_total=>9}
+  Jun = {"3"=>5, "2"=>4, "1"=>20.0, "0"=>8.0, :kinmu_total => 21, :night_total=>8}
+;HHl = [7.5,20,5,50]
+   Sin = {"3"=>4, "2"=>5, "1"=>20.0, "0"=>8.0, :kinmu_total => 21, :night_total=>8}
+   All = {"3"=>5, "2"=>5, "1"=>20.0, "0"=>8.0, :kinmu_total => 22, :night_total=>9}
+   Holyday = {"3"=>5, "2"=>5, "1"=>20.0, "0"=>7.0, :kinmu_total => 22, :night_total=>9}
   ([Day,Jun,Sin,Jun,Sin, #1,2,3,L2,L3
    Day,Day,Day,Day,Day, # 会,会,早,遅出,遅出
    HDy,HDy,Day,Day,Day, # Z,G,R1,Z/R,R/G
@@ -101,7 +103,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
   ).each_with_index{|ret,code|
     must "勤務code #{code+1}だとshift残は" do
       nurce41 = nurce(41)
-      assert_equal({"3"=>5, "2"=>5, "1"=>20.0, "0"=>8.0},nurce41.shift_remain)
+      assert_equal({"3"=>5, "2"=>5, "1"=>20.0, "0"=>8.0, :kinmu_total => 22, :night_total=>9},nurce41.shift_remain)
         set_code(nurce41,:day10,code+1); 
 #puts nurce41.shifts
         assert_equal ret,nurce41.shift_remain(true),"code #{code+1} shift #{nurce41.shifts[10,1]} は#{ret}"
@@ -224,9 +226,9 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     ret = 
       [
        "______1_____________12____1__",
-       { [3,"0"]=>0, [3, "1"]=>3, [3, "2"]=>1, [3,"3"]=>0,[3, :kinmu_total]=>18, [3, :night_total]=>8,
-         [4,"0"]=>0, [4, "1"]=>3, [4, "2"]=>1, [4,"3"]=>0,[4, :kinmu_total]=>18, [4, :night_total]=>8,
-         [9,"0"]=>0, [9, "1"]=>3, [9, "2"]=>1, [9,"3"]=>0,[9, :kinmu_total]=>18, [9, :night_total]=>8 
+       { [3,"0"]=>0, [3, "1"]=>3, [3, "2"]=>1, [3,"3"]=>0,[3, :kinmu_total]=>4, [3, :night_total]=>1,
+         [4,"0"]=>0, [4, "1"]=>3, [4, "2"]=>1, [4,"3"]=>0,[4, :kinmu_total]=>4, [4, :night_total]=>1,
+         [9,"0"]=>0, [9, "1"]=>3, [9, "2"]=>1, [9,"3"]=>0,[9, :kinmu_total]=>4, [9, :night_total]=>1 
        },
        { [3, "1"]=>17,[3, "2"]=>4,  [3, "3"]=>5,[3, :kinmu_total]=>18, [3, :night_total]=>8,
          [4, "1"]=>17,[4, "2"]=>4,  [4, "3"]=>5,[4, :kinmu_total]=>18, [4, :night_total]=>8,
