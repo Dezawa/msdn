@@ -49,7 +49,7 @@ class Hospital::Limit < ActiveRecord::Base
     assinable = nurces.
       inject(Hash.new{ |h,k| h[k]=0}){ |sum,nurce|
       nurce.assinable_roles.to_a.each{ |rs,cnt|       sum[rs] += cnt}
-      nurce.assinable_total.to_a.each{ |rs,cnt|       sum[rs] += cnt}
+      #nurce.assinable_total.to_a.each{ |rs,cnt|       sum[rs] += cnt}
       sum
     }
   end
