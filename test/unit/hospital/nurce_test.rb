@@ -160,7 +160,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     assert_equal [[:kinmu_total], [], [:junya,:nine_nights], [ :nine_nights,:shinya]],
     set_check_reg[-1].map{ |r| r.sort}
 #pp  check_regset_check_reg[0][2][:junya].first
-pp set_check_reg[0][2][:junya]
+#pp set_check_reg[0][2][:junya]
     assert set_check_reg[0][2][:junya].check(0, "000000222222"),"junya set_check_reg Over 5 error"
     assert !(set_check_reg[0][2][:junya].check(0, "00000022222")),"junya set_check_reg under 6  error"
 
@@ -221,30 +221,19 @@ pp set_check_reg[0][2][:junya]
   end
 
   must "save_shift" do
-    ret = ["______1_____________12____1__",
-           { [3,"0"]=>0,
-             [3, "2"]=>1, 
-             [3, "1"]=>3,
-             [3,"3"]=>0,
-             [4,"0"]=>0,
-             [4, "1"]=>3, 
-             [4, "2"]=>1,
-             [4,"3"]=>0,
-             [9, "1"]=>3,
-             [9, "2"]=>1,
-             [9,"0"]=>0,
-             [9,"3"]=>0},
-           { [3, "1"]=>17,
-             [3, "2"]=>4,
-             [3, "3"]=>5,
-             [4, "1"]=>17,
-             [4, "2"]=>4,
-             [4, "3"]=>5,
-             [9, "3"]=>5,
-             [9, "1"]=>17,
-             [9, "2"]=>4,
- },
-            {"0"=>8.0, "1"=>17.0, "2"=>4, "3"=>5}]
+    ret = 
+      [
+       "______1_____________12____1__",
+       { [3,"0"]=>0, [3, "1"]=>3, [3, "2"]=>1, [3,"3"]=>0,[3, :kinmu_total]=>18, [3, :night_total]=>8,
+         [4,"0"]=>0, [4, "1"]=>3, [4, "2"]=>1, [4,"3"]=>0,[4, :kinmu_total]=>18, [4, :night_total]=>8,
+         [9,"0"]=>0, [9, "1"]=>3, [9, "2"]=>1, [9,"3"]=>0,[9, :kinmu_total]=>18, [9, :night_total]=>8 
+       },
+       { [3, "1"]=>17,[3, "2"]=>4,  [3, "3"]=>5,[3, :kinmu_total]=>18, [3, :night_total]=>8,
+         [4, "1"]=>17,[4, "2"]=>4,  [4, "3"]=>5,[4, :kinmu_total]=>18, [4, :night_total]=>8,
+         [9, "3"]=>5 ,[9, "1"]=>17, [9, "2"]=>4,[9, :kinmu_total]=>18, [9, :night_total]=>8 
+       },
+       {"0"=>8.0, "1"=>17.0, "2"=>4, "3"=>5, :kinmu_total =>18,  :night_total =>8}
+      ]
     nurce40 = nurce(40)
     save_shift=nurce40.save_shift
     assert_equal ret,save_shift
@@ -392,13 +381,16 @@ pp [43,nurce(43).shifts]#"_________00____1_0_1__1_2__1_"
     assert_equal Hospital::Nurce::Cost[7], Hospital::Nurce.cost_table[[3,10,9]][[3,9,10]],"valu of key 1109 Nurce:Const"
   end
   
+assinable_roles = { 
+    [9, "3"]=>5, [9, "2"]=>5, [9, "1"]=>20, [9, :kinmu_total]=>22,[9, :night_total]=>9,
+    [3, "3"]=>5, [3, "2"]=>5, [3, "1"]=>20, [3, :kinmu_total]=>22,[3, :night_total]=>9,
+    [4, "3"]=>5, [4, "2"]=>5, [4, "1"]=>20, [4, :kinmu_total]=>22,[4, :night_total]=>9,
+  }
   must "Nurce 40 cost" do
     nurce40 = nurce(40)
     assert_equal [3,4,9], nurce40.role_ids,"nurce40.role_ids"
-    assert_equal ({ [9, "3"]=>5, [9, "2"]=>5, [9, "1"]=>20,
-                    [3, "3"]=>5, [3, "2"]=>5, [3, "1"]=>20, 
-                    [4, "3"]=>5, [4, "2"]=>5, [4, "1"]=>20}
-                  ), nurce40.assinable_roles
+    assert_equal assinable_roles, nurce40.assinable_roles
+
     assert_equal 5,nurce40.role_remain[[4,"3"]],"role remain5"
     cost = Hospital::Nurce::Cost[6][5]
     assert_equal cost, nurce40.cost("3",[3,9,10]) ," tight 3,9,10"
