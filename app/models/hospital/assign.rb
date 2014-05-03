@@ -453,7 +453,6 @@ class Hospital::Assign
   #                       『Hospital::Nurce::LongPatern[sft_str][patern_番号]』
   def assign_patern(nurces,day,sft_str,idx_list_of_long_patern)
     return :done if nurces == true
-pp nurces[0].shifts
     @count_eval[sft_str] += 1
     unless list_of_long_patern = assign_patern_if_possible(nurces,day,sft_str,idx_list_of_long_patern)
       return :cannot_assign_this_patern
@@ -464,10 +463,8 @@ pp nurces[0].shifts
 
   def assign_patern_if_possible(nurces,day,sft_str,idx_list_of_long_patern)
     # この長い割付が可能か                                                # [0,2]
-pp nurces[0].shifts
     list_of_long_patern = 
       assign_test_patern(nurces,day,sft_str,idx_list_of_long_patern)
-pp nurces[0].shifts
     return false unless list_of_long_patern
 
     (0..nurces.size-1).each{|idx|
