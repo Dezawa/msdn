@@ -187,4 +187,10 @@ puts 3
       @assign.candidate_for_night(day).map(&:id)
   end
 
+  must "2/20の夜勤割り当ての組み合わせ候補" do
+    #            [37, 41, 44, 46, 52, 39, 42, 48, 38, 40, 43, 47]
+    assert_equal [37, 38, 39, 52, 40, 41, 44, 43, 42, 46, 47, 48],
+    @assign.candidate_combination_for_night(day).map{ |comb| comb.map(&:id)}
+  end
+
 end

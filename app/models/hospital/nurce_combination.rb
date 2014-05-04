@@ -20,9 +20,9 @@ module Hospital::NurceCombination
   # 
   def nurce_combination_shift23(combinations,need_nurces,short_roles,day,&block)
     @msg = nil
-    dbgout("FOR_DEBUG(#{__LINE__})case #{need_nurces[Sshift2]} [#{short_roles[Sshift2]} #{need_nurces[Sshift3]} [#{short_roles[Sshift3]}] #{@koutai3} ")
-    case [need_nurces[Sshift2] == 0 && short_roles[Sshift2] ==[],
-          need_nurces[Sshift3] == 0 && short_roles[Sshift3] ==[] || !@koutai3 ]
+    dbgout("FOR_DEBUG(#{__LINE__})case #{need_nurces_shift(day,Sshift2)} [#{short_roles[Sshift2]} #{need_nurces[Sshift3]} [#{short_roles[Sshift3]}] #{@koutai3} ")
+    case [need_nurces_shift(day,Sshift2) == 0 && short_roles[Sshift2] ==[],
+          need_nurces_shift(day,Sshift3) == 0 && short_roles[Sshift3] ==[] || !@koutai3 ]
     when [true,true]  # shift2,3共に既に足りている
       @msg =  "ALLREDY filled for 2,3 " 
       block.call( {Sshift2 => true,Sshift3 => true })
@@ -69,7 +69,7 @@ module Hospital::NurceCombination
   end
 
   def nurce_combination_shift1(combinations,need_nurces,short_roles,day,&block)
-      combinations[Sshift1].combination(need_nurces[Sshift1]).each{|cmb1|
+      combinations[Sshift1].combination(need_nurces_shift(day,Sshift1)).each{|cmb1|
         block.call({ Sshift1 => cmb1})
       }
   end
@@ -92,6 +92,9 @@ module Hospital::NurceCombination
       sort_by{ |nurce| nurce.cost(:night_total,tight_roles(:night_total))}
   end
 
+  def candidate_combination_for_night(day)
+    candidate_for_night(day).combination(need_nurces[Sshift2]+need_nurces[Sshift3])
+  end
   def nurce_combination_for_shift23(day)
 
   end

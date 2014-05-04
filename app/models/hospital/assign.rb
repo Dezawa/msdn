@@ -395,7 +395,7 @@ class Hospital::Assign
     @entrant_count += 1
     # 長い割付が可能なら割り付ける
     dbgout("FOR_DEBUG(#{__LINE__}): shift=#{sft_str} need_nurces[sft_str] #{need_nurces[sft_str]} Hospital::Nurce::LongPatern[@koutai3][Sshift2].size #{Hospital::Nurce::LongPatern[@koutai3][Sshift2].size} ")
-    long_plan_combination(need_nurces[sft_str],Hospital::Nurce::LongPatern[@koutai3][sft_str].size).
+    long_plan_combination(need_nurces_shift(day,sft_str),Hospital::Nurce::LongPatern[@koutai3][sft_str].size).
       each{|idx_list_of_long_patern|  # [0,2]
       @loop_count += 1
 
@@ -466,7 +466,6 @@ class Hospital::Assign
     list_of_long_patern = 
       assign_test_patern(nurces,day,sft_str,idx_list_of_long_patern)
     return false unless list_of_long_patern
-
     (0..nurces.size-1).each{|idx|
       nurce_set_patern(nurces[idx],day,list_of_long_patern[idx].patern)
     }
@@ -489,8 +488,8 @@ class Hospital::Assign
     combinations ,need_nurces, short_roles = ready_for_day_reentrant(day)
     return false unless combinations
     
-    ncm = nCm(combinations[Sshift2].size,need_nurces[Sshift2].size)
-    comb ,need =  combinations[Sshift2].size,need_nurces[Sshift2].size
+    ncm = nCm(combinations[Sshift2].size,need_nurces_shift(day,Sshift2).size)
+    comb ,need =  combinations[Sshift2].size,need_nurces_shift(day,Sshift2).size
     try = 0 
     nurce_combination_shift23(combinations,need_nurces,short_roles,day){|nurce_combinations| 
       unless nurce_combinations
@@ -519,8 +518,8 @@ class Hospital::Assign
     combinations ,need_nurces, short_roles = ready_for_day_reentrant(day)
     return false unless combinations
 
-    ncm = nCm(combinations[Sshift1].size,need_nurces[Sshift1].size)
-    comb ,need =  combinations[Sshift1].size,need_nurces[Sshift1].size
+    ncm = nCm(combinations[Sshift1].size,need_nurces_shift(day,Sshift1).size)
+    comb ,need =  combinations[Sshift1].size,need_nurces_shift(day,Sshift1).size
     try = 0 
     nurce_combination_shift1(combinations,need_nurces,short_roles,day){|nurce_combinations| 
       unless nurce_combinations
@@ -550,7 +549,7 @@ class Hospital::Assign
       @night.each{|sft_str|     #(1)
         combinations[sft_str] = 
         nurce_combination_by_tightness(as_nurces_selected[sft_str],#[0..SelectedMax],
-                                       need_nurces[sft_str],short_roles[sft_str],sft_str)
+                                       need_nurces_shift(day,sft_str),short_roles[sft_str],sft_str)
       }
     else 
       combinations["1"] = as_nurces_selected["1"].sort_by{|n| n.cost("1",tight_roles("1"))}
@@ -565,7 +564,7 @@ class Hospital::Assign
     dbgout dump("  HP ASSIGN ")
     combinations,need_nurces,short_roles = ready_for_day_reentrant(day)
     return false unless combinations
-    ncm = nCm(combinations[sft_str].size,need_nurces[sft_str].size)
+    ncm = nCm(combinations[sft_str].size,need_nurces_shift(day,sft_str).size)
     try = 0 
     nurce_combination_shift1(combinations,need_nurces,short_roles,day){|nurce_combinations|
       dbgout("HP AASIGN #{day}:#{sft_str} Try #{try += 1} of #{ncm}")
@@ -615,8 +614,8 @@ class Hospital::Assign
     for_night = (combination2 + combination3).uniq
     dbgout("HP ASSIGN not_enough_for_shift1 #{day}日 need for_1 #{nurce_list(for_1)} ")
     dbgout("HP ASSIGN not_enough_for_shift1 #{day}日 need for_night #{nurce_list( for_night)} ")
-    dbgout("HP 6ASSIGN not_enough_for_shift1 need #{need_nurces['1']} but #{(for_1 - for_night).size} ")
-    if (for_1 - for_night).size < need_nurces["1"]
+    dbgout("HP 6ASSIGN not_enough_for_shift1 need #{need_nurces_shift(day,'1')} but #{(for_1 - for_night).size} ")
+    if (for_1 - for_night).size < need_nurces_shift(day,'1')
       true
     else ;false
     end
@@ -677,6 +676,10 @@ class Hospital::Assign
     count_role_shift true
   end
 
+  def need_nurces_shift(day,sft_str)
+    short_role_shift_of(day)[[@Kangoshi,sft_str]][0]
+  end
+
   def need_nurces_roles(day)
     if @night_mode
       need_nurces_roles_night(day)
@@ -701,12 +704,12 @@ class Hospital::Assign
     }
     @shifts_night[@night_mode].each{ |sft_str|
       as_nurces_selected[sft_str] = 
-      (need_nurces[sft_str]==0) ? [] :
+      (need_nurces_shift(day,sft_str)==0) ? [] :
       assinable_nurces_by_cost_size_limited(assinable_nurces(day,sft_str,short_roles[sft_str]),
                                             sft_str, need_nurces, short_roles[sft_str])
     }
     @shifts_night[@night_mode].each{|sft_str| next unless
-      entry_log(day,sft_str,__LINE__,need_nurces[sft_str],short_roles[sft_str],as_nurces_selected[sft_str])
+      entry_log(day,sft_str,__LINE__,need_nurces_shift(day,sft_str),short_roles[sft_str],as_nurces_selected[sft_str])
     }
     if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
       [as_nurces_selected,need_nurces, short_roles]
@@ -732,7 +735,7 @@ class Hospital::Assign
       assinable_nurces_by_cost_size_limited(assinable_nurces(day,Sshift1,short_roles[Sshift1]),
                                             Sshift1, need_nurces, short_roles[Sshift1])
 
-      entry_log(day,Sshift1,__LINE__,need_nurces[Sshift1],short_roles[Sshift1],as_nurces_selected[Sshift1])
+      entry_log(day,Sshift1,__LINE__,need_nurces_shift(day,Sshift1),short_roles[Sshift1],as_nurces_selected[Sshift1])
     if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
       [as_nurces_selected,need_nurces, short_roles]
     else 
