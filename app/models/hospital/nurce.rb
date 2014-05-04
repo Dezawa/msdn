@@ -38,7 +38,7 @@ class Hospital::Nurce < ActiveRecord::Base
   }
   CheckFail = Class.new(StandardError)
 
-  attr_accessor :month
+  attr_accessor :month,:shift_used
 
 
   def after_find
@@ -320,10 +320,10 @@ class Hospital::Nurce < ActiveRecord::Base
 
 
 
-  def has_assignable_roles_atleast_one(sft_str,roles)
+  def has_assignable_roles_atleast_one(sft_str,need_roles)
     #logger.debug("### roles & role_ids(#{__LINE__}) #{roles} #{roles.class} & #{role_ids}#{role_ids.class}")
       shift_remain[sft_str]>0 &&
-      (roles & role_ids).size > 0
+      (need_roles & role_ids).size > 0
   end
 
 ####################################################################
