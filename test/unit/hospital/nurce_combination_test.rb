@@ -6,10 +6,35 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
   fixtures :holydays,:hospital_needs,:hospital_monthlies
   fixtures :hospital_kinmucodes,:hospital_defines
   # Replace this with your real tests.
+
+  Log2_4 = 
+"
+  HP ASSIGN 34 _220330_______________________
+  HP ASSIGN 35 _220330______________________ 4 9
+  HP ASSIGN 36 _220330______________________ 4 10
+  HP ASSIGN 37 _____________________________ 4 9
+  HP ASSIGN 38 _2___________________________ 3 4 9
+  HP ASSIGN 39 _3___________________________ 3 4 9
+  HP ASSIGN 40 _22__________________________ 3 4 9
+  HP ASSIGN 41 ___33________________________ 3 4 9
+  HP ASSIGN 42 _____2203____________________ 4 9 10
+  HP ASSIGN 43 _____2203____________________ 4 9 10
+  HP ASSIGN 44 _____3302____________________ 4 9 10
+  HP ASSIGN 45 _22033_______________________ 4 9 10
+  HP ASSIGN 46 _22033022____________________ 4   10
+  HP ASSIGN 47 _22033022____________________ 3 4   10
+  HP ASSIGN 48 _2203303303__________________ 3 4   10
+  HP ASSIGN 49 _2203302203__________________ 3 4   10
+  HP ASSIGN 50 _220330220330________________ 4 10
+  HP ASSIGN 51 _220330220330________________ 4 10
+  HP ASSIGN 52 __300____0_0___________0_____ 4 10
+"
   def setup
     @month  = Date.new(2013,2,1)
     @busho_id = 1
     @assign = Hospital::Assign.new(@busho_id,@month)
+    @nurces = extract_set_shifts(Log2_4)
+    @assign.refresh
   end
 
   def nurce_by_id(id,nurces)
@@ -46,36 +71,12 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
     assert_equal 59,@nurce.cost(:kinmu_total,[3,4,9])
     assert_equal 54,@nurce.cost(:kinmu_total,[3,4,10])
   end
-  log2_4 = 
-"
-  HP ASSIGN 34 _220330______________________
-  HP ASSIGN 35 _220330______________________ 4 9
-  HP ASSIGN 36 _220330______________________ 4 10
-  HP ASSIGN 37 _____________________________ 4 9
-  HP ASSIGN 38 _2___________________________ 3 4 9
-  HP ASSIGN 39 _3___________________________ 3 4 9
-  HP ASSIGN 40 _22__________________________ 3 4 9
-  HP ASSIGN 41 ___33________________________ 3 4 9
-  HP ASSIGN 42 _____2203____________________ 4 9 10
-  HP ASSIGN 43 _____2203____________________ 4 9 10
-  HP ASSIGN 44 _____3302____________________ 4 9 10
-  HP ASSIGN 45 _22033_______________________ 4 9 10
-  HP ASSIGN 46 _22033022____________________ 4   10
-  HP ASSIGN 47 _22033022____________________ 3 4   10
-  HP ASSIGN 48 _2203303303__________________ 3 4   10
-  HP ASSIGN 49 _2203302203__________________ 3 4   10
-  HP ASSIGN 50 _220330220330________________ 4 10
-  HP ASSIGN 51 _220330220330________________ 4 10
-  HP ASSIGN 52 __300____0_0___________0_____ 4 10
-"
   must "月データ読み込み" do
-    nurces = extract_set_shifts(log2_4)
     nurce = nurce_by_id(52,@assign.nurces)
     assert_equal "__300____0_0___________0_____",nurce.shifts
   end
 
   must "nurce 34 は？？？" do
-    nurces = extract_set_shifts(log2_4)
     nurce = nurce_by_id(34,@assign.nurces)
     assert_equal "_220330______________________",nurce.shifts ,"shifts"
     @assign.refresh
@@ -86,29 +87,22 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
   end
  
   must "シフト1使用・残り" do
-    nurces = extract_set_shifts(log2_4)
-    @assign.refresh
-    assert_equal [0]*19,nurces.map{ |nurce| nurce.shift_used["1"] },"shift_used"
-    assert_equal [20]*19,nurces.map{ |nurce| nurce.shift_remain(true)["1"] },"shift_remain"
+    assert_equal [0]*19,@nurces.map{ |nurce| nurce.shift_used["1"] },"shift_used"
+    assert_equal [20]*19,@nurces.map{ |nurce| nurce.shift_remain(true)["1"] },"shift_remain"
   end
   must "シフト2使用・残り" do
-    nurces = extract_set_shifts(log2_4)
-    assert_equal [0,0,0,5,4,5,3,5,3,3,4,3,1,1,3,1,1,1,5],nurces.map{ |nurce| nurce.shift_remain(true)["2"] }
+    assert_equal [0,0,0,5,4,5,3,5,3,3,4,3,1,1,3,1,1,1,5],@nurces.map{ |nurce| nurce.shift_remain(true)["2"] }
   end
   must "シフト3使用・残り" do
-    nurces = extract_set_shifts(log2_4)
-    assert_equal [0,0,0,5,5,4,5,3,4,4,3,3,3,3,0,2,1,1,4],nurces.map{ |nurce| nurce.shift_remain(true)["3"] }
+    assert_equal [0,0,0,5,5,4,5,3,4,4,3,3,3,3,0,2,1,1,4],@nurces.map{ |nurce| nurce.shift_remain(true)["3"] }
   end
   must "シフト:night_total使用・残り" do
-    nurces = extract_set_shifts(log2_4)
-    assert_equal [0,0,0,9,8,8,7,7,6,6,6,5,3,3,2,2,1,1,8],nurces.map{ |nurce| nurce.shift_remain(true)[:night_total] }
+    assert_equal [0,0,0,9,8,8,7,7,6,6,6,5,3,3,2,2,1,1,8],@nurces.map{ |nurce| nurce.shift_remain(true)[:night_total] }
   end
           
   must "シフト:kinmu_total使用・残り" do
-    nurces = extract_set_shifts(log2_4)
-    @assign.refresh
     assert_equal [18,18,18,22,21,21,20,20,19,19,19,18,16,16,15,15,14,14,21],
-    nurces.map{ |nurce| nurce.shift_remain(true)[:kinmu_total] }
+    @nurces.map{ |nurce| nurce.shift_remain(true)[:kinmu_total] }
   end
 
   day = 20
@@ -116,8 +110,6 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
   sft_str = "2"
   must "2/20のshift2の割り当て可能看護師" do
   sft_str = "2"
-    nurces = extract_set_shifts(log2_4)
-    @assign.refresh
     assert_equal [37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52],
     @assign.assinable_nurces(day,sft_str,@assign.short_role(day,sft_str)).map(&:id)
   end
@@ -125,8 +117,6 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
   must "2/20のshift3の割り当て可能看護師" do
   sft_str = "3"
 puts 3
-    nurces = extract_set_shifts(log2_4)
-    @assign.refresh
     assert_equal [37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52],
     @assign.assinable_nurces(day,sft_str,@assign.short_role(day,sft_str)).map(&:id)
   end
@@ -142,8 +132,6 @@ puts 3
   # 
   must "2/20のshift2の割り当て可能看護師gather_by" do
   sft_str = "2"
-    nurces = extract_set_shifts(log2_4)
-    @assign.refresh
     need_nurces = { }
     %w(2 3).each{ |sftstr|
       need_nurces[sftstr] = @assign.short_role_shift_of(day)[[4,sftstr]][0]
@@ -154,8 +142,6 @@ puts 3
   end
   must "2/20のshift3の割り当て可能看護師gather_by" do
   sft_str = "3"
-    nurces = extract_set_shifts(log2_4)
-    @assign.refresh
     need_nurces = { }
     %w(2 3).each{ |sftstr|
       need_nurces[sftstr] = @assign.short_role_shift_of(day)[[4,sftstr]][0]
@@ -167,8 +153,6 @@ puts 3
 
   must "2/20のshift2の割り当て可能看護師 数制限" do
   sft_str = "2"
-    nurces = extract_set_shifts(log2_4)
-    @assign.refresh
     need_nurces = { }
     %w(2 3).each{ |sftstr|
       need_nurces[sftstr] = @assign.short_role_shift_of(day)[[4,sftstr]][0]
@@ -181,8 +165,6 @@ puts 3
   sft_str = "3"
   must "2/20のshift3の割り当て可能看護師 数制限" do
   sft_str = "3"
-    nurces = extract_set_shifts(log2_4)
-    @assign.refresh
     need_nurces = { }
     %w(2 3).each{ |sftstr|
       need_nurces[sftstr] = @assign.short_role_shift_of(day)[[4,sftstr]][0]
@@ -192,4 +174,17 @@ puts 3
                                                   sft_str,need_nurces,
                                                   @assign.short_role(day,sft_str)).map(&:id)
   end
+
+  must "2/20の夜勤割り当て候補" do
+    #            [37, 41, 44, 46, 52, 39, 42, 48, 38, 40, 43, 47]
+    assert_equal [37, 38, 42, 46, 52, 40, 43, 47, 41, 44, 39, 48].sort,
+      @assign.candidate_for_night(day).map(&:id).sort
+  end
+
+  must "2/20の夜勤割り当て候補 ソート" do
+    #            [37, 41, 44, 46, 52, 39, 42, 48, 38, 40, 43, 47]
+    assert_equal [37, 38, 39, 52, 40, 41, 44, 43, 42, 46, 47, 48],
+      @assign.candidate_for_night(day).map(&:id)
+  end
+
 end

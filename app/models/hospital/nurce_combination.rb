@@ -74,6 +74,24 @@ module Hospital::NurceCombination
       }
   end
 
+  def candidate_for_night(day)
+    need_nurces = { }
+    %w(2 3).each{ |sftstr|
+      need_nurces[sftstr] = short_role_shift_of(day)[[4,sftstr]][0]
+    }
+    nurces_short = $HP_DEF.night.inject([[],[]]){ 
+      |n_s,sft_str|
+      short = short_role(day,sft_str)
+      n_s[0] += assinable_nurces_by_cost_size_limited(assinable_nurces(day,sft_str,short_role(day,sft_str)),
+                                                      sft_str,need_nurces, short)
+      n_s[1] += short
+      n_s
+    }
+    short = nurces_short[1].uniq
+    nurces = nurces_short[0].uniq.
+      sort_by{ |nurce| nurce.cost(:night_total,tight_roles(:night_total))}
+  end
+
   def nurce_combination_for_shift23(day)
 
   end
