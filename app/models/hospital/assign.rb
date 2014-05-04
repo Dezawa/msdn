@@ -703,7 +703,7 @@ class Hospital::Assign
       as_nurces_selected[sft_str] = 
       (need_nurces[sft_str]==0) ? [] :
       assinable_nurces_by_cost_size_limited(assinable_nurces(day,sft_str,short_roles[sft_str]),
-                                            sft_str, need_nurces, short_roles)
+                                            sft_str, need_nurces, short_roles[sft_str])
     }
     @shifts_night[@night_mode].each{|sft_str| next unless
       entry_log(day,sft_str,__LINE__,need_nurces[sft_str],short_roles[sft_str],as_nurces_selected[sft_str])
@@ -730,7 +730,7 @@ class Hospital::Assign
       as_nurces_selected[Sshift1] = 
       (need_nurces[Sshift1]==0) ? [] :
       assinable_nurces_by_cost_size_limited(assinable_nurces(day,Sshift1,short_roles[Sshift1]),
-                                            Sshift1, need_nurces, short_roles)
+                                            Sshift1, need_nurces, short_roles[Sshift1])
 
       entry_log(day,Sshift1,__LINE__,need_nurces[Sshift1],short_roles[Sshift1],as_nurces_selected[Sshift1])
     if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
@@ -746,12 +746,12 @@ class Hospital::Assign
   # shift2,3の場合はshift2+3の5割り増し、shift1の場合はshift1の5割り増し
   #ただし必要ロールがそろう様にするために持っているロールで分ける。
   # これが必要なのは割りあて可能な人数が「何人か」より多い場合
-  def assinable_nurces_by_cost_size_limited(as_nurce,sft_str,need_nurces,short_roles )
+  def assinable_nurces_by_cost_size_limited(as_nurce,sft_str,need_nurces,short_roles_this_shift )
     limit = limit_of_nurce_candidate(sft_str,need_nurces)
     if as_nurce.size <= limit
       as_nurce.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str))} 
     else
-      gather_by_each_group_of_role(as_nurce,sft_str,short_roles[sft_str])[0,limit]
+      gather_by_each_group_of_role(as_nurce,sft_str,short_roles_this_shift)[0,limit]
     end
   end
 
