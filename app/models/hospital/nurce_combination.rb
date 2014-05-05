@@ -48,7 +48,7 @@ module Hospital::NurceCombination
         block.call({Sshift3 => true,Sshift2 => cmb2 })
       }
       
-    when [false,false] #shift2,3共に足りない
+    when [false,false,false] #shift2,3共に足りない
       if combinations[Sshift2].size==0 && short_roles[Sshift2].size > 0 
         @msg = "combination 2 is empity"
         return false
@@ -64,6 +64,11 @@ module Hospital::NurceCombination
           #next if not_enough_for_shift1(combinations["1"],cmb2,cmb3,need_nurces,short_roles,day)
           block.call({Sshift2 => cmb2,Sshift3 => cmb3 })
         }
+      }
+      
+    when [false,false] #shift2,3共に足りない
+      candidate_combination_for_shift23_selected_by_cost(day).each{|cmb2,cmb3|
+        block.call({Sshift2 => cmb2,Sshift3 => cmb3 })
       }
     end
   end
@@ -110,6 +115,11 @@ module Hospital::NurceCombination
 
   def candidate_combination_for_shift23_selected_by_cost(day)
     candidate_combination_for_shift23(day).
+      select{  |nurces_shift2,nurces_shift3| 
+      nurces_shift2.all?{ |nurce| nurce.shift_remain[Sshift2] > 0 } &&
+      nurces_shift3.all?{ |nurce| nurce.shift_remain[Sshift3] > 0 }
+
+    }.
       sort_by{ |nurces_shift2,nurces_shift3| 
       cost_of_nurce_combination(nurces_shift2,Sshift2,tight_roles(Sshift2)) +
       cost_of_nurce_combination(nurces_shift3,Sshift3,tight_roles(Sshift3))
