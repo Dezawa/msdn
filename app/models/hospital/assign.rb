@@ -1073,7 +1073,8 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
         s_r[need_patern][1] = needs_all_days[day][need_patern][1] - rs[day][need_patern]
       }
     rescue
-      dbgout("needs_all_days day:(#{__LINE__})#{day} ")
+#pp need_patern
+      dbgout("needs_all_days day:(#{__LINE__})#{day} need_patern=#{need_patern}")
       raise
     end
     s_r

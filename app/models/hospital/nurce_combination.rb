@@ -75,15 +75,11 @@ module Hospital::NurceCombination
   end
 
   def candidate_for_night(day)
-    need_nurces = { }
-    %w(2 3).each{ |sftstr|
-      need_nurces[sftstr] = short_role_shift_of(day)[[4,sftstr]][0]
-    }
     nurces_short = $HP_DEF.night.inject([[],[]]){ 
       |n_s,sft_str|
       short = short_role(day,sft_str)
       n_s[0] += assinable_nurces_by_cost_size_limited(assinable_nurces(day,sft_str,short_role(day,sft_str)),
-                                                      sft_str,need_nurces, short)
+                                                      sft_str,day, short)
       n_s[1] += short
       n_s
     }
@@ -93,8 +89,33 @@ module Hospital::NurceCombination
   end
 
   def candidate_combination_for_night(day)
-    candidate_for_night(day).combination(need_nurces[Sshift2]+need_nurces[Sshift3])
+    candidate_for_night(day).combination(need_nurces_shift(day,Sshift2)+need_nurces_shift(day,Sshift3))
   end
+
+  def candidate_combination_for_night_selected_by_cost(day)
+    candidate_combination_for_night(day).
+      sort_by{ |nurces| 
+        cost_of_nurce_combination(nurces,:night_total,tight_roles(:night_total))
+      }[0,limit_of_nurce_candidate_night(day)]
+  end
+
+  def candidate_combination_for_shift23(day)
+    need2 = need_nurces_shift(day,Sshift2)
+    candidate_combination_for_night_selected_by_cost(day).map{ |comb|
+      comb.combination(need2).map{ |nurce_shift2|
+        [nurce_shift2, comb - nurce_shift2]
+      }
+    }.flatten(1)
+  end
+
+  def candidate_combination_for_shift23_selected_by_cost(day)
+    candidate_combination_for_shift23(day).
+      sort_by{ |nurces_shift2,nurces_shift3| 
+      cost_of_nurce_combination(nurces_shift2,Sshift2,tight_roles(Sshift2)) +
+      cost_of_nurce_combination(nurces_shift3,Sshift3,tight_roles(Sshift3))
+    }[0,limit_of_nurce_candidate_night(day)]
+  end
+
   def nurce_combination_for_shift23(day)
 
   end
