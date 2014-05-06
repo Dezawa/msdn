@@ -1297,10 +1297,19 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
     end
   end
 
+  def leader_need ; Hospital::Limit.need_roles(@busho_id,@month)[[$HP_DEF.leader,:night_total]] ;end
+  def leader_arrow; Hospital::Limit.arrowable_roles(@busho_id,@month)[[$HP_DEF.leader,:night_total]] ;end
+  def kangoshi_need;Hospital::Limit.need_roles(@busho_id,@month)[[$HP_DEF.kangoshi,:kinmu_total]]    ;end
+  def kangoshi_arrow;Hospital::Limit.arrowable_roles(@busho_id,@month)[[$HP_DEF.kangoshi,:kinmu_total]];end
+
+
+
 
   def log_stat(m="once",head="HOSPITAL ASSIGN ")
-    msg = "FINISHED Ver #{ID.split[2]} #{m}:#{Hospital::Busho.find(@busho_id).name} "+
-      "#{@month.strftime('%Y/%m')}月 繰り返し %3d回, 評価%4d回 %5.1f秒 ON "%[@entrant_count,@loop_count,@fine-@start]+
+    msg = "FINISHED #{Hospital::Busho.find(@busho_id).name} #{@month.strftime('%Y/%m')}月" +
+      " [実数/必要数]：リーダー #{leader_arrow}/#{leader_need}人日、"+
+      "看護師 #{kangoshi_arrow}/#{kangoshi_need}人日\n" +
+      " 繰り返し %3d回, 評価%4d回 %5.1f秒 ON "%[@entrant_count,@loop_count,@fine-@start]+
       Time.now.strftime("%Y-%m-%d %H:%M:%S")
     msgstat0 = "#{head} STAT shift  評価 失敗" + @count_cause.keys.map{ |k| "%8s"%k}.join(" ") +"\n"
     msgstat1 = 
