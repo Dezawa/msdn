@@ -235,16 +235,6 @@ class Hospital::Assign
     self
   end
 
-  # 主任の1クールを割り付ける。一般の割付に先立って呼ぶ。
-  def assign1cool_to_shunin
-    day = 1
-    shunins = @nurces.select{|nurce| nurce.shokui_id == @Kangoshi }.
-      sort_by{|nurce| nurce.shift2 - nurce.shift3}.
-      each{|nurce| 
-      day,patern = nurce.assign_1_cool(day)
-      day += patern.size if patern
-    }
-  end
 
   #######################################################################
   # 一番深くまで割り付けた時の状態を保存する
@@ -275,8 +265,14 @@ class Hospital::Assign
     unlink_mults("assign_month_mul")
     dbgout("HOSPITAL ASSIGN MULT START ON "+Time.now.to_s)
     logger.info("HOSPITAL ASSIGN MULT IS STARTED ON "+Time.now.to_s)
-    assign_mult(all)
-    logger.info("HOSPITAL ASSIGN MULT IS FINISHED ON "+Time.now.to_s)
+    begin
+      assign_mult(all)
+      logger.info("HOSPITAL ASSIGN MULT IS FINISHED ON "+Time.now.to_s)
+    rescue TimeoutError
+      logger.info("HOSPITAL FINISHED BY TIMED OUT Finaly================================")
+      restore_shift(nurces,1,@longest[1])
+      save
+    end      
     self
   end 
 
@@ -329,7 +325,7 @@ class Hospital::Assign
       rescue TimeoutError
         logger.info("HOSPITAL FINISHED BY TIMED OUT ==================================================")
       end
-      break if @limit_mult < Time.now
+      raise TimeoutError if @limit_mult < Time.now
 
       dbgout("HOSPITAL AS NEXT 次候補 ")
       clear_assign
