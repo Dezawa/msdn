@@ -599,7 +599,7 @@ class Hospital::Assign
       end
     }
     dbgout("HP AASIGN TIGHT_DAY FIRST exit ")
-    @longest =  [0,0]
+    #@longest =  [0,0]
     ret
   end
 
