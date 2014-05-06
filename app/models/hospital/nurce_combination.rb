@@ -48,7 +48,7 @@ module Hospital::NurceCombination
         block.call({Sshift3 => true,Sshift2 => cmb2 })
       }
       
-    when [false,false,false] #shift2,3共に足りない
+    when [false,false] #shift2,3共に足りない
       if combinations[Sshift2].size==0 && short_roles[Sshift2].size > 0 
         @msg = "combination 2 is empity"
         return false
@@ -66,7 +66,7 @@ module Hospital::NurceCombination
         }
       }
       
-    when [false,false] #shift2,3共に足りない
+    when [false,false,false] #shift2,3共に足りない
       candidate_combination_for_shift23_selected_by_cost(day).each{|cmb2,cmb3|
         block.call({Sshift2 => cmb2,Sshift3 => cmb3 })
       }
