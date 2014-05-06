@@ -1304,15 +1304,15 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
       Time.now.strftime("%Y-%m-%d %H:%M:%S")
     msgstat0 = "#{head} STAT shift  評価 失敗" + @count_cause.keys.map{ |k| "%8s"%k}.join(" ") +"\n"
     msgstat1 = 
-      @shifts123.map{|sft_str| shift = sft_str.to_i
-      "       %s    %4d %4d"%[sft_str,@count_eval[shift],@count_fail[shift]] +
-      @count_cause.keys.map{ |k| "%9d"%@count_cause[k][shift]}.join
+      @shifts123.map{|sft_str|
+      "       %s    %4d %4d"%[sft_str,@count_eval[sft_str],@count_fail[sft_str]] +
+      @count_cause.keys.map{ |k| "%9d"%@count_cause[k][sft_str]}.join
 
     }
     # msgstat += @count_cause.keys.map{ |k| "%9d"%@count_cause[k][shift]}.join
 
     dbgout("#{head} #{msg}")
-    dbgout(head+msgstat0+head+msgstat1.join("\n#{head}"))
+    dbgout(head+msgstat0+head+msgstat1.join("\n#{head}")+@count_fail.to_s)
     
     logout_stat "#{msg}\n" +msgstat0+msgstat1.join("\n")
     
