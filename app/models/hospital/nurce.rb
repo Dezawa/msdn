@@ -401,16 +401,10 @@ def role_remain(recalc=false)
     #return @role_shift if @role_shift && month == monthly.month && !reculc
     @role_shift=
       monthly(month).shift.split("").map{|sft_str| role_shift_of(sft_str)  }
-      #monthly(month).shift.split("").map{|sft| role_shift_of(sft.hex)  }
-    #logger.debug("FOR_DEGBUG(#{__LINE__}) #{monthly(month).shift} => role_shift #{role_shift.join(',')}")
     @role_shift
   end
   def role_shift_of(sft_str)
     r_s = role_ids.map{|role_id| [ role_id , sft_str] }.compact
-    #r_s = roles.map{|role| [ role[0] , sft_str] }.compact
-    #r_s = roles.map{|role| [ role[0] , sft] }.compact
-    #r_s << [2,0] if ( sft == "0" || sft== 0 ) && role_id?(2) 
-    #r_s
   end
 
   def shift_count(shift)
