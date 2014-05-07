@@ -201,8 +201,12 @@ class Hospital::Assign
     @count_eval  = Hash.new{|h,k| h[k] = 0 }
     @count_fail  = Hash.new{|h,k| h[k] = 0 }
     @count_cause = Hash.new{|h,k| h[k] = Hash.new{|h,k| h[k] = 0 } }
+    @missing_roles= Hash.new{|h,k| h[k] = 0 }
   end
 
+  def missing_roles(m_roles)
+    m_roles.each{ |role_id|  @missing_roles[role_id] += 1 }
+  end
 
   def nurce_by_id(id)
     case id
@@ -752,7 +756,7 @@ class Hospital::Assign
     if as_nurce.size <= limit
       as_nurce.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str))} 
     else
-      gather_by_each_group_of_role(as_nurce,sft_str,short_roles_this_shift)[0,limit]
+      array_merge(gather_by_each_group_of_role(as_nurce,sft_str,short_roles_this_shift))[0,limit]
     end
   end
 
@@ -763,7 +767,6 @@ class Hospital::Assign
       nurce_list.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str)) 
       }
     }
-    array_merge(nurces) # costの低い方から選ぶ
   end # of case
 
   def limit_of_nurce_candidate(sft_str,day)
@@ -948,7 +951,10 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
       # role不足
       (need_roles - (need_roles & roles_of(combination))).size <= 0
     }.sort_by{|nurces| cost_of_nurce_combination(nurces,sft_str,tight_roles(sft_str))}
-    #combinations #(2)Dで削除
+    if combinations.size == 0
+      missing_roles(need_roles - roles_of(nurces))      
+    end
+    combinations #(2)Dで削除
   end
 
   # 看護師群のcostの総計
@@ -1320,12 +1326,14 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
       @count_cause.keys.map{ |k| "%9d"%@count_cause[k][sft_str]}.join
 
     }
+    msgmissing = @missing_roles.size == 0 ? "" :
+      "\n   不足Role "+@missing_roles.to_a.map{ |id_count| " %2d %d回"%id_count}.join(",") 
     # msgstat += @count_cause.keys.map{ |k| "%9d"%@count_cause[k][shift]}.join
 
     dbgout("#{head} #{msg}")
-    dbgout(head+msgstat0+head+msgstat1.join("\n#{head}")+@count_fail.to_s)
+    dbgout(head+msgstat0+head+msgstat1.join("\n#{head}")+@count_fail.to_s + msgmissing)
     
-    logout_stat "#{msg}\n" +msgstat0+msgstat1.join("\n")
+    logout_stat "#{msg}\n" +msgstat0+msgstat1.join("\n") + msgmissing
     
   end
 
