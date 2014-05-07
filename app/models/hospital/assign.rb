@@ -197,6 +197,7 @@ class Hospital::Assign
     @restore_count = @entrant_count = @loop_count = 0
 
     #  shift毎の、評価回数、失敗数、失敗原因
+    @count_back  = Hash.new{|h,k| h[k] = 0 }
     @count_eval  = Hash.new{|h,k| h[k] = 0 }
     @count_fail  = Hash.new{|h,k| h[k] = 0 }
     @count_cause = Hash.new{|h,k| h[k] = Hash.new{|h,k| h[k] = 0 } }
@@ -437,6 +438,7 @@ class Hospital::Assign
       end
     }
     assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,nil,"FALSE")
+    @count_back[sft_str] += 1
     return false
   end
 
@@ -1307,14 +1309,14 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
 
   def log_stat(m="once",head="HOSPITAL ASSIGN ")
     msg = "FINISHED #{Hospital::Busho.find(@busho_id).name} #{@month.strftime('%Y/%m')}月" +
+      "   shift分再帰 %3d回, 評価%4d回 %5.1f秒 ON "%[@entrant_count,@loop_count,@fine-@start]+
+      Time.now.strftime("%Y-%m-%d %H:%M:%S")+"\n"+
       " [実数/必要数]：リーダー #{leader_arrow}/#{leader_need}人日、"+
-      "看護師 #{kangoshi_arrow}/#{kangoshi_need}人日\n" +
-      " 繰り返し %3d回, 評価%4d回 %5.1f秒 ON "%[@entrant_count,@loop_count,@fine-@start]+
-      Time.now.strftime("%Y-%m-%d %H:%M:%S")
-    msgstat0 = "#{head} STAT shift  評価 失敗" + @count_cause.keys.map{ |k| "%8s"%k}.join(" ") +"\n"
+      "看護師 #{kangoshi_arrow}/#{kangoshi_need}人日" 
+    msgstat0 = "#{head} STAT shift  評価 失敗 戻り" + @count_cause.keys.map{ |k| "%8s"%k}.join(" ") +"\n"
     msgstat1 = 
       @shifts123.map{|sft_str|
-      "       %s    %4d %4d"%[sft_str,@count_eval[sft_str],@count_fail[sft_str]] +
+      "       %s    %4d %4d %4d"%[sft_str,@count_eval[sft_str],@count_fail[sft_str],@count_back[sft_str]] +
       @count_cause.keys.map{ |k| "%9d"%@count_cause[k][sft_str]}.join
 
     }
