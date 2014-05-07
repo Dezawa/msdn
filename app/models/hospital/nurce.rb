@@ -492,6 +492,7 @@ def role_remain(recalc=false)
   #  shift_with_last_month[7]   8-5+4
   # 違反項目がないとき nil が返る
   def check_at_assign(day,sft_str,imidiate=true)
+    return [[:no_space,true]] unless  monthly.shift[day,1] == "_"
     save = monthly.shift[day,1]
     monthly.shift[day,1] = sft_str
     ret = check(day,sft_str,imidiate)  
