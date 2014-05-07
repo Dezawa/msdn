@@ -33,7 +33,7 @@ module Hospital::NurceCombination
         @msg =  "(#{__LINE__})NO Abaiable combination set for shift 3" 
         block.call false
       end
-      combinations[Sshift3].each{|cmb3|
+      combinations[Sshift3][0,6].each{|cmb3|
         #next if not_enough_for_shift1(combinations["1"],[],cmb3,need_nurces,short_roles,day)
         block.call({Sshift2 => true,Sshift3 => cmb3 })
       }
@@ -43,7 +43,7 @@ module Hospital::NurceCombination
         @msg =  "(#{__LINE__})NO Abaiable combination set for shift 2" 
         block.call false
       end
-      combinations[Sshift2].each{|cmb2| 
+      combinations[Sshift2][0,6].each{|cmb2| 
         #next if not_enough_for_shift1(combinations["1"],cmb2,[],need_nurces,short_roles,day)
         block.call({Sshift3 => true,Sshift2 => cmb2 })
       }
@@ -58,11 +58,14 @@ module Hospital::NurceCombination
         #logger.debug("==== [false,false]")
       end
       # 組み合わせ順の最適化を行わない
+      count=6
       combinations[Sshift3].each{|cmb3|
         combinations[Sshift2].each{|cmb2|
           next unless (cmb3 | cmb2).size == cmb3.size+cmb2.size
           #next if not_enough_for_shift1(combinations["1"],cmb2,cmb3,need_nurces,short_roles,day)
           block.call({Sshift2 => cmb2,Sshift3 => cmb3 })
+          count -= 1
+          return if count < 1
         }
       }
       
