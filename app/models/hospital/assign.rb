@@ -204,8 +204,8 @@ class Hospital::Assign
     @missing_roles= Hash.new{|h,k| h[k] = 0 }
   end
 
-  def missing_roles(m_roles)
-    m_roles.each{ |role_id|  @missing_roles[role_id] += 1 }
+  def missing_roles(sft_str,m_roles)
+    m_roles.each{ |role_id|  @missing_roles[[role_id,sft_str]] += 1 }
   end
 
   def nurce_by_id(id)
@@ -276,6 +276,7 @@ class Hospital::Assign
     rescue TimeoutError
       logger.info("HOSPITAL FINISHED BY TIMED OUT Finaly================================")
       restore_shift(nurces,1,@longest[1])
+      @fine = Time.now;log_stat(:head => "=== Timed Out ===")
       save
     end      
     self
@@ -346,7 +347,7 @@ class Hospital::Assign
   end
 
   def log_stat_and_save_result
-          @fine = Time.now ; log_stat( "once" ,"") 
+          @fine = Time.now ; log_stat( ) 
           #if count == 0
           dbgout("HP ASSIGN (#{__LINE__})output to file #{ @basename + "%04d"%@count}")
           open( @basename + "%04d"%@count ,"w"){ |fp| fp.puts dump }
@@ -707,8 +708,7 @@ class Hospital::Assign
     @shifts_night[@night_mode].each{ |sft_str|
       as_nurces_selected[sft_str] = 
       (need_nurces_shift(day,sft_str)==0) ? [] :
-      assinable_nurces_by_cost_size_limited(assinable_nurces(day,sft_str,short_roles[sft_str]),
-                                            sft_str, day, short_roles[sft_str])
+      assinable_nurces_by_cost_size_limited(sft_str, day, short_roles[sft_str])
     }
     @shifts_night[@night_mode].each{|sft_str| next unless
       entry_log(day,sft_str,__LINE__,need_nurces_shift(day,sft_str),short_roles[sft_str],as_nurces_selected[sft_str])
@@ -734,8 +734,7 @@ class Hospital::Assign
     
       as_nurces_selected[Sshift1] = 
       (need_nurces[Sshift1]==0) ? [] :
-      assinable_nurces_by_cost_size_limited(assinable_nurces(day,Sshift1,short_roles[Sshift1]),
-                                            Sshift1, day, short_roles[Sshift1])
+      assinable_nurces_by_cost_size_limited(Sshift1, day, short_roles[Sshift1])
 
       entry_log(day,Sshift1,__LINE__,need_nurces_shift(day,Sshift1),short_roles[Sshift1],as_nurces_selected[Sshift1])
     if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
@@ -751,7 +750,8 @@ class Hospital::Assign
   # shift2,3の場合はshift2+3の5割り増し、shift1の場合はshift1の5割り増し
   #ただし必要ロールがそろう様にするために持っているロールで分ける。
   # これが必要なのは割りあて可能な人数が「何人か」より多い場合
-  def assinable_nurces_by_cost_size_limited(as_nurce,sft_str,day,short_roles_this_shift )
+  def assinable_nurces_by_cost_size_limited(sft_str,day,short_roles_this_shift )
+    as_nurce = assinable_nurces(day,sft_str,short_roles_this_shift)
     limit = limit_of_nurce_candidate(sft_str,day)
     if as_nurce.size <= limit
       as_nurce.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str))} 
@@ -763,6 +763,7 @@ class Hospital::Assign
   def gather_by_each_group_of_role(as_nurce,sft_str,short_role_of_this_shift)
     nurces = as_nurce.
       group_by{ |nurce| nurce.role_ids & short_role_of_this_shift}.to_a.  # 持ってるroleで層別し
+      sort_by{ |roles,nurce_list|  roles_cost(roles,tight_roles(sft_str))}.
       map{ |roles,nurce_list|                                # 各々の層をcostで並べる
       nurce_list.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str)) 
       }
@@ -787,6 +788,7 @@ class Hospital::Assign
 
   def array_merge(aryary)
     return [] if aryary==[]
+    return aryary[0] if aryary.size==1
     maxsize = aryary.map{|ary| ary.size}.max
     merged = aryary[0]+[nil]*(maxsize-aryary[0].size)
     aryary[1..-1].inject(merged){|merg,ary| merg.zip(ary)}.flatten.compact
@@ -952,11 +954,14 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
       (need_roles - (need_roles & roles_of(combination))).size <= 0
     }.sort_by{|nurces| cost_of_nurce_combination(nurces,sft_str,tight_roles(sft_str))}
     if combinations.size == 0
-      missing_roles(need_roles - roles_of(nurces))      
+      missing_roles(sft_str,need_roles - roles_of(nurces))      
     end
     combinations #(2)Dで削除
   end
 
+  def roles_cost(roles,tight)
+    tight.inject(0){ |cost,role| cost * 2 + (roles.include?(role) ? 1 : 0 )}
+  end
   # 看護師群のcostの総計
   def cost_of_nurce_combination(nurces,sft_str,tight)
     nurces.inject(2.0){|cost,nurce| cost + nurce.cost(sft_str,tight) }*
@@ -1313,7 +1318,8 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
 
 
 
-  def log_stat(m="once",head="HOSPITAL ASSIGN ")
+  def log_stat(opt ={ })
+    head = opt.delete(:head) || ""
     msg = "FINISHED #{Hospital::Busho.find(@busho_id).name} #{@month.strftime('%Y/%m')}月" +
       "   shift分再帰 %3d回, 評価%4d回 %5.1f秒 ON "%[@entrant_count,@loop_count,@fine-@start]+
       Time.now.strftime("%Y-%m-%d %H:%M:%S")+"\n"+
@@ -1327,11 +1333,12 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
 
     }
     msgmissing = @missing_roles.size == 0 ? "" :
-      "\n   不足Role "+@missing_roles.to_a.map{ |id_count| " %2d %d回"%id_count}.join(",") 
+      "\n   不足Role "+@missing_roles.to_a.
+      map{ |id_shift,count| "  [%s] %d回"%[id_shift.join("-"),count]}.join(",") 
     # msgstat += @count_cause.keys.map{ |k| "%9d"%@count_cause[k][shift]}.join
 
     dbgout("#{head} #{msg}")
-    dbgout(head+msgstat0+head+msgstat1.join("\n#{head}")+@count_fail.to_s + msgmissing)
+    dbgout(head+msgstat0+head+msgstat1.join("\n#{head}\n")+@count_fail.to_s + msgmissing)
     
     logout_stat "#{msg}\n" +msgstat0+msgstat1.join("\n") + msgmissing
     
