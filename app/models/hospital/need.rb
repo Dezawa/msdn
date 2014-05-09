@@ -101,15 +101,16 @@ logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sor
     roles.combination(3).to_a.each{|c0,c1,c2| 
       comb << [c0,c1,c2] << [c0,c2,c1] << [c1,c0,c2] << [c1,c2,c0] << [c2,c0,c1] << [c2,c1,c0]
     }
-logger.debug("=== Need::roles =#{roles.join} comb:#{comb.join(',')}")
+    logger.debug("=== Need::roles =#{roles.join(',')} comb:[#{comb.map{ |c| c.join(',')}.join']['}]")
     comb.sort
   end
+
   def self.make_combination2
     comb = []
     roles.combination(2).to_a.each{|c0,c1| 
       comb << [c0,c1] <<  [c1,c0]
     }
-logger.debug("=== Need::roles =#{roles.join} comb:#{comb.join(',')}")
+    logger.debug("=== Need::roles =#{roles.join(',')} comb:[#{comb.map{ |c| c.join(',')}.join']['}]")
     comb.sort
   end
   
