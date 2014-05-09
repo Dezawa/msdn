@@ -86,8 +86,7 @@ module Hospital::NurceCombination
     nurces_short = $HP_DEF.night.inject([[],[]]){ 
       |n_s,sft_str|
       short = short_role(day,sft_str)
-      n_s[0] += assinable_nurces_by_cost_size_limited(assinable_nurces(day,sft_str,short_role(day,sft_str)),
-                                                      sft_str,day, short)
+      n_s[0] += assinable_nurces_by_cost_size_limited(sft_str,day, short)
       n_s[1] += short
       n_s
     }
