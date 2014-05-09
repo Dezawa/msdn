@@ -762,7 +762,7 @@ class Hospital::Assign
 
   def gather_by_each_group_of_role(as_nurce,sft_str,short_role_of_this_shift)
     nurces = as_nurce.
-      group_by{ |nurce| nurce.role_ids & short_role_of_this_shift}.to_a.  # 持ってるroleで層別し
+      group_by{ |nurce| (nurce.role_ids & short_role_of_this_shift).sort}.to_a.  # 持ってるroleで層別し
       sort_by{ |roles,nurce_list|  roles_cost(roles,tight_roles(sft_str))}.
       map{ |roles,nurce_list|                                # 各々の層をcostで並べる
       nurce_list.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str)) 
