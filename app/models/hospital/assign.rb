@@ -761,13 +761,16 @@ class Hospital::Assign
   end
 
   def gather_by_each_group_of_role(as_nurce,sft_str,short_role_of_this_shift)
-    nurces = as_nurce.
-      group_by{ |nurce| (nurce.role_ids & short_role_of_this_shift).sort}.to_a.  # 持ってるroleで層別し
+    nurces_group_by = as_nurce.group_by{ |nurce| (nurce.role_ids & short_role_of_this_shift).sort}
+    logger.debug("GATHER_BY_EACH_GROUP_OF_ROLE shift=#{sft_str}:as_nurce = #{as_nurce.map(&:id).join(',')}")
+    nurces =  nurces_group_by.to_a.  # 持ってるroleで層別し
       sort_by{ |roles,nurce_list|  roles_cost(roles,tight_roles(sft_str))}.
       map{ |roles,nurce_list|                                # 各々の層をcostで並べる
       nurce_list.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str)) 
       }
     }
+    logger.debug("GATHER_BY_EACH_GROUP_OF_ROLE [#{nurces.map{|ns| ns.map(&:id).join(',')}.join('],[')}]")
+    nurces
   end # of case
 
   def limit_of_nurce_candidate(sft_str,day)
@@ -994,6 +997,9 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
   # その日割付まだされておらず、かつそのshiftを割り付けても勤務制約を越えず
   # 足りないroleを少なくとも一つ持っている
   def assinable_nurces(day,sft_str,short_roles,reculc=false)
+    logger.debug("ASSINABLE_NURCES check_at_assign of id 11,17,20 "+
+                 "#{nurce_by_id([11,17,20]).map{ |nurce| nurce.check_at_assign(day,sft_str)}.join(',')}"
+                 ) if day==1
     nurce_not_assigned(day).
       select{|nurce| !nurce.check_at_assign(day,sft_str) && 
       nurce.has_assignable_roles_atleast_one(sft_str,short_roles.map{|r,mi_max| r })
