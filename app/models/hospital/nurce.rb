@@ -82,6 +82,7 @@ class Hospital::Nurce < ActiveRecord::Base
   end
 
   def cost(sft_str,tight)
+begin
     case tight.size
     when 3 ;self.class.cost_table[tight][(tight & role_ids).sort][shift_remain[sft_str]]  +rand
     when 2 ;self.class.cost_table2[tight][(tight & role_ids).sort][shift_remain[sft_str]] +rand
@@ -89,6 +90,10 @@ class Hospital::Nurce < ActiveRecord::Base
       dbgout("Nurce#cost sft_str #{sft_str} tight #{tight}")
       raise
     end
+rescue
+  logger.debug("Nurce #{id}, Shift#{sft_str} tight = #{tight.join(',')} shift_remain=#{shift_remain[sft_str]}"+
+               "role_remain=#{role_remain.to_a.join('//')}")
+end
   end
 
   class AssignPatern
