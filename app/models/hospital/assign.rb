@@ -552,7 +552,8 @@ class Hospital::Assign
       @night.each{|sft_str|     #(1)
         combinations[sft_str] = 
         nurce_combination_by_tightness(as_nurces_selected[sft_str],#[0..SelectedMax],
-                                       need_nurces_shift(day,sft_str),short_roles[sft_str],sft_str)
+                                       need_nurces_shift(day,sft_str),short_roles[sft_str],sft_str
+                                       )[0,@limit||6]
       }
     else 
       combinations["1"] = as_nurces_selected["1"].sort_by{|n| n.cost("1",tight_roles("1"))}
@@ -641,7 +642,7 @@ class Hospital::Assign
         dbgout("HP ASSIGN(#{line}) #{day}:#{sft_str} tight:#{tight_roles(sft_str)} ["+
                comb.map{|nurces| 
                  "[" + 
-                 nurces.map{|nurce| [nurce.id,nurce.cost(sft_str,tight_roles(sft_str))].join(':') }.join(",") +
+                 nurces.map{|nurce| "%d:%d"%[nurce.id,nurce.cost(sft_str,tight_roles(sft_str))] }.join(", ") +
                  "]" }.join(",") +
                "]"
                )
@@ -752,11 +753,11 @@ class Hospital::Assign
   # これが必要なのは割りあて可能な人数が「何人か」より多い場合
   def assinable_nurces_by_cost_size_limited(sft_str,day,short_roles_this_shift )
     as_nurce = assinable_nurces(day,sft_str,short_roles_this_shift)
-    limit = limit_of_nurce_candidate(sft_str,day)
-    if as_nurce.size <= limit
+    @limit = limit_of_nurce_candidate(sft_str,day)
+    if as_nurce.size <= @limit
       as_nurce.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str))} 
     else
-      array_merge(gather_by_each_group_of_role(as_nurce,sft_str,short_roles_this_shift))[0,limit]
+      array_merge(gather_by_each_group_of_role(as_nurce,sft_str,short_roles_this_shift))[0,@limit]
     end
   end
 
@@ -955,7 +956,7 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
     combinations = nurces.combination(need_nurces).select{|combination| 
       # role不足
       (need_roles - (need_roles & roles_of(combination))).size <= 0
-    }.sort_by{|nurces| cost_of_nurce_combination(nurces,sft_str,tight_roles(sft_str))}
+    }.sort_by{|nurces| cost_of_nurce_combination_with_avoid(nurces,sft_str,tight_roles(sft_str))}
     if combinations.size == 0
       missing_roles(sft_str,need_roles - roles_of(nurces))      
     end
@@ -969,6 +970,16 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
   def cost_of_nurce_combination(nurces,sft_str,tight)
     nurces.inject(2.0){|cost,nurce| cost + nurce.cost(sft_str,tight) }*
       AvoidWeight[[nurces_have_avoid_combination?(nurces),AvoidWeight.size-1].min]
+  end
+
+  def cost_of_nurce_combination_with_avoid(nurces,sft_str,tight)
+   cost_of_nurce_combination(nurces,sft_str,tight)*
+      AvoidWeight[[nurces_have_avoid_combination?(nurces),AvoidWeight.size-1].min]
+  end
+
+  def cost_of_nurce_combination_of_combination(comb2,comb3)
+    cost_of_nurce_combination(comb2,Sshift2,tight_roles(Sshift2)) +
+      (comb3 ? cost_of_nurce_combination(comb3,Sshift2,tight_roles(Sshift2)) : 0) 
   end
 
   def nurces_have_avoid_combination?(nurces)

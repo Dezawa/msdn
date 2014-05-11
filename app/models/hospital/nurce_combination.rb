@@ -75,6 +75,14 @@ module Hospital::NurceCombination
       }
     end
   end
+  # 最適化を行うとどの位のコストとなるのか？
+  # ５Fを例にとると、
+  #  limit_of_nurce_candidate_night = (4+3)*2 = 14
+  #  comb2 14 13 12 11/(4 3 2) = 2261
+  #  comb3 14 13 12 /(3 2)     =  364
+  #  各々の limit_of_nurce_candidate_night = (4+3)*2 = 14 を選び oprduct
+  #  14 * 14 = 196
+  #
 
   def nurce_combination_shift1(combinations,need_nurces,short_roles,day,&block)
       combinations[Sshift1].combination(need_nurces_shift(day,Sshift1)).each{|cmb1|
