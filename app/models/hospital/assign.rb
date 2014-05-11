@@ -978,8 +978,11 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
   end
 
   def cost_of_nurce_combination_of_combination(comb2,comb3)
+    if comb3.nil?
+      comb2,comb3 = comb2
+    end 
     cost_of_nurce_combination(comb2,Sshift2,tight_roles(Sshift2)) +
-      (comb3 ? cost_of_nurce_combination(comb3,Sshift2,tight_roles(Sshift2)) : 0) 
+      (comb3 ? cost_of_nurce_combination(comb3,Sshift3,tight_roles(Sshift3)) : 0) 
   end
 
   def nurces_have_avoid_combination?(nurces)
@@ -1010,7 +1013,7 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
   def assinable_nurces(day,sft_str,short_roles,reculc=false)
     logger.debug("ASSINABLE_NURCES check_at_assign of id 11,17,20 "+
                  "#{nurce_by_id([11,17,20]).map{ |nurce| nurce.check_at_assign(day,sft_str)}.join(',')}"
-                 ) if day==1
+                 ) if day==1 && @busho_id == 3 
     nurce_not_assigned(day).
       select{|nurce| !nurce.check_at_assign(day,sft_str) && 
       nurce.has_assignable_roles_atleast_one(sft_str,short_roles.map{|r,mi_max| r })
