@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 require "pp"
+
+srand(1)
 class Hospital::Define < ActiveRecord::Base
   include Hospital::Const
 
