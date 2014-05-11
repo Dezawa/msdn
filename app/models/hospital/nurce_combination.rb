@@ -58,7 +58,18 @@ module Hospital::NurceCombination
         #logger.debug("==== [false,false]")
       end
       # 組み合わせ順の最適化を行わない
+      
       count=6
+      combinations[Sshift2].product(combinations[Sshift3]).
+        sort_by{ |cmb2,cmb3|
+        cost_of_nurce_combination_of_combination(cmb2,cmb3)
+      }.each{ |cmb2,cmb3|
+        next unless (cmb3 | cmb2).size == cmb3.size+cmb2.size
+        block.call({Sshift2 => cmb2,Sshift3 => cmb3 })
+          count -= 1
+          return if count < 1
+      }
+      return
       combinations[Sshift3].each{|cmb3|
         combinations[Sshift2].each{|cmb2|
           next unless (cmb3 | cmb2).size == cmb3.size+cmb2.size
