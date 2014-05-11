@@ -20,6 +20,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
   def setup
     @nurces = Hospital::Nurce.all
     @month  = Date.new(2013,2,1)
+    srand(1)
   end
 
   def nurce(id); 
@@ -395,19 +396,19 @@ assinable_roles = {
 
     assert_equal 5,nurce40.role_remain[[4,"3"]],"role remain5"
     cost = Hospital::Nurce::Cost[6][5]
-    assert_equal cost, nurce40.cost("3",[3,9,10]) ," tight 3,9,10"
-    assert_equal Hospital::Nurce::Cost[5][5], nurce40.cost("3",[3,10,9]) ," tight 3,10,9"
-    assert_equal Hospital::Nurce::Cost[7][5], nurce40.cost("3",[3,9,4]),"shft 3 is remains 5 before set\shift"
+    assert_equal cost, nurce40.cost("3",[3,9,10]).to_i ," tight 3,9,10"
+    assert_equal Hospital::Nurce::Cost[5][5], nurce40.cost("3",[3,10,9]).to_i ," tight 3,10,9"
+    assert_equal Hospital::Nurce::Cost[7][5], nurce40.cost("3",[3,9,4]).to_i ,"shft 3 is remains 5 before set\shift"
     saved = nurce40.save_shift
     #pp saved[2]
     #pp nurce40.role_remain[[2,3]]
     nurce40.set_shift(20,"3")
     #pp saved[2]
-    assert_equal Hospital::Nurce::Cost[7][4], nurce40.cost("3",[3,9,4]),"shft 3 is remains 4 after set\shift"
+    assert_equal Hospital::Nurce::Cost[7][4], nurce40.cost("3",[3,9,4]).to_i ,"shft 3 is remains 4 after set\shift"
     nurce40.restore_shift(saved)
     #pp nurce40.role_remain
     #pp nurce40.role_remain[[2,3]]
-    assert_equal Hospital::Nurce::Cost[7][5], nurce40.cost("3",[3,9,4]),"shft 3 is remains 5 after restore"
+    assert_equal Hospital::Nurce::Cost[7][5], nurce40.cost("3",[3,9,4]).to_i ,"shft 3 is remains 5 after restore"
   end
 
   

@@ -69,7 +69,7 @@ class Hospital::NurcePaterningTest < ActiveSupport::TestCase
     assert_equal [["330",[[2],[],[],[1]]],["330",[[2],[],[],[1]]]], 
     assigned.map{ |as| [as.patern,as.target_days]},"二人ほどshift3にlong_patern[0,0],330を入れるのは可能"
 pp "bofore ret = @assign.assign_patern"
-ret = @assign.assign_patern(comb_nurces[0,2],day,shift,assigned)
+ret = @assign.assign_patern(comb_nurces[0,2],day,shift,assigned) #####
 pp "after ret = @assign.assign_patern"
 puts @assign.dump
     @assign.long_check_later_days(day,[[2],[],[],[1]],"3")

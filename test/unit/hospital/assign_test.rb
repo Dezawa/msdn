@@ -12,6 +12,7 @@ class Hospital::AssignTest < ActiveSupport::TestCase
     @busho_id = 1
     @assign=Hospital::Assign.new(@busho_id,@month)
     @nurces=@assign.nurces
+    srand(1)
   end
   def newmonth(month)
     @month  = Date.new(2013,month,1)
@@ -106,7 +107,7 @@ HP ASSIGN 4:3  [[37:0.5],[42:0.5],[43:0.83],[39:1.0],[38:1.0],[44:1.0]]
     assert_equal [[3,4,9],[3,4,9]],  [38,39].
       map{|id| nurces[id].role_ids}, "看護師の role"
 
-    assert_equal [Cost[6][5],Cost[6][4]],[38,39].map{|id| nurces[id].cost(shift,tight) }, "看護師のcost"
+    assert_equal [Cost[6][5],Cost[6][4]],[38,39].map{|id| nurces[id].cost(shift,tight).to_i }, "看護師のcost"
     #nurces[38].
     #  nurces[39].
   end
@@ -177,8 +178,8 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
     assert_equal [[3, 4,10], [3, 4,10], [3, 4,10], [3, 4,10], [4,10]],  
       [50,47,49,48,36].map{|id| nurces[id].role_ids}, "看護師の role"
     assert_equal [5,5,5,4] .map{|r| Cost[5][r]},
-    [50,47,49,48].map{|id| nurces[id].cost(shift,tight) }, "看護師のcost"
-    assert_equal Cost[1][1],nurces[36].cost(shift,tight) , "看護師 36のcost"
+    [50,47,49,48].map{|id| nurces[id].cost(shift,tight).to_i }, "看護師のcost"
+    assert_equal Cost[1][1],nurces[36].cost(shift,tight).to_i , "看護師 36のcost"
                     #nurces[38].
                     #  nurces[39].
   end

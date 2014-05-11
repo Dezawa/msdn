@@ -35,6 +35,7 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
     @assign = Hospital::Assign.new(@busho_id,@month)
     @nurces = extract_set_shifts(Log2_4)
     @assign.refresh
+    srand(1)
   end
 
   def nurce_by_id(id,nurces)
@@ -69,13 +70,13 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
   must "2/20の夜勤割り当ての組み合わせ候補・costで選別" do
     #            [37, 41, 44, 46, 52, 39, 42, 48, 38, 40, 43, 47]
     assert_equal [[37, 38, 39, 52],
-                  [37, 38, 39, 40],
-                  [37, 38, 39, 41],
-                  [37, 39, 52, 40],
-                  [37, 38, 52, 40],
-                  [37, 38, 52, 41],
-                  [37, 39, 52, 41],
-                  [37, 39, 40, 41]],
+ [37, 38, 39, 41],
+ [37, 38, 39, 40],
+ [37, 38, 52, 40],
+ [37, 39, 52, 41],
+ [37, 38, 52, 41],
+ [37, 39, 52, 40],
+ [37, 38, 41, 40]] ,
     @assign.candidate_combination_for_night_selected_by_cost(day).map{ |comb| comb.map(&:id)}
   end
 
@@ -87,7 +88,14 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
 
   must "2/20のshift2,3の候補の組み合わせを作る。 shift2,3のコストで選ぶ" do
     candidate_combination=@assign.candidate_combination_for_shift23_selected_by_cost(day)
-    assert_equal 4*3/2 * 8 , # = 48
+    assert_equal [[[39, 41], [37, 38]],
+ [[37, 41], [38, 40]],
+ [[37, 39], [38, 40]],
+ [[52, 41], [37, 38]],
+ [[39, 52], [37, 38]],
+ [[39, 52], [37, 40]],
+ [[38, 39], [37, 40]],
+ [[38, 41], [37, 40]]],
       candidate_combination.map{  |nurces_shift2,nurces_shift3| 
       [nurces_shift2.map(&:id),nurces_shift3.map(&:id)]
     }
@@ -98,16 +106,16 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
     @nurce = Hospital::Nurce.find 38 # 3,4,9
     @nurce.monthly(@month)
     @nurce.shifts = "02233___________________________"
-    assert_equal 1813,@nurce.cost(:night_total,[3,4,9])
-    assert_equal 1648,@nurce.cost(:night_total,[3,4,10])
+    assert_equal 1813,@nurce.cost(:night_total,[3,4,9]).to_i
+    assert_equal 1648,@nurce.cost(:night_total,[3,4,10]).to_i
   end
   must "2233のとき全勤務でのコスト" do
     @month  = Date.new(2014,3,1)
     @nurce = Hospital::Nurce.find 38 # 3,4,9
     @nurce.monthly(@month)
     @nurce.shifts = "02233___________________________"
-    assert_equal 59,@nurce.cost(:kinmu_total,[3,4,9])
-    assert_equal 54,@nurce.cost(:kinmu_total,[3,4,10])
+    assert_equal 59,@nurce.cost(:kinmu_total,[3,4,9]).to_i
+    assert_equal 54,@nurce.cost(:kinmu_total,[3,4,10]).to_i
   end
   must "月データ読み込み" do
     nurce = nurce_by_id(52,@assign.nurces)
@@ -168,31 +176,32 @@ puts 3
   # 
   # 
   must "2/20のshift2の割り当て可能看護師gather_by" do
-  sft_str = "2"
-    assert_equal [37, 41, 44, 46, 52, 39, 42, 48, 38, 43, 50, 40, 45, 49, 51, 47],
+    sft_str = "2"
+    assert_equal [[37], [39, 41, 38, 40], [46], [44, 42, 43, 45], [52, 48, 51, 49, 47, 50]],
     @assign.gather_by_each_group_of_role(@assign.assinable_nurces(day,sft_str,@assign.short_role(day,sft_str)),
-                                         sft_str,@assign.short_role(day,sft_str)).map(&:id)
-  end
+                                         sft_str,@assign.short_role(day,sft_str)).
+      map{ |cmb| cmb.map(&:id)}
+
+ end
   must "2/20のshift3の割り当て可能看護師gather_by" do
-  sft_str = "3"
-    assert_equal [37, 38, 42, 46, 52, 40, 43, 47, 39, 44, 49, 41, 45, 51, 50],
+    sft_str = "3"
+    assert_equal [[37], [46], [42, 43, 45, 44], [38, 40, 39, 41], [52, 47, 49, 50, 51]],
     @assign.gather_by_each_group_of_role(@assign.assinable_nurces(day,sft_str,@assign.short_role(day,sft_str)),
-                                         sft_str,@assign.short_role(day,sft_str)).map(&:id)
+                                         sft_str,@assign.short_role(day,sft_str)).
+      map{ |cmb| cmb.map(&:id)}
   end
 
   must "2/20のshift2の割り当て可能看護師 数制限" do
   sft_str = "2"
-    assert_equal [37, 41, 44, 46, 52, 39, 42, 48],
-    @assign.assinable_nurces_by_cost_size_limited(@assign.assinable_nurces(day,sft_str,@assign.short_role(day,sft_str)),
-                                                  sft_str,day,
+    assert_equal [37, 39, 46, 44, 52, 41, 42, 48],
+    @assign.assinable_nurces_by_cost_size_limited(sft_str,day,
                                                   @assign.short_role(day,sft_str)).map(&:id)
   end
   sft_str = "3"
   must "2/20のshift3の割り当て可能看護師 数制限" do
   sft_str = "3"
-    assert_equal [37, 38, 42, 46, 52, 40, 43, 47],
-    @assign.assinable_nurces_by_cost_size_limited(@assign.assinable_nurces(day,sft_str,@assign.short_role(day,sft_str)),
-                                                  sft_str,day,
+    assert_equal [37, 46, 42, 38, 52, 43, 40, 47],
+    @assign.assinable_nurces_by_cost_size_limited(sft_str,day,
                                                   @assign.short_role(day,sft_str)).map(&:id)
   end
 
@@ -204,7 +213,7 @@ puts 3
 
   must "2/20の夜勤割り当て候補 ソート" do
     #            [37, 41, 44, 46, 52, 39, 42, 48, 38, 40, 43, 47]
-    assert_equal [37, 38, 39, 52, 40, 41, 44, 43, 42, 46, 47, 48],
+    assert_equal [37, 38, 39, 52, 41, 40, 44, 42, 43, 46, 47, 48],
       @assign.candidate_for_night(day).map(&:id)
   end
 
