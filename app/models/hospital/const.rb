@@ -19,7 +19,7 @@ module Const
   AvoidWeight = [ 1.0,  1.3,  1.7,  2.2,  2.9,  3.7,  4.8,   6.3,   8.2, 10.6, 13.8,
                  17.9, 23.3, 30.3, 39.4, 51.2, 66.5, 86.5, 112.5, 146.2, 190.0]
 
-  Timeout     = 1.minute
+  Timeout     = 2.minute
   TimeoutMult = 3.minute
   Sleep       = 30
 
@@ -41,11 +41,13 @@ module Const
  else
     Kangoshi,Leader = %w(看護師 リーダー).map{ |name| Hospital::Role.find_by_name(name).id}
     MarginLimit   = Hash.new{ |h,k| h[k] = 11}               # 夜、全 の余裕が
-    MarginLimit.merge!(Hash[ [Kangoshi,:night_total],500 ,   #[10,10]できる
-                             [Kangoshi,:kinmu_total],500 ,   #[8,10] も、まあまあ 28"
-                             [Leader  ,:night_total],500 ,    #[7,10] きついNG 
-                             [Leader  ,Sshift2]      ,1 ,    #[7,13] 18",[7,12] 22" [7,11] 80"
-                             [Leader  ,Sshift3]      ,1      
+    MarginLimit.merge!(Hash[ [Kangoshi,:night_total],15  ,   #[10,10]できる
+                             [Kangoshi,:kinmu_total],50  ,   #[8,10] も、まあまあ 28"
+                             [Kangoshi,Sshift2],20  ,   #[8,10] も、まあまあ 28"
+                             [Kangoshi,Sshift2],20  ,   #[8,10] も、まあまあ 28"
+                             [Leader  ,:night_total],10  ,    #[7,10] きついNG 
+                             [Leader  ,Sshift2]      ,10,    #[7,13] 18",[7,12] 22" [7,11] 80"
+                             [Leader  ,Sshift3]      ,10     
                            ] )        #  要員数警告
   end
   
