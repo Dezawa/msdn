@@ -57,8 +57,8 @@ module Hospital::NurceCombination
         block.call false
         #logger.debug("==== [false,false]")
       end
-      # 組み合わせ順の最適化を行わない
-      
+
+      # 組み合わせ順の最適化を行う
       count=6
       combinations[Sshift2].product(combinations[Sshift3]).
         sort_by{ |cmb2,cmb3|
@@ -68,21 +68,6 @@ module Hospital::NurceCombination
         block.call({Sshift2 => cmb2,Sshift3 => cmb3 })
           count -= 1
           return if count < 1
-      }
-      return
-      combinations[Sshift3].each{|cmb3|
-        combinations[Sshift2].each{|cmb2|
-          next unless (cmb3 | cmb2).size == cmb3.size+cmb2.size
-          #next if not_enough_for_shift1(combinations["1"],cmb2,cmb3,need_nurces,short_roles,day)
-          block.call({Sshift2 => cmb2,Sshift3 => cmb3 })
-          count -= 1
-          return if count < 1
-        }
-      }
-      
-    when [false,false,false] #shift2,3共に足りない
-      candidate_combination_for_shift23_selected_by_cost(day).each{|cmb2,cmb3|
-        block.call({Sshift2 => cmb2,Sshift3 => cmb3 })
       }
     end
   end
@@ -96,8 +81,15 @@ module Hospital::NurceCombination
   #
 
   def nurce_combination_shift1(combinations,need_nurces,short_roles,day,&block)
-      combinations[Sshift1].combination(need_nurces_shift(day,Sshift1)).each{|cmb1|
+    tight = tight_roles(Sshift1)
+    count=2
+    combinations[Sshift1].
+      combination(need_nurces_shift(day,Sshift1)).
+      sort_by{ |nurces| cost_of_nurce_combination(nurces,Sshift1,tight) }.
+      each{|cmb1|
         block.call({ Sshift1 => cmb1})
+          count -= 1
+          return if count < 1
       }
   end
 

@@ -790,7 +790,7 @@ class Hospital::Assign
   end
 
   def  limit_of_nurce_candidate_day(day)
-    (need_nurces_shift(day,Sshift1) * 1.5).ceil
+    [ (need_nurces_shift(day,Sshift1) * 1.2).ceil ,need_nurces_shift(day,Sshift1)+1].max
   end
 
   def array_merge(aryary)
