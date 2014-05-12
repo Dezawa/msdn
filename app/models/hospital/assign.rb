@@ -416,9 +416,12 @@ class Hospital::Assign
         
       else  # 成功(または既に満たされていた)時は次のshiftへ再帰
         assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,idx_list_of_long_patern,"SUCCESS")
-        @longest = [day*10+10-sft_str.to_i,save_shift(@nurces,day)] if day*10+10-sft_str.to_i > longest[0]
-
         return true if single
+
+        #     31日のtshif3より 1日のshift1の方が大きくなるようにする
+        #     shift * 100  100,200,300
+        new_longest = 1000 + day - sft_str.to_i * 100
+        @longest = [new_longest,save_shift(@nurces,day)] if new_longest > longest[0]
 
         case [sft_str,@koutai3]
         when [Sshift2,true]
