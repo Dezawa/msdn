@@ -59,7 +59,7 @@ module Hospital::NurceCombination
       end
 
       # 組み合わせ順の最適化を行う
-      count=6
+      count=3
       combinations[Sshift2].product(combinations[Sshift3]).
         sort_by{ |cmb2,cmb3|
         cost_of_nurce_combination_of_combination(cmb2,cmb3)
