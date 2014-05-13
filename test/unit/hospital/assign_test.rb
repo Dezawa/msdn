@@ -4,7 +4,7 @@ require 'test_helper'
 
 class Hospital::AssignTest < ActiveSupport::TestCase
   fixtures :nurces,:hospital_roles,:nurces_roles,:hospital_limits
-  fixtures :holydays,:hospital_needs,:hospital_monthlies
+  fixtures :holydays,:hospital_needs,:hospital_monthlies,:hospital_defines
   fixtures :hospital_kinmucodes
   # Replace this with your real tests.
   def setup
