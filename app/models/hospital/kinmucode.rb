@@ -132,16 +132,17 @@ class Hospital::Kinmucode < ActiveRecord::Base
     @code_for_hope[shift] ||=
       (case shift
        when  Kubun[:nikkin] #日勤
-         self.all(:conditions => [sql,%w(0 D N),Kubun[:kyoutuu]])+
-           self.all(:conditions => [sql,%w(4□ 管),Kubun[:nikkin]])+
-           self.all(:conditions => [sql,%w(1 2 3),Kubun[:sankoutai]])+
-           self.all(:conditions => [sql,%w(S A),Kubun[:kyoutuu]])+
-           self.all(:conditions => ["kinmukubun_id = ?",Kubun[:nikkin]])
+         self.code_nikkin  + #all(:conditions => [sql,%w(0 D N),Kubun[:kyoutuu]])+
+           self.code_holyday  + #self.all(:conditions => [sql,%w(4□ 管),Kubun[:nikkin]])+
+           self.code_sanchoku + #all(:conditions => [sql,%w(1 2 3),Kubun[:sankoutai]])+
+           self.code_holydaye_other + # all(:conditions => [sql,%w(S A),Kubun[:kyoutuu]])+
+           self.code_nikkin_all       #all(:conditions => ["kinmukubun_id = ?",Kubun[:nikkin]])
        when Kubun[:sankoutai]
-         self.all(:conditions => [sql,%w(0 D N),Kubun[:kyoutuu]])+
-           self.all(:conditions => [sql,%w(1 2 3),Kubun[:sankoutai]])+
-           self.all(:conditions => [sql,%w(S A),Kubun[:kyoutuu]])+
-           self.all(:conditions => ["kinmukubun_id = ?",Kubun[:kyoutuu]])
+         self.code_holyday  + # self.all(:conditions => [sql,%w(0 D N),Kubun[:kyoutuu]])+
+           self.code_sanchoku + #self.all(:conditions => [sql,%w(1 2 3),Kubun[:sankoutai]])+
+           self.code_holydaye_other + 
+           code_sanchoku_other #+ # all(:conditions => [sql,%w(S A),Kubun[:kyoutuu]])+
+           #self.code_kyoutuu_other    #all(:conditions => ["kinmukubun_id = ?",Kubun[:kyoutuu]])
        when Kubun[:part]
          self.all(:conditions => [sql,%w(0 D N),Kubun[:kyoutuu]])+
            self.all(:conditions => ["kinmukubun_id = ?",3])+
@@ -153,6 +154,33 @@ class Hospital::Kinmucode < ActiveRecord::Base
        end
        ).uniq.map{|kinmucode| [ kinmucode.code,kinmucode.id]}
   end
+    Sql="code in (?) and kinmukubun_id = ?"
+  def self.code_holyday
+    self.all(:conditions => [Sql,%w(0 D N),Kubun[:kyoutuu]])
+  end
+  def self.code_holydaye_other
+    self.all(:conditions => [Sql,%w(S A),Kubun[:kyoutuu]])
+  end
+  def self.code_nikkin
+    self.all(:conditions => [Sql,%w(4□ 管),Kubun[:nikkin]])
+  end
+  def self.code_nikkin_all
+    self.all(:conditions => ["kinmukubun_id = ?",Kubun[:nikkin]])
+  end
+  def self.code_sanchoku
+    self.all(:conditions => [Sql,%w(1 2 3),Kubun[:sankoutai]])
+  end
+  def self.code_sanchoku_other
+    self.all(:conditions => ["kinmukubun_id = ?",Kubun[:sankoutai]])
+  end
+  def self.code_kyoutuu_other
+    self.all(:conditions => ["kinmukubun_id = ?",Kubun[:kyoutuu]])
+  end
+  def self.code_kyoutuu
+    self.all(:conditions => [Sql,%w(S A),Kubun[:kyoutuu]])
+  end
+
+
   @@shift1 ={ }
   @@shift2={ }
   @@shift3={ }
