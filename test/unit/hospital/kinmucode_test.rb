@@ -25,8 +25,6 @@ class Hospital::KinmucodeTest < ActiveSupport::TestCase
         inject(0.0){|sum,item| sum + kc[item]}
     end
   }
-#
-  [[1,"4□ 0 N D 1 2 3 1 Z G 管  G S A"],[2,""]].each{|kinmu,reslt|
 
   must "id2kinmutype" do
     #assert_equal [0.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] , Hospital::Kinmucode.id2kinmutype(1)
