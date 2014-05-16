@@ -645,7 +645,7 @@ class Hospital::Assign
         dbgout("HP ASSIGN(#{line}) #{day}:#{sft_str} tight:#{tight_roles(sft_str)} ["+
                comb.map{|nurces| 
                  "[" + 
-                 nurces.map{|nurce| "%d:%d"%[nurce.id,nurce.cost(sft_str,tight_roles(sft_str))] }.join(", ") +
+                 nurces.map{|nurce| "%d:%d"%[nurce.id,nurce.cost(:night_total,tight_roles(sft_str))] }.join(", ") +
                  "]" }.join(",") +
                "]"
                )
@@ -758,7 +758,7 @@ class Hospital::Assign
     as_nurce = assinable_nurces(day,sft_str,short_roles_this_shift)
     @limit = limit_of_nurce_candidate(sft_str,day)
     if as_nurce.size <= @limit
-      as_nurce.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str))} 
+      as_nurce.sort_by{|nurce| nurce.cost(@night_mode ? :night_total : Sshift1,tight_roles(sft_str))} 
     else
       array_merge(gather_by_each_group_of_role(as_nurce,sft_str,short_roles_this_shift))[0,@limit]
     end
@@ -770,7 +770,7 @@ class Hospital::Assign
     nurces =  nurces_group_by.to_a.  # 持ってるroleで層別し
       sort_by{ |roles,nurce_list|  roles_cost(roles,tight_roles(sft_str))}.
       map{ |roles,nurce_list|                                # 各々の層をcostで並べる
-      nurce_list.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str)) 
+      nurce_list.sort_by{|nurce| nurce.cost(@night_mode ? :night_total : Sshift1,tight_roles(sft_str)) 
       }
     }
     logger.debug("GATHER_BY_EACH_GROUP_OF_ROLE [#{nurces.map{|ns| ns.map(&:id).join(',')}.join('],[')}]")
@@ -971,7 +971,7 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
   end
   # 看護師群のcostの総計
   def cost_of_nurce_combination(nurces,sft_str,tight)
-    nurces.inject(2.0){|cost,nurce| cost + nurce.cost(sft_str,tight) }*
+    nurces.inject(2.0){|cost,nurce| cost + nurce.cost(@night_mode ? :night_total : Sshift1,tight) }*
       AvoidWeight[[nurces_have_avoid_combination?(nurces),AvoidWeight.size-1].min]
   end
 
