@@ -40,14 +40,13 @@ module Const
                            ] )        #  要員数警告
  else
     Kangoshi,Leader = %w(看護師 リーダー).map{ |name| Hospital::Role.find_by_name(name).id}
-    MarginLimit   = Hash.new{ |h,k| h[k] = 40}               # 夜、全 の余裕が
-    MarginLimit.merge!(Hash[ [Kangoshi,:night_total],25  ,   #[10,10]できる
-                             [Kangoshi,:kinmu_total],50  ,   #[8,10] も、まあまあ 28"
-                             [Kangoshi,Sshift2],20  ,   #[8,10] も、まあまあ 28"
-                             [Kangoshi,Sshift2],20  ,   #[8,10] も、まあまあ 28"
-                             [Leader  ,:night_total],20  ,    #[7,10] きついNG 
-                             [Leader  ,Sshift2]      ,15,    #[7,13] 18",[7,12] 22" [7,11] 80"
-                             [Leader  ,Sshift3]      ,15     
+    MarginLimit   = Hash.new{ |h,k| h[k] = 20}               # 夜、全 の余裕が
+    MarginLimit.merge!(Hash[ [Kangoshi,:night_total],15  ,   #[10,10]できる
+                             [Kangoshi,:kinmu_total],30  ,   #[8,10] も、まあまあ 28"
+                             [Kangoshi,Sshift2],15  ,   #[8,10] も、まあまあ 28"
+                             [Leader  ,:night_total] ,10  ,    #[7,10] きついNG 
+                             [Leader  ,Sshift2]      ,10,    #[7,13] 18",[7,12] 22" [7,11] 80"
+                             [Leader  ,Sshift3]      ,10     
                            ] )        #  要員数警告
   end
   
