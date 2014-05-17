@@ -20,8 +20,8 @@
 class Hospital::Nurce < ActiveRecord::Base
   extend Function::CsvIo
   include Hospital::Const
+  include Hospital::NurceCost
   include Hospital::Reguration
-  #extend Hospital::Nurce::Const
 
   set_table_name 'nurces'
   has_and_belongs_to_many :hospital_roles,:class_name => "Hospital::Role"
@@ -45,57 +45,6 @@ class Hospital::Nurce < ActiveRecord::Base
     set_check_reg 
   end
 
-  def self.cost_table
-    @@Cost ||= make_cost_table
-  end
-  def self.make_cost_table
-    cost = Hash.new{|h,k| h[k]=Hash.new{|hh,kk| hh[kk] = 0 }}
-     
-    Hospital::Need.combination3.
-      each{|cmb| c0,c1,c2 = cmb
-        cost[cmb] = Hash.new{|h,k| h[k] = 0 }
-        cost[cmb][[c0,c1,c2].sort] = Cost[7]
-        cost[cmb][[c0,c1].sort]    = Cost[6]
-        cost[cmb][[c0,c2].sort]    = Cost[5]
-        cost[cmb][[c1,c2].sort]    = Cost[4]
-        cost[cmb][[c0]]       = Cost[3]
-        cost[cmb][[c1]]       = Cost[2]
-        cost[cmb][[c2]]       = Cost[1]
-    }
-    cost
-  end
-
-  def self.cost_table2
-    @@Cost2 ||= make_cost_table2
-  end
-  def self.make_cost_table2
-    cost = Hash.new{|h,k| h[k]=Hash.new{|hh,kk| hh[kk] = 0 }}
-     
-    Hospital::Need.combination2.
-      each{|cmb| c0,c1 = cmb
-        cost[cmb] = Hash.new{|h,k| h[k] = 0 }
-        cost[cmb][[c0,c1].sort] = Cost[3]
-        cost[cmb][[c0]]       = Cost[2]
-        cost[cmb][[c1]]       = Cost[1]
-    }
-    cost
-  end
-
-  def cost(sft_str,tight)
-    begin
-      case tight.size
-      when 3 ;self.class.cost_table[tight][(tight & role_ids).sort][shift_remain[sft_str]]  +rand
-      when 2 ;self.class.cost_table2[tight][(tight & role_ids).sort][shift_remain[sft_str]] +rand
-      else
-        dbgout("Nurce#cost sft_str #{sft_str} tight #{tight}")
-        raise
-      end
-    rescue
-      logger.debug("Nurce #{id}, Shift#{sft_str} tight = #{tight.join(',')} shift_remain=#{shift_remain[sft_str]}"+
-                   "role_remain=#{role_remain.to_a.join('//')}")
-      0
-    end
-  end
 
   class AssignPatern
     attr_accessor :patern, :reg, :back,:length,:checks,:target_days
