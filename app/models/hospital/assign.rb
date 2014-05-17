@@ -958,12 +958,16 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
 
     combinations = nurces.combination(need_nurces).select{|combination| 
       # role不足
-      (need_roles - (need_roles & roles_of(combination))).size <= 0
+      roles_enough?(combination,need_roles) #(need_roles - (need_roles & roles_of(combination))).size <= 0
     }.sort_by{|nurces| cost_of_nurce_combination_with_avoid(nurces,sft_str,tight_roles(sft_str))}
     if combinations.size == 0
       missing_roles(sft_str,need_roles - roles_of(nurces))      
     end
     combinations #(2)Dで削除
+  end
+ 
+  def roles_enough?(nurces,need_roles) 
+    (need_roles - (need_roles & roles_of(nurces))).size <= 0
   end
 
   def roles_cost(roles,tight)
