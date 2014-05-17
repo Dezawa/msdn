@@ -208,40 +208,6 @@ class Hospital::Nurce < ActiveRecord::Base
   def shift(day) ;    monthly.shift[day,1] ;  end
   def shifts     ;    monthly.shift ;end #|| ""        ;  end
   def shifts=(shft) ; monthly.shift=shft   ;  end
-  # この看護師を選ぶに当たってのポイントを評価する。
-  # 考慮するのは
-  #   1 不足ロールと持ってるロールのマッチング、
-  #   2 割り当てようとしている勤務の残り数
-  #   3 未割り当ての日数
-  #   4 リーダの 要否とリーダかどうか
-  # 1,2 は100点満点、3は100～200点満点、4は場合による。
-  def evaluate(short_role,shift)
-    # 必要なroleがあるか
-    role_match = (short_role & role_ids).size
-    return 0 if role_match == 0
-
-    
-    value = role_match*25 +       # ロールのマッチング ４つで100点
-      (limits[Hospital::Limit::Code[shift]]-shift_count(shift)) * 100 + # 勤務の残り数 ４つで200点
-      case [short_role.include?(1),!!role_id?(1)]
-      when [true,true] # リーダが必要でかつリーダである
-        days_not_assigned*200/30 + # 未割り当ての日数
-          0                      # リーダ
-      when [true,false] # リーダが必要でかつリーダではない
-        days_not_assigned*300/30
-      when [false,true] # リーダ不要でリーダである=>割り振りは優先度下げる
-        days_not_assigned*30/30
-      when [false,false] # リーダ不要でリーダではない
-        days_not_assigned*300/30      
-      end
-    #puts "EVAL:  #{id} #{value} <= #{role_match*25} #{limits[Hospital::Limit::Code[shift]] * 25} #{days_not_assigned*100/30}" if id == 35 || id == 36
-
-    adjust_by_shokui(value)
-  end
-
-  def adjust_by_shokui(value)
-    {1 => 0.2, 2 => 0.5 , 0 => 1, nil => 1}[shokui_id] * value
-  end
 
   def limits
     #limit ||= Hospital::Limit.crate
