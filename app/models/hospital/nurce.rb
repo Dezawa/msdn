@@ -263,6 +263,7 @@ class Hospital::Nurce < ActiveRecord::Base
 
   def shift_remain(recalc=false)
     return @shift_remain if @shift_remain && !recalc
+    shift_used true
     @shift_remain = Hash[*Sshift0123.
                          zip([limits.code0,limits.code1,limits.code2,limits.code3]).flatten
                         ]
