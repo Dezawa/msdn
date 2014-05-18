@@ -49,56 +49,22 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     [4,"1"]=>20,[4,"2"]=>5,[4,"3"]=>5, [4, :kinmu_total]=>22, [4, :night_total]=>9,
     [9,"1"]=>20,[9,"2"]=>5,[9,"3"]=>5, [9, :kinmu_total]=>22, [9, :night_total]=>9
   }
-  role_used = {
-    [3, "0"]=>0,[3,"1"]=>3,[3,"2"]=>1,[3,"3"]=>0, [3, :kinmu_total]=>4, [3, :night_total]=>1,
-    [4, "0"]=>0,[4,"1"]=>3,[4,"2"]=>1,[4,"3"]=>0, [4, :kinmu_total]=>4, [4, :night_total]=>1,
-    [9, "0"]=>0,[9,"1"]=>3,[9,"2"]=>1,[9,"3"]=>0, [9, :kinmu_total]=>4, [9, :night_total]=>1
-  }
-
-  role_remain = {
-    [3,"1"]=>17,[3,"2"]=>4,[3,"3"]=>5, [3, :kinmu_total]=>18, [3, :night_total]=>8,
-    [4,"1"]=>17,[4,"2"]=>4,[4,"3"]=>5, [4, :kinmu_total]=>18, [4, :night_total]=>8,
-    [9,"1"]=>17,[9,"2"]=>4,[9,"3"]=>5, [9, :kinmu_total]=>18, [9, :night_total]=>8
-  }
   shift_remain1 = { "1"=>17,"2"=>4,"3"=>5, "0"=>8.0, :kinmu_total =>18,  :night_total=>8}
-  role_used_2 = {
-    [3, "0"]=>0,[3,"1"]=>3,[3,"2"]=>1,[3,"3"]=>1, [3, :kinmu_total]=>5, [3, :night_total]=>2,
-    [4, "0"]=>0,[4,"1"]=>3,[4,"2"]=>1,[4,"3"]=>1, [4, :kinmu_total]=>5, [4, :night_total]=>2,
-    [9, "0"]=>0,[9,"1"]=>3,[9,"2"]=>1,[9,"3"]=>1, [9, :kinmu_total]=>5, [9, :night_total]=>2
-  }
-  role_remain_2 = {
-    [3,"1"]=>17,[3,"2"]=>4,[3,"3"]=>4, [3, :kinmu_total]=>17, [3, :night_total]=>7,
-    [4,"1"]=>17,[4,"2"]=>4,[4,"3"]=>4, [4, :kinmu_total]=>17, [4, :night_total]=>7,
-    [9,"1"]=>17,[9,"2"]=>4,[9,"3"]=>4, [9, :kinmu_total]=>17, [9, :night_total]=>7
-  }
   shift_remain2 = { "1"=>17,"2"=>4,"3"=>4, "0"=>8.0, :kinmu_total =>17,  :night_total=>7}
 
   must "Nurce 6 id 40 寺田輝子のアサイン可能なrole" do
     assert_equal assinable, nurce(40).assinable_roles
   end
 
-  must "Nurce 6 id 40 寺田輝子の使われたrole" do
-    assert_equal role_used, nurce(40).role_used
-  end
-
-
   must "Nurce 6 id 40 寺田輝子の残っているrole" do
     assert_equal shift_remain1, nurce(40).shift_remain
-    assert_equal role_remain[[4,"1"]], nurce(40).role_remain(4,"1")
   end
-  role_remain.keys.each{ |r,s|
-    must "Nurce 6 id 40 寺田輝子の残っているrole[#{r},#[s}}" do
-    assert_equal role_remain[[r,s]], nurce(40).role_remain(r,s)
-      end
-  }
 
   must "Nurce 6 id 40 寺田輝子に 2/2 shift3を割り振ると、usedとremainは" do
     nrc =  nurce(40)
-    assert_equal role_used  ,nrc.role_used,"割り振り前 used"
     assert_equal  shift_remain1, nurce(40).shift_remain,"割り振り前 remain"
     nrc.set_shift(2,"3")
-    assert_equal role_used_2  ,nrc.role_used,"割り振り後 used"
-    assert_equal  shift_remain2, nurce(40).shift_remain,"割り振り後 remain"
+    assert_equal  shift_remain2, nurce(40).shift_remain(true),"割り振り後 remain"
   end
   must "石川トシ子さんの2/4 の [role,勤務]" do
     assert_equal [ [4, "3"],  [10, "3"]],nurce(36).role_shift(@month)[4],"role_shift"

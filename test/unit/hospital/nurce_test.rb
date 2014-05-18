@@ -53,20 +53,20 @@ class Hospital::NurceTest < ActiveSupport::TestCase
   end
 
   #123456789012345678901234567890123456789
-  "1232311111AB487564564564477CB11151AB487".split("").each_with_index{|shift,code|
+  "12323111119A487564564564487CB111519A487".split("").each_with_index{|shift,code|
     must "To_123 of code #{code+1}" do
       nurce41 = nurce(41)
       set_code(nurce41,:day10,code+1); 
       assert_equal code+1,nurce41.monthly.day10
-      assert_equal code+1,nurce41.monthly.days[10].id
-      assert_equal shift,nurce41.monthly.days[10].to_0123
+      #assert_equal code+1,nurce41.monthly.days[10].id
+      #assert_equal shift,nurce41.monthly.days[10].to_0123
       assert_equal shift,nurce41.shifts[10,1],
       "code #{code+1} #{Hospital::Kinmucode.find(code+1).name} は#{shift}"
     end
   }
   #01234567890123456789012345678901234567890
   "4487CB1111111123FFF441FFF4401110000000000".split("").each_with_index{|shift,code|
-    must "To_123 of code #{code+1}" do
+    must "To_123 of code #{code+40}" do
       nurce41 = nurce(41)
       set_code(nurce41,:day10,code+40); 
       assert_equal code+40,nurce41.monthly.day10
@@ -107,7 +107,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
       assert_equal({"3"=>5, "2"=>5, "1"=>20.0, "0"=>8.0, :kinmu_total => 22, :night_total=>9},nurce41.shift_remain)
         set_code(nurce41,:day10,code+1); 
 #puts nurce41.shifts
-        assert_equal ret,nurce41.shift_remain(true),"code #{code+1} shift #{nurce41.shifts[10,1]} は#{ret}"
+        assert_equal ret,nurce41.shift_remain(true),"code #{code+1} shift #{nurce41.shifts[10,1]} は#{ret.to_a.map{ |s_r| '%s=>%d'%s_r}.join(',')}"
       
     end
   }
@@ -227,10 +227,6 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     ret = 
       [
        "______1_____________12____1__",
-       { [3,"0"]=>0, [3, "1"]=>3, [3, "2"]=>1, [3,"3"]=>0,[3, :kinmu_total]=>4, [3, :night_total]=>1,
-         [4,"0"]=>0, [4, "1"]=>3, [4, "2"]=>1, [4,"3"]=>0,[4, :kinmu_total]=>4, [4, :night_total]=>1,
-         [9,"0"]=>0, [9, "1"]=>3, [9, "2"]=>1, [9,"3"]=>0,[9, :kinmu_total]=>4, [9, :night_total]=>1 
-       },
        {"0"=>8.0, "1"=>17.0, "2"=>4, "3"=>5, :kinmu_total =>18,  :night_total =>8}
       ]
     nurce40 = nurce(40)
@@ -240,7 +236,6 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     save_shift2 = nurce40.save_shift
     assert_not_equal save_shift[0],save_shift2[0]
     assert_not_equal save_shift[1],save_shift2[1]
-    assert_not_equal save_shift[2],save_shift2[2]
 
     save_shift3 = nurce40.restore_shift(save_shift).save_shift
     assert_equal save_shift[0], nurce40.shifts
@@ -392,7 +387,7 @@ assinable_roles = {
     assert_equal ({:night_total=>8, "3"=>5, "2"=>4, "1"=>17.0, "0"=>8.0, :kinmu_total=>18.0}),
     nurce40.shift_remain
     assert_equal [3,4,9],    nurce40.role_ids
-    assert_equal 5,nurce40.role_remain(4,"3"),"role remain5"
+    assert_equal 5,nurce40.shift_remain["3"],"role remain5"
     cost = Hospital::Nurce::Cost[6][5]
     assert_equal cost, nurce40.cost("3",[3,9,10]).to_i ," tight 3,9,10"
     assert_equal Hospital::Nurce::Cost[5][5], nurce40.cost("3",[3,10,9]).to_i ," tight 3,10,9"
