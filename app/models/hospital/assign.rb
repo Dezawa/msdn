@@ -677,7 +677,6 @@ class Hospital::Assign
     nurces.each{ |nurce| nurce.refresh }
     role_remain true
     margin_of_role
-    role_used true
     roles_required
     short_role_shift true
     count_role_shift true
@@ -806,7 +805,6 @@ class Hospital::Assign
   # 保存するもの
   #   看護師の状況 Hospital::Nurceに任せる  nurces_save
   #   一月分の各日・shiftのroleの不足状況   short_role_shift_dup
-  #   消費したroleの数                      role_used_dup
   #   まだ使えるroleの数                    role_remain_dup
   #
   # 看護師は初め全nurceを保存したが、該当するshiftで変更の有るnurceだけにした。速度、メモリー消費
@@ -818,10 +816,8 @@ class Hospital::Assign
       srs=Hash.new
       short_role_shift[d].each_pair{|key,ary| srs[key] = ary.dup}
     }
-    role_used_dup = role_used.dup
     role_remain_dup = role_remain.dup
-    [ nurces_save,   count_role_shift[day].dup,  short_role_shift_dup ,
-      role_used_dup, role_remain_dup]
+    [ nurces_save,   count_role_shift[day].dup,  short_role_shift_dup, role_remain_dup]
   end
 
   def restore_shift(nurces,day,shifts_short_role,sft_str=Sshift3)
@@ -835,8 +831,7 @@ class Hospital::Assign
       short_role_shift[day+d] = srs 
     }
     
-    role_used = shifts_short_role[3]
-    role_remain = shifts_short_role[4]
+    role_remain = shifts_short_role[3]
   end
 
   # 評価する看護師組み合わせはその日の分は制限をみたしているが、
@@ -1076,7 +1071,6 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
     count_role_shift[day] = count_role_shift_of(day)
     short_role_shift[day] = short_role_shift_of(day)
     nurce.role_ids.each{|role_id,name| 
-      #role_used[[role_id,shift_str.to_i]] += 1 
       role_remain[[role_id,shift_str]] -= 1
       #      margin_of_role[[role_id,shift_str.to_i]] -= 1
     }
@@ -1156,8 +1150,6 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
     return @role_remain if @role_remain && !recalc
     @role_remain = Hash.new{|h,k| h[k]=0}
     @nurces.each{|nurce| 
-      #nurce.role_remain.each_pair{|role_shift,remain|
-      #  @role_remain[role_shift] += remain
       nurce.role_ids.each{ |role_id|
         nurce.shift_remain.keys.each{ |sft_str|
           @role_remain[[role_id,sft_str]] += nurce.shift_remain(recalc)[sft_str]
@@ -1178,19 +1170,6 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
     }
     @margin_of_role
   end
-
-
-  def role_used(recalc=false)
-    return @role_used if @role_used && !recalc
-    @role_used = Hash.new{|h,k| h[k]=0}
-    @nurces.each{|nurce| 
-      nurce.role_used.each_pair{|role_shift,used|
-        @role_used[role_shift] += used
-      }
-    }
-    @role_used
-  end
-
 
   def roles_required
     return @roles_required  if @roles_required 
