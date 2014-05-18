@@ -187,21 +187,15 @@ class Hospital::Nurce < ActiveRecord::Base
 
   def update_remain(sft_str)
     shift_remain[sft_str] -= 1 
-    role_ids.each{|role_id| 
-      role_used[[role_id,sft_str]] += 1
-      #role_remain[[role_id,sft_str]] -= 1
-    }
   end
 
-  def save_shift #; [shifts.dup ,role_used.dup ,role_remain.dup,shift_remain.dup];end
-  [shifts.dup ,role_used.dup ,shift_remain.dup]
+  def save_shift #; [shifts.dup  ,role_remain.dup,shift_remain.dup];end
+  [shifts.dup  ,shift_remain.dup]
   end
   def restore_shift(saved_shift)
     #dbgout( "HP  restore_shift前 #{id}:#{shifts} #{role_shift.to_a.flatten.join(' ')}")
     self.shifts = saved_shift[0]
-    role_used   = saved_shift[1]
-    # @role_remain = saved_shift[2]
-    @shift_remain= saved_shift[2]
+    @shift_remain= saved_shift[1]
 
     @role_shift=(self.shifts||"").split("").map{|sft_str|   role_shift_of(sft_str) }
     self
@@ -251,14 +245,11 @@ class Hospital::Nurce < ActiveRecord::Base
 
 ####################################################################
   def refresh
-    role_used true
-    #role_remain true
     shift_remain true
   end
 
-  def role_used(recalc=false)
-    return @role_used if @role_used && !recalc
-    @role_used=Hash.new{|h,k| h[k]=0}
+  def shift_used(recalc=false)
+    return @shift_used if @shift_used && !recalc
     @shift_used=Hash.new{|h,k| h[k]=0}
 
     @shift_used["0"]  =  shifts.gsub(/[^0]/,"").size + shifts.gsub(/[^9ABC]/,"").size*0.5
@@ -267,36 +258,21 @@ class Hospital::Nurce < ActiveRecord::Base
     @shift_used["3"]  = shifts.gsub(/[^36]/,"").size
     @shift_used[:night_total]  = @shift_used["2"] + @shift_used["3"]
     @shift_used[:kinmu_total]  = @shift_used[:night_total] + @shift_used["1"]
-    
-    %w(0 1 2 3).each{ |sft_str|
-      role_ids.each{|role| @role_used[[role,sft_str]] = @shift_used[sft_str] }
-    }
-    [:kinmu_total,:night_total].each{ |sft_str|
-      role_ids.each{|role| @role_used[[role,sft_str]] = @shift_used[sft_str] }
-    }
-   @role_used
+    @shift_used
   end
 
   def role_remain(role,shift,recalc=false)
     role_ids.include?(role) ? shift_remain(recalc)[shift] : 0
-    #return @role_remain if @role_remain && !recalc
-    #role_used true
-    #@role_remain = Hash.new{|h,k| h[k]=0}
-    #assinable_roles.each_pair{|role_shift,assinable|
-    #  @role_remain[role_shift] = assinable - role_used[role_shift]
-    #}
-    #@role_remain
   end
 
   def shift_remain(recalc=false)
     return @shift_remain if @shift_remain && !recalc
-    role_used true
     @shift_remain = Hash[*Sshift0123.
                          zip([limits.code0,limits.code1,limits.code2,limits.code3]).flatten
                         ]
-    @shift_remain[:night_total] = limits.night_total - @shift_used[:night_total]
-    @shift_remain[:kinmu_total] = limits.kinmu_total - @shift_used[:kinmu_total] 
-    ["0","1","2","3"].each{ |sft_str|  @shift_remain[sft_str] -= @shift_used[sft_str]}
+    @shift_remain[:night_total] = limits.night_total - shift_used[:night_total]
+    @shift_remain[:kinmu_total] = limits.kinmu_total - shift_used[:kinmu_total] 
+    ["0","1","2","3"].each{ |sft_str|  @shift_remain[sft_str] -= shift_used[sft_str]}
     
     @shift_remain
   end
