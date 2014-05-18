@@ -261,10 +261,6 @@ class Hospital::Nurce < ActiveRecord::Base
     @shift_used
   end
 
-  def role_remain(role,shift,recalc=false)
-    role_ids.include?(role) ? shift_remain(recalc)[shift] : 0
-  end
-
   def shift_remain(recalc=false)
     return @shift_remain if @shift_remain && !recalc
     @shift_remain = Hash[*Sshift0123.
