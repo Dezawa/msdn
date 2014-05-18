@@ -1156,8 +1156,12 @@ logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avo
     return @role_remain if @role_remain && !recalc
     @role_remain = Hash.new{|h,k| h[k]=0}
     @nurces.each{|nurce| 
-      nurce.role_remain.each_pair{|role_shift,remain|
-        @role_remain[role_shift] += remain
+      #nurce.role_remain.each_pair{|role_shift,remain|
+      #  @role_remain[role_shift] += remain
+      nurce.role_ids.each{ |role_id|
+        nurce.shift_remain.keys.each{ |sft_str|
+          @role_remain[[role_id,sft_str]] += nurce.shift_remain(recalc)[sft_str]
+        }
       }
     }
     @role_remain

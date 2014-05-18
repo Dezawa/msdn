@@ -231,10 +231,6 @@ class Hospital::NurceTest < ActiveSupport::TestCase
          [4,"0"]=>0, [4, "1"]=>3, [4, "2"]=>1, [4,"3"]=>0,[4, :kinmu_total]=>4, [4, :night_total]=>1,
          [9,"0"]=>0, [9, "1"]=>3, [9, "2"]=>1, [9,"3"]=>0,[9, :kinmu_total]=>4, [9, :night_total]=>1 
        },
-       { [3, "1"]=>17,[3, "2"]=>4,  [3, "3"]=>5,[3, :kinmu_total]=>18, [3, :night_total]=>8,
-         [4, "1"]=>17,[4, "2"]=>4,  [4, "3"]=>5,[4, :kinmu_total]=>18, [4, :night_total]=>8,
-         [9, "3"]=>5 ,[9, "1"]=>17, [9, "2"]=>4,[9, :kinmu_total]=>18, [9, :night_total]=>8 
-       },
        {"0"=>8.0, "1"=>17.0, "2"=>4, "3"=>5, :kinmu_total =>18,  :night_total =>8}
       ]
     nurce40 = nurce(40)
@@ -393,8 +389,10 @@ assinable_roles = {
     nurce40 = nurce(40)
     assert_equal [3,4,9], nurce40.role_ids,"nurce40.role_ids"
     assert_equal assinable_roles, nurce40.assinable_roles
-
-    assert_equal 5,nurce40.role_remain[[4,"3"]],"role remain5"
+    assert_equal ({:night_total=>8, "3"=>5, "2"=>4, "1"=>17.0, "0"=>8.0, :kinmu_total=>18.0}),
+    nurce40.shift_remain
+    assert_equal [3,4,9],    nurce40.role_ids
+    assert_equal 5,nurce40.role_remain(4,"3"),"role remain5"
     cost = Hospital::Nurce::Cost[6][5]
     assert_equal cost, nurce40.cost("3",[3,9,10]).to_i ," tight 3,9,10"
     assert_equal Hospital::Nurce::Cost[5][5], nurce40.cost("3",[3,10,9]).to_i ," tight 3,10,9"

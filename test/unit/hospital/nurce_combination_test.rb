@@ -62,7 +62,7 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
   day = 20
 
   ["2"].each{ |sft_str|
-    must "2/20#{sft_str}のタイトロール" do
+    must "2/20 Shift#{sft_str}のタイトロール" do
 #puts @assign.dump
       assert_equal [10, 3, 9],@assign.tight_roles(sft_str)
     end

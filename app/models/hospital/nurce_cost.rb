@@ -65,8 +65,8 @@ module Hospital
           raise
         end
       rescue
-        logger.debug("Nurce #{id}, Shift#{sft_str} tight = #{tight.join(',')} shift_remain=#{shift_remain[sft_str]}"+
-                     "role_remain=#{role_remain.to_a.join('//')}")
+        logger.debug("Nurce #{id}, Shift:#{sft_str} tight = #{tight.join(',')} "+
+                     "shift_remain=#{shift_remain.to_a.map{ |k,v| '%s=>%d'%[k,v]}.join('/')}")
         0
       end
     end

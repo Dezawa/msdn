@@ -189,17 +189,19 @@ class Hospital::Nurce < ActiveRecord::Base
     shift_remain[sft_str] -= 1 
     role_ids.each{|role_id| 
       role_used[[role_id,sft_str]] += 1
-      role_remain[[role_id,sft_str]] -= 1
+      #role_remain[[role_id,sft_str]] -= 1
     }
   end
 
-  def save_shift; [shifts.dup ,role_used.dup ,role_remain.dup,shift_remain.dup];end
+  def save_shift #; [shifts.dup ,role_used.dup ,role_remain.dup,shift_remain.dup];end
+  [shifts.dup ,role_used.dup ,shift_remain.dup]
+  end
   def restore_shift(saved_shift)
     #dbgout( "HP  restore_shift前 #{id}:#{shifts} #{role_shift.to_a.flatten.join(' ')}")
     self.shifts = saved_shift[0]
     role_used   = saved_shift[1]
-    @role_remain = saved_shift[2]
-    @shift_remain= saved_shift[3]
+    # @role_remain = saved_shift[2]
+    @shift_remain= saved_shift[2]
 
     @role_shift=(self.shifts||"").split("").map{|sft_str|   role_shift_of(sft_str) }
     self
@@ -250,7 +252,7 @@ class Hospital::Nurce < ActiveRecord::Base
 ####################################################################
   def refresh
     role_used true
-    role_remain true
+    #role_remain true
     shift_remain true
   end
 
@@ -275,14 +277,15 @@ class Hospital::Nurce < ActiveRecord::Base
    @role_used
   end
 
-def role_remain(recalc=false)
-    return @role_remain if @role_remain && !recalc
-    role_used true
-    @role_remain = Hash.new{|h,k| h[k]=0}
-    assinable_roles.each_pair{|role_shift,assinable|
-      @role_remain[role_shift] = assinable - role_used[role_shift]
-    }
-    @role_remain
+  def role_remain(role,shift,recalc=false)
+    role_ids.include?(role) ? shift_remain(recalc)[shift] : 0
+    #return @role_remain if @role_remain && !recalc
+    #role_used true
+    #@role_remain = Hash.new{|h,k| h[k]=0}
+    #assinable_roles.each_pair{|role_shift,assinable|
+    #  @role_remain[role_shift] = assinable - role_used[role_shift]
+    #}
+    #@role_remain
   end
 
   def shift_remain(recalc=false)
