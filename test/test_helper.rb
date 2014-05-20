@@ -53,6 +53,11 @@ class Test::Unit::TestCase
   def times(str)
     str.split(",").map{|tstr| Time.parse("2012/"+tstr)}
   end
+
+  def ids_of_ary_of_ary(aryary)
+    aryary.map{ |ary| ary.map(&:id)}
+  end
+
 end
 class String
   def times; self.split(/[ ,]+/).map{|tstr| Time.parse("2012/"+tstr+" +9:00")};end
