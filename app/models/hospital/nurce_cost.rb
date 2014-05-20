@@ -19,36 +19,36 @@ module Hospital
         @@Cost ||= make_cost_table
       end
       def make_cost_table
-        cost = Hash.new{|h,k| h[k]=Hash.new{|hh,kk| hh[kk] = 0 }}
+        cost_table = Hash.new{|h,k| h[k]=Hash.new{|hh,kk| hh[kk] = 0 }}
         
         Hospital::Need.combination3.
           each{|cmb| c0,c1,c2 = cmb
-          cost[cmb] = Hash.new{|h,k| h[k] = 0 }
-          cost[cmb][[c0,c1,c2].sort] = Cost[7]
-          cost[cmb][[c0,c1].sort]    = Cost[6]
-          cost[cmb][[c0,c2].sort]    = Cost[5]
-          cost[cmb][[c1,c2].sort]    = Cost[4]
-          cost[cmb][[c0]]       = Cost[3]
-          cost[cmb][[c1]]       = Cost[2]
-          cost[cmb][[c2]]       = Cost[1]
+          cost_table[cmb] = Hash.new{|h,k| h[k] = 0 }
+          cost_table[cmb][[c0,c1,c2].sort] = Cost[7]
+          cost_table[cmb][[c0,c1].sort]    = Cost[6]
+          cost_table[cmb][[c0,c2].sort]    = Cost[5]
+          cost_table[cmb][[c1,c2].sort]    = Cost[4]
+          cost_table[cmb][[c0]]       = Cost[3]
+          cost_table[cmb][[c1]]       = Cost[2]
+          cost_table[cmb][[c2]]       = Cost[1]
         }
-        cost
+        cost_table
       end
 
       def cost_table2
         @@Cost2 ||= make_cost_table2
       end
       def make_cost_table2
-        cost = Hash.new{|h,k| h[k]=Hash.new{|hh,kk| hh[kk] = 0 }}
+        cost_table = Hash.new{|h,k| h[k]=Hash.new{|hh,kk| hh[kk] = 0 }}
         
         Hospital::Need.combination2.
           each{|cmb| c0,c1 = cmb
-          cost[cmb] = Hash.new{|h,k| h[k] = 0 }
-          cost[cmb][[c0,c1].sort] = Cost[3]
-          cost[cmb][[c0]]       = Cost[2]
-          cost[cmb][[c1]]       = Cost[1]
+          cost_table[cmb] = Hash.new{|h,k| h[k] = 0 }
+          cost_table[cmb][[c0,c1].sort] = Cost[3]
+          cost_table[cmb][[c0]]       = Cost[2]
+          cost_table[cmb][[c1]]       = Cost[1]
         }
-        cost
+        cost_table
       end
     end
 
@@ -67,7 +67,7 @@ module Hospital
       rescue
         logger.debug("Nurce #{id}, Shift:#{sft_str} tight = #{tight.join(',')} "+
                      "shift_remain=#{shift_remain.to_a.map{ |k,v| '%s=>%d'%[k,v]}.join('/')}")
-        0
+        rand
       end
     end
   end
