@@ -552,11 +552,12 @@ class Hospital::Assign
     #(0)combinations = [nil]+[1,2,3].map{|shift|   #(1)
     combinations = { }
     if @night_mode
+      @limit = limit_of_nurce_candidate(Sshift2,day)
       @night.each{|sft_str|     #(1)
         combinations[sft_str] = 
-        nurce_combination_by_tightness(as_nurces_selected[sft_str],#[0..SelectedMax],
+        nurce_combination_by_tightness(as_nurces_selected[sft_str][0,@limit||8],
                                        need_nurces_shift(day,sft_str),short_roles[sft_str],sft_str
-                                       )[0,@limit||6]
+                                       )#[0,@limit||6]
       }
     else 
       combinations["1"] = as_nurces_selected["1"].sort_by{|n| n.cost("1",tight_roles("1"))}
