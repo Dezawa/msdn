@@ -3,6 +3,7 @@ module Hospital
 module Const
 
   LimitOfNurceCandidateList = 6
+  Size_of_NurceCombinationList = 3
   Factor_of_safety_NurceCandidateList = 1.1
 
   MultiSolution  = 2        #  3 複数解求める。最初の解も求める。これは save する

@@ -20,7 +20,8 @@ module Hospital::NurceCombination
   # 
   def nurce_combination_shift23(combinations,need_nurces,short_roles,day,&block)
     @msg = nil
-    dbgout("FOR_DEBUG(#{__LINE__})case #{need_nurces_shift(day,Sshift2)} [#{short_roles[Sshift2]} #{need_nurces[Sshift3]} [#{short_roles[Sshift3]}] #{@koutai3} ")
+    dbgout("FOR_DEBUG(#{__LINE__}) Shift2:#{need_nurces_shift(day,Sshift2)} [#{short_roles[Sshift2].join(',')}]"+
+           "  Shift2:#{need_nurces[Sshift3]}] [#{short_roles[Sshift3].join(',')}] 三直:#{@koutai3} ")
     case [need_nurces_shift(day,Sshift2) == 0 && short_roles[Sshift2] ==[],
           need_nurces_shift(day,Sshift3) == 0 && short_roles[Sshift3] ==[] || !@koutai3 ]
     when [true,true]  # shift2,3共に既に足りている
@@ -33,7 +34,7 @@ module Hospital::NurceCombination
         @msg =  "(#{__LINE__})NO Abaiable combination set for shift 3" 
         block.call false
       end
-      combinations[Sshift3][0,6].each{|cmb3|
+      combinations[Sshift3][0,Size_of_NurceCombinationList].each{|cmb3|
         #next if not_enough_for_shift1(combinations["1"],[],cmb3,need_nurces,short_roles,day)
         block.call({Sshift2 => true,Sshift3 => cmb3 })
       }
@@ -43,7 +44,7 @@ module Hospital::NurceCombination
         @msg =  "(#{__LINE__})NO Abaiable combination set for shift 2" 
         block.call false
       end
-      combinations[Sshift2][0,6].each{|cmb2| 
+      combinations[Sshift2][0,Size_of_NurceCombinationList].each{|cmb2| 
         #next if not_enough_for_shift1(combinations["1"],cmb2,[],need_nurces,short_roles,day)
         block.call({Sshift3 => true,Sshift2 => cmb2 })
       }
@@ -59,15 +60,13 @@ module Hospital::NurceCombination
       end
 
       # 組み合わせ順の最適化を行う
-      count=3
       combinations[Sshift2].product(combinations[Sshift3]).
         sort_by{ |cmb2,cmb3|
         cost_of_nurce_combination_of_combination(cmb2,cmb3)
-      }.each{ |cmb2,cmb3|
-        next unless (cmb3 | cmb2).size == cmb3.size+cmb2.size
+      }.select{ |cmb2,cmb3|
+        (cmb3 | cmb2).size == cmb3.size+cmb2.size
+      }[0,Size_of_NurceCombinationList].each{ |cmb2,cmb3|
         block.call({Sshift2 => cmb2,Sshift3 => cmb3 })
-          count -= 1
-          return if count < 1
       }
     end
   end
