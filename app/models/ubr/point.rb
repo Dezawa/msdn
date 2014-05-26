@@ -116,7 +116,7 @@ class Ubr::Point
     }
   end
 
-  def average(row,orig,firstday,lastday)
+  def average(row,orig,firstday,lastday) 
     sum = row[0,1] + row[1..-1].map{ |s| s.to_f}
     count = 1
     while row0=orig.shift
@@ -140,18 +140,6 @@ class Ubr::Point
   def make_average(extension,label,orig)
     orig.each{ |row| row[0] = Time.parse(row[0]).to_date}
     @today     = orig[-1][0]
-    wday0      = @today.beginning_of_week
-    wday1      = wday0 -  1.week    #   この日までは毎日
-    wday9      = wday0 -  9.week    #   
-    month0     = wday0.beginning_of_month
-    month1     = month0.last_month  #.last_month
-             
-    this_quarter = @today.beginning_of_quarter
-    quarter2     = this_quarter - 6.month
-    this_year  = @today.beginning_of_year
-    this_annual= this_year + 3.month
-    this_annual= this_annual.last_year if @today.month<4
-    last_annual= this_annual - 1.year
 
     path = Ubr::Const::SCM_stock_stat_FILEBASE+"_#{extension}.ave"
     open(path,"w"){ |fp|
@@ -159,25 +147,44 @@ class Ubr::Point
       rowsize =  orig[0].size
       
       while row = orig.shift
-        if row[0] >= wday1        #   この日までは毎日
+        from,to,fmt = from_to(@today,row[0])
+        if from
+          ave = average(row,orig,from,to)
+          fp.puts ave[0].strftime(fmt) + ave[1..-1].join
+        else
           fp.puts row[0].strftime("%m%d ")+row[1..-1].join(" ")
-
-          # 週平均
-        elsif row[0] >= wday9 && row[0] >= month1        #   この日までは週平均
-            ave = average(row,orig,row[0].beginning_of_week,row[0].beginning_of_week+1.week)
-            fp.puts ave[0].strftime("%m%d- ") + ave[1..-1].join
-        elsif row[0] >= quarter2   #   この日までは月平均                #   年度平均
-            ave = average(row,orig,row[0].beginning_of_month,row[0].beginning_of_month+1.month)
-            fp.puts ave[0].strftime("%y年%m ") + ave[1..-1].join
-        elsif row[0] >= last_annual   #  四半期平均
-            ave = average(row,orig,row[0].beginning_of_quarter,row[0].beginning_of_quarter+3.month)
-            fp.puts ave[0].strftime("%y年%m- ") + ave[1..-1].join
-        else                       #   年度平均
-            ave = average(row,orig,row[0].beginning_of_annual,row[0].beginning_of_annual+1.year)
-            fp.puts ave[0].strftime("%y年度 ") + ave[1..-1].join
-          end
         end
-      }
+      end
+    }
+  end
+
+  def from_to(today,date)
+    wday0      = today.beginning_of_week
+    wday1      = wday0 -  1.week    #   この日までは毎日
+    wday9      = wday0 -  9.week    #   
+    month0     = wday0.beginning_of_month
+    month1     = month0.last_month  #.last_month
+             
+    this_quarter = today.beginning_of_quarter
+    quarter2     = this_quarter - 6.month
+    this_year  = today.beginning_of_year
+    this_annual= this_year + 3.month
+    this_annual= this_annual.last_year if today.month<4
+    last_annual= this_annual - 1.year
+
+    if date  >= wday1        #   この日までは毎日
+      return false
+
+      # 週平均
+    elsif date >= wday9 && date >= month1        #   この日までは週平均
+      [date.beginning_of_week,date.beginning_of_week+7.day,"%m%d- "]
+    elsif date >= quarter2   #   この日までは月平均              
+      [date.beginning_of_month,date.beginning_of_month+1.month,"%y年%m "]
+    elsif date >= last_annual   #  四半期平均
+      [date.beginning_of_quarter,date.beginning_of_quarter+3.month,"%y年%m- "]
+    else                       #   年度平均
+      [date.beginning_of_annual,date.beginning_of_annual+1.year,"%y年度 "]
+    end
   end
 
   def self.remake
