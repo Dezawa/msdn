@@ -22,8 +22,8 @@ module Hospital::NurceCombination
     @msg = nil
     dbgout("FOR_DEBUG(#{__LINE__}) Shift2:#{need_nurces_shift(day,Sshift2)} [#{short_roles[Sshift2].join(',')}]"+
            "  Shift2:#{need_nurces[Sshift3]}] [#{short_roles[Sshift3].join(',')}] 三直:#{@koutai3} ")
-    case [need_nurces_shift(day,Sshift2) == 0 && short_roles[Sshift2] ==[],
-          need_nurces_shift(day,Sshift3) == 0 && short_roles[Sshift3] ==[] || !@koutai3 ]
+    case [need_nurces_shift(day,Sshift2) <= 0 && short_roles[Sshift2] ==[],
+          need_nurces_shift(day,Sshift3) <= 0 && short_roles[Sshift3] ==[] || !@koutai3 ]
     when [true,true]  # shift2,3共に既に足りている
       @msg =  "ALLREDY filled for 2,3 " 
       block.call( {Sshift2 => true,Sshift3 => true })

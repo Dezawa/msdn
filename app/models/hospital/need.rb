@@ -4,6 +4,9 @@ class Hospital::Need < ActiveRecord::Base
   include Hospital::Const
   set_table_name 'hospital_needs'
   
+  @@need_roles = nil
+  @@need_role_ids = nil
+
   def self.need_list_each_role_daytype_of(busho_id)
     ret = Hash.new{ |h,k| h[k]={  Weekday => [nil,nil,nil],Weekend=> [nil,nil,nil]}}
     needs = all(:conditions => ["busho_id = ? ",busho_id])
@@ -26,10 +29,10 @@ logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sor
   end
 
   def self.need_roles
-    Hospital::Role.all(:conditions => "need = true") 
+    @@need_roles ||= Hospital::Role.all(:conditions => "need = true") 
   end
   def self.need_role_ids
-    need_roles.map(&:id)
+   @@need_role_ids ||= need_roles.map(&:id)
   end
 
 

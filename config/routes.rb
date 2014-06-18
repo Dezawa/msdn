@@ -3,6 +3,11 @@ ActionController::Routing::Routes.draw do |map|
   # 全体
   map.connect '/:controller/:action',:action => /[^0-9]+/
 
+  # シマダヤ
+  map.connect '/shimada/:controller/:action'  ,:path_prefix => 'shimada'#,:action => /[^0-9]+/
+  map.connect '/shimada/:controller'  ,:path_prefix => 'shimada'#,:action => /[^0-9]+/
+  map.resources :shimada_month       ,:controller => 'shimada/month'
+
   # UBR
 #  map.connect '/ubr/倉庫状況.pdf'  ,:url => '/public/ubr/倉庫状況.pdf'
   map.connect '/ubr/:controller/:action'  ,:path_prefix => 'ubr'#,:action => /[^0-9]+/

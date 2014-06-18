@@ -166,16 +166,19 @@ module ApplicationHelper
     else function.to_s
     end
   end
-  def form_buttom(action,label,opt={})
+  def form_buttom(action,label,opt ={ })
     hidden = opt.delete(:hidden) if opt.class==Hash
     hidden_value = opt.delete(:hidden_value) if opt.class==Hash
+    form_close = opt.delete(:form_close) if opt.class==Hash
+
+    from_close = (form_close.nil? || form_close == true) ? "</form>" : ""
     form_tag(:action => action)+ 
       (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
        else;"";end
        )+
       "<input type='hidden' name='page' value='#{@page}'>"+
       (opt.class==Symbol ? send(opt) : "") +
-      submit_tag(label)+"</form>"
+      submit_tag(label)+from_close
   end
   def input_and_action(action,label,opt)
     hidden = opt.delete(:hidden)
@@ -282,17 +285,21 @@ module ApplicationHelper
 
   def delete_if_accepted(obj)
     if deletable
-        "<td>" + link_to('削除',obj , :confirm => 'Are you sure?', :method => :delete) + "</td>"
+      "<td>" + link_to('削除',obj , :confirm => 'Are you sure?', :method => :delete) + "</td>"
     else
       ""
     end
   end
 
   def delete_connection_if_accepted(obj)
+    if connection_deletable
       url = "/#{@Domain}/delete_bind?id=#{@model.id}&bind_id=#{obj.id}"
         "<td>" + link_to('取外し',url,
                          :confirm => '関係付けだけ削除します',
                          :method => :delete) + "</td>"
+    else
+      ""
+    end
   end
 
   def label_line_option(size=2,labels=nil)
@@ -315,6 +322,14 @@ module ApplicationHelper
     (case @Delete
     when Symbol  ; controller.send(@Delete)
     else         ; @Delete
+    end
+     ) ? true : nil
+  end
+
+  def connection_deletable
+    (case @AssosiationDelete
+    when Symbol  ; controller.send(@AssosiationDelete)
+    else         ; @AssosiationDelete
     end
      ) ? true : nil
   end
