@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 class Shimada::MonthController <  Shimada::Controller
   Labels = 
-    [ HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
+    [HtmlCeckForSelect.new(:id,""),
+     HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
       HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month",
                      :key => :id , :key_val => :id, :link_label => "グラフ"})
     ]
@@ -18,7 +19,11 @@ class Shimada::MonthController <  Shimada::Controller
     @TYTLE = "シマダ:月度データ"
     @labels=Labels
     @AssosiationLabels = PowerLabels
-    @TableEdit  = [:csv_up_buttom]
+    @TableEdit  = 
+      [:csv_up_buttom,
+       [:form,:graph_all_month,"全月度グラフ",{ :hidden => :id,:hidden_value => params[:id]} ],
+       [:form,:graph_selected_months,"選択月度グラフ",{ :form_close => false}]
+      ]
     @Show = true
     @Delete = true
     @FindOption = { :order => "month" }
@@ -51,7 +56,6 @@ class Shimada::MonthController <  Shimada::Controller
     send_file RAILS_ROOT+"/tmp/shimada/power.gif", :type => 'image/gif', :disposition => 'inline'
   end
 
-
   def graph_month
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
     @power = @Model.find(id).powers
@@ -67,7 +71,27 @@ class Shimada::MonthController <  Shimada::Controller
     Shimada::Power.gnuplot(@power)
     @TYTLE = "消費電力推移" + 
       @power.first.date.strftime("(%Y年%m月 ") +
-      @power.map{ |p| p.date.strftime("%d")}.join(",") + ")"
+      @power.map{ |p| p.date.strftime("%d")}.join(",") + "日)"
+    render :action => :graph
+  end
+
+  def graph_all_month
+    months = Shimada::Month.all
+    @power=months.map{ |m| m.powers}.flatten
+    Shimada::Power.gnuplot(@power)
+    @TYTLE = "消費電力推移 全月度" 
+    render :action => :graph
+  end
+
+  def graph_selected_months
+    month_ids = params[:check_id].
+      delete_if {|key, value| value == "0" }.keys.map(&:to_i)
+    months = Shimada::Month.find(month_ids)
+    @power=months.map{ |m| m.powers}.flatten
+    Shimada::Power.gnuplot(@power)
+    @TYTLE = "消費電力推移" + 
+      @power.first.date.strftime("(%Y年 ") +
+      months.map{ |m| m.powers.first.date.strftime("%m")}.join(",") + "月)"
     render :action => :graph
   end
 
