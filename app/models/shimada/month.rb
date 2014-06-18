@@ -3,7 +3,7 @@ class Shimada::Month < ActiveRecord::Base
   extend ExcelToCsv
   
   set_table_name 'shimada_months'
-  has_many :shimada_powers ,:class_name =>  "Shimada::Power"
+  has_many :shimada_powers ,:class_name =>  "Shimada::Power" ,:dependent => :delete_all
 
   def powers
     @powers ||= shimada_powers.sort_by{ |p| p.date }
@@ -30,7 +30,7 @@ class Shimada::Month < ActiveRecord::Base
       days = days[0,lastday].map{ |d| Date.new(year,*d.split("/").map(&:to_i))}
       skip_untile_first_data_line(lines)
       
-      month = self.create(:month => days.first)
+      month = self.find_or_create_by_month(days.first)
       powers = days.map{ |day| Shimada::Power.create(:date => day) }
       set_power(powers,lines)
       month.shimada_powers = powers

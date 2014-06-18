@@ -20,7 +20,7 @@ class Shimada::MonthController <  Shimada::Controller
     @AssosiationLabels = PowerLabels
     @TableEdit  = [:csv_up_buttom]
     @Show = true
-    # @Delete = @configure
+    @Delete = true
     # @conditions = { :order => "bunrui,kamoku" }
     @Domain= @Model.name.underscore
     # @Refresh = :kamokus
