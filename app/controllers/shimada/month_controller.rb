@@ -54,15 +54,21 @@ class Shimada::MonthController <  Shimada::Controller
 
   def graph_month
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
-    @power = @Model.find(ids).powers
-    graph_mult(@power)
+    @power = @Model.find(id).powers
+    Shimada::Power.gnuplot(@power)
+    @TYTLE = "消費電力推移" + @power.first.date.strftime("(%Y年%m月)")
+    render :action => :graph
   end
 
   def graph_selected
     ids = params[:check_id].
       delete_if {|key, value| value == "0" }.keys.map(&:to_i)
     @power=Shimada::Power.find(ids)  
-    graph_mult(@power) 
+    Shimada::Power.gnuplot(@power)
+    @TYTLE = "消費電力推移" + 
+      @power.first.date.strftime("(%Y年%m月 ") +
+      @power.map{ |p| p.date.strftime("%d")}.join(",") + ")"
+    render :action => :graph
   end
 
   def graph_mult(power)
