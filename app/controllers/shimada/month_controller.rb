@@ -21,7 +21,7 @@ class Shimada::MonthController <  Shimada::Controller
     @TableEdit  = [:csv_up_buttom]
     @Show = true
     @Delete = true
-    # @conditions = { :order => "bunrui,kamoku" }
+    @FindOption = { :order => "month" }
     @Domain= @Model.name.underscore
     # @Refresh = :kamokus
     @SortBy    = :month
