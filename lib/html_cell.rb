@@ -19,7 +19,7 @@ class HtmlCell
   include ActionView::Helpers::FormOptionsHelper
   delegate :logger, :to=>"ActiveRecord::Base"
   Attr_names = [:type,:correction,:display,:size,:align,:comment,:help,
-                :tform,:include_blank,:link,:event]
+                :tform,:include_blank,:link,:event,:link_label]
   attr_writer :field_disable,:ro
   attr_accessor :symbol,:label
   attr_accessor *Attr_names
@@ -101,16 +101,31 @@ class HtmlCell
   end
 end
 
+class HtmlCeckForSelect < HtmlCell
+  def disp(object,htmlopt="")
+    check_box(@Domain,symbol,:id => object.id,:name => "check_id[#{object.id}]")
+  end
+end
+
 class HtmlText  < HtmlCell
   def edit(domain,obj,controller,opt)
     text_field(domain,symbol,opt)
   end
 end
 
+
+class HtmlNum  < HtmlText
+  def disp(object,htmlopt="")
+    @align = :right
+    object.send(symbol).blank?  ? "　" : tform ? tform%object.send(symbol) : object.send(symbol)
+  end
+end
+
 class HtmlLink   < HtmlCell
   def disp(object,htmlopt="")
     #logger.debug("HtmlLink: #{object.send(symbol)},#{link[:url]},#{link[:key]}, #{object.send(link[:key_val])}")
-    "<a href='#{link[:url]}?#{link[:key]}=#{object.send(link[:key_val])}'>#{object.send(symbol)}</a>"
+    lbl = link[:link_label] || object.send(symbol)
+    "<a href='#{link[:url]}?#{link[:key]}=#{object.send(link[:key_val])}'>#{lbl}</a>"
   end  
 end
 

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140412132841) do
+ActiveRecord::Schema.define(:version => 20140616141348) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -208,6 +208,39 @@ ActiveRecord::Schema.define(:version => 20140412132841) do
   create_table "nurces_roles", :id => false, :force => true do |t|
     t.integer "nurce_id"
     t.integer "role_id"
+  end
+
+  create_table "shimada_months", :force => true do |t|
+    t.date "month"
+  end
+
+  create_table "shimada_powers", :force => true do |t|
+    t.date    "date"
+    t.integer "month_id"
+    t.float   "hour01"
+    t.float   "hour02"
+    t.float   "hour03"
+    t.float   "hour04"
+    t.float   "hour05"
+    t.float   "hour06"
+    t.float   "hour07"
+    t.float   "hour08"
+    t.float   "hour09"
+    t.float   "hour10"
+    t.float   "hour11"
+    t.float   "hour12"
+    t.float   "hour13"
+    t.float   "hour14"
+    t.float   "hour15"
+    t.float   "hour16"
+    t.float   "hour17"
+    t.float   "hour18"
+    t.float   "hour19"
+    t.float   "hour20"
+    t.float   "hour21"
+    t.float   "hour22"
+    t.float   "hour23"
+    t.float   "hour24"
   end
 
   create_table "top_pages", :force => true do |t|
