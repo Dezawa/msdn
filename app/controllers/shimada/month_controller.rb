@@ -4,6 +4,10 @@ class Shimada::MonthController <  Shimada::Controller
     [HtmlCeckForSelect.new(:id,""),
      HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
       HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month", :link_label => "グラフ",
+                     :htmloption => %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!}),
+      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_ave", :link_label => "平均化",
+                     :htmloption => %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!}),
+      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_nomalized", :link_label => "正規化",
                      :htmloption => %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!})
     ]
   PowerLabels =
@@ -26,6 +30,7 @@ class Shimada::MonthController <  Shimada::Controller
     @TableEdit  = 
       [:csv_up_buttom,
        [:popup,:graph_all_month_nomalized,"全月度正規化",{ :win_name => "graph"}  ] ,
+       [:popup,:graph_all_month_ave,"全月度平均化",{ :win_name => "graph"}  ] ,
        [:popup,:graph_all_month,"全月度グラフ",{ :win_name => "graph"} ],
        [:form,:graph_selected_months,"選択月度グラフ",{ :form_notclose => true,:win_name => "graph"}]
       ]
@@ -54,10 +59,45 @@ class Shimada::MonthController <  Shimada::Controller
   end
 
   def graph
-    @power = [Shimada::Power.find(params[:id])]
-    Shimada::Power.gnuplot(@power)
-    @TYTLE = "消費電力推移" + @power.first.date.strftime("(%Y年%m月%d日)")
+    @power = Shimada::Power.find(params[:id])
+    Shimada::Power.gnuplot([@power.powers])
+    @TYTLE = "消費電力推移" + @power.date.strftime("(%Y年%m月%d日)")
     render :layout => "hospital_error_disp"
+  end
+
+  def graph_month
+    id = params[@Domain] ? params[@Domain][:id] : params[:id] 
+    @power = @Model.find(id).powers
+    Shimada::Power.gnuplot(@power.map(&:powers))
+    @TYTLE = "消費電力推移" + @power.first.date.strftime("(%Y年%m月)")
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_selected
+    ids = params[:check_id].
+      delete_if {|key, value| value == "0" }.keys.map(&:to_i)
+    @power=Shimada::Power.find(ids)  
+    Shimada::Power.gnuplot(@power.map(&:powers))
+    @TYTLE = "消費電力推移" + 
+      @power.first.date.strftime("(%Y年%m月 ") +
+      @power.map{ |p| p.date.strftime("%d")}.join(",") + "日)"
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_all_month
+    months = Shimada::Month.all
+    @power=months.map{ |m| m.powers}.flatten
+    Shimada::Power.gnuplot(@power.map(&:powers))
+    @TYTLE = "消費電力推移 全月度" 
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_all_month_ave
+    months = Shimada::Month.all
+    @power=months.map{ |m| m.powers}.flatten
+    Shimada::Power.gnuplot(@power.map{ |p| p.move_ave(5)})
+    @TYTLE = "消費電力推移 全月度" 
+    render :action => :graph,:layout => "hospital_error_disp"
   end
 
   def graph_nomalize
@@ -72,7 +112,7 @@ class Shimada::MonthController <  Shimada::Controller
     @power = @Model.find(id).powers
     power = @power.map{ |p| p.normalized(5)}
     Shimada::Power.gnuplot(power,true)
-    @TYTLE = "消費電力推移" + @power.first.date.strftime("(%Y年%m月)")
+    @TYTLE = "正規化消費電力推移" + @power.first.date.strftime("(%Y年%m月)")
     render :action => :graph, :layout => "hospital_error_disp"
   end
 
@@ -80,23 +120,13 @@ class Shimada::MonthController <  Shimada::Controller
     send_file RAILS_ROOT+"/tmp/shimada/power.gif", :type => 'image/gif', :disposition => 'inline'
   end
 
-  def graph_month
+  def graph_month_ave
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
     @power = @Model.find(id).powers
-    Shimada::Power.gnuplot(@power)
+    power = @power.map{ |p| p.move_ave(5)}
+    Shimada::Power.gnuplot(power)
     @TYTLE = "消費電力推移" + @power.first.date.strftime("(%Y年%m月)")
-    render :action => :graph,:layout => "hospital_error_disp"
-  end
-
-  def graph_selected
-    ids = params[:check_id].
-      delete_if {|key, value| value == "0" }.keys.map(&:to_i)
-    @power=Shimada::Power.find(ids)  
-    Shimada::Power.gnuplot(@power)
-    @TYTLE = "消費電力推移" + 
-      @power.first.date.strftime("(%Y年%m月 ") +
-      @power.map{ |p| p.date.strftime("%d")}.join(",") + "日)"
-    render :action => :graph,:layout => "hospital_error_disp"
+    render :action => :graph, :layout => "hospital_error_disp"
   end
 
   def graph_all_month_nomalized
@@ -108,20 +138,13 @@ class Shimada::MonthController <  Shimada::Controller
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
-  def graph_all_month
-    months = Shimada::Month.all
-    @power=months.map{ |m| m.powers}.flatten
-    Shimada::Power.gnuplot(@power)
-    @TYTLE = "消費電力推移 全月度" 
-    render :action => :graph,:layout => "hospital_error_disp"
-  end
 
   def graph_selected_months
     month_ids = params[:check_id].
       delete_if {|key, value| value == "0" }.keys.map(&:to_i)
     months = Shimada::Month.find(month_ids)
     @power=months.map{ |m| m.powers}.flatten
-    Shimada::Power.gnuplot(@power)
+    Shimada::Power.gnuplot(@power.map(&:powers))
     @TYTLE = "消費電力推移" + 
       @power.first.date.strftime("(%Y年 ") +
       months.map{ |m| m.powers.first.date.strftime("%m")}.join(",") + "月)"

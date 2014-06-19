@@ -29,9 +29,15 @@ class ShimadaPowerTest < ActiveSupport::TestCase
 
   must "Id=1 の正規化 " do
     powers = Shimada::Power.find(1)
-    assert_equal [0.989566866898514, 0.986405311413215, 0.980082200442618,
-                  1.00537464432501, 1.02276319949415],
-    powers.normalized(5)[10,5]
+    assert_equal [0.98957, 0.98641, 0.98008,1.00537, 1.02276],
+    powers.normalized(5)[10,5].map{ |p| p.round(5)}
   end
+
+  must "Id=1 の移動平均 " do
+    powers = Shimada::Power.find(1)
+    assert_equal 618.2, powers.move_ave(5)[10]
+    assert_equal 339.0, powers.move_ave(5)[0]
+    assert_equal 571.25, powers.move_ave(5)[22]
+  end 
 
 end
