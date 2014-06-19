@@ -9,15 +9,6 @@ class ShimadaPowerTest < ActiveSupport::TestCase
     assert_equal 28*2 + 31*2,Shimada::Power.all.size
   end
 
-  must "gnuplot_data するとtmpfileができる" do
-    power = Shimada::Power.find 1
-    path = power.gnuplot_data
-    require =
-"時刻 電力\n1 384.000000\n2 330.000000\n3 303.000000\n4 386.000000\n5 442.000000\n6 559.000000\n7 575.000000\n8 598.000000\n9 619.000000\n10 602.000000\n11 626.000000\n12 624.000000\n13 620.000000\n14 636.000000\n15 647.000000\n16 621.000000\n17 630.000000\n18 622.000000\n19 603.000000\n20 623.000000\n21 618.000000\n22 586.000000\n23 576.000000\n24 505.000000\n"
-puts require
-    assert_equal require,File.read(path)
-  end
-
   must "複数のpowerで gnuplot_data するとtmpfileは 1+24*日数 行できる" do
     powers = Shimada::Power.find(1,4,10)
     path = Shimada::Power.gnuplot_data(powers)
@@ -27,6 +18,20 @@ puts require
 
   must "複数のpowerで gnuplot するとgifができる" do
     powers = Shimada::Power.find(1,4,10)
-    path = Shimada::Power.gnuplot(powers)
+    path   = Shimada::Power.gnuplot(powers)
   end
+
+  must "Id=1 の最大値群とその平均は" do
+    powers = Shimada::Power.find(1)
+    assert_equal [632.6,[624.0, 626.0, 630.0, 636.0, 647.0]],
+    [powers.max_ave(5) ,powers.max_powers(5)]
+  end
+
+  must "Id=1 の正規化 " do
+    powers = Shimada::Power.find(1)
+    assert_equal [0.989566866898514, 0.986405311413215, 0.980082200442618,
+                  1.00537464432501, 1.02276319949415],
+    powers.normalized(5)[10,5]
+  end
+
 end

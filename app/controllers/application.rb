@@ -396,4 +396,5 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     page=1 unless page.to_i >0
     @Model.paginate((@FindOption||{}).merge({ :page => page,:per_page => @Pagenation}))
   end
+
 end

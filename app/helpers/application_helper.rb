@@ -155,9 +155,10 @@ module ApplicationHelper
   #action_buttomの列を作る
   #- ［［function,action,label],,,,]
   def action_buttom(buttom)
-    function,action,label,opt = buttom
+    function,action,label,opt,htmlopt = buttom
     case function
-    when :form ;form_buttom(action,label,opt)
+    when :form ;form_buttom(action,label,opt,htmlopt)
+    when :popup ;popupform_buttom(action,label,opt,htmlopt)
     when :add_edit_buttoms ;edit_buttoms(@Domain) 
     when :add_buttom       ;add_buttom(@Domain)
     when :edit_bottom       ;edit_bottom#(@Domain)
@@ -166,19 +167,50 @@ module ApplicationHelper
     else function.to_s
     end
   end
-  def form_buttom(action,label,opt ={ })
+  def popupform_buttom(action,label,opt ={ },htmlopt={ })
+    form_notclose = opt.delete(:form_notclose) if opt.class==Hash
+
+    win_name = opt.delete(:win_name) || ""
+    if @model
+      fmt =
+        %Q!<form action="/%s/%s">
+  <input name="authenticity_token" type="hidden" value="%s" />
+  <input id="%s_id" name="%s[id]" type="hidden" value="%d" />
+  <input name="commit" type="submit"  value="%s" onclick="window.open('/%s/%s?id=%d', '%s', 'width=500,height=400'); target='%s'">
+</form>!
+      fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,@model.id,win_name,win_name]
+    elsif form_notclose
+      %Q!<form action="/shimada/month/graph_selected_months" method="post" target='graph'><div style="margin:0;padding:0"><input name="authenticity_token" type="hidden" value="d2eaef964366b120c255747e4653c7a436b1af06" /></div><input type='hidden' name='page' value='1'><input name="commit" type="submit" value="選択月度グラフ" target='graph' />!
+    elsif nil #form_notclose
+      fmt =
+        %Q!<form action="/%s/%s" >
+  <input name="authenticity_token" type="hidden" value="%s" />
+  <input name="commit" type="submit"  value="%s" target="%s">!
+      fmt%[@Domain,action,form_authenticity_token,label,win_name]
+    else
+      fmt =
+        %Q!<form action="/%s/%s">
+  <input name="authenticity_token" type="hidden" value="%s" />
+  <input name="commit" type="submit"  value="%s" onclick="window.open('/%s/%s', '%s', 'width=500,height=400'); target='%s'">
+</form>!
+      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,win_name]
+    end 
+  end
+
+  def form_buttom(action,label,opt ={ },htmlopt={ })
     hidden = opt.delete(:hidden) if opt.class==Hash
     hidden_value = opt.delete(:hidden_value) if opt.class==Hash
-    form_close = opt.delete(:form_close) if opt.class==Hash
 
-    from_close = (form_close.nil? || form_close == true) ? "</form>" : ""
-    form_tag(:action => action)+ 
+    form_notclose = opt.delete(:form_notclose) if opt.class==Hash
+    from_notclose = form_notclose ? "" : "</form>"
+
+    form_tag({ :action => action})+ 
       (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
        else;"";end
        )+
       "<input type='hidden' name='page' value='#{@page}'>"+
       (opt.class==Symbol ? send(opt) : "") +
-      submit_tag(label)+from_close
+      submit_tag(label)+from_notclose
   end
   def input_and_action(action,label,opt)
     hidden = opt.delete(:hidden)
@@ -338,6 +370,11 @@ module ApplicationHelper
     delete = (obj.id and obj.id < maxid) ? 
     link_to( '<nobr>削除</nobr>',obj , :confirm => 'Are you sure?', :method => :delete) : ""
     "<td>#{delete}<td>"
+  end
+
+  def popup(url,opt = { })
+    opt.merge!({ :target => 'pop',:scroll => true, :width => 300,:height => 300})
+    {"onClick" => "window.open('error_disp','_error_disp','width=#{opt[:width]},height=#{opt[:height]},scrollbars=#{opt[:scroll] ? "yes" : "no"}');",:target => '_error_disp'}
   end
 
   def pagenation(models)
