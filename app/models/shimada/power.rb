@@ -44,36 +44,8 @@ set xtics 1,1
 
   Header = "時刻"
 
-  def self.gnuplot_data_by_temp(powers,opt = { })
-    path = []
-    if by_month = opt[:by_month]
-      ary_powres = powers.group_by{ |p| p.date.strftime("%Y/%m")}
-      ary_powres.each_with_index{ |month_powers,idx|
-        path << "/tmp/shimada/shimada_power_temp%d"%idx
-        open(path.last,"w"){ |f|
-          f.puts "温度 #{month_powers.first}"
-          month_powers.last.each{ |power|
-            temperatures = Weather.find_or_feach("maebashi", power.date).temperatures
-            power.powers.each_with_index{ |h,idx| f.printf "%.1f %.1f\n",temperatures[idx],h }
-          }
-        }
-      }
-    else
-      path << "/tmp/shimada/shimada_power_temp"
-      open(path.last,"w"){ |f|
-        f.puts "温度 電力"
-        powers.each{ |power|
-          temperatures = Weather.find_or_feach("maebashi", power.date).temperatures
-          power.powers.each_with_index{ |h,idx| f.printf "%.1f %.1f\n",temperatures[idx],h }
-          f.puts
-        }
-      }
-    end
-    path
-  end
 
-
-  def self.gnuplot_data(powers,method,opt = { })
+  def self.output_plot_data(powers,method,opt = { },&block)
     path = []
     ary_powres = if by_month = opt[:by_month]
                    powers.group_by{ |p| p.date.strftime("%Y/%m")} 
@@ -85,7 +57,7 @@ set xtics 1,1
       open(path.last,"w"){ |f|
         f.puts "時刻 #{month_powers.first}"
         month_powers.last.each{ |power|
-          power.send(method).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
+          yield f,power #power.send(method).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
           f.puts
         }
       }
@@ -94,8 +66,9 @@ set xtics 1,1
   end
 
   def self.gnuplot(powers,method,opt={ })
-    #nomalized = opt[:nomalized]
-    path = gnuplot_data(powers,method,opt)
+    path = output_plot_data(powers,method,opt){ |f,power| 
+      power.send(method).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
+    }
     def_file = "/tmp/shimada/power.def"
     def_base =  method == :normalized ? Nomalized_def : Power_def
     open(def_file,"w"){ |f|
@@ -106,7 +79,11 @@ set xtics 1,1
   end
 
   def self.gnuplot_by_temp(powers,opt={ })
-    path = gnuplot_data_by_temp(powers,opt)
+    path = output_plot_data(powers,:powers,opt){ |f,power| 
+      temperatures = Weather.find_or_feach("maebashi", power.date).temperatures
+      power.powers.each_with_index{ |h,idx| f.printf "%.1f %.1f\n",temperatures[idx],h }
+    }
+#    path = gnuplot_data_by_temp(powers,opt)
     def_file = "/tmp/shimada/power_temp.def"
     open(def_file,"w"){ |f|
       f.puts Temp_power_def
