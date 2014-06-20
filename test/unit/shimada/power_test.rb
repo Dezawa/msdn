@@ -11,25 +11,30 @@ class ShimadaPowerTest < ActiveSupport::TestCase
 
   must "複数のpowerで gnuplot_data するとtmpfileは 1+24*日数 行できる" do
     powers = Shimada::Power.find(1,4,10)
-    path = Shimada::Power.gnuplot_data(powers)
+    path = Shimada::Power.gnuplot_data(powers.map{ |p| p.powers })
     lines = File.read path
     assert_equal 1+3*24,lines.split(/\n+/).size
   end
 
   must "複数のpowerで gnuplot するとgifができる" do
     powers = Shimada::Power.find(1,4,10)
-    path   = Shimada::Power.gnuplot(powers)
+    path   = Shimada::Power.gnuplot(powers.map{ |p| p.powers })
   end
 
-  must "Id=1 の最大値群とその平均は" do
+  must "Id=1 の最大値群は" do
     powers = Shimada::Power.find(1)
-    assert_equal [632.6,[624.0, 626.0, 630.0, 636.0, 647.0]],
-    [powers.max_ave(5) ,powers.max_powers(5)]
+    assert_equal [624.0, 626.0, 630.0, 636.0, 647.0], powers.max_powers(5)
   end
+
+  must "Id=1 の移動平均 最大値群の平均は" do
+    powers = Shimada::Power.find(1)
+    assert_equal 629.36, powers.max_ave(5)
+  end
+
 
   must "Id=1 の正規化 " do
     powers = Shimada::Power.find(1)
-    assert_equal [0.98957, 0.98641, 0.98008,1.00537, 1.02276],
+    assert_equal [0.98227, 0.98767, 1.00197, 1.00038, 1.00229],
     powers.normalized(5)[10,5].map{ |p| p.round(5)}
   end
 
@@ -40,4 +45,10 @@ class ShimadaPowerTest < ActiveSupport::TestCase
     assert_equal 571.25, powers.move_ave(5)[22]
   end 
 
+  must "600kwH 30℃は20℃のときは" do
+    day = Time.new(2013,2,1)
+    power = Shimada::Power.create(:date => day,:hour01 => 600)
+    temp  = Weather.create(:date => day,:temp01 => 30 )
+    assert_equal 600 - 9*(30-20),power.revise_by_temp["hour01"]
+  end
 end
