@@ -17,6 +17,30 @@ set yrange [0:1000]
 set xrange [-10:40]
 set xtics -10,5
 !
+  Power_def =
+%Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+set out 'tmp/shimada/power.gif'
+#set terminal x11
+
+set title "消費電力 " 
+%s
+set yrange [0:1000]
+#set xrange [0:24]
+set xtics 1,1
+!
+
+  Nomalized_def=
+%Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+set out 'tmp/shimada/power.gif'
+#set terminal x11
+
+set title "正規化消費電力 " 
+%s
+set yrange [0:1.1]
+#set xrange [0:24]
+set xtics 1,1
+!
+
 
   Header = "時刻"
 
@@ -49,32 +73,36 @@ set xtics -10,5
   end
 
 
-  def self.gnuplot_data(powers,opt = { })
+  def self.gnuplot_data(powers,method,opt = { })
     path = []
-    path << "/tmp/shimada_power"
-    nomalized = opt.delete(:nomalized)
-    open(path.last,"w"){ |f|
-      f.puts "時刻 電力"
-      if nomalized
-          powers.each{ |power|
-            power.each_with_index{ |h,idx| f.printf "%d %.4f\n",idx+1,h }
+    ary_powres = if by_month = opt[:by_month]
+                   powers.group_by{ |p| p.date.strftime("%Y/%m")} 
+                 else
+                   [[powers.first.date.strftime("%Y/%m"),powers]]
+                 end
+    ary_powres.each_with_index{ |month_powers,idx|
+      path << "/tmp/shimada/shimada_power_temp%d"%idx
+      open(path.last,"w"){ |f|
+        f.puts "時刻 #{month_powers.first}"
+        month_powers.last.each{ |power|
+          power.send(method).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
           f.puts
         }
-      else
-        powers.each{ |power|
-          power.each_with_index{ |h,idx| f.printf "%d %.1f\n",idx+1,h }
-          f.puts
-        }
-      end
+      }
     }
     path
   end
 
-  def self.gnuplot(powers,opt={ })
-    nomalized = opt[:nomalized]
-    path = gnuplot_data(powers,opt)
-    def_file = nomalized ? "nomalized.def" : "power.def"
-    `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot app/models/shimada/#{def_file})`
+  def self.gnuplot(powers,method,opt={ })
+    #nomalized = opt[:nomalized]
+    path = gnuplot_data(powers,method,opt)
+    def_file = "/tmp/shimada/power.def"
+    def_base =  method == :normalized ? Nomalized_def : Power_def
+    open(def_file,"w"){ |f|
+      f.puts def_base%(opt[:by_month] ? "set key outside autotitle columnheader" : "unset key")
+      f.puts "plot " + path.map{ |p| "'#{p}' using 1:2  with line"}.join(" , ")
+    }
+    `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
   end
 
   def self.gnuplot_by_temp(powers,opt={ })
@@ -114,7 +142,7 @@ set xtics -10,5
     } 
   end
 
-  def move_ave(num=3)
+  def move_ave(num=5)
     @move_ave ||= []
     return @move_ave[num] if @move_ave[num]
     n = num/2
@@ -124,7 +152,7 @@ set xtics -10,5
     }
   end
 
-  def normalized(num=3)
+  def normalized(num=5)
     ave = max_ave(num)
     move_ave(num)
     #Hours.map{ |h| self[h]/ave}
