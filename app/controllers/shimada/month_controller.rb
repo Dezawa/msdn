@@ -1,20 +1,25 @@
 # -*- coding: utf-8 -*-
 class Shimada::MonthController <  Shimada::Controller
+  Popup = %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!
+
   Labels = 
     [HtmlCeckForSelect.new(:id,""),
      HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
       HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month", :link_label => "グラフ",
-                     :htmloption => %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!}),
+                     :htmloption => Popup}),
+      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_temp", :link_label => "対温度",
+                     :htmloption => Popup}),
       HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_ave", :link_label => "平均化",
-                     :htmloption => %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!}),
+                     :htmloption => Popup}),
       HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_nomalized", :link_label => "正規化",
-                     :htmloption => %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!})
+                     :htmloption => Popup})
     ]
   PowerLabels =
-    [ HtmlLink.new(:id,"",:link => { :link_label => "グラフ", :url => "/shimada/month/graph",
-                     :htmloption => %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!}),
+    [ HtmlLink.new(:id,"",:link => { :link_label => "グラフ", :url => "/shimada/month/graph",:htmloption => Popup}),
+      HtmlLink.new(:id,"",:link => { :link_label => "対温度", :url => "/shimada/month/graph_temp",
+                     :htmloption =>Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "正規化", :url => "/shimada/month/graph_nomalize",
-                     :htmloption => %Q!onClick="window.open('error_disp','graph','width=300,height=300,scrollbars=yes');" target="graph"!}),
+                     :htmloption =>Popup}),
       HtmlCeckForSelect.new(:id,""),
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d")
     ] + 
@@ -32,6 +37,7 @@ class Shimada::MonthController <  Shimada::Controller
        [:popup,:graph_all_month_nomalized,"全月度正規化",{ :win_name => "graph"}  ] ,
        [:popup,:graph_all_month_ave,"全月度平均化",{ :win_name => "graph"}  ] ,
        [:popup,:graph_all_month,"全月度グラフ",{ :win_name => "graph"} ],
+       [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
        [:form,:graph_selected_months,"選択月度グラフ",{ :form_notclose => true,:win_name => "graph"}]
       ]
     @Show = true
@@ -52,6 +58,7 @@ class Shimada::MonthController <  Shimada::Controller
     @TableEdit  =  [[:form,:index,"一覧に戻る"],
                     [:popup,:graph_month_nomalized,"月度正規化",{ :win_name => "graph"} ] ,
                     [:popup,:graph_month,"月度グラフ",{ :win_name => "graph"} ],
+                    [:popup,:graph_month_temp,"月度対温度",{ :win_name => "graph"} ],
                     [:form,:graph_selected,"選択日グラフ",{:win_name => "graph", :form_notclose => true}]
                    ]
     @labels = PowerLabels
@@ -65,11 +72,25 @@ class Shimada::MonthController <  Shimada::Controller
     render :layout => "hospital_error_disp"
   end
 
+  def graph_temp
+    @power = Shimada::Power.find(params[:id])
+    Shimada::Power.gnuplot_by_temp([@power])
+    @TYTLE = "温度-消費電力" + @power.date.strftime("(%Y年%m月%d日)")
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
   def graph_month
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
     @power = @Model.find(id).powers
     Shimada::Power.gnuplot(@power.map(&:powers))
     @TYTLE = "消費電力推移" + @power.first.date.strftime("(%Y年%m月)")
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_month_temp
+    id = params[@Domain] ? params[@Domain][:id] : params[:id] 
+    @power = @Model.find(id).powers
+    Shimada::Power.gnuplot_by_temp(@power)
+    @TYTLE = "温度-消費電力" + @power.first.date.strftime("(%Y年%m月)")
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
@@ -81,6 +102,14 @@ class Shimada::MonthController <  Shimada::Controller
     @TYTLE = "消費電力推移" + 
       @power.first.date.strftime("(%Y年%m月 ") +
       @power.map{ |p| p.date.strftime("%d")}.join(",") + "日)"
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_all_month_temp
+    months = Shimada::Month.all
+    @power=months.map{ |m| m.powers}.flatten
+    Shimada::Power.gnuplot_by_temp(@power,:by_month => true)
+    @TYTLE = "温度-消費電力 全月度"
     render :action => :graph,:layout => "hospital_error_disp"
   end
 

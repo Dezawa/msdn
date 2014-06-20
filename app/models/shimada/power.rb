@@ -8,6 +8,20 @@ class Shimada::Power < ActiveRecord::Base
 
   Header = "時刻"
 
+  def self.gnuplot_data_by_temp(powers,opt = { })
+    path = "/tmp/shimada_power_temp"
+    open(path,"w"){ |f|
+      f.puts "温度 電力"
+      powers.each{ |power|
+        temperatures = Weather.find_or_feach("maebashi", power.date).temperatures
+        power.powers.each_with_index{ |h,idx| f.printf "%.1f %.1f\n",temperatures[idx],h }
+        f.puts
+      }
+    }
+    path
+  end
+
+
   def self.gnuplot_data(powers,nomalized=false)
     path = "/tmp/shimada_power"
     open(path,"w"){ |f|
@@ -30,6 +44,12 @@ class Shimada::Power < ActiveRecord::Base
   def self.gnuplot(powers,nomalized=false)
     gnuplot_data(powers,nomalized)
     def_file = nomalized ? "nomalized.def" : "power.def"
+    `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot app/models/shimada/#{def_file})`
+  end
+
+  def self.gnuplot_by_temp(powers,opt={ })
+    gnuplot_data_by_temp(powers,opt)
+    def_file = "power_temp.def"
     `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot app/models/shimada/#{def_file})`
   end
 
@@ -56,8 +76,12 @@ class Shimada::Power < ActiveRecord::Base
     #Hours.map{ |h| self[h]}.sort.last(num)
     move_ave(num).sort.last(num)
   end
+
   def max_ave(num=3)
     max_powers(num).inject(0){ |s,e| s+=e}/num
   end
 
+  def power_temp
+
+  end
 end
