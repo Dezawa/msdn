@@ -2,7 +2,7 @@
 require 'pp'
 
 class Weather < ActiveRecord::Base
-  Temperature = ("temp01".."temp24").to_a
+  Temperature = ("hour01".."hour24").to_a
   class << self
     def fetch(location,day)
       y,m,d = [day.year, day.month, day.day]

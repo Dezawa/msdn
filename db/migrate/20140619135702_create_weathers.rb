@@ -3,7 +3,7 @@ class CreateWeathers < ActiveRecord::Migration
     create_table :weathers do |t|
       t.string :location
       t.date   :date
-      ("temp01".."temp24").each{ |sym| t.float sym}
+      ("hour01".."hour24").each{ |sym| t.float sym}
     end
   end
 
