@@ -45,10 +45,21 @@ class ShimadaPowerTest < ActiveSupport::TestCase
     assert_equal 571.25, powers.move_ave(5)[22]
   end 
 
+  must "ID=1 2013-02-01 の気温は" do
+    powers = Shimada::Power.find(1)
+    assert_equal Weather,powers.weather.class  
+    assert_equal [0.4, 0.4, -0.8, -0.7, -0.4, -0.9, -1.1, 0.3, 2.4, 4.3,
+                  6.4, 8.1, 9.9, 9.9, 9.1, 9.0, 8.1, 7.7, 6.2, 5.8, 5.8, 5.5, 5.5, 5.2],powers.temps
+  end
+
   must "600kwH 30℃は20℃のときは" do
-    day = Time.new(2013,2,1)
+    day = Time.local(2013,2,1)
     power = Shimada::Power.create(:date => day,:hour01 => 600)
-    temp  = Weather.create(:date => day,:temp01 => 30 )
-    assert_equal 600 - 9*(30-20),power.revise_by_temp["hour01"]
+    temp  = Weather.create(:date => day,:hour01 => 30 )
+    assert_equal 600 - 9*(30-20),power.revise_by_temp[0]
+  end
+  must "ID=1の温度補正後" do
+    powers = Shimada::Power.find(1)
+    assert_equal [],powers.revise_by_temp
   end
 end
