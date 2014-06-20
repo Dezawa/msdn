@@ -49,9 +49,11 @@ set xtics -10,5
   end
 
 
-  def self.gnuplot_data(powers,nomalized=false)
-    path = "/tmp/shimada_power"
-    open(path,"w"){ |f|
+  def self.gnuplot_data(powers,opt = { })
+    path = []
+    path << "/tmp/shimada_power"
+    nomalized = opt.delete(:nomalized)
+    open(path.last,"w"){ |f|
       f.puts "時刻 電力"
       if nomalized
           powers.each{ |power|
@@ -68,8 +70,9 @@ set xtics -10,5
     path
   end
 
-  def self.gnuplot(powers,nomalized=false)
-    gnuplot_data(powers,nomalized)
+  def self.gnuplot(powers,opt={ })
+    nomalized = opt[:nomalized]
+    path = gnuplot_data(powers,opt)
     def_file = nomalized ? "nomalized.def" : "power.def"
     `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot app/models/shimada/#{def_file})`
   end
