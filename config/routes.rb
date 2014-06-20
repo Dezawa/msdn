@@ -2,7 +2,7 @@
 ActionController::Routing::Routes.draw do |map|
   # 全体
   map.connect '/:controller/:action',:action => /[^0-9]+/
-
+  map.resources :weather
   # シマダヤ
   map.connect '/shimada/:controller/:action'  ,:path_prefix => 'shimada'#,:action => /[^0-9]+/
   map.connect '/shimada/:controller'  ,:path_prefix => 'shimada'#,:action => /[^0-9]+/
