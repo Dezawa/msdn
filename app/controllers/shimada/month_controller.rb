@@ -108,7 +108,7 @@ class Shimada::MonthController <  Shimada::Controller
   def graph_all_month_temp
     months = Shimada::Month.all
     @power=months.map{ |m| m.powers}.flatten
-    Shimada::Power.gnuplot_by_temp(@power,:by_month => true)
+    Shimada::Power.gnuplot_by_temp(@power,:by_month => true,:with_Approximation => true)
     @TYTLE = "温度-消費電力 全月度"
     render :action => :graph,:layout => "hospital_error_disp"
   end
