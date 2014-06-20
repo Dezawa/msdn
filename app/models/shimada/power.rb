@@ -3,7 +3,8 @@ require "tempfile"
 
 class Shimada::Power < ActiveRecord::Base
   set_table_name 'shimada_powers'
-  belongs_to :month,:class_name => "Shimada::Month"
+  belongs_to :month     ,:class_name => "Shimada::Month"
+  belongs_to :db_weather,:class_name => "Weather"
   Hours = ("hour01".."hour24")
 
   Temp_power_def =
@@ -90,6 +91,26 @@ set xtics -10,5
 
   def powers ; Hours.map{ |h| self[h]} ; end
 
+  def weather
+    return db_weather if db_weather
+    db_weather = Weather.find_or_feach("maebashi", date)
+  end
+
+  def temps 
+    return @temps if @temps
+    @temps = Hours.map{ |h| weather[h]}
+    save
+    @temps
+  end
+
+  def revise_by_temp
+    Hours.map{ |h|
+      power = self[h]
+      temp  = weather[h]
+      temp > 20.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20)
+    } 
+  end
+
   def move_ave(num=3)
     @move_ave ||= []
     return @move_ave[num] if @move_ave[num]
@@ -108,15 +129,11 @@ set xtics -10,5
   end
 
   def max_powers(num=3)
-    #Hours.map{ |h| self[h]}.sort.last(num)
-    move_ave(num).sort.last(num)
+    Hours.map{ |h| self[h]}.sort.last(num)
   end
 
   def max_ave(num=3)
-    max_powers(num).inject(0){ |s,e| s+=e}/num
+    move_ave(num).sort.last(num).inject(0){ |s,e| s+=e}/num
   end
-
-  def power_temp
-
-  end
+# 629.36, [624.6, 629.6, 630.6, 630.8, 631.2]
 end
