@@ -7,7 +7,8 @@ class Weather < ActiveRecord::Base
     def fetch(location,day)
       y,m,d = [day.year, day.month, day.day]
       temp = `/home/dezawa/bin/weather/weather_past.rb #{location} #{y} #{m} #{d}`
-      weather = self.create( Hash[*Temperature.zip(temp.split(/\s+/)).flatten])
+      weather = self.create( { :location => location,:date => day}.
+                             merge(Hash[*Temperature.zip(temp.split(/\s+/)).flatten]))
     end
 
     def find_or_feach(location,day)
@@ -16,5 +17,7 @@ class Weather < ActiveRecord::Base
       fetch(location,day)
     end
   end
+
+  def temperatures ;   Temperature.map{ |t| self[t]} ; end
 
 end
