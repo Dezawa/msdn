@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140616141348) do
+ActiveRecord::Schema.define(:version => 20140619135702) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -197,9 +197,6 @@ ActiveRecord::Schema.define(:version => 20140616141348) do
     t.integer "number"
     t.integer "busho_id"
     t.integer "pre_busho_id"
-    t.integer "shokui_id"
-    t.integer "shokushu_id"
-    t.integer "kinmukubun_id"
     t.integer "pre_shokui_id"
     t.integer "pre_shokushu_id"
     t.integer "pre_kinmukubun_id"
@@ -415,7 +412,6 @@ ActiveRecord::Schema.define(:version => 20140616141348) do
     t.integer  "limit_dryero"
     t.integer  "limit_dryern"
     t.boolean  "jun_only"
-    t.datetime "replan_from"
     t.date     "plan_from"
   end
 
@@ -542,5 +538,34 @@ ActiveRecord::Schema.define(:version => 20140616141348) do
   end
 
   add_index "users", ["login"], :name => "index_users_on_login", :unique => true
+
+  create_table "weathers", :force => true do |t|
+    t.string "location"
+    t.date   "date"
+    t.float  "temp01"
+    t.float  "temp02"
+    t.float  "temp03"
+    t.float  "temp04"
+    t.float  "temp05"
+    t.float  "temp06"
+    t.float  "temp07"
+    t.float  "temp08"
+    t.float  "temp09"
+    t.float  "temp10"
+    t.float  "temp11"
+    t.float  "temp12"
+    t.float  "temp13"
+    t.float  "temp14"
+    t.float  "temp15"
+    t.float  "temp16"
+    t.float  "temp17"
+    t.float  "temp18"
+    t.float  "temp19"
+    t.float  "temp20"
+    t.float  "temp21"
+    t.float  "temp22"
+    t.float  "temp23"
+    t.float  "temp24"
+  end
 
 end
