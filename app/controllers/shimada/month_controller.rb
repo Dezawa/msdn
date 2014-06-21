@@ -16,6 +16,12 @@ class Shimada::MonthController <  Shimada::Controller
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_ave", :link_label => "平均化",
                     :htmloption => Popup}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_nomalized", :link_label => "正規化",
+                    :htmloption => Popup}),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_difference", :link_label => "差分",
+                    :htmloption => Popup}),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_difference_ave", :link_label => "差分平均",
+                    :htmloption => Popup}),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_diffdiff", :link_label => "二階差",
                     :htmloption => Popup})
      
     ]
@@ -26,6 +32,8 @@ class Shimada::MonthController <  Shimada::Controller
       HtmlLink.new(:id,"",:link => { :link_label => "対温度", :url => "/shimada/month/graph_temp",
                      :htmloption =>Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "正規化", :url => "/shimada/month/graph_nomalize",
+                     :htmloption =>Popup}),
+      HtmlLink.new(:id,"",:link => { :link_label => "差分", :url => "/shimada/month/graph_difference",
                      :htmloption =>Popup}),
       HtmlCeckForSelect.new(:id,""),
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d")
@@ -47,6 +55,7 @@ class Shimada::MonthController <  Shimada::Controller
        [:popup,:graph_all_month_ave,"全月度平均化",{ :win_name => "graph"}  ] ,
        [:popup,:graph_all_month_reviced,"全月度温度補正",{ :win_name => "graph"} ],
        [:popup,:graph_all_month_reviced_ave,"全月度温度補正平均化",{ :win_name => "graph"} ],
+       [:popup,:graph_all_month_difference,"全月度差分",{ :win_name => "graph"} ],
        [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
        [:form,:graph_selected_months,"選択月度グラフ",{ :form_notclose => true,:win_name => "graph"}]
       ]]
@@ -71,6 +80,7 @@ class Shimada::MonthController <  Shimada::Controller
                     [:popup,:graph_month_reviced,"月度温度補正",{ :win_name => "graph"} ],
                     [:popup,:graph_month_reviced_ave,"月度温度補正平均",{ :win_name => "graph"} ],
                     [:popup,:graph_month_temp,"月度対温度",{ :win_name => "graph"} ],
+                    [:popup,:graph_month_difference,"月度差分",{ :win_name => "graph"} ],
                     [:form,:graph_selected,"選択日グラフ",{:win_name => "graph", :form_notclose => true}]
                    ]
     @labels = PowerLabels
@@ -93,7 +103,8 @@ class Shimada::MonthController <  Shimada::Controller
   def graph_reviced ;    graph_sub(:revise_by_temp,"温度補正後 消費電力推移") ;  end
   def graph_reviced_ave; graph_sub(:revise_by_temp_ave,"補正後平均 消費電力推移") ;  end
   def graph_nomalize     ;    graph_sub(:normalized,"正規化消費電力推移") ;  end
-
+  def graph_nomalize     ;    graph_sub(:normalized,"正規化消費電力推移") ;  end
+  def graph_difference   ;    graph_sub(:difference,"差分") ;  end
   def graph_selected
     ids = params[:check_id].
       delete_if {|key, value| value == "0" }.keys.map(&:to_i)
@@ -111,6 +122,7 @@ class Shimada::MonthController <  Shimada::Controller
   def graph_all_month_ave ;    graph_all_month_sub(:move_ave,"平均消費電力推移 全月度");  end
   def graph_all_month_nomalized ; graph_all_month_sub(:normalized, "正規化消費電力推移 全月度");  end
   def graph_all_month            ; graph_all_month_sub(:powers,"消費電力推移 全月度") ;end
+  def graph_all_month_difference           ; graph_all_month_sub(:difference,"差分 全月度") ;end
   def graph_all_month_sub(method,title)
     months = Shimada::Month.all
     @power=months.map{ |m| m.powers}.flatten
@@ -132,6 +144,9 @@ class Shimada::MonthController <  Shimada::Controller
   def graph_month_reviced_ave ;graph_month_sub(:revise_by_temp_ave,"補正平均消費電力推移") ; end
   def graph_month_nomalized ;graph_month_sub(:normalized,"正規化消費電力推移") ; end
   def graph_month_ave   ;graph_month_sub(:move_ave,"平均消費電力推移") ; end
+  def graph_month_difference   ;graph_month_sub(:difference,"月度差分") ; end
+  def graph_month_difference_ave   ;graph_month_sub(:difference_ave,"月度差分") ; end
+  def graph_month_diffdiff   ;graph_month_sub(:diffdiff,"月度二階差") ; end
 
 
 
