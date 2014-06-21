@@ -40,7 +40,7 @@ class Shimada::MonthController <  Shimada::Controller
     @labels=Labels
     @AssosiationLabels = PowerLabels
     @TableEdit  = 
-      [:csv_up_buttom ]
+      [:csv_up_buttom ,[:form,:reset_reevice_and_ave,"再補正・再平均"]]
     @action_buttoms = [4,[
        [:popup,:graph_all_month,"全月度グラフ",{ :win_name => "graph"} ],
        [:popup,:graph_all_month_nomalized,"全月度正規化",{ :win_name => "graph"}  ] ,
@@ -75,6 +75,12 @@ class Shimada::MonthController <  Shimada::Controller
                    ]
     @labels = PowerLabels
     @TableHeaderDouble = [4,[24,"時刻"]]
+  end
+
+  def reset_reevice_and_ave
+    Shimada::Power.reset_reevice_and_ave
+    redirect_to :action => :index
+    #render  :file => 'application/index',:layout => 'application'
   end
 
   def graph_sub(method,title)
