@@ -7,6 +7,7 @@ class Shimada::Power < ActiveRecord::Base
   belongs_to :db_weather,:class_name => "Weather"
   Hours = ("hour01".."hour24")
   Revs = ("rev01".."rev24")
+  Aves = ("ave01".."ave24")
 
   Temp_power_def =
 %Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
@@ -127,15 +128,21 @@ set xtics 1,1
   end
 
   def revise_by_temp_ave(num=3)
+    return @revise_by_temp_ave if @revise_by_temp_ave
+    unless self.ave01
     n = num/2
     rev = Hours.map{ |h|
       power = self[h]
       temp  = weather[h]
       temp > 20.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20)
     }
-    (0..powers.size-1).map{ |h| ary = rev[[0,h-n].max..[h+n,rev.size-1].min]
+    aves = (0..powers.size-1).map{ |h| ary = rev[[0,h-n].max..[h+n,rev.size-1].min]
       ary.inject(0){ |s,e| s+e}/ary.size
     }
+      Aves.each{ |r|  self[r] = aves.shift}
+      save
+    end
+    @revise_by_temp_ave = Aves.map{ |r| self[r]}
   end
 
   def move_ave(num=5)
