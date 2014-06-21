@@ -6,6 +6,7 @@ class Shimada::Power < ActiveRecord::Base
   belongs_to :month     ,:class_name => "Shimada::Month"
   belongs_to :db_weather,:class_name => "Weather"
   Hours = ("hour01".."hour24")
+  Revs = ("rev01".."rev24")
 
   Temp_power_def =
 %Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
@@ -112,14 +113,20 @@ set xtics 1,1
   end
 
   def revise_by_temp
-    Hours.map{ |h|
-      power = self[h]
-      temp  = weather[h]
-      temp > 20.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20)
-    } 
+    return @revise_by_temp if @revise_by_temp
+    unless self.rev01
+      revs = Hours.map{ |h|
+        power = self[h]
+        temp  = weather[h]
+        temp > 20.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20)
+      }
+      Revs.each{ |r|  self[r] = revs.shift}
+      save
+    end
+    @revise_by_temp = Revs.map{ |r| self[r]}
   end
 
-  def revise_by_temp_ave(num=7)
+  def revise_by_temp_ave(num=3)
     n = num/2
     rev = Hours.map{ |h|
       power = self[h]
