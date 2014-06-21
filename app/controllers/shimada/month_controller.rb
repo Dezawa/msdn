@@ -36,14 +36,17 @@ class Shimada::MonthController <  Shimada::Controller
     @labels=Labels
     @AssosiationLabels = PowerLabels
     @TableEdit  = 
-      [:csv_up_buttom,
+      [:csv_up_buttom   ]
+    @action_buttoms = [4,[
+       [:popup,:graph_all_month,"全月度グラフ",{ :win_name => "graph"} ],
        [:popup,:graph_all_month_nomalized,"全月度正規化",{ :win_name => "graph"}  ] ,
        [:popup,:graph_all_month_ave,"全月度平均化",{ :win_name => "graph"}  ] ,
-       [:popup,:graph_all_month,"全月度グラフ",{ :win_name => "graph"} ],
        [:popup,:graph_all_month_reviced,"全月度温度補正",{ :win_name => "graph"} ],
+       [:popup,:graph_all_month_reviced_ave,"全月度温度補正平均化",{ :win_name => "graph"} ],
        [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
        [:form,:graph_selected_months,"選択月度グラフ",{ :form_notclose => true,:win_name => "graph"}]
-      ]
+      ]]
+
     @Show = true
     @Delete = true
     @FindOption = { :order => "month" }
@@ -91,6 +94,64 @@ class Shimada::MonthController <  Shimada::Controller
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
+
+  def graph_selected
+    ids = params[:check_id].
+      delete_if {|key, value| value == "0" }.keys.map(&:to_i)
+    @power=Shimada::Power.find(ids)  
+    Shimada::Power.gnuplot(@power,:powers)
+    @TYTLE = "消費電力推移" + 
+      @power.first.date.strftime("(%Y年%m月 ") +
+      @power.map{ |p| p.date.strftime("%d")}.join(",") + "日)"
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_all_month_temp
+    months = Shimada::Month.all
+    @power=months.map{ |m| m.powers}.flatten
+    Shimada::Power.gnuplot_by_temp(@power,:by_month => true,:with_Approximation => true)
+    @TYTLE = "温度-消費電力 全月度"
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_all_month_reviced
+    @TYTLE = "補正消費電力推移 全月度" 
+    graph_all_month_sub(:revise_by_temp)
+  end
+
+  def graph_all_month_reviced_ave
+    @TYTLE = "補正消費電力平均化推移 全月度" 
+    graph_all_month_sub(:revise_by_temp_ave)
+  end
+
+  def graph_all_month
+    @TYTLE = "消費電力推移 全月度" 
+    graph_all_month_sub(:powers)
+  end
+
+  def graph_all_month_ave
+    @TYTLE = "平均消費電力推移 全月度" 
+    graph_all_month_sub(:move_ave)
+  end
+
+  def graph_all_month_nomalized
+    @TYTLE = "正規化消費電力推移 全月度"
+    graph_all_month_sub(:normalized)
+  end
+
+  def graph_all_month_sub(method)
+    months = Shimada::Month.all
+    @power=months.map{ |m| m.powers}.flatten
+    Shimada::Power.gnuplot(@power,method,:by_month => true)
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_nomalize
+    @power = Shimada::Power.find(params[:id])
+    Shimada::Power.gnuplot([@power],:normalized)
+    @TYTLE = "正規化消費電力推移" + @power.date.strftime("(%Y年%m月%d日)")
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
   def graph_month
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
     @power = @Model.find(id).powers
@@ -114,66 +175,6 @@ class Shimada::MonthController <  Shimada::Controller
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
-  def graph_selected
-    ids = params[:check_id].
-      delete_if {|key, value| value == "0" }.keys.map(&:to_i)
-    @power=Shimada::Power.find(ids)  
-    Shimada::Power.gnuplot(@power,:powers)
-    @TYTLE = "消費電力推移" + 
-      @power.first.date.strftime("(%Y年%m月 ") +
-      @power.map{ |p| p.date.strftime("%d")}.join(",") + "日)"
-    render :action => :graph,:layout => "hospital_error_disp"
-  end
-
-  def graph_all_month_temp
-    months = Shimada::Month.all
-    @power=months.map{ |m| m.powers}.flatten
-    Shimada::Power.gnuplot_by_temp(@power,:by_month => true,:with_Approximation => true)
-    @TYTLE = "温度-消費電力 全月度"
-    render :action => :graph,:layout => "hospital_error_disp"
-  end
-
-  def graph_all_month_reviced
-    months = Shimada::Month.all
-    @power=months.map{ |m| m.powers}.flatten
-    Shimada::Power.gnuplot(@power,:revise_by_temp,:by_month => true)
-    @TYTLE = "消費電力推移 全月度" 
-    render :action => :graph,:layout => "hospital_error_disp"
-  end
-
-  def graph_all_month
-    months = Shimada::Month.all
-    @power=months.map{ |m| m.powers}.flatten
-    Shimada::Power.gnuplot(@power,:powers,:by_month => true)
-    @TYTLE = "消費電力推移 全月度" 
-    render :action => :graph,:layout => "hospital_error_disp"
-  end
-
-  def graph_all_month_ave
-    months = Shimada::Month.all
-    @power=months.map{ |m| m.powers}.flatten
-    Shimada::Power.gnuplot(@power,:move_ave,:by_month => true)
-    @TYTLE = "消費電力推移 全月度" 
-    render :action => :graph,:layout => "hospital_error_disp"
-  end
-
-
-  def graph_all_month_nomalized
-    months = Shimada::Month.all
-    @power=months.map{ |m| m.powers}.flatten
-    power = @power.map{ |p| p.normalized(5)}
-    Shimada::Power.gnuplot(@power,:normalized,:by_month => true )
-    @TYTLE = "正規化消費電力推移 全月度" + @power.first.date.strftime("(%Y年%m月)")
-    render :action => :graph,:layout => "hospital_error_disp"
-  end
-
-  def graph_nomalize
-    @power = Shimada::Power.find(params[:id])
-    Shimada::Power.gnuplot([@power],:normalized)
-    @TYTLE = "正規化消費電力推移" + @power.date.strftime("(%Y年%m月%d日)")
-    render :action => :graph,:layout => "hospital_error_disp"
-  end
-
   def graph_month_nomalized
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
     @power = @Model.find(id).powers
@@ -181,10 +182,6 @@ class Shimada::MonthController <  Shimada::Controller
     Shimada::Power.gnuplot(@power,:normalized)
     @TYTLE = "正規化消費電力推移" + @power.first.date.strftime("(%Y年%m月)")
     render :action => :graph, :layout => "hospital_error_disp"
-  end
-
-  def show_gif
-    send_file RAILS_ROOT+"/tmp/shimada/power.gif", :type => 'image/gif', :disposition => 'inline'
   end
 
   def graph_month_ave
@@ -212,6 +209,11 @@ class Shimada::MonthController <  Shimada::Controller
     Shimada::Power.gnuplot(power)
     @TYTLE = "消費電力推移" + @power.first.date.strftime("(%Y年%m月)")
     render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+
+  def show_gif
+    send_file RAILS_ROOT+"/tmp/shimada/power.gif", :type => 'image/gif', :disposition => 'inline'
   end
 
   def csv_upload

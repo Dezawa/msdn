@@ -119,6 +119,18 @@ set xtics 1,1
     } 
   end
 
+  def revise_by_temp_ave(num=7)
+    n = num/2
+    rev = Hours.map{ |h|
+      power = self[h]
+      temp  = weather[h]
+      temp > 20.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20)
+    }
+    (0..powers.size-1).map{ |h| ary = rev[[0,h-n].max..[h+n,rev.size-1].min]
+      ary.inject(0){ |s,e| s+e}/ary.size
+    }
+  end
+
   def move_ave(num=5)
     @move_ave ||= []
     return @move_ave[num] if @move_ave[num]
