@@ -7,6 +7,8 @@ class Weather < ActiveRecord::Base
     def fetch(location,day)
       y,m,d = [day.year, day.month, day.day]
       temp = `/home/dezawa/bin/weather/weather_past.rb #{location} #{y} #{m} #{d}`
+      logger.info("WEATHER:: #{temp.class}")
+      return unless temp
       weather = self.create( { :location => location,:date => day}.
                              merge(Hash[*Temperature.zip(temp.split(/\s+/)).flatten]))
     end

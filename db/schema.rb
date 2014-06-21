@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140620065503) do
+ActiveRecord::Schema.define(:version => 20140621002232) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -242,6 +242,30 @@ ActiveRecord::Schema.define(:version => 20140620065503) do
     t.float   "hour23"
     t.float   "hour24"
     t.integer "weather_id"
+    t.float   "rev01"
+    t.float   "rev02"
+    t.float   "rev03"
+    t.float   "rev04"
+    t.float   "rev05"
+    t.float   "rev06"
+    t.float   "rev07"
+    t.float   "rev08"
+    t.float   "rev09"
+    t.float   "rev10"
+    t.float   "rev11"
+    t.float   "rev12"
+    t.float   "rev13"
+    t.float   "rev14"
+    t.float   "rev15"
+    t.float   "rev16"
+    t.float   "rev17"
+    t.float   "rev18"
+    t.float   "rev19"
+    t.float   "rev20"
+    t.float   "rev21"
+    t.float   "rev22"
+    t.float   "rev23"
+    t.float   "rev24"
   end
 
   create_table "top_pages", :force => true do |t|

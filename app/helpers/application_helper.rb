@@ -116,6 +116,19 @@ module ApplicationHelper
     }.compact.join("</td>" + td )+"</td></tr>"
   end
 
+  def action_buttom_table
+    return "" unless @action_buttoms
+    clms,action_buttoms =  @action_buttoms
+    th = "<table><tr>"+"<td></td>"* clms +"</tr>\n"
+    tb = "<tr>" +
+      (0..action_buttoms.size-1).step(clms).
+      map{ |c| 
+      (1..clms).map{ |d|  
+        buttom = action_buttoms.shift 
+        "<td>"+action_buttom(buttom) + "</td>" if buttom}.compact.join
+    }.join("</tr>\n")
+    th + tb + "</table>"
+end
   def table_edit
     case @TableEdit
     when TrueClass ; add_edit_buttoms(@Domain) 
