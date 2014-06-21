@@ -183,7 +183,7 @@ set xtics 1,1
     unless self.ave01
       n = num/2
 
-      aves = (0..powers.size-1).map{ |h| ary = revise_by_temp[[0,h-n].max..[h+n,rev.size-1].min]
+      aves = (0..powers.size-1).map{ |h| ary = revise_by_temp[[0,h-n].max..[h+n,revise_by_temp.size-1].min]
         ary.inject(0){ |s,e| s+e}/ary.size
       }
       Aves.each{ |r|  self[r] = aves.shift}
