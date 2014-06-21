@@ -5,8 +5,9 @@ class Shimada::Power < ActiveRecord::Base
   set_table_name 'shimada_powers'
   belongs_to :month     ,:class_name => "Shimada::Month"
   belongs_to :db_weather,:class_name => "Weather"
-  Hours = ("hour01".."hour24")
-  Revs = ("rev01".."rev24")
+  Hours = ("hour01".."hour24").to_a
+  Revs = ("rev01".."rev24").to_a
+  Aves = ("ave01".."ave24").to_a
 
   Temp_power_def =
 %Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
@@ -26,8 +27,23 @@ set out 'tmp/shimada/power.gif'
 set title "消費電力 " 
 %s
 set yrange [0:1000]
-#set xrange [0:24]
+set xrange [1:24]
 set xtics 1,1
+set grid ytics
+!
+
+  Differ_def =
+%Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+set out 'tmp/shimada/power.gif'
+#set terminal x11
+
+set title "消費電力 " 
+%s
+set yrange [-100:100]
+set xrange [1:24]
+set xtics 1,1
+set ytics -100,25
+set grid ytics
 !
 
   Nomalized_def=
@@ -38,13 +54,20 @@ set out 'tmp/shimada/power.gif'
 set title "正規化消費電力 " 
 %s
 set yrange [0:1.1]
-#set xrange [0:24]
+set xrange [1:24]
 set xtics 1,1
 !
 
 
   Header = "時刻"
 
+
+  def self.reset_reevice_and_ave
+    self.all.each{ |power|
+      ( Revs +   Aves ).each{ |clm|  power[clm]=nil }
+      power.save
+    }
+  end
 
   def self.output_plot_data(powers,method,opt = { },&block)
     path = []
@@ -71,9 +94,16 @@ set xtics 1,1
       power.send(method).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
     }
     def_file = "/tmp/shimada/power.def"
-    def_base =  method == :normalized ? Nomalized_def : Power_def
+
+    by_month = opt[:by_month] ? "set key outside autotitle columnheader" : "unset key"
+    preunble = ( case method
+                 when :normalized ;  Nomalized_def
+                 when :difference, :difference_ave ,:diffdiff;  Differ_def 
+                 else             ; Power_def 
+                 end)% by_month
+
     open(def_file,"w"){ |f|
-      f.puts def_base%(opt[:by_month] ? "set key outside autotitle columnheader" : "unset key")
+      f.puts preunble
       f.puts "plot " + path.map{ |p| "'#{p}' using 1:2  with line"}.join(" , ")
     }
     `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
@@ -118,7 +148,7 @@ set xtics 1,1
       revs = Hours.map{ |h|
         power = self[h]
         temp  = weather[h]
-        temp > 20.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20)
+        temp > 15.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20)
       }
       Revs.each{ |r|  self[r] = revs.shift}
       save
@@ -126,16 +156,40 @@ set xtics 1,1
     @revise_by_temp = Revs.map{ |r| self[r]}
   end
 
-  def revise_by_temp_ave(num=3)
+  def diffdiff(num=5)
     n = num/2
-    rev = Hours.map{ |h|
-      power = self[h]
-      temp  = weather[h]
-      temp > 20.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20)
-    }
-    (0..powers.size-1).map{ |h| ary = rev[[0,h-n].max..[h+n,rev.size-1].min]
+    y0 = difference_ave.first
+    diff =difference_ave[1..-1].map{ |y| dif = y - y0; y0 = y ; dif*4}
+    aves = (0..diff.size-1).map{ |h| ary = diff[[0,h-n].max..[h+n,diff.size-1].min]
+      ary.inject(0){ |s,e| s+e}/ary.size
+    } 
+  end
+
+  def difference
+    y0 = revise_by_temp_ave.first
+    revise_by_temp_ave[1..-1].map{ |y| dif = y - y0; y0 = y ; dif} 
+  end
+
+  def difference_ave(num=5)
+    n = num/2
+    
+    aves = (0..difference.size-1).map{ |h| ary = difference[[0,h-n].max..[h+n,difference.size-1].min]
       ary.inject(0){ |s,e| s+e}/ary.size
     }
+  end
+
+  def revise_by_temp_ave(num=3)
+    return @revise_by_temp_ave if @revise_by_temp_ave
+    unless self.ave01
+      n = num/2
+
+      aves = (0..powers.size-1).map{ |h| ary = revise_by_temp[[0,h-n].max..[h+n,rev.size-1].min]
+        ary.inject(0){ |s,e| s+e}/ary.size
+      }
+      Aves.each{ |r|  self[r] = aves.shift}
+      save
+    end
+    @revise_by_temp_ave = Aves.map{ |r| self[r]}
   end
 
   def move_ave(num=5)

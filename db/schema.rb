@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140621002232) do
+ActiveRecord::Schema.define(:version => 20140621103505) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -269,6 +269,30 @@ ActiveRecord::Schema.define(:version => 20140621002232) do
     t.float   "rev22"
     t.float   "rev23"
     t.float   "rev24"
+    t.float   "ave01"
+    t.float   "ave02"
+    t.float   "ave03"
+    t.float   "ave04"
+    t.float   "ave05"
+    t.float   "ave06"
+    t.float   "ave07"
+    t.float   "ave08"
+    t.float   "ave09"
+    t.float   "ave10"
+    t.float   "ave11"
+    t.float   "ave12"
+    t.float   "ave13"
+    t.float   "ave14"
+    t.float   "ave15"
+    t.float   "ave16"
+    t.float   "ave17"
+    t.float   "ave18"
+    t.float   "ave19"
+    t.float   "ave20"
+    t.float   "ave21"
+    t.float   "ave22"
+    t.float   "ave23"
+    t.float   "ave24"
   end
 
   create_table "top_pages", :force => true do |t|
