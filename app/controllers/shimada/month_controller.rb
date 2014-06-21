@@ -9,6 +9,8 @@ class Shimada::MonthController <  Shimada::Controller
                      :htmloption => Popup}),
       HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_reviced", :link_label => "温度補正",
                      :htmloption => Popup}),
+      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_reviced_ave", :link_label => "温度補正平均",
+                     :htmloption => Popup}),
       HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_temp", :link_label => "対温度",
                      :htmloption => Popup}),
       HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_ave", :link_label => "平均化",
@@ -19,6 +21,7 @@ class Shimada::MonthController <  Shimada::Controller
   PowerLabels =
     [ HtmlLink.new(:id,"",:link => { :link_label => "グラフ", :url => "/shimada/month/graph",:htmloption => Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "温度補正", :url => "/shimada/month/graph_reviced",:htmloption => Popup}),
+      HtmlLink.new(:id,"",:link => { :link_label => "補正後平均", :url => "/shimada/month/graph_reviced_ave",:htmloption => Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "対温度", :url => "/shimada/month/graph_temp",
                      :htmloption =>Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "正規化", :url => "/shimada/month/graph_nomalize",
@@ -63,14 +66,21 @@ class Shimada::MonthController <  Shimada::Controller
     @Graph = true
     @TYTLE_post = @models.first.date.strftime("(%Y年%m月)")
     @TableEdit  =  [[:form,:index,"一覧に戻る"],
-                    [:popup,:graph_month_nomalized,"月度正規化",{ :win_name => "graph"} ] ,
                     [:popup,:graph_month,"月度グラフ",{ :win_name => "graph"} ],
                     [:popup,:graph_month_reviced,"月度温度補正",{ :win_name => "graph"} ],
+                    [:popup,:graph_month_reviced_ave,"月度温度補正平均",{ :win_name => "graph"} ],
                     [:popup,:graph_month_temp,"月度対温度",{ :win_name => "graph"} ],
                     [:form,:graph_selected,"選択日グラフ",{:win_name => "graph", :form_notclose => true}]
                    ]
     @labels = PowerLabels
     @TableHeaderDouble = [4,[24,"時刻"]]
+  end
+
+  def graph_sub(method)
+    @power = Shimada::Power.find(params[:id])
+    Shimada::Power.gnuplot([@power],method)
+    @TYTLE += @power.date.strftime("(%Y年%m月%d日)")
+    render  :action => :graph,:layout => "hospital_error_disp"
   end
 
   def graph
@@ -85,6 +95,10 @@ class Shimada::MonthController <  Shimada::Controller
     Shimada::Power.gnuplot([@power],:revise_by_temp)
     @TYTLE = "温度補正後 消費電力推移" + @power.date.strftime("(%Y年%m月%d日)")
     render :action => :graph,:layout => "hospital_error_disp"
+  end
+  def graph_reviced_ave
+    @TYTLE = "温度補正後 消費電力推移"
+    graph_sub(:revise_by_temp_ave)
   end
 
   def graph_temp
@@ -152,6 +166,14 @@ class Shimada::MonthController <  Shimada::Controller
     @TYTLE = "正規化消費電力推移" + @power.date.strftime("(%Y年%m月%d日)")
     render :action => :graph,:layout => "hospital_error_disp"
   end
+  ###
+  def graph_month_sub(method)
+    id = params[@Domain] ? params[@Domain][:id] : params[:id] 
+    @power = @Model.find(id).powers
+    @TYTLE += @power.first.date.strftime("(%Y年%m月)")
+    Shimada::Power.gnuplot(@power,method)
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
   def graph_month
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
     @power = @Model.find(id).powers
@@ -162,9 +184,13 @@ class Shimada::MonthController <  Shimada::Controller
   def graph_month_reviced
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
     @power = @Model.find(id).powers
-    Shimada::Power.gnuplot(@power,:revise_by_temp,:by_month => true)
-    @TYTLE = "消費電力推移" + @power.first.date.strftime("(%Y年%m月)")
+    Shimada::Power.gnuplot(@power,:revise_by_temp)
+    @TYTLE = "補正消費電力推移" + @power.first.date.strftime("(%Y年%m月)")
     render :action => :graph,:layout => "hospital_error_disp"
+  end
+  def graph_month_reviced_ave
+    @TYTLE = "補正平均消費電力推移"
+    graph_month_sub(:revise_by_temp_ave)
   end
 
   def graph_month_temp
