@@ -9,7 +9,7 @@ class Shimada::Power < ActiveRecord::Base
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
-  Lines = [(0..300),(300..350),(350..400),(400..550),(550..710),(710..800)]
+  Lines = [(0..300),(300..400),(400..550),(550..710),(710..800),(800..1000)]
 
   Header = "時刻"
 
@@ -27,6 +27,8 @@ class Shimada::Power < ActiveRecord::Base
                    powers.group_by{ |p| p.date.strftime("%Y/%m")} 
                  elsif opt[:by_line]
                    powers.group_by{ |p| "稼働数-#{p.lines}"}.sort_by{ |p,v| p}.reverse
+                 elsif opt[:by_shape]
+                   powers.group_by{ |p| p.shape}.sort_by{ |p,v| p}#.reverse
                   else
                    powers.size > 0 ? [[powers.first.date.strftime("%Y/%m"),powers]] : [["",[]]]
                      
@@ -50,7 +52,7 @@ class Shimada::Power < ActiveRecord::Base
     }
     def_file = "/tmp/shimada/power.def"
 
-    by_month = ( opt[:by_month] || opt[:by_line] ) ? "set key outside autotitle columnheader" : "unset key"
+    by_month = ( opt.keys & [:by_month,:by_line,:by_shape] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
     preunble = ( case method
                  when :normalized ;  Nomalized_def
                  when :difference, :difference_ave ,:diffdiff;  Differ_def 
@@ -92,6 +94,38 @@ class Shimada::Power < ActiveRecord::Base
     Lines.index{ |line| line.include?(revise_by_temp_ave[3..-1].max) }
   end
 
+  def shape
+    if     variance_revise < 6000   ; "Flat"
+    elsif  difference_ave[10..18].max < 20 && diffdiff[8..18].max < 25; "Reduce"
+    else                            ; "Other"
+    end
+  end
+
+  Sdev = [0,6000,90000]
+  def shape_by_sdev
+    case variance_revise
+    when (Sdev[0]..Sdev[1])   ; "Flat"
+    when (Sdev[1]..Sdev[2]) ; "Reduce"
+    else           ; "Other"
+    end
+  end
+
+  def shape_by_difdif
+    case diffdiff[8..18].max
+    when (-10..15)   ; "Flat"
+    when (15..100) ; "Reduce"
+    else           ; "Other"
+    end
+  end
+
+  def shape_by_diff
+    case difference_ave[8..18].min
+    when (-15..10)   ; "Flat"
+    when (-100..-15) ; "Down"
+    else            ; "Other"
+    end
+  end
+
   def powers ; Hours.map{ |h| self[h]} ; end
 
   def weather
@@ -104,6 +138,11 @@ class Shimada::Power < ActiveRecord::Base
     @temps = Hours.map{ |h| weather[h]}
     save
     @temps
+  end
+
+  def variance_revise(from = 8,to = 18)
+    ave = revise_by_temp_ave[from..to].inject(0.0){ |s,e| s += e}/(to-from+1)
+    sigma  = revise_by_temp_ave[from..to].inject(0.0){ |s,e| s += (e-ave)*(e-ave)}
   end
 
   def revise_by_temp
