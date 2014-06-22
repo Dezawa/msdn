@@ -9,6 +9,9 @@ class Shimada::MonthController <  Shimada::Controller
                     :htmloption => Popup}),
      HtmlLink.new(:id,"",:link => { :link_label => "稼働数"   , :url => "/shimada/month/graph_line_all"   ,:htmloption => Popup}),
      HtmlLink.new(:id,"",:link => { :link_label => "稼働変化別",:url => "/shimada/month/graph_shape_all"  ,:htmloption => Popup}), 
+     HtmlLink.new(:id,"",:link => { :link_label => "稼働F",:url => "/shimada/month/graph_shape_all_F"  ,:htmloption => Popup}), 
+     HtmlLink.new(:id,"",:link => { :link_label => "稼働D",:url => "/shimada/month/graph_shape_all_D"  ,:htmloption => Popup}), 
+     HtmlLink.new(:id,"",:link => { :link_label => "稼働O",:url => "/shimada/month/graph_shape_all_O"  ,:htmloption => Popup}), 
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_difference_ave", :link_label => "差分平均", :htmloption => Popup}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_diffdiff", :link_label => "二階差", :htmloption => Popup}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_reviced", :link_label => "温度補正", :htmloption => Popup}),
@@ -79,6 +82,9 @@ class Shimada::MonthController <  Shimada::Controller
       [7,
        (0..5).map{ |run| [:popup,"graph_line#{run}","#{run}ライン稼働",{ :win_name => "graph"}] } +
        [[:popup,"graph_line_all","ライン稼働数別",{ :win_name => "graph"}],
+        [:popup,"graph_shape_all_F","稼働フラット",{ :win_name => "graph"}],
+        [:popup,"graph_shape_all_D","稼働ダウン",{ :win_name => "graph"}],
+        [:popup,"graph_shape_all_O","稼働その他",{ :win_name => "graph"}],
         [:popup,"graph_shape_all","稼働変化別",{ :win_name => "graph"}]
        ]
       ]
@@ -155,11 +161,13 @@ class Shimada::MonthController <  Shimada::Controller
   def graph_line4       ; graph_month_sub(:revise_by_temp_ave,"稼働４ライン",:find => [:line_num,4]) ;  end
   def graph_line5       ; graph_month_sub(:revise_by_temp_ave,"稼働５ライン",:find => [:line_num,5]) ;  end
   def graph_line_all    ; graph_month_sub(:revise_by_temp_ave,"稼働５ライン",:by_line => true ) ;  end
-  def graph_shape_all   ; graph_month_sub(:revise_by_temp_ave,"稼働５ライン",:by_shape => true ) ;  end
+  def graph_shape_all_F ; graph_month_sub(:revise_by_temp_ave,"稼働F",:find => [:shape,"Flat"] ) ;  end
+  def graph_shape_all_D ; graph_month_sub(:revise_by_temp_ave,"稼働D"  ,:find => [:shape,"Reduce"]);end
+  def graph_shape_all_O ; graph_month_sub(:revise_by_temp_ave,"稼働O"  ,:find => [:shape,"Other"] ) ;  end
+  def graph_shape_all   ; graph_month_sub(:revise_by_temp_ave,"稼働変化別",:by_shape => true ) ;  end
 
-  def line_num(month, run)
-    month.powers.select{ |p| p.lines == run }
-  end
+  def line_num(month, run) ;  month.powers.select{ |p| p.lines == run } ;  end
+  def shape(month, run)    ;  month.powers.select{ |p| p.shape == run } ;  end
 
   def graph_temp    
     @power = Shimada::Power.find(params[:id])

@@ -96,7 +96,8 @@ class Shimada::Power < ActiveRecord::Base
 
   def shape
     if     variance_revise < 6000   ; "Flat"
-    elsif  difference_ave[10..18].max < 20 && diffdiff[8..18].max < 25; "Reduce"
+    elsif  difference_ave[10..18].min < -20 && difference_ave[10..18].max < 20 # && diffdiff[8..18].max < 25
+      "Reduce" #u 
     else                            ; "Other"
     end
   end
