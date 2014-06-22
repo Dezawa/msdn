@@ -23,3 +23,12 @@ class Weather < ActiveRecord::Base
   def temperatures ;   Temperature.map{ |t| self[t]} ; end
 
 end
+__END__
+s = Time.local(2013,1,1).beginning_of_day
+e = Time.local(2014,6,20).beginning_of_day
+date = s
+  Weather.fetch("maebashi",date)
+while date <= e
+  Weather.find_or_feach("maebashi",date)
+  date = date.tomorrow
+end
