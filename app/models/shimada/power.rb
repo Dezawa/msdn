@@ -2,62 +2,14 @@
 require "tempfile"
 
 class Shimada::Power < ActiveRecord::Base
+  include GnuplotDef
   set_table_name 'shimada_powers'
   belongs_to :month     ,:class_name => "Shimada::Month"
   belongs_to :db_weather,:class_name => "Weather"
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
-
-  Temp_power_def =
-%Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
-set out 'tmp/shimada/power.gif'
-
-set title "温度-消費電力 " 
-set key outside autotitle columnheader
-set yrange [0:1000]
-set xrange [-10:40]
-set xtics -10,5
-!
-  Power_def =
-%Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
-set out 'tmp/shimada/power.gif'
-#set terminal x11
-
-set title "消費電力 " 
-%s
-set yrange [0:1000]
-set xrange [1:24]
-set xtics 1,1
-set grid ytics
-!
-
-  Differ_def =
-%Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
-set out 'tmp/shimada/power.gif'
-#set terminal x11
-
-set title "消費電力 " 
-%s
-set yrange [-100:100]
-set xrange [1:24]
-set xtics 1,1
-set ytics -100,25
-set grid ytics
-!
-
-  Nomalized_def=
-%Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
-set out 'tmp/shimada/power.gif'
-#set terminal x11
-
-set title "正規化消費電力 " 
-%s
-set yrange [0:1.1]
-set xrange [1:24]
-set xtics 1,1
-!
-
+  Lines = [(0..300),(300..350),(350..400),(400..550),(550..700),(700..800)]
 
   Header = "時刻"
 
@@ -126,6 +78,10 @@ set xtics 1,1
       end
     }
     `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
+  end
+
+  def lines
+    Lines.index{ |line| line.include?(revise_by_temp_ave[3..-1].max) }
   end
 
   def powers ; Hours.map{ |h| self[h]} ; end
