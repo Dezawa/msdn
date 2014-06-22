@@ -4,9 +4,9 @@ class WeatherController < ApplicationController
   
   #Viewにて表示すべき項目の定義。
   Labels = [
-            HtmlDate.new(:month        ,"年月",  :tform => "%Y/%m", :ro => true, :size => 7 ),
-            HtmlDate.new(:date         ,"日",  :tform => "%d", :ro => true, :size => 7 ),
-            HtmlText.new(:location     ,"場所",    :ro => true , :size => 7)
+            HtmlText.new(:location     ,"場所",    :ro => true , :size => 7),
+#            HtmlDate.new(:month        ,"年月",  :tform => "%Y/%m", :ro => true, :size => 7 ),
+            HtmlDate.new(:date         ,"年月日",  :tform => "%Y/%m/%d", :ro => true, :size => 7 )
             ] +
     Weather::Temperature.map{ |h| 
       HtmlNum.new(h, h.sub(/hour/,""),:ro => true,:size => 2 ) }
@@ -17,9 +17,24 @@ class WeatherController < ApplicationController
     @labels=Labels
     @TableEdit = nil
     @Domain= @Model.name.underscore
-    @TableHeaderDouble = [3,[24,"時刻"]]
+    #@TableHeaderDouble = [3,[24,"時刻"]]
     @FindOption = { :order => "date"}
   end
 
+  def index
+    @labels =  [
+            HtmlText.new(:location     ,"場所",    :ro => true , :size => 7),
+            HtmlDate.new(:month        ,"年月",  :tform => "%Y/%m", :ro => true, :size => 7 )
+            ]
+    @Show = true
+    @models = Weather.all(:select => :month,:select => "distinct month,location",
+                          :order => "location,month")
+  end
 
-  end # of class users_cont
+  def monthly
+    @models = Weather.
+      all(:conditions => ["location = ? and month = ?", params[:location],params[:month]],
+          :order => "date")
+    render  :file => 'application/index',:layout => 'application'
+  end
+end
