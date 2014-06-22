@@ -2,7 +2,7 @@
 require "tempfile"
 
 class Shimada::Power < ActiveRecord::Base
-  include GnuplotDef
+  include Shimada::GnuplotDef
   set_table_name 'shimada_powers'
   belongs_to :month     ,:class_name => "Shimada::Month"
   belongs_to :db_weather,:class_name => "Weather"
