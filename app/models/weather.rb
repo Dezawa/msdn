@@ -6,7 +6,7 @@ class Weather < ActiveRecord::Base
   class << self
     def fetch(location,day)
       y,m,d = [day.year, day.month, day.day]
-      temp = `/home/dezawa/bin/weather/weather_past.rb #{location} #{y} #{m} #{d}`
+      temp = `/usr/local/bin/weather_past.rb #{location} #{y} #{m} #{d}`
       logger.info("WEATHER:: #{temp.class}")
       return unless temp
       weather = self.create( { :location => location,:date => day}.
