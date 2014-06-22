@@ -9,7 +9,7 @@ class Shimada::Power < ActiveRecord::Base
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
-  Lines = [(0..300),(300..350),(350..400),(400..550),(550..700),(700..800)]
+  Lines = [(0..300),(300..350),(350..400),(400..550),(550..710),(710..800)]
 
   Header = "時刻"
 
@@ -25,8 +25,11 @@ class Shimada::Power < ActiveRecord::Base
     path = []
     ary_powres = if by_month = opt[:by_month]
                    powers.group_by{ |p| p.date.strftime("%Y/%m")} 
-                 else
-                   [[powers.first.date.strftime("%Y/%m"),powers]]
+                 elsif opt[:by_line]
+                   powers.group_by{ |p| "稼働数-#{p.lines}"}.sort_by{ |p,v| p}.reverse
+                  else
+                   powers.size > 0 ? [[powers.first.date.strftime("%Y/%m"),powers]] : [["",[]]]
+                     
                  end
     ary_powres.each_with_index{ |month_powers,idx|
       path << "/tmp/shimada/shimada_power_temp%d"%idx
@@ -47,7 +50,7 @@ class Shimada::Power < ActiveRecord::Base
     }
     def_file = "/tmp/shimada/power.def"
 
-    by_month = opt[:by_month] ? "set key outside autotitle columnheader" : "unset key"
+    by_month = ( opt[:by_month] || opt[:by_line] ) ? "set key outside autotitle columnheader" : "unset key"
     preunble = ( case method
                  when :normalized ;  Nomalized_def
                  when :difference, :difference_ave ,:diffdiff;  Differ_def 
@@ -56,7 +59,12 @@ class Shimada::Power < ActiveRecord::Base
 
     open(def_file,"w"){ |f|
       f.puts preunble
-      f.puts "plot " + path.map{ |p| "'#{p}' using 1:2  with line"}.join(" , ")
+      f.print "plot " + path.map{ |p| "'#{p}' using 1:2  with line"}.join(" , ")
+      if opt[:by_line]
+        f.puts " , " + Lines.map{ |line| line.last}.join(" , ")
+      else
+        f.puts
+      end
     }
     `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
   end
