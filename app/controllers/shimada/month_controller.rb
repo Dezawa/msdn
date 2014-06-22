@@ -36,7 +36,8 @@ class Shimada::MonthController <  Shimada::Controller
       HtmlLink.new(:id,"",:link => { :link_label => "差分", :url => "/shimada/month/graph_difference",
                      :htmloption =>Popup}),
       HtmlCeckForSelect.new(:id,""),
-      HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d")
+      HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
+      HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2)
     ] + 
       Shimada::Power::Hours.map{ |h| 
         HtmlNum.new( h.to_sym,h.sub(/hour0?/,""),:tform => "%.0f",:size => 3)
@@ -84,7 +85,7 @@ class Shimada::MonthController <  Shimada::Controller
                     [:form,:graph_selected,"選択日グラフ",{:win_name => "graph", :form_notclose => true}]
                    ]
     @labels = PowerLabels
-    @TableHeaderDouble = [4,[24,"時刻"]]
+    @TableHeaderDouble = [9,[24,"時刻"]]
   end
 
   def reset_reevice_and_ave
