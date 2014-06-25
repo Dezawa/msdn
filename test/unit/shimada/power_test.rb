@@ -11,14 +11,16 @@ class ShimadaPowerTest < ActiveSupport::TestCase
 
   must "複数のpowerで gnuplot_data するとtmpfileは 1+24*日数 行できる" do
     powers = Shimada::Power.find(1,4,10)
-    path = Shimada::Power.gnuplot_data(powers.map{ |p| p.powers })
-    lines = File.read path
+    path = Shimada::Power.output_plot_data(powers,:powers){ |f,power| 
+      power.send(:powers).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
+    }
+    lines = File.read path.first
     assert_equal 1+3*24,lines.split(/\n+/).size
   end
 
   must "複数のpowerで gnuplot するとgifができる" do
     powers = Shimada::Power.find(1,4,10)
-    path   = Shimada::Power.gnuplot(powers.map{ |p| p.powers })
+    path   = Shimada::Power.gnuplot(powers,:powers)
   end
 
   must "Id=1 の最大値群は" do
@@ -52,14 +54,15 @@ class ShimadaPowerTest < ActiveSupport::TestCase
                   6.4, 8.1, 9.9, 9.9, 9.1, 9.0, 8.1, 7.7, 6.2, 5.8, 5.8, 5.5, 5.5, 5.2],powers.temps
   end
 
-  must "600kwH 30℃は20℃のときは" do
-    day = Time.local(2013,2,1)
-    power = Shimada::Power.create(:date => day,:hour01 => 600)
-    temp  = Weather.create(:date => day,:hour01 => 30 )
-    assert_equal 600 - 9*(30-20),power.revise_by_temp[0]
-  end
   must "ID=1の温度補正後" do
     powers = Shimada::Power.find(1)
-    assert_equal [],powers.revise_by_temp
+    assert_equal [442.8, 388.8, 365.4, 448.1, 503.2, 621.7, 638.3, 657.1,
+                  671.8, 649.1, 666.8, 659.7, 650.3, 666.3, 679.7, 654.0,
+                  665.7, 658.9, 644.4, 665.6, 660.6, 629.5, 619.5, 549.4],powers.revise_by_temp
+  end
+
+  must "ID=1の近似" do
+    powers = Shimada::Power.find(1)
+    assert_equal [657.8844, -2.6897, 0.8771, 0.089, -0.0239],powers.a(4).map{ |f| f.round(4)}
   end
 end
