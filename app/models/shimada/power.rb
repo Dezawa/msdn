@@ -166,8 +166,8 @@ class Shimada::Power < ActiveRecord::Base
 
   # Array a of \sum_{i=0}^{次元数}(a_i x^i)
   # 
-  def a
-    @a ||= polyfit(PolyFitHour.map{ |h| h-PolyFitX0},revise_by_temp[PolyFitHour],PolyLevel)
+  def a(n=PolyLevel)
+    @a ||= polyfit(PolyFitHour.map{ |h| h-PolyFitX0},revise_by_temp[PolyFitHour],n)
   end
   def a0 ; a[0];end
   def a1 ; a[1];end
