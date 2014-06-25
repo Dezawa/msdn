@@ -3,14 +3,21 @@ require "tempfile"
 
 class Shimada::Power < ActiveRecord::Base
   include Shimada::GnuplotDef
+  include PolyFit
+
+  PolyFitHour = (3 .. 22)  # 6時～23時
+  PolyFitX0   = 13.0       # 13時
+  PolyLevel   = 6
+
+
   set_table_name 'shimada_powers'
   belongs_to :month     ,:class_name => "Shimada::Month"
   belongs_to :db_weather,:class_name => "Weather"
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
-  Lines = [(0..300),(300..400),(400..550),(550..710),(710..800),(800..1000)]
-
+  Lines = [(0..300),(300..400),(400..560),(560..710),(710..800),(800..1000)]
+  Shapes = %w(F U D I R O)
   Header = "時刻"
 
 
@@ -23,21 +30,29 @@ class Shimada::Power < ActiveRecord::Base
 
   def self.output_plot_data(powers,method,opt = { },&block)
     path = []
+    keys = nil
     ary_powres = if by_month = opt[:by_month]
                    powers.group_by{ |p| p.date.strftime("%Y/%m")} 
                  elsif opt[:by_line]
-                   powers.group_by{ |p| "稼働数-#{p.lines}"}.sort_by{ |p,v| p}.reverse
+                   keys = (0..5).to_a
+                   powers.group_by{ |p| "稼働数-#{p.lines}"}
+                   
                  elsif opt[:by_shape]
-                   powers.group_by{ |p| p.shape}.sort_by{ |p,v| p}#.reverse
-                  else
-                   powers.size > 0 ? [[powers.first.date.strftime("%Y/%m"),powers]] : [["",[]]]
+                   keys = Shapes
+                   powers.group_by{ |p| p.shape}#.sort_by{ |p,v| p}#.reverse
+                 else
+                   powers.size > 0 ? { powers.first.date.strftime("%Y/%m")=>powers} : {"" =>[]}
                      
                  end
-    ary_powres.each_with_index{ |month_powers,idx|
+    keys = ary_powres.keys
+    keys.each_with_index{ |k,idx|
+      #ary_powres.each_with_index{ |month_powers,idx|
       path << "/tmp/shimada/shimada_power_temp%d"%idx
       open(path.last,"w"){ |f|
-        f.puts "時刻 #{month_powers.first}"
-        month_powers.last.each{ |power|
+        #f.puts "時刻 #{month_powers.first}"
+        f.puts "時刻 #{k}"
+        #month_powers.last.each{ |power|
+        ary_powres[k].each{ |power|
           yield f,power #power.send(method).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
           f.puts
         }
@@ -62,11 +77,18 @@ class Shimada::Power < ActiveRecord::Base
     open(def_file,"w"){ |f|
       f.puts preunble
       f.print "plot " + path.map{ |p| "'#{p}' using 1:2  with line"}.join(" , ")
-      if opt[:by_line]
-        f.puts " , " + Lines.map{ |line| line.last}.join(" , ")
-      else
-        f.puts
+      if opt[:by_line] 
+        f.print " , " + Lines.map{ |line| line.last}.join(" , ")
+      elsif opt[:fitting]
+        i=0
+#logger.debug("powers = #{powers.first.class}")
+        a = powers.first.a
+#        logger.debug("powers.a = #{powers.first.a.join(',')}")
+        f.print  ",\\\n #{a[0]}"+ 
+          a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{PolyFitX0+1})**#{i}"
+        }.join
       end
+        f.puts
     }
     `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
   end
@@ -95,10 +117,23 @@ class Shimada::Power < ActiveRecord::Base
   end
 
   def shape
-    if     variance_revise < 6000   ; "Flat"
+    # F Flat          ほぼ平ら。稼働ライン数が一定なのだろう
+    # U step Up       階段状に増える。稼働ラインが途中から増えたのだろう
+    # D step Down     階段状に減る。　稼働ラインが途中で減ったのだろう
+    # I Increace      ズルズル増える  稼働ラインの変化ではなく、なんかある？
+    # R Reduce        ズルズル減る。  稼働ラインの変化ではなく、なんかある？
+    # C Cup           途中で稼働ライン一時的に止めた
+    # H Hat           途中で一時的に増えている。なんかある？
+    if     variance_revise < 6000   ; "F"  # 分散が少ないなら、一定とみなしてよいだろう
+                                           # 大きな＋差分ピークならstep up とみなしてよいだろう
+                                           # 大きな-差分ディップならDとみてよいだろう
+                                           # ＋差分が支配的なら I
+                                           # ー差分が支配的なら R
+                                           # 差分が／＼なら H
+                                           # 差分が＼／なら C
     elsif  difference_ave[10..18].min < -20 && difference_ave[10..18].max < 20 # && diffdiff[8..18].max < 25
-      "Reduce" #u 
-    else                            ; "Other"
+      "R" #u 
+    else                            ; "O"
     end
   end
 
@@ -128,6 +163,23 @@ class Shimada::Power < ActiveRecord::Base
   end
 
   def powers ; Hours.map{ |h| self[h]} ; end
+
+  # Array a of \sum_{i=0}^{次元数}(a_i x^i)
+  # 
+  def a
+    @a ||= polyfit(PolyFitHour.map{ |h| h-PolyFitX0},revise_by_temp[PolyFitHour],PolyLevel)
+  end
+  def a0 ; a[0];end
+  def a1 ; a[1];end
+  def a2 ; a[2];end
+  def a3 ; a[3];end
+  def a4 ; a[4];end
+
+  def a5 ; a[5];end
+  def a6 ; a[6];end
+
+
+
 
   def weather
     return db_weather if db_weather
@@ -174,7 +226,7 @@ class Shimada::Power < ActiveRecord::Base
     revise_by_temp_ave[1..-1].map{ |y| dif = y - y0; y0 = y ; dif} 
   end
 
-  def difference_ave(num=5)
+  def difference_ave(num=3)
     n = num/2
     
     aves = (0..difference.size-1).map{ |h| ary = difference[[0,h-n].max..[h+n,difference.size-1].min]
