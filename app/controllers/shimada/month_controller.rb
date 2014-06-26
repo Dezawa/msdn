@@ -28,7 +28,7 @@ class Shimada::MonthController <  Shimada::Controller
       HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => "/shimada/month/graph_reviced"    ,:htmloption => Popup}),
       #HtmlLink.new(:id,"",:link => { :link_label => "補正後平均",:url => "/shimada/month/graph_reviced_ave",:htmloption => Popup}),
       #HtmlLink.new(:id,"",:link => { :link_label => "対温度"   , :url => "/shimada/month/graph_temp"    ,  :htmloption =>Popup}),
-      #HtmlLink.new(:id,"",:link => { :link_label => "正規化"   , :url => "/shimada/month/graph_nomalize" , :htmloption =>Popup}),
+      HtmlLink.new(:id,"",:link => { :link_label => "正規化"   , :url => "/shimada/month/graph_nomalize" , :htmloption =>Popup}),
       #HtmlLink.new(:id,"",:link => { :link_label => "差分"     , :url => "/shimada/month/graph_difference",:htmloption =>Popup}),
       HtmlCeckForSelect.new(:id,""),
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
@@ -36,7 +36,7 @@ class Shimada::MonthController <  Shimada::Controller
       HtmlText.new(:shape,"形<br>状",:ro => true,:size =>2)
       
     ] + 
-    (0..6).map{ |i| HtmlNum.new("a#{i}".to_sym,"a#{i}",:tform => "%.3f")}+
+    (0..6).map{ |i| HtmlNum.new("na#{i}".to_sym,"na#{i}",:tform => "%.3f")}+
       Shimada::Power::Hours.map{ |h| 
         HtmlNum.new( h.to_sym,h.sub(/hour0?/,""),:tform => "%.0f",:size => 3)
       }
@@ -112,8 +112,7 @@ class Shimada::MonthController <  Shimada::Controller
   def graph         ;    graph_sub(:powers,"消費電力推移") ;  end
   def graph_reviced ;    graph_sub(:revise_by_temp,"温度補正後 消費電力推移",:fitting => true) ;  end
   def graph_reviced_ave; graph_sub(:revise_by_temp_ave,"補正後平均 消費電力推移") ;  end
-  def graph_nomalize   ; graph_sub(:normalized,"正規化消費電力推移") ;  end
-  def graph_nomalize   ; graph_sub(:normalized,"正規化消費電力推移") ;  end
+  def graph_nomalize   ; graph_sub(:normalized,"正規化消費電力推移",:fitting => true) ;  end
   def graph_difference ; graph_sub(:difference,"差分") ;  end
 
   def graph_selected

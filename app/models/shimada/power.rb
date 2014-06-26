@@ -6,8 +6,8 @@ class Shimada::Power < ActiveRecord::Base
   include PolyFit
 
   PolyFitHour = (3 .. 22)  # 6時～23時
-  PolyFitX0   = 13.0       # 13時
-  PolyLevel   = 6
+  PolyFitX0   = 14.0       # 15時
+  PolyLevel   = 5
 
 
   set_table_name 'shimada_powers'
@@ -82,7 +82,7 @@ class Shimada::Power < ActiveRecord::Base
       elsif opt[:fitting]
         i=0
 #logger.debug("powers = #{powers.first.class}")
-        a = powers.first.a
+        a = method == :normalized ? powers.first.na : powers.first.a
 #        logger.debug("powers.a = #{powers.first.a.join(',')}")
         f.print  ",\\\n #{a[0]}"+ 
           a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{PolyFitX0+1})**#{i}"
@@ -116,14 +116,7 @@ class Shimada::Power < ActiveRecord::Base
     Lines.index{ |line| line.include?(revise_by_temp_ave[3..-1].max) }
   end
 
-  def shape
-    # F Flat          ほぼ平ら。稼働ライン数が一定なのだろう
-    # U step Up       階段状に増える。稼働ラインが途中から増えたのだろう
-    # D step Down     階段状に減る。　稼働ラインが途中で減ったのだろう
-    # I Increace      ズルズル増える  稼働ラインの変化ではなく、なんかある？
-    # R Reduce        ズルズル減る。  稼働ラインの変化ではなく、なんかある？
-    # C Cup           途中で稼働ライン一時的に止めた
-    # H Hat           途中で一時的に増えている。なんかある？
+  def shape_old
     if     variance_revise < 6000   ; "F"  # 分散が少ないなら、一定とみなしてよいだろう
                                            # 大きな＋差分ピークならstep up とみなしてよいだろう
                                            # 大きな-差分ディップならDとみてよいだろう
@@ -134,6 +127,21 @@ class Shimada::Power < ActiveRecord::Base
     elsif  difference_ave[10..18].min < -20 && difference_ave[10..18].max < 20 # && diffdiff[8..18].max < 25
       "R" #u 
     else                            ; "O"
+    end
+  end
+
+    # F Flat          ほぼ平ら。稼働ライン数が一定なのだろう
+    # U step Up       階段状に増える。稼働ラインが途中から増えたのだろう
+    # D step Down     階段状に減る。　稼働ラインが途中で減ったのだろう
+    # I Increace      ズルズル増える  稼働ラインの変化ではなく、なんかある？
+    # R Reduce        ズルズル減る。  稼働ラインの変化ではなく、なんかある？
+    # C Cup           途中で稼働ライン一時的に止めた
+    # H Hat           途中で一時的に増えている。なんかある？
+    # S Sleep         稼働なし
+  def shape
+    if lines < 2  ; "S"
+    elsif na2<0 && -na2 > na1.abs ; "F"
+    elsif na2>0                   ; "f"
     end
   end
 
@@ -169,15 +177,25 @@ class Shimada::Power < ActiveRecord::Base
   def a(n=PolyLevel)
     @a ||= polyfit(PolyFitHour.map{ |h| h-PolyFitX0},revise_by_temp[PolyFitHour],n)
   end
-  def a0 ; a[0];end
-  def a1 ; a[1];end
-  def a2 ; a[2];end
-  def a3 ; a[3];end
-  def a4 ; a[4];end
+  def a0 ; (a[0] || 0.0);end
+  def a1 ; (a[1] || 0.0)*10;end
+  def a2 ; (a[2] || 0.0)*100;end
+  def a3 ; (a[3] || 0.0)*1000;end
+  def a4 ; (a[4] || 0.0)*10000;end
+  def a5 ; (a[5] || 0.0)*100000;end
+  def a6 ; (a[6] || 0.0)*1000000;end
 
-  def a5 ; a[5];end
-  def a6 ; a[6];end
 
+  def na(n=PolyLevel)
+    @a ||= polyfit(PolyFitHour.map{ |h| h-PolyFitX0},normalized[PolyFitHour],n)
+  end
+  def na0 ; (na[0] || 0.0);end
+  def na1 ; (na[1] || 0.0)*10;end
+  def na2 ; (na[2] || 0.0)*100;end
+  def na3 ; (na[3] || 0.0)*1000;end
+  def na4 ; (na[4] || 0.0)*10000;end
+  def na5 ; (na[5] || 0.0)*100000;end
+  def na6 ; (na[6] || 0.0)*1000000;end
 
 
 
