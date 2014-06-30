@@ -174,7 +174,7 @@ end
     when :popup ;popupform_buttom(action,label,opt,htmlopt)
     when :add_edit_buttoms ;edit_buttoms(@Domain) 
     when :add_buttom       ;add_buttom(@Domain)
-    when :edit_bottom       ;edit_bottom#(@Domain)
+    when :edit_bottom       ;edit_bottom(opt||{ })
     when :csv_up_buttom     ;csv_up_buttom
     when :input_and_action  ;input_and_action(action,label,opt)
     else function.to_s
