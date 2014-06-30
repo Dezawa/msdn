@@ -5,10 +5,10 @@ class Shimada::Power < ActiveRecord::Base
   include Shimada::GnuplotDef
   include PolyFit
 
-  PolyFitHour = (3 .. 22)  # 6時～23時
+  PolyFitHour = (5 .. 23)  # 6時～23時
   PolyFitX0   = 14.0       # 15時
-  PolyLevel   = 5
-
+  PolyLevel   = 4
+  Err         = 0.01
 
   set_table_name 'shimada_powers'
   belongs_to :month     ,:class_name => "Shimada::Month"
@@ -32,19 +32,25 @@ class Shimada::Power < ActiveRecord::Base
     path = []
     keys = nil
     ary_powres = if by_month = opt[:by_month]
-                   powers.group_by{ |p| p.date.strftime("%Y/%m")} 
+                   powers.group_by{ |p| p.date.strftime("%y/%m")} 
                  elsif opt[:by_line]
                    keys = (0..5).to_a
                    powers.group_by{ |p| "稼働数-#{p.lines}"}
                    
+                 elsif opt[:by_line_shape]
+                   #keys = Shapes
+                   p=powers.group_by{ |p| "#{p.lines}#{p.shape_calc}"}#.sort_by{ |p,v| p}#.reverse
+                   keys = p.keys.compact.sort
+                   p
                  elsif opt[:by_shape]
-                   keys = Shapes
-                   powers.group_by{ |p| p.shape}#.sort_by{ |p,v| p}#.reverse
+                   p=powers.group_by{ |p| p.shape_calc}#.sort_by{ |p,v| p}#.reverse
+                   keys = p.keys.compact.sort
+                   p
                  else
-                   powers.size > 0 ? { powers.first.date.strftime("%Y/%m")=>powers} : {"" =>[]}
+                   powers.size > 0 ? { powers.first.date.strftime("%y/%m")=>powers} : {"" =>[]}
                      
                  end
-    keys = ary_powres.keys
+    keys ||= ary_powres.keys
     keys.each_with_index{ |k,idx|
       #ary_powres.each_with_index{ |month_powers,idx|
       path << "/tmp/shimada/shimada_power_temp%d"%idx
@@ -63,11 +69,11 @@ class Shimada::Power < ActiveRecord::Base
 
   def self.gnuplot(powers,method,opt={ })
     path = output_plot_data(powers,method,opt){ |f,power| 
-      power.send(method).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
+      power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+1,h ) if h }
     }
     def_file = "/tmp/shimada/power.def"
 
-    by_month = ( opt.keys & [:by_month,:by_line,:by_shape] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
+    by_month = ( opt.keys & [:by_month,:by_line,:by_shape,:by_line_shape] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
     preunble = ( case method
                  when :normalized ;  Nomalized_def
                  when :difference, :difference_ave ,:diffdiff;  Differ_def 
@@ -84,9 +90,11 @@ class Shimada::Power < ActiveRecord::Base
 #logger.debug("powers = #{powers.first.class}")
         a = method == :normalized ? powers.first.na : powers.first.a
 #        logger.debug("powers.a = #{powers.first.a.join(',')}")
-        f.print  ",\\\n #{a[0]}"+ 
-          a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{PolyFitX0+1})**#{i}"
-        }.join
+        f.print  ",1,\\\n #{a[0]}"+ 
+          a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{PolyFitX0+1})**#{i}" }.join + " lt -1" +
+          ",\\\n (((%+f * (x-#{PolyFitX0+1}) %+f)*(x-#{PolyFitX0+1}) %+f)*(x-#{PolyFitX0+1}) %+f)*5+1"%[
+          a[4] * 4,a[3]*3,a[2]*2,a[1]] +
+          ", \\\n((%+f * (x-#{PolyFitX0+1}) %+f) * (x-#{PolyFitX0+1}) %+f)*5 +1"%[a[4] * 12,a[3]*6,a[2]*2]
       end
         f.puts
     }
@@ -96,7 +104,7 @@ class Shimada::Power < ActiveRecord::Base
   def self.gnuplot_by_temp(powers,opt={ })
     path = output_plot_data(powers,:powers,opt){ |f,power| 
       temperatures = Weather.find_or_feach("maebashi", power.date).temperatures
-      power.powers.each_with_index{ |h,idx| f.printf "%.1f %.1f\n",temperatures[idx],h }
+      power.powers.each_with_index{ |h,idx| f.printf( "%.1f %.1f\n",temperatures[idx],h ) if h && temperatures[idx] }
     }
 #    path = gnuplot_data_by_temp(powers,opt)
     def_file = "/tmp/shimada/power_temp.def"
@@ -138,10 +146,23 @@ class Shimada::Power < ActiveRecord::Base
     # C Cup           途中で稼働ライン一時的に止めた
     # H Hat           途中で一時的に増えている。なんかある？
     # S Sleep         稼働なし
-  def shape
+  def shape_calc
+    return nil unless lines
     if lines < 2  ; "S"
-    elsif na2<0 && -na2 > na1.abs ; "F"
-    elsif na2>0                   ; "f"
+    elsif discriminant.abs < 0.000002       ;"00"
+    elsif discriminant < 0.0                ; "F"
+    elsif na[4] > 0                         ; "O"
+    #elsif x1 < (PolyFitHour.first-PolyFitX0) ||  x2 > (PolyFitHour.last-PolyFitX0)         ;  "F2"
+    elsif y1     >  Err && y2.abs <   Err   ;  "+0"
+    elsif y1     >  Err && y2     >   Err   ;  "++"
+    elsif y1     >  Err && y2     <  -Err   ;  "+-"
+    elsif y1     < -Err && y2.abs <   Err   ;  "-0"
+    elsif y1     < -Err && y2     <  -Err   ;  "--"
+    elsif y1     < -Err && y2     >   Err   ;  "-+" # H
+    elsif y1.abs <  Err && y2.abs <   Err   ;  "00" #
+    elsif y1.abs <  Err && y2     >   Err   ;  "0+"
+    elsif y1.abs <  Err && y2     <  -Err   ;  "0-"
+    else                                    ;   "他"
     end
   end
 
@@ -187,7 +208,7 @@ class Shimada::Power < ActiveRecord::Base
 
 
   def na(n=PolyLevel)
-    @a ||= polyfit(PolyFitHour.map{ |h| h-PolyFitX0},normalized[PolyFitHour],n)
+    @na ||= polyfit(PolyFitHour.map{ |h| h-PolyFitX0},normalized_ave[PolyFitHour],n)
   end
   def na0 ; (na[0] || 0.0);end
   def na1 ; (na[1] || 0.0)*10;end
@@ -197,7 +218,30 @@ class Shimada::Power < ActiveRecord::Base
   def na5 ; (na[5] || 0.0)*100000;end
   def na6 ; (na[6] || 0.0)*1000000;end
 
+  def f4(x) ;    (((na[4] * x + na[3])*x + na[2])*x + na[1])*x+na[0] ;  end
+  
+  # 4x^3 + 3x^2 + 2x + a0
+  def f3(x) ;    ((na[4] * 4 * x + na[3]*3)*x + na[2]*2)*x + na[1] ;  end
+  
+  # 12x^2 + 6x + 2a1
+  def f2(x) ;    (na[4] * 12 * x + na[3]*6)*x + na[2]*2 ;  end
 
+  def discriminant ; 36*na[3]*na[3] - 96*na[2]*na[4]   ;  end
+  def f2_solve
+    @f2_solve ||=  
+      unless discriminant && discriminant >= 0
+        []
+      else
+#logger.debug("Math.sqrt  #{discriminant},#{na[3]} #{36*na[3]*na[3] - discriminant}")
+        sqrt = Math.sqrt(discriminant)
+        [(-na[3]*6 + sqrt)/(24*na[4]), (-na[3]*6 - sqrt)/(24*na[4])].sort
+      end
+  end
+  def x1       ; f2_solve.first ;end
+  def x2       ; f2_solve.last ;end
+
+  def y1       ; x1 ? f3(x1) : nil ;end
+  def y2       ; x2 ? f3(x2) : nil ;end
 
   def weather
     return db_weather if db_weather
@@ -222,7 +266,7 @@ class Shimada::Power < ActiveRecord::Base
       revs = Hours.map{ |h|
         power = self[h]
         temp  = weather[h]
-        temp > 15.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20)
+          temp > 15.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20) if power && temp
       }
       Revs.each{ |r|  self[r] = revs.shift}
       save
@@ -258,7 +302,7 @@ class Shimada::Power < ActiveRecord::Base
       n = num/2
 
       aves = (0..powers.size-1).map{ |h| ary = revise_by_temp[[0,h-n].max..[h+n,revise_by_temp.size-1].min]
-        ary.inject(0){ |s,e| s+e}/ary.size
+        ary.inject(0){ |s,e| s+(e ? e : 0 ) }/ary.size
       }
       Aves.each{ |r|  self[r] = aves.shift}
       save
@@ -276,11 +320,21 @@ class Shimada::Power < ActiveRecord::Base
     }
   end
 
+  def normalized_ave(num=5)
+    @normalized_ave ||= []
+    return @normalized_ave[num] if @normalized_ave[num]
+    n = num/2
+    @normalized_ave[num] = (0..normalized.size-1).
+      map{ |h| ary = normalized[[0,h-n].max..[h+n,normalized.size-1].min]
+      ary.inject(0){ |s,e| s+e}/ary.size
+    }
+  end
+
   def normalized(num=5)
     ave = max_ave(num)
-    move_ave(num)
+    #move_ave(num)
     #Hours.map{ |h| self[h]/ave}
-    move_ave(num).map{ |h| h/ave}
+    powers.map{ |h| h/ave}
   end
 
   def max_powers(num=3)
