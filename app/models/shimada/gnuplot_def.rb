@@ -47,8 +47,10 @@ set out 'tmp/shimada/power.gif'
 
 set title "正規化消費電力 " 
 %s
-set yrange [0.2:1.1]
-set xrange [1:24]
+set yrange [0.0:1.1]
+#set xrange [1:24]
+#set yrange [0.0:10.1]
+set xrange [-10:30]
 set xtics 1,1
 set x2tics 3,3
 set grid x2tics

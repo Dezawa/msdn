@@ -15,7 +15,7 @@ pp day.beginning_of_month
     end
 
     def find_or_feach(location,day)
-      weather = find_by_location_and_date(location,day)
+      weather = find_by_location_and_month_and_date(location,day.beginning_of_month,day)
       return weather if weather
       fetch(location,day)
     end
@@ -30,7 +30,7 @@ e = Time.local(2014,6,26).beginning_of_day
 date = s
   Weather.fetch("maebashi",date)
 while date <= e
-  Weather.fetch("maebashi",date)
+  Weather.find_or_feach("maebashi",date)
   date = date.tomorrow
 p date
 end

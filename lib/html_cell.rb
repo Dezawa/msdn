@@ -122,6 +122,13 @@ class HtmlNum  < HtmlText
 end
 
 class HtmlLink   < HtmlCell
+  def initialize(sym,lbl=nil,args={})
+    @ro = true
+    super
+  end
+  def edit_text(object,htmlopt="")
+    disp(object,htmlopt="")
+  end
   def disp(object,htmlopt="")
     #logger.debug("HtmlLink: #{object.send(symbol)},#{link[:url]},#{link[:key]}, #{object.send(link[:key_val])}")
     lbl = link[:link_label] || object.send(symbol)

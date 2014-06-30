@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140622004807) do
+ActiveRecord::Schema.define(:version => 20140626100332) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -293,6 +293,7 @@ ActiveRecord::Schema.define(:version => 20140622004807) do
     t.float   "ave22"
     t.float   "ave23"
     t.float   "ave24"
+    t.string  "shape"
   end
 
   create_table "top_pages", :force => true do |t|
