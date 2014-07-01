@@ -6,28 +6,26 @@ class Shimada::MonthController <  Shimada::Controller
   Labels = 
     [#HtmlCeckForSelect.new(:id,""),
      HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month", :link_label => "グラフ",
-                    :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_nomalized", :link_label => "正規化", :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :link_label => "稼働数"   , :url => "/shimada/month/graph_line_all"   ,:htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :link_label => "稼働変化別",:url => "/shimada/month/graph_month_lines_types"  ,:htmloption => Popup}), 
-     HtmlLink.new(:id,"",:link => { :link_label => "稼働F",:url => "/shimada/month/graph_shape_all_F"  ,:htmloption => Popup}), 
-     HtmlLink.new(:id,"",:link => { :link_label => "稼働D",:url => "/shimada/month/graph_shape_all_D"  ,:htmloption => Popup}), 
-     HtmlLink.new(:id,"",:link => { :link_label => "稼働O",:url => "/shimada/month/graph_shape_all_O"  ,:htmloption => Popup}), 
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_difference", :link_label => "差分", :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_difference_ave", :link_label => "差分平均", :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_diffdiff", :link_label => "二階差", :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_reviced", :link_label => "温度補正", :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_reviced_ave", :link_label => "温度補正平均", :htmloption => Popup}),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month", :link_label => "グラフ", :htmloption => Popup}),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_nomalized",:link_label => "正規化", :htmloption => Popup}),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_reviced", :link_label => "温度補正",  :htmloption => Popup}),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_reviced_ave",:link_label => "温度補正平均",:htmloption => Popup}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_temp", :link_label => "対温度", :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_ave", :link_label => "平均化", :htmloption => Popup}),
-     
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働数"   , :url => "/shimada/month/graph_line_all"   , :htmloption => Popup}),
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働変化別",:url => "/shimada/month/graph_month_lines_types",:htmloption => Popup}), 
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働F",:url => "/shimada/month/graph_shape_all_F"  , :htmloption => Popup}), 
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働D",:url => "/shimada/month/graph_shape_all_D"  , :htmloption => Popup}), 
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働O",:url => "/shimada/month/graph_shape_all_O"  , :htmloption => Popup}), 
+     #HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_difference", :link_label => "差分",  :htmloption => Popup}),
+     #HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_difference_ave", :link_label => "差分平均",:htmloption => Popup}),
+     #HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_diffdiff", :link_label => "二階差", :htmloption => Popup}),
+     #HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_ave", :link_label => "平均化",  :htmloption => Popup}),
     ]
   PowerLabels =
-    [ HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => "/shimada/month/graph"            ,:htmloption => Popup}),
-      HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => "/shimada/month/graph_reviced"    ,:htmloption => Popup}),
-      #HtmlLink.new(:id,"",:link => { :link_label => "補正後平均",:url => "/shimada/month/graph_reviced_ave",:htmloption => Popup}),
-      #HtmlLink.new(:id,"",:link => { :link_label => "対温度"   , :url => "/shimada/month/graph_temp"    ,  :htmloption =>Popup}),
+    [ HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => "/shimada/month/graph"            , :htmloption => Popup}),
+      HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => "/shimada/month/graph_reviced"    , :htmloption => Popup}),
+      #HtmlLink.new(:id,"",:link => { :link_label => "補正後平均",:url => "/shimada/month/graph_reviced_ave", tmloption => Popup}),
+      #HtmlLink.new(:id,"",:link => { :link_label => "対温度"   , :url => "/shimada/month/graph_temp"    , htmloption =>Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "正規化"   , :url => "/shimada/month/graph_nomalize" , :htmloption =>Popup}),
       #HtmlLink.new(:id,"",:link => { :link_label => "差分"     , :url => "/shimada/month/graph_difference",:htmloption =>Popup}),
       #HtmlCeckForSelect.new(:id,""),
@@ -41,8 +39,13 @@ class Shimada::MonthController <  Shimada::Controller
     [HtmlNum.new(:discriminant,"判別式",:size =>2,:tform => "%.6f"),
      HtmlNum.new(:x1,"x1",:size =>2,:tform => "%.1f"),
      HtmlNum.new(:x2,"x2",:size =>2,:tform => "%.1f"),
-     HtmlNum.new(:y1,"f2(左)",:size =>2,:tform => "%.3f"),
-     HtmlNum.new(:y2,"f2(右)",:size =>2,:tform => "%.3f")]+
+     HtmlNum.new(:y1,"f3(左)",:size =>2,:tform => "%.3f"),
+     HtmlNum.new(:y2,"f3(右)",:size =>2,:tform => "%.3f"),
+     HtmlNum.new(:f3x1,"f3x1",:size =>2,:tform => "%.1f"),
+     HtmlNum.new(:f3x2,"f3x2",:size =>2,:tform => "%.1f"),
+     HtmlNum.new(:f3x3,"f3x3",:size =>2,:tform => "%.1f"),
+     
+    ]+
       Shimada::Power::Hours.map{ |h| 
         HtmlNum.new( h.to_sym,h.sub(/hour0?/,""),:tform => "%.0f",:size => 3)
       }
@@ -67,10 +70,21 @@ class Shimada::MonthController <  Shimada::Controller
     @TableEdit  = 
       [:csv_up_buttom ,[:form,:reset_reevice_and_ave,"再補正・再平均"]]
     @action_buttoms = 
-      [8 ,
+      [9 ,
        [
         [:popup,:graph_all_month,"全月度グラフ",{ :win_name => "graph"} ],
         [:popup,:graph_all_month_lines_types,"全月度稼働変化別",{ :win_name => "graph"} ],
+        [:popup,:graph_all_month_linesS ,"稼働無",{ :win_name => "graph"}],
+        [:popup,:graph_all_month_lines4F,"稼働4full",{ :win_name => "graph"}],
+        [:popup,:graph_all_month_lines4D,"稼働4から3へ",{ :win_name => "graph"}],
+        [:popup,:graph_all_month_lines3F,"稼働3full",{ :win_name => "graph"}],
+        [:popup,:graph_all_month_lines3H,"稼働3一時低下",{ :win_name => "graph"}],
+        [:popup,:graph_all_month_lines4H,"稼働4一時低下",{ :win_name => "graph"}],
+        [:popup,:graph_all_month_linesOT ,"その他",{ :win_name => "graph"}],
+
+        [:popup,:graph_all_month_reviced,"全月度温度補正",{ :win_name => "graph"} ],
+        [:popup,:graph_all_month_reviced_ave,"全月度温度補正平均化",{ :win_name => "graph"} ],
+        [:popup,:graph_all_month_linesE ,"未分類",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_mm","3line--",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_mp","3line-+",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_m0","3line-0",{ :win_name => "graph"}],
@@ -78,26 +92,28 @@ class Shimada::MonthController <  Shimada::Controller
         [:popup,"graph_all_month_line3_F" ,"3lineF" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_O" ,"3lineO" ,{ :win_name => "graph"}],
 
-        [:popup,:graph_all_month_reviced,"全月度温度補正",{ :win_name => "graph"} ],
-        [:popup,:graph_all_month_reviced_ave,"全月度温度補正平均化",{ :win_name => "graph"} ],
+
+        [:popup,:graph_all_month_nomalized,"全月度正規化",{ :win_name => "graph"}  ] ,
         [:popup,"graph_all_month_line4_mm","4line--",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line4_m0","4line-0",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line4_mp","4line-+",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line4_00","4line00",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line4_F" ,"4lineF" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line4_O" ,"4lineO" ,{ :win_name => "graph"}],
+        [:popup,"graph_all_month_line4_H" ,"4lineH" ,{ :win_name => "graph"}],
+        [:popup,"graph_all_month_line4_OT","4line他",{ :win_name => "graph"}],
 
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
-        [:popup,:graph_all_month_nomalized,"全月度正規化",{ :win_name => "graph"}  ] ,
         [:popup,"graph_all_month_line0_S" ,"0lineS" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line1_S" ,"1lineS" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line2_00","2line00",{ :win_name => "graph"}],
+        [:popup,"graph_all_month_line2_O" ,"2lineO" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_OT","3line他",{ :win_name => "graph"}],
-        [:popup,"graph_all_month_line4_OT","4line他",{ :win_name => "graph"}],
+        [:popup,"graph_all_month_line3_0p","3line0+",{ :win_name => "graph"}],
 
-       #[:popup,:graph_all_month_ave,"全月度平均化",{ :win_name => "graph"}  ] ,
-       #[:popup,:graph_all_month_difference_ave,"全月度差分",{ :win_name => "graph"} ],
-         #[:popup,"graph_all_month_line5_mm","5line--",{ :win_name => "graph"}],
+        #[:popup,:graph_all_month_ave,"全月度平均化",{ :win_name => "graph"}  ] ,
+        #[:popup,:graph_all_month_difference_ave,"全月度差分",{ :win_name => "graph"} ],
+        #[:popup,"graph_all_month_line5_mm","5line--",{ :win_name => "graph"}],
         #[:popup,"graph_all_month_line5_m0","5line-0",{ :win_name => "graph"}],
         #[:popup,"graph_all_month_line5_mp","5line-+",{ :win_name => "graph"}],
         #[:popup,"graph_all_month_line3_pm","3line+-",{ :win_name => "graph"}],
@@ -110,7 +126,6 @@ class Shimada::MonthController <  Shimada::Controller
         #[:popup,"graph_all_month_line4_pp","4line++",{ :win_name => "graph"}],
         #[:popup,"graph_all_month_line5_pp","5line++",{ :win_name => "graph"}],
         #[:popup,"graph_all_month_line5_00","5line00",{ :win_name => "graph"}],
-        #[:popup,"graph_all_month_line3_0p","3line0+",{ :win_name => "graph"}],
         #[:popup,"graph_all_month_line4_0p","4line0+",{ :win_name => "graph"}],
         #[:popup,"graph_all_month_line5_0p","5line0+",{ :win_name => "graph"}],
         #[:popup,"graph_all_month_line3_pp","3line0-",{ :win_name => "graph"}],
@@ -166,7 +181,7 @@ class Shimada::MonthController <  Shimada::Controller
                    ]
 
     @action_buttoms =
-      [9,
+      [12,
        [
         [:popup,"graph_line3_mm","3line--",{ :win_name => "graph"}],
         [:popup,"graph_line4_mm","4line--",{ :win_name => "graph"}],
@@ -259,7 +274,8 @@ class Shimada::MonthController <  Shimada::Controller
 
 
   def graph_line_shape(lines,shape)
-    graph_month_sub(:revise_by_temp,"#{lines}line #{shape}",:find => {:lines => lines,:shape_calc => shape}) 
+    graph_month_sub(:revise_by_temp,"#{lines}line #{shape}",:by_month => true,
+                    :find => {:lines => lines,:shape_calc => shape}) 
   end
 
   def graph_all_month_line3_p0;graph_all_month_line_shape( 3,"+0") ;  end
@@ -293,11 +309,13 @@ class Shimada::MonthController <  Shimada::Controller
   def graph_all_month_line3_F;graph_all_month_line_shape( 3,"F") ;  end
   def graph_all_month_line4_F;graph_all_month_line_shape( 4,"F") ;  end
   def graph_all_month_line5_F;graph_all_month_line_shape( 5,"F") ;  end
+  def graph_all_month_line2_O;graph_all_month_line_shape( 2,"O") ;  end
   def graph_all_month_line3_O;graph_all_month_line_shape( 3,"O") ;  end
   def graph_all_month_line4_O;graph_all_month_line_shape( 4,"O") ;  end
   def graph_all_month_line5_O;graph_all_month_line_shape( 5,"O") ;  end
   def graph_all_month_line0_S;graph_all_month_line_shape( 0,"S") ;  end
   def graph_all_month_line1_S;graph_all_month_line_shape( 1,"S") ;  end
+  def graph_all_month_line4_H;graph_all_month_line_shape( 4,"H") ;  end
   def graph_all_month_line3_OT;graph_all_month_line_shape( 3,"他") ;  end
   def graph_all_month_line4_OT;graph_all_month_line_shape( 4,"他") ;  end
   def graph_all_month_line5_OT;graph_all_month_line_shape( 5,"他") ;  end
@@ -306,13 +324,39 @@ class Shimada::MonthController <  Shimada::Controller
     graph_all_month_sub(:revise_by_temp,"#{lines}line #{shape}",:find => {:lines => lines,:shape_calc => shape}) 
   end
   def graph_all_month_sub(method,title,opt={ })
+    opt = { :by_month => true}.merge(opt)
     months = Shimada::Month.all
     @power=months.map{ |m| m.powers}.flatten
     @power = select_by_( @power,opt[:find]) if  opt[:find] 
-Shimada::Power.gnuplot(@power,method,opt)
+    Shimada::Power.gnuplot(@power,method,opt)
     @TYTLE = title
     render :action => :graph,:layout => "hospital_error_disp"
   end
+  def graph_all_month_patern(method,title,shapes)
+    line_shape = shapes.map{ |ls| ls.split("",2)}
+    months = Shimada::Month.all
+    @power=months.map{ |m| m.powers}.flatten.
+      select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_calc == shape }}
+    Shimada::Power.gnuplot(@power,method,:by_line_shape => true )
+    @TYTLE = title
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  Paterns = {
+    "S" => %w(0S 1S)          ,"4H" => %w(4H)    ,"4F" => %w(400 4F),"4D" => %w(4-- 4-+ 4-0),
+    "3F" => %w(3-- 30- 3F 300),"3H" => %w(3H)    ,"OT" => %w(1他 2他 3他 4他)   }
+  AllPatern = %w(0 1 2 3 4 5).product(Shimada::Power::Shapes).map{ |l,s| l+s } 
+  Un_sorted = AllPatern - Paterns.values.flatten
+
+  def graph_all_month_linesS;  graph_all_month_patern(:revise_by_temp,"稼働無"       ,Paterns["S" ] ) ;  end
+  def graph_all_month_lines4F; graph_all_month_patern(:revise_by_temp,"稼働4"        ,Paterns["4F"] ) ;  end
+  def graph_all_month_lines4D; graph_all_month_patern(:revise_by_temp,"稼働4→3"     ,Paterns["4D"] ) ;  end
+  
+  def graph_all_month_lines3F; graph_all_month_patern(:revise_by_temp,"稼働3"        ,Paterns["3F"] ) ;  end
+  def graph_all_month_lines3H; graph_all_month_patern(:revise_by_temp,"稼働3一時低下",Paterns["3H"] ) ;  end
+  def graph_all_month_lines4H; graph_all_month_patern(:revise_by_temp,"稼働4一時低下",Paterns["4H"] ) ;  end
+  def graph_all_month_linesOT; graph_all_month_patern(:revise_by_temp,"その他"       ,Paterns["OT"] ) ;  end
+  def graph_all_month_linesE;  graph_all_month_patern(:revise_by_temp,"未分類"       ,Un_sorted     ) ;  end
 
   ###
   def graph_month_sub(method,title,opt={ })

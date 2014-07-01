@@ -16,7 +16,7 @@ class Shimada::Power < ActiveRecord::Base
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
-  Lines = [(0..300),(300..400),(400..560),(560..710),(710..800),(800..1000)]
+  Lines = [(0..300),(300..400),(400..560),(560..680),(680..800),(800..1000)]
   Shapes = %w(F U D I R O)
   Header = "時刻"
 
@@ -50,7 +50,7 @@ class Shimada::Power < ActiveRecord::Base
                    powers.size > 0 ? { powers.first.date.strftime("%y/%m")=>powers} : {"" =>[]}
                      
                  end
-    keys ||= ary_powres.keys
+    keys ||= ary_powres.keys.sort
     keys.each_with_index{ |k,idx|
       #ary_powres.each_with_index{ |month_powers,idx|
       path << "/tmp/shimada/shimada_power_temp%d"%idx
@@ -111,17 +111,17 @@ class Shimada::Power < ActiveRecord::Base
     open(def_file,"w"){ |f|
       f.puts Temp_power_def
       f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") +
-      if opt[:with_Approximation]
+      #if opt[:with_Approximation]
         ", 780+9*(x-20) ,670+3*(x-20), 0.440*(x-5)**1.8+750"
-      else
-        ""
-      end
+      #else
+      #  ""
+      #end
     }
     `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
   end
 
   def lines
-    Lines.index{ |line| line.include?(revise_by_temp_ave[3..-1].max) }
+    Lines.index{ |line| line.include?(revise_by_temp_ave[7..-1].max) }
   end
 
   def shape_old
@@ -146,23 +146,40 @@ class Shimada::Power < ActiveRecord::Base
     # C Cup           途中で稼働ライン一時的に止めた
     # H Hat           途中で一時的に増えている。なんかある？
     # S Sleep         稼働なし
+  Shapes = %w(- 0 +).product(%w(- 0 +)).map{ |a,b| a+b }+%w(F O S H)
   def shape_calc
     return nil unless lines
     if lines < 2  ; "S"
     elsif discriminant.abs < 0.000002       ;"00"
     elsif discriminant < 0.0                ; "F"
-    elsif na[4] > 0                         ; "O"
+    elsif na[4] > 0  &&  powers[6] > 400    ; "O"
+    elsif powers[6] < 400     
+      logger.debug("===== ID=#{id} #{date} 他  powers[8] powers[8]=#{ powers[8]}")
+               "他"
+
+      #powers[8] > 400 ? "O" : "delay"
     #elsif x1 < (PolyFitHour.first-PolyFitX0) ||  x2 > (PolyFitHour.last-PolyFitX0)         ;  "F2"
     elsif y1     >  Err && y2.abs <   Err   ;  "+0"
     elsif y1     >  Err && y2     >   Err   ;  "++"
-    elsif y1     >  Err && y2     <  -Err   ;  "+-"
+    elsif y1     >  Err && y2     <  -Err   
+      max_powers[0] - min_powers[0]  > 120 ? "H" :  "+-"
     elsif y1     < -Err && y2.abs <   Err   ;  "-0"
     elsif y1     < -Err && y2     <  -Err   ;  "--"
-    elsif y1     < -Err && y2     >   Err   ;  "-+" # H
+    elsif y1     < -Err && y2     >   Err   # -+
+      pw_values = pw_peaks
+      unless f3_solve.all?{ |x| PolyFitHour.include?(x+PolyFitX0)}
+         "-+"
+      else
+      #logger.debug("===== pw_values = #{pw_values.join(',')} f3_solve=#{f3_solve.join(',')}")
+      logger.debug("===== ID=#{id} #{date} difference_peak_vary = #{difference_peak_vary} difference_peaks=#{difference_peaks}")
+      difference_peak_vary > 99 && difference_peaks < 100  ? "H" : "-+" # H
+      end
     elsif y1.abs <  Err && y2.abs <   Err   ;  "00" #
-    elsif y1.abs <  Err && y2     >   Err   ;  "0+"
+    elsif y1.abs <  Err && y2     >   Err    
+      x0 = f3_solve((x1+x2)*0.5)
+      max_powers[0] - min_powers[0] > 150 ? "H" :  "0+"
     elsif y1.abs <  Err && y2     <  -Err   ;  "0-"
-    else                                    ;   "他"
+    else      ;   "他"
     end
   end
 
@@ -219,10 +236,32 @@ class Shimada::Power < ActiveRecord::Base
   def na6 ; (na[6] || 0.0)*1000000;end
 
   def f4(x) ;    (((na[4] * x + na[3])*x + na[2])*x + na[1])*x+na[0] ;  end
-  
-  # 4x^3 + 3x^2 + 2x + a0
+  def f4_peaks ;f3_solve.map{ |x| f4(x)} ;end
+  def pw_peaks ;f3_solve.map{ |x| powers[x+PolyFitX0]} ;end
+
+  def difference_peak_vary
+    (powers[f3x1+PolyFitX0,3] + powers[f3x3+PolyFitX0,3]).max -
+      powers[f3x2+PolyFitX0,3].min
+  end
+
+  def difference_peaks
+    (powers[f3x1+PolyFitX0,3].max - powers[f3x3+PolyFitX0,3].max ).abs
+  end
+
   def f3(x) ;    ((na[4] * 4 * x + na[3]*3)*x + na[2]*2)*x + na[1] ;  end
-  
+  def f3_solve(initial_x=nil)
+    return @f3_solve if @f3_solve
+    return [] unless discriminant && discriminant >= 0
+    x12 = (x1+x2)*0.5
+    solv0 = (0..4).inject(x1-(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
+    solv1 = (0..4).inject((x1+x2)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
+    solv2 = (0..4).inject(x2+(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
+    @f3_solve  = [solv0,solv1,solv2]
+  end
+  def f3x1 ;f3_solve[0];end
+  def f3x2 ;f3_solve[1];end
+  def f3x3 ;f3_solve[2];end
+
   # 12x^2 + 6x + 2a1
   def f2(x) ;    (na[4] * 12 * x + na[3]*6)*x + na[2]*2 ;  end
 
@@ -335,6 +374,10 @@ class Shimada::Power < ActiveRecord::Base
     #move_ave(num)
     #Hours.map{ |h| self[h]/ave}
     powers.map{ |h| h/ave}
+  end
+
+  def min_powers(num=3)
+    Hours.map{ |h| self[h]}.sort.first(num)
   end
 
   def max_powers(num=3)
