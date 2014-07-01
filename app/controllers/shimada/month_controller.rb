@@ -73,7 +73,7 @@ class Shimada::MonthController <  Shimada::Controller
       [9 ,
        [
         [:popup,:graph_all_month,"全月度グラフ",{ :win_name => "graph"} ],
-        [:popup,:graph_all_month_lines_types,"全月度稼働変化別",{ :win_name => "graph"} ],
+        #[:popup,:graph_all_month_lines_types,"全月度稼働変化別",{ :win_name => "graph"} ],
         [:popup,:graph_all_month_linesS ,"稼働無",{ :win_name => "graph"}],
         [:popup,:graph_all_month_lines4F,"稼働4full",{ :win_name => "graph"}],
         [:popup,:graph_all_month_lines4D,"稼働4から3へ",{ :win_name => "graph"}],
@@ -81,16 +81,17 @@ class Shimada::MonthController <  Shimada::Controller
         [:popup,:graph_all_month_lines3H,"稼働3一時低下",{ :win_name => "graph"}],
         [:popup,:graph_all_month_lines4H,"稼働4一時低下",{ :win_name => "graph"}],
         [:popup,:graph_all_month_linesOT ,"その他",{ :win_name => "graph"}],
+        [:popup,:graph_all_month_linesE ,"未分類",{ :win_name => "graph"}],
 
         [:popup,:graph_all_month_reviced,"全月度温度補正",{ :win_name => "graph"} ],
         [:popup,:graph_all_month_reviced_ave,"全月度温度補正平均化",{ :win_name => "graph"} ],
-        [:popup,:graph_all_month_linesE ,"未分類",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_mm","3line--",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_mp","3line-+",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_m0","3line-0",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_00","3line00",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_F" ,"3lineF" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_O" ,"3lineO" ,{ :win_name => "graph"}],
+        [:popup,"graph_all_month_line3_0p","3line0+",{ :win_name => "graph"}],
 
 
         [:popup,:graph_all_month_nomalized,"全月度正規化",{ :win_name => "graph"}  ] ,
@@ -109,7 +110,6 @@ class Shimada::MonthController <  Shimada::Controller
         [:popup,"graph_all_month_line2_00","2line00",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line2_O" ,"2lineO" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_OT","3line他",{ :win_name => "graph"}],
-        [:popup,"graph_all_month_line3_0p","3line0+",{ :win_name => "graph"}],
 
         #[:popup,:graph_all_month_ave,"全月度平均化",{ :win_name => "graph"}  ] ,
         #[:popup,:graph_all_month_difference_ave,"全月度差分",{ :win_name => "graph"} ],
