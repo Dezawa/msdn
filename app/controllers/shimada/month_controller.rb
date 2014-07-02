@@ -31,7 +31,7 @@ class Shimada::MonthController <  Shimada::Controller
       #HtmlCeckForSelect.new(:id,""),
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
       HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
-      HtmlText.new(:shape_calc,"形<br>状",:ro => true,:size =>2,:ro => true),
+      HtmlText.new(:shape_is,"形<br>状",:ro => true,:size =>2,:ro => true),
       HtmlText.new(:shape,"形<br>状",:ro => true,:size =>2)
       
     ] + 
@@ -53,7 +53,7 @@ class Shimada::MonthController <  Shimada::Controller
     [ 
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
       HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
-      HtmlText.new(:shape_calc,"形<br>状",:ro => true,:size =>2,:ro => true),
+      HtmlText.new(:shape_is,"形<br>状",:ro => true,:size =>2,:ro => true),
       HtmlText.new(:shape,"形<br>状",:size =>2)
       
     ] + 
@@ -275,7 +275,7 @@ class Shimada::MonthController <  Shimada::Controller
 
   def graph_line_shape(lines,shape)
     graph_month_sub(:revise_by_temp,"#{lines}line #{shape}",:by_month => true,
-                    :find => {:lines => lines,:shape_calc => shape}) 
+                    :find => {:lines => lines,:shape_is => shape}) 
   end
 
   def graph_all_month_line3_p0;graph_all_month_line_shape( 3,"+0") ;  end
@@ -321,7 +321,7 @@ class Shimada::MonthController <  Shimada::Controller
   def graph_all_month_line5_OT;graph_all_month_line_shape( 5,"他") ;  end
 
   def graph_all_month_line_shape(lines,shape)
-    graph_all_month_sub(:revise_by_temp,"#{lines}line #{shape}",:find => {:lines => lines,:shape_calc => shape}) 
+    graph_all_month_sub(:revise_by_temp,"#{lines}line #{shape}",:find => {:lines => lines,:shape_is => shape}) 
   end
   def graph_all_month_sub(method,title,opt={ })
     opt = { :by_month => true}.merge(opt)
@@ -336,7 +336,7 @@ class Shimada::MonthController <  Shimada::Controller
     line_shape = shapes.map{ |ls| ls.split("",2)}
     months = Shimada::Month.all
     @power=months.map{ |m| m.powers}.flatten.
-      select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_calc == shape }}
+      select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
     Shimada::Power.gnuplot(@power,method,:by_line_shape => true )
     @TYTLE = title
     render :action => :graph,:layout => "hospital_error_disp"
@@ -370,7 +370,7 @@ class Shimada::MonthController <  Shimada::Controller
   end
 
   def graph_line_shape(lines,shape)
-    graph_month_sub(:revise_by_temp,"#{lines}line #{shape}",:find => {:lines => lines,:shape_calc => shape}) 
+    graph_month_sub(:revise_by_temp,"#{lines}line #{shape}",:find => {:lines => lines,:shape_is => shape}) 
   end
   def graph_line3_p0;graph_line_shape( 3,"+0") ;  end
   def graph_line4_p0;graph_line_shape( 4,"+0") ;  end
