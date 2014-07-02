@@ -151,14 +151,11 @@ class Shimada::Power < ActiveRecord::Base
     return nil unless lines
     if lines < 2  ; "S"
     elsif discriminant.abs < 0.000002       ;"00"
-    elsif discriminant < 0.0                ; "F"
-    elsif na[4] > 0  &&  powers[6] > 400    ; "O"
-    elsif powers[6] < 400     
-      logger.debug("===== ID=#{id} #{date} 他  powers[8] powers[8]=#{ powers[8]}")
+    elsif na[4] > 0  &&  revise_by_temp[6] > 400    ; "O"
+    elsif revise_by_temp[6] < 400     
+      logger.debug("===== ID=#{id} #{date} 他  revise_by_temp[6] revise_by_temp[6]=#{ revise_by_temp[6]}")
                "他"
-
-      #powers[8] > 400 ? "O" : "delay"
-    #elsif x1 < (PolyFitHour.first-PolyFitX0) ||  x2 > (PolyFitHour.last-PolyFitX0)         ;  "F2"
+    elsif discriminant < 0.0                ; "F"
     elsif y1     >  Err && y2.abs <   Err   ;  "+0"
     elsif y1     >  Err && y2     >   Err   ;  "++"
     elsif y1     >  Err && y2     <  -Err   
