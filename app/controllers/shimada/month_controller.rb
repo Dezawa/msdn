@@ -21,13 +21,14 @@ class Shimada::MonthController <  Shimada::Controller
      #HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_diffdiff", :link_label => "二階差", :htmloption => Popup}),
      #HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_ave", :link_label => "平均化",  :htmloption => Popup}),
     ]
+  # 月別画面でのリンクボタン
   PowerLabels =
     [ HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => "/shimada/month/graph"            , :htmloption => Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => "/shimada/month/graph_reviced"    , :htmloption => Popup}),
       #HtmlLink.new(:id,"",:link => { :link_label => "補正後平均",:url => "/shimada/month/graph_reviced_ave", tmloption => Popup}),
       #HtmlLink.new(:id,"",:link => { :link_label => "対温度"   , :url => "/shimada/month/graph_temp"    , htmloption =>Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "正規化"   , :url => "/shimada/month/graph_nomalize" , :htmloption =>Popup}),
-      #HtmlLink.new(:id,"",:link => { :link_label => "差分"     , :url => "/shimada/month/graph_difference",:htmloption =>Popup}),
+      HtmlLink.new(:id,"",:link => { :link_label => "差分"     , :url => "/shimada/month/graph_difference",:htmloption =>Popup}),
       #HtmlCeckForSelect.new(:id,""),
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
       HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
@@ -68,7 +69,8 @@ class Shimada::MonthController <  Shimada::Controller
     @labels=Labels
     @AssosiationLabels = PowerLabels
     @TableEdit  = 
-      [:csv_up_buttom ,[:form,:reset_reevice_and_ave,"再補正・再平均"]]
+      [:csv_up_buttom ,[:form,:reset_reevice_and_ave,"再補正・再平均"],
+       [:form,:reculc_shapes,"再計算"]]
     @action_buttoms = 
       [9 ,
        [
@@ -105,6 +107,7 @@ class Shimada::MonthController <  Shimada::Controller
         [:popup,"graph_all_month_line4_OT","4line他",{ :win_name => "graph"}],
 
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
+        [:popup,:graph_all_month_difference,"全月度差分",{ :win_name => "graph"} ],
         [:popup,"graph_all_month_line0_S" ,"0lineS" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line1_S" ,"1lineS" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line2_00","2line00",{ :win_name => "graph"}],
@@ -112,7 +115,6 @@ class Shimada::MonthController <  Shimada::Controller
         [:popup,"graph_all_month_line3_OT","3line他",{ :win_name => "graph"}],
 
         #[:popup,:graph_all_month_ave,"全月度平均化",{ :win_name => "graph"}  ] ,
-        #[:popup,:graph_all_month_difference_ave,"全月度差分",{ :win_name => "graph"} ],
         #[:popup,"graph_all_month_line5_mm","5line--",{ :win_name => "graph"}],
         #[:popup,"graph_all_month_line5_m0","5line-0",{ :win_name => "graph"}],
         #[:popup,"graph_all_month_line5_mp","5line-+",{ :win_name => "graph"}],
@@ -177,7 +179,7 @@ class Shimada::MonthController <  Shimada::Controller
                     [:popup,:graph_month_temp,"月度対温度",{ :win_name => "graph"} ],
                     [:popup,:graph_month_lines_types,"月度稼働・型",{ :win_name => "graph"} ],
                     #:popup,:graph_month_difference_ave,"月度差分平均",{ :win_name => "graph"} ],
-                    #:popup,:graph_month_difference,"月度差分",{ :win_name => "graph"} ]
+                    [:popup,:graph_month_difference,"月度差分",{ :win_name => "graph"} ]
                    ]
 
     @action_buttoms =
@@ -241,6 +243,12 @@ class Shimada::MonthController <  Shimada::Controller
     #render  :file => 'application/index',:layout => 'application'
   end
 
+  def reculc_shapes
+    Shimada::Power.reculc_shapes
+    redirect_to :action => :index
+    #render  :file => 'application/index',:layout => 'application'
+  end
+
   def graph_sub(method,title,opt={ })
     @power = Shimada::Power.find(params[:id])
     Shimada::Power.gnuplot([@power],method,opt)
@@ -269,6 +277,7 @@ class Shimada::MonthController <  Shimada::Controller
   def graph_all_month_ave ;    graph_all_month_sub(:move_ave,"平均消費電力推移 全月度",:by_month => true);  end
   def graph_all_month_nomalized ; graph_all_month_sub(:normalized, "正規化消費電力推移 全月度",:by_shape => true);  end
   def graph_all_month            ; graph_all_month_sub(:powers,"消費電力推移 全月度",:by_month => true) ;end
+  def graph_all_month_difference           ; graph_all_month_sub(:difference,"差分 全月度",:by_month => true) ;end
   def graph_all_month_difference_ave           ; graph_all_month_sub(:difference_ave,"差分 全月度",:by_month => true) ;end
   def graph_all_month_lines_types;graph_all_month_sub(:revise_by_temp_ave,"月度稼働数・型",:by_line_shape => true ) ;  end
 

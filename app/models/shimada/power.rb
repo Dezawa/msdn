@@ -24,6 +24,11 @@ class Shimada::Power < ActiveRecord::Base
   Shapes = %w(F U D I R O)
   Header = "時刻"
 
+  Differ = ("00".."23").map{ |h| "difference#{h}" }
+  NA     = ("f4_na0".."f4_na4").to_a
+  F3_SOLVE = %w(f3_x1 f3_x2 f3_x3)
+  F2_SOLVE = %w(f2_x1 f2_x2)
+  CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE
 
   def self.reset_reevice_and_ave
     self.all.each{ |power|
@@ -35,7 +40,8 @@ class Shimada::Power < ActiveRecord::Base
   def self.reculc_shapes
     self.all.each{ |pw|
       pw.shape_is =  pw.na = pw.f4_peaks = pw.f3_solve = pw.f2_solve =  pw.differences = nil
-      power.save
+      CashColumns.each{ |sym| pw[sym] = nil}
+      pw.save
     }
   end
 
@@ -350,6 +356,7 @@ class Shimada::Power < ActiveRecord::Base
       @differences = powers[1..-1].map{ |y| dif = y - y0; y0 = y ;  dif}
       update_attributes(Hash[*Differences.zip(@differences).flatten])
     end
+      @differences 
   end
 
   def difference_revise_by_temp

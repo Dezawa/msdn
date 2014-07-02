@@ -33,10 +33,10 @@ set out 'tmp/shimada/power.gif'
 
 set title "消費電力 " 
 %s
-set yrange [-50:50]
+set yrange [-250:250]
 set xrange [1:24]
 set xtics 1,1
-set ytics -50,10
+set ytics -250,50
 set grid ytics
 !
 
