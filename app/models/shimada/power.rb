@@ -54,7 +54,6 @@ class Shimada::Power < ActiveRecord::Base
     }
   end
 
-
   def self.output_plot_data(powers,method,opt = { },&block)
     path = []
     keys = nil
@@ -94,6 +93,14 @@ class Shimada::Power < ActiveRecord::Base
     path
   end
 
+  def self.average_out(power,method)
+      open("/tmp/shimada/shimada_power_diff_ave","w"){ |f|
+        f.puts "時刻 平均"
+        power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+1,h ) if h } 
+      f.puts
+    }
+  end
+
   def self.gnuplot(powers,method,opt={ })
     path = output_plot_data(powers,method,opt){ |f,power| 
       power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+1,h ) if h }
@@ -122,6 +129,9 @@ class Shimada::Power < ActiveRecord::Base
           ",\\\n (((%+f * (x-#{PolyFitX0+1}) %+f)*(x-#{PolyFitX0+1}) %+f)*(x-#{PolyFitX0+1}) %+f)*5+1"%[
           a[4] * 4,a[3]*3,a[2]*2,a[1]] +
           ", \\\n((%+f * (x-#{PolyFitX0+1}) %+f) * (x-#{PolyFitX0+1}) %+f)*5 +1"%[a[4] * 12,a[3]*6,a[2]*2]
+      elsif method == :difference
+        average_out(average_diff,:difference)
+        f.print ",\\\n  '/tmp/shimada/shimada_power_diff_ave'  using 1:2  with line lt -1"
       end
         f.puts
     }
@@ -146,6 +156,24 @@ class Shimada::Power < ActiveRecord::Base
       #end
     }
     `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
+  end
+
+  def self.average_diff
+    ave_power = Shimada::Power.find_by_date(nil)
+    ave_power = create_average_diff unless ave_power && ave_power.differences
+    ave_power
+  end
+
+  def self.create_average_diff
+    ave_power = Shimada::Power.find_or_create_by_date(nil)
+    all_powers = Shimada::Power.all(:conditions => "date is  not null")
+    diffs = all_powers.inject([0]*24){ |s,v|
+      v.difference.each_with_index{ |diff,idx| s[idx]+=( diff || 0 )};s
+    }
+    diffs =  diffs.map{ |d| d/all_powers.size}
+    ave_power.update_attributes(Hash[*Differences.zip(diffs).flatten])
+    ave_power.difference
+    ave_power
   end
 
   def lines
@@ -435,3 +463,5 @@ class Shimada::Power < ActiveRecord::Base
   end
 # 629.36, [624.6, 629.6, 630.6, 630.8, 631.2]
 end
+
+
