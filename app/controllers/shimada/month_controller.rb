@@ -76,7 +76,7 @@ class Shimada::MonthController <  Shimada::Controller
 
     @action_buttoms = Month_action_buttoms
     @labels = PowerLabels
-    @TableHeaderDouble = [7,[9,"係数"],[24,"時刻"]]
+    @TableHeaderDouble = [7,[13,"係数"],[24,"時刻"]]
   end
 
   def reset_reevice_and_ave

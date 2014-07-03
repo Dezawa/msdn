@@ -361,9 +361,9 @@ class Shimada::Power < ActiveRecord::Base
     if difference00
       @differences = ("00".."23").map{ |h| self["difference#{h}"] }
     else
-      y0 = powers.first
+      y0 = revise_by_temp.first
       diff = { }
-      @differences = powers[1..-1].map{ |y| dif = y - y0; y0 = y ;  dif}
+      @differences = revise_by_temp[1..-1].map{ |y| dif = y - y0; y0 = y ;  dif}
       update_attributes(Hash[*Differences.zip(@differences).flatten])
     end
       @differences 
