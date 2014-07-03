@@ -19,6 +19,7 @@ class Shimada::Power < ActiveRecord::Base
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
+
   Differences = ("difference00".."difference23").to_a
   Lines = [(0..300),(300..400),(400..560),(560..680),(680..800),(800..1000)]
   Shapes = %w(F U D I R O)
@@ -28,7 +29,7 @@ class Shimada::Power < ActiveRecord::Base
   NA     = ("f4_na0".."f4_na4").to_a
   F3_SOLVE = %w(f3_x1 f3_x2 f3_x3)
   F2_SOLVE = %w(f2_x1 f2_x2)
-  CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE
+  CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["shape"]
 
   def self.reset_reevice_and_ave
     self.all.each{ |power|
@@ -37,11 +38,19 @@ class Shimada::Power < ActiveRecord::Base
     }
   end
 
-  def self.reculc_shapes
+  def self.reculc_all
     self.all.each{ |pw|
       pw.shape_is =  pw.na = pw.f4_peaks = pw.f3_solve = pw.f2_solve =  pw.differences = nil
       CashColumns.each{ |sym| pw[sym] = nil}
       pw.save
+      File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
+    }
+  end
+
+  def self.reculc_shapes
+    self.all.each{ |pw|
+      pw.update_attribute(:shape,nil)
+      File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
     }
   end
 
@@ -90,16 +99,16 @@ class Shimada::Power < ActiveRecord::Base
       power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+1,h ) if h }
     }
     def_file = "/tmp/shimada/power.def"
-
+    graph_file = opt[:graph_file] || "power"
     by_month = ( opt.keys & [:by_month,:by_line,:by_shape,:by_line_shape] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
     preunble = ( case method
                  when :normalized ;  Nomalized_def
                  when :difference, :difference_ave ,:diffdiff;  Differ_def 
                  else             ; Power_def 
-                 end)% by_month
+                 end)% [ graph_file , by_month ]
 
     open(def_file,"w"){ |f|
-      f.puts preunble
+      f.puts preunble 
       f.print "plot " + path.map{ |p| "'#{p}' using 1:2  with line"}.join(" , ")
       if opt[:by_line] 
         f.print " , " + Lines.map{ |line| line.last}.join(" , ")
@@ -126,8 +135,9 @@ class Shimada::Power < ActiveRecord::Base
     }
 #    path = gnuplot_data_by_temp(powers,opt)
     def_file = "/tmp/shimada/power_temp.def"
+    graph_file = opt[:graph_file] || "power"
     open(def_file,"w"){ |f|
-      f.puts Temp_power_def
+      f.puts Temp_power_def % graph_file
       f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") +
       #if opt[:with_Approximation]
         ", 780+9*(x-20) ,670+3*(x-20), 0.440*(x-5)**1.8+750"

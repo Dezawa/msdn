@@ -123,23 +123,40 @@ module Shimada::GraphAllMonth
   def graph_all_month_line5_OT;graph_all_month_line_shape( 5,"他") ;  end
 
   def graph_all_month_line_shape(lines,shape)
-    graph_all_month_sub(:revise_by_temp,"#{lines}line #{shape}",:find => {:lines => lines,:shape_is => shape}) 
+    graph_all_month_sub(:revise_by_temp,"#{lines}line #{shape}",
+                        :find => {:lines => lines,:shape_is => shape},:by_month => true,
+                        :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")) 
   end
   def graph_all_month_sub(method,title,opt={ })
-#    opt = { :by_month => true,:graph_file => @graph_file }.merge(opt)
-    months = Shimada::Month.all
-    @power=months.map{ |m| m.powers}.flatten
-    @power = select_by_( @power,opt[:find]) if  opt[:find] 
-    Shimada::Power.gnuplot(@power,method,opt)
+    graph_file = opt[:graph_file] ? opt[:graph_file].sub(/\+/,"p") : ""
+    opt.merge!(:graph_file => "giffiles/all_month#{graph_file}_#{method}" ) 
+    @graph_file =  opt[:graph_file]
+#    logger.debug("GRAPH_FILE #{ @graph_file} #{opt[:graph_file]}, giffiles/all_month#{opt[:graph_file]}_#{method}")
+
+#logger.debug("File.exist? "+ RAILS_ROOT+"/tmp/shimada/#{opt[:graph_file]}.gif}")
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{opt[:graph_file]}.gif") == true
+      months = Shimada::Month.all
+      @power=months.map{ |m| m.powers}.flatten
+      @power = select_by_( @power,opt[:find]) if  opt[:find] 
+      Shimada::Power.gnuplot(@power,method,opt)
+    end
+
     @TYTLE = title
     render :action => :graph,:layout => "hospital_error_disp"
   end
   def graph_all_month_patern(method,title,shapes)
-    line_shape = shapes.map{ |ls| ls.split("",2)}
-    months = Shimada::Month.all
-    @power=months.map{ |m| m.powers}.flatten.
-      select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
-    Shimada::Power.gnuplot(@power,method,:by_line_shape => true )
+    @graph_file =  "giffiles/all_month_patern_" + ( shapes || "unsorted")
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
+      line_shape = ( if   shapes ; Paterns[shapes]
+                     else Un_sorted
+                     end ).map{ |ls| ls.split("",2)}
+      months = Shimada::Month.all
+      @power=months.map{ |m| m.powers}.flatten.
+        select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
+      Shimada::Power.gnuplot(@power,method,:by_line_shape => true,
+                             :graph_file => @graph_file
+                             )
+    end
     @TYTLE = title
     render :action => :graph,:layout => "hospital_error_disp"
   end
@@ -150,15 +167,15 @@ module Shimada::GraphAllMonth
   AllPatern = %w(0 1 2 3 4 5).product(Shimada::Power::Shapes).map{ |l,s| l+s } 
   Un_sorted = AllPatern - Paterns.values.flatten
 
-  def graph_all_month_linesS;  graph_all_month_patern(:revise_by_temp,"稼働無"       ,Paterns["S" ] ) ;  end
-  def graph_all_month_lines4F; graph_all_month_patern(:revise_by_temp,"稼働4"        ,Paterns["4F"] ) ;  end
-  def graph_all_month_lines4D; graph_all_month_patern(:revise_by_temp,"稼働4→3"     ,Paterns["4D"] ) ;  end
+  def graph_all_month_linesS;  graph_all_month_patern(:revise_by_temp,"稼働無"       ,"S"  ) ;  end
+  def graph_all_month_lines4F; graph_all_month_patern(:revise_by_temp,"稼働4"        ,"4F" ) ;  end
+  def graph_all_month_lines4D; graph_all_month_patern(:revise_by_temp,"稼働4→3"     ,"4D" ) ;  end
   
-  def graph_all_month_lines3F; graph_all_month_patern(:revise_by_temp,"稼働3"        ,Paterns["3F"] ) ;  end
-  def graph_all_month_lines3H; graph_all_month_patern(:revise_by_temp,"稼働3一時低下",Paterns["3H"] ) ;  end
-  def graph_all_month_lines4H; graph_all_month_patern(:revise_by_temp,"稼働4一時低下",Paterns["4H"] ) ;  end
-  def graph_all_month_linesOT; graph_all_month_patern(:revise_by_temp,"その他"       ,Paterns["OT"] ) ;  end
-  def graph_all_month_linesE;  graph_all_month_patern(:revise_by_temp,"未分類"       ,Un_sorted     ) ;  end
+  def graph_all_month_lines3F; graph_all_month_patern(:revise_by_temp,"稼働3"        ,"3F" ) ;  end
+  def graph_all_month_lines3H; graph_all_month_patern(:revise_by_temp,"稼働3一時低下","3H" ) ;  end
+  def graph_all_month_lines4H; graph_all_month_patern(:revise_by_temp,"稼働4一時低下","4H" ) ;  end
+  def graph_all_month_linesOT; graph_all_month_patern(:revise_by_temp,"その他"       ,"OT" ) ;  end
+  def graph_all_month_linesE;  graph_all_month_patern(:revise_by_temp,"未分類"       ,nil  ) ;  end
 
 
   def graph_all_month_temp

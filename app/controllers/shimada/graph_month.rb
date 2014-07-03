@@ -76,17 +76,24 @@ module  Shimada::GraphMonth
   def graph_month_sub(method,title,opt={ })
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
     month =  @Model.find(id)
-    #@power = opt[:find] ? send(opt[:find].first,month, opt[:find].last)  : month.powers
-    @power = opt[:find] ? select_by_(month.powers,opt[:find])  : month.powers
-    @TYTLE = title + month.month.strftime("(%Y年%m月)")
-    Shimada::Power.gnuplot(@power,method,opt)
-    render :action => :graph,:layout => "hospital_error_disp"
+    
+    opt.merge!(:graph_file => "giffiles/month_#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{method}" ) 
+    @graph_file =  opt[:graph_file]
+
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{opt[:graph_file]}.gif") == true
+      #@power = opt[:find] ? send(opt[:find].first,month, opt[:find].last)  : month.powers
+      @power = opt[:find] ? select_by_(month.powers,opt[:find])  : month.powers
+      Shimada::Power.gnuplot(@power,method,opt)
+   end
+      @TYTLE = title + month.month.strftime("(%Y年%m月)")
+      render :action => :graph,:layout => "hospital_error_disp"
   end
 
 
   def graph_line_shape(lines,shape)
     graph_month_sub(:revise_by_temp,"#{lines}line #{shape}",:by_month => true,
-                    :find => {:lines => lines,:shape_is => shape}) 
+                    :find => {:lines => lines,:shape_is => shape},
+                    :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")) 
   end
 
   def graph_line3_p0;graph_line_shape( 3,"+0") ;  end
@@ -143,15 +150,22 @@ module  Shimada::GraphMonth
   def graph_line4       ; graph_month_sub(:revise_by_temp_ave,"稼働４ライン",:find => {:lines => 4}) ;  end
   def graph_line5       ; graph_month_sub(:revise_by_temp_ave,"稼働５ライン",:find => {:lines => 5}) ;  end
   def graph_line_all    ; graph_month_sub(:revise_by_temp_ave,"稼働５ライン",:by_line => true ) ;  end
-  def graph_month_lines_types;graph_month_sub(:revise_by_temp_ave,"月度稼働数・型",:by_line_shape => true ) ;  end
+  def graph_month_lines_types
+    graph_month_sub(:revise_by_temp_ave,"月度稼働数・型",:by_line_shape => true,:graph_file => " lines_types") 
+  end
   def graph_shape_all_F ; graph_month_sub(:revise_by_temp_ave,"稼働F",:find => {:shape => "Flat"} ) ;  end
   def graph_shape_all_D ; graph_month_sub(:revise_by_temp_ave,"稼働D"  ,:find => {:shape => "Reduce"});end
   def graph_shape_all_O ; graph_month_sub(:revise_by_temp_ave,"稼働O"  ,:find => {:shape => "Other"} ) ;  end
   def graph_shape_all   ; graph_month_sub(:revise_by_temp_ave,"稼働変化別",:by_shape => true ) ;  end
-  def graph_month_temp
+
+  def graph_month_temp(opt={ })
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
-    @power = @Model.find(id).powers
-    Shimada::Power.gnuplot_by_temp(@power)
+    month = @Model.find(id)
+    @power = month.powers
+ 
+    opt.merge!(:graph_file => "giffiles/month_temp#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}" ) 
+    @graph_file =  opt[:graph_file]
+   Shimada::Power.gnuplot_by_temp(@power,opt)
     @TYTLE = "温度-消費電力" + @power.first.date.strftime("(%Y年%m月)")
     render :action => :graph,:layout => "hospital_error_disp"
   end

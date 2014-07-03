@@ -28,7 +28,8 @@ class Shimada::MonthController <  Shimada::Controller
     @AssosiationLabels = PowerLabels
     @TableEdit  = 
       [:csv_up_buttom ,[:form,:reset_reevice_and_ave,"再補正・再平均"],
-       [:form,:reculc_shapes,"再計算"]]
+       [:form,:reculc_all,"再計算"],
+       [:form,:reculc_shapes,"再分類"]]
     @action_buttoms = AllMonthaction_buttoms
 
     @Show = true
@@ -84,6 +85,12 @@ class Shimada::MonthController <  Shimada::Controller
     #render  :file => 'application/index',:layout => 'application'
   end
 
+  def reculc_all
+    Shimada::Power.reculc_all
+    redirect_to :action => :index
+    #render  :file => 'application/index',:layout => 'application'
+  end
+
   def reculc_shapes
     Shimada::Power.reculc_shapes
     redirect_to :action => :index
@@ -132,7 +139,7 @@ class Shimada::MonthController <  Shimada::Controller
 
 
   def show_gif
-    graph_file = @graph_file ? "giffiles/"+@graph_file : 'power'
+    graph_file = params[:graph_file].blank? ? "power" : params[:graph_file]
     send_file RAILS_ROOT+"/tmp/shimada/#{graph_file}.gif", :type => 'image/gif', :disposition => 'inline'
   end
 
