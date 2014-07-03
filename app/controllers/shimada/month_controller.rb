@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 class Shimada::MonthController <  Shimada::Controller
-  include Shimada::GraphAllMonth
+  include Shimada::GraphDay
   include Shimada::GraphMonth
+  include Shimada::GraphAllMonth
 #  Popup = %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!
 
   # メイン画面での各月のリンクボタン
@@ -134,19 +135,6 @@ class Shimada::MonthController <  Shimada::Controller
     #render  :file => 'application/index',:layout => 'application'
   end
 
-  def graph_sub(method,title,opt={ })
-    @power = Shimada::Power.find(params[:id])
-    Shimada::Power.gnuplot([@power],method,opt)
-    @TYTLE = title + @power.date.strftime("(%Y年%m月%d日)")
-    render  :action => :graph,:layout => "hospital_error_disp"
-  end
-
-  def graph         ;    graph_sub(:powers,"消費電力推移") ;  end
-  def graph_reviced ;    graph_sub(:revise_by_temp,"温度補正後 消費電力推移",:fitting => true) ;  end
-  def graph_reviced_ave; graph_sub(:revise_by_temp_ave,"補正後平均 消費電力推移") ;  end
-  def graph_nomalize   ; graph_sub(:normalized,"正規化消費電力推移",:fitting => true) ;  end
-  def graph_difference ; graph_sub(:difference,"差分") ;  end
-
   def graph_selected
     ids = params[:check_id].
       delete_if {|key, value| value == "0" }.keys.map(&:to_i)
@@ -168,12 +156,6 @@ class Shimada::MonthController <  Shimada::Controller
   def line_num(month, run) ;  month.powers.select{ |p| p.lines == run } ;  end
   def shape(month, run)    ;  month.powers.select{ |p| p.shape == run } ;  end
 
-  def graph_temp    
-    @power = Shimada::Power.find(params[:id])
-    Shimada::Power.gnuplot_by_temp([@power])
-    @TYTLE = "温度-消費電力" + @power.date.strftime("(%Y年%m月%d日)")
-    render :action => :graph,:layout => "hospital_error_disp"
-  end
 
   def graph_selected_months
     month_ids = params[:check_id].
