@@ -9,7 +9,6 @@ class Weather < ActiveRecord::Base
       temp = `/usr/local/bin/weather_past.rb #{location} #{y} #{m} #{d}`
       logger.info("WEATHER:: #{temp.class}")
       return unless temp
-pp day.beginning_of_month
       weather = self.create( { :location => location,:date => day,:month => day.beginning_of_month}.
                              merge(Hash[*Temperature.zip(temp.split(/\s+/)).flatten]))
     end
