@@ -1,58 +1,13 @@
 # -*- coding: utf-8 -*-
 class Shimada::MonthController <  Shimada::Controller
+  Popup = %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"! 
+
   include Shimada::GraphDay
   include Shimada::GraphMonth
   include Shimada::GraphAllMonth
-#  Popup = %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!
 
-  # メイン画面での各月のリンクボタン
-  Labels = 
-    [#HtmlCeckForSelect.new(:id,""),
-     HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month", :link_label => "グラフ", :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_nomalized",:link_label => "正規化", :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_reviced", :link_label => "温度補正",  :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_reviced_ave",:link_label => "温度補正平均",:htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_temp", :link_label => "対温度", :htmloption => Popup}),
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働数"   , :url => "/shimada/month/graph_line_all"   , :htmloption => Popup}),
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働変化別",:url => "/shimada/month/graph_month_lines_types",:htmloption => Popup}), 
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働F",:url => "/shimada/month/graph_shape_all_F"  , :htmloption => Popup}), 
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働D",:url => "/shimada/month/graph_shape_all_D"  , :htmloption => Popup}), 
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働O",:url => "/shimada/month/graph_shape_all_O"  , :htmloption => Popup}), 
-     #HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_difference", :link_label => "差分",  :htmloption => Popup}),
-     #HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_difference_ave", :link_label => "差分平均",:htmloption => Popup}),
-     #HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_diffdiff", :link_label => "二階差", :htmloption => Popup}),
-     #HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_ave", :link_label => "平均化",  :htmloption => Popup}),
-    ]
-  # 月別画面でのリンクボタン
-  PowerLabels =
-    [ HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => "/shimada/month/graph"            , :htmloption => Popup}),
-      HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => "/shimada/month/graph_reviced"    , :htmloption => Popup}),
-      #HtmlLink.new(:id,"",:link => { :link_label => "補正後平均",:url => "/shimada/month/graph_reviced_ave", tmloption => Popup}),
-      #HtmlLink.new(:id,"",:link => { :link_label => "対温度"   , :url => "/shimada/month/graph_temp"    , htmloption =>Popup}),
-      HtmlLink.new(:id,"",:link => { :link_label => "正規化"   , :url => "/shimada/month/graph_nomalize" , :htmloption =>Popup}),
-      HtmlLink.new(:id,"",:link => { :link_label => "差分"     , :url => "/shimada/month/graph_difference",:htmloption =>Popup}),
-      #HtmlCeckForSelect.new(:id,""),
-      HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
-      HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
-      HtmlText.new(:shape_is,"形<br>状",:ro => true,:size =>2,:ro => true),
-      HtmlText.new(:shape,"形<br>状",:ro => true,:size =>2)
-      
-    ] + 
-    (1..4).map{ |i| HtmlNum.new("na#{i}".to_sym,"na#{i}",:tform => "%.3f")}+
-    [HtmlNum.new(:discriminant,"判別式",:size =>2,:tform => "%.6f"),
-     HtmlNum.new(:x1,"x1",:size =>2,:tform => "%.1f"),
-     HtmlNum.new(:x2,"x2",:size =>2,:tform => "%.1f"),
-     HtmlNum.new(:y1,"f3(左)",:size =>2,:tform => "%.3f"),
-     HtmlNum.new(:y2,"f3(右)",:size =>2,:tform => "%.3f"),
-     HtmlNum.new(:f3x1,"f3x1",:size =>2,:tform => "%.1f"),
-     HtmlNum.new(:f3x2,"f3x2",:size =>2,:tform => "%.1f"),
-     HtmlNum.new(:f3x3,"f3x3",:size =>2,:tform => "%.1f"),
-     
-    ]+
-      Shimada::Power::Hours.map{ |h| 
-        HtmlNum.new( h.to_sym,h.sub(/hour0?/,""),:tform => "%.0f",:size => 3)
-      }
+
+
   EditOnTable = 
     [ 
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 module Shimada::GraphAllMonth
-  Popup = %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!
 
     AllMonthaction_buttoms = 
       [9 ,
