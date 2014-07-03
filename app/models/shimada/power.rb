@@ -5,6 +5,9 @@ class Shimada::Power < ActiveRecord::Base
   include Shimada::GnuplotDef
   include PolyFit
 
+  attr_accessor :shape_is, :na, :f4_peaks, :f3_solve, :f2_solve, :differences
+
+
   PolyFitHour = (5 .. 23)  # 6時～23時
   PolyFitX0   = 14.0       # 15時
   PolyLevel   = 4
@@ -16,10 +19,17 @@ class Shimada::Power < ActiveRecord::Base
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
+
+  Differences = ("difference00".."difference23").to_a
   Lines = [(0..300),(300..400),(400..560),(560..680),(680..800),(800..1000)]
   Shapes = %w(F U D I R O)
   Header = "時刻"
 
+  Differ = ("00".."23").map{ |h| "difference#{h}" }
+  NA     = ("f4_na0".."f4_na4").to_a
+  F3_SOLVE = %w(f3_x1 f3_x2 f3_x3)
+  F2_SOLVE = %w(f2_x1 f2_x2)
+  CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["shape"]
 
   def self.reset_reevice_and_ave
     self.all.each{ |power|
@@ -27,6 +37,23 @@ class Shimada::Power < ActiveRecord::Base
       power.save
     }
   end
+
+  def self.reculc_all
+    self.all.each{ |pw|
+      pw.shape_is =  pw.na = pw.f4_peaks = pw.f3_solve = pw.f2_solve =  pw.differences = nil
+      CashColumns.each{ |sym| pw[sym] = nil}
+      pw.save
+      File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
+    }
+  end
+
+  def self.reculc_shapes
+    self.all.each{ |pw|
+      pw.update_attribute(:shape,nil)
+      File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
+    }
+  end
+
 
   def self.output_plot_data(powers,method,opt = { },&block)
     path = []
@@ -72,16 +99,16 @@ class Shimada::Power < ActiveRecord::Base
       power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+1,h ) if h }
     }
     def_file = "/tmp/shimada/power.def"
-
+    graph_file = opt[:graph_file] || "power"
     by_month = ( opt.keys & [:by_month,:by_line,:by_shape,:by_line_shape] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
     preunble = ( case method
                  when :normalized ;  Nomalized_def
                  when :difference, :difference_ave ,:diffdiff;  Differ_def 
                  else             ; Power_def 
-                 end)% by_month
+                 end)% [ graph_file , by_month ]
 
     open(def_file,"w"){ |f|
-      f.puts preunble
+      f.puts preunble 
       f.print "plot " + path.map{ |p| "'#{p}' using 1:2  with line"}.join(" , ")
       if opt[:by_line] 
         f.print " , " + Lines.map{ |line| line.last}.join(" , ")
@@ -108,8 +135,9 @@ class Shimada::Power < ActiveRecord::Base
     }
 #    path = gnuplot_data_by_temp(powers,opt)
     def_file = "/tmp/shimada/power_temp.def"
+    graph_file = opt[:graph_file] || "power"
     open(def_file,"w"){ |f|
-      f.puts Temp_power_def
+      f.puts Temp_power_def % graph_file
       f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") +
       #if opt[:with_Approximation]
         ", 780+9*(x-20) ,670+3*(x-20), 0.440*(x-5)**1.8+750"
@@ -124,18 +152,10 @@ class Shimada::Power < ActiveRecord::Base
     Lines.index{ |line| line.include?(revise_by_temp_ave[7..-1].max) }
   end
 
-  def shape_old
-    if     variance_revise < 6000   ; "F"  # 分散が少ないなら、一定とみなしてよいだろう
-                                           # 大きな＋差分ピークならstep up とみなしてよいだろう
-                                           # 大きな-差分ディップならDとみてよいだろう
-                                           # ＋差分が支配的なら I
-                                           # ー差分が支配的なら R
-                                           # 差分が／＼なら H
-                                           # 差分が＼／なら C
-    elsif  difference_ave[10..18].min < -20 && difference_ave[10..18].max < 20 # && diffdiff[8..18].max < 25
-      "R" #u 
-    else                            ; "O"
-    end
+  def shape_is
+    return @shape_is if @shape_is
+    update_attribute(:shape , shape_calc) unless shape
+    @shape_is = shape
   end
 
     # F Flat          ほぼ平ら。稼働ライン数が一定なのだろう
@@ -151,14 +171,11 @@ class Shimada::Power < ActiveRecord::Base
     return nil unless lines
     if lines < 2  ; "S"
     elsif discriminant.abs < 0.000002       ;"00"
-    elsif discriminant < 0.0                ; "F"
-    elsif na[4] > 0  &&  powers[6] > 400    ; "O"
-    elsif powers[6] < 400     
-      logger.debug("===== ID=#{id} #{date} 他  powers[8] powers[8]=#{ powers[8]}")
+    elsif na[4] > 0  &&  revise_by_temp[6] > 400    ; "O"
+    elsif revise_by_temp[6] < 400     
+      logger.debug("===== ID=#{id} #{date} 他  revise_by_temp[6] revise_by_temp[6]=#{ revise_by_temp[6]}")
                "他"
-
-      #powers[8] > 400 ? "O" : "delay"
-    #elsif x1 < (PolyFitHour.first-PolyFitX0) ||  x2 > (PolyFitHour.last-PolyFitX0)         ;  "F2"
+    elsif discriminant < 0.0                ; "F"
     elsif y1     >  Err && y2.abs <   Err   ;  "+0"
     elsif y1     >  Err && y2     >   Err   ;  "++"
     elsif y1     >  Err && y2     <  -Err   
@@ -225,7 +242,14 @@ class Shimada::Power < ActiveRecord::Base
 
 
   def na(n=PolyLevel)
-    @na ||= polyfit(PolyFitHour.map{ |h| h-PolyFitX0},normalized_ave[PolyFitHour],n)
+    return @na if @na
+    unless self.f4_na0 
+            self.f4_na0, self.f4_na1, self.f4_na2, self.f4_na3, self.f4_na4 = 
+              polyfit(PolyFitHour.map{ |h| h-PolyFitX0},normalized_ave[PolyFitHour],n)
+      save
+    end
+    @na =   [ f4_na0, f4_na1, f4_na2, f4_na3, f4_na4 ]
+
   end
   def na0 ; (na[0] || 0.0);end
   def na1 ; (na[1] || 0.0)*10;end
@@ -236,7 +260,7 @@ class Shimada::Power < ActiveRecord::Base
   def na6 ; (na[6] || 0.0)*1000000;end
 
   def f4(x) ;    (((na[4] * x + na[3])*x + na[2])*x + na[1])*x+na[0] ;  end
-  def f4_peaks ;f3_solve.map{ |x| f4(x)} ;end
+  def f4_peaks ;@f4_peaks ||= f3_solve.map{ |x| f4(x)} ;end
   def pw_peaks ;f3_solve.map{ |x| powers[x+PolyFitX0]} ;end
 
   def difference_peak_vary
@@ -251,13 +275,20 @@ class Shimada::Power < ActiveRecord::Base
   def f3(x) ;    ((na[4] * 4 * x + na[3]*3)*x + na[2]*2)*x + na[1] ;  end
   def f3_solve(initial_x=nil)
     return @f3_solve if @f3_solve
-    return [] unless discriminant && discriminant >= 0
-    x12 = (x1+x2)*0.5
-    solv0 = (0..4).inject(x1-(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
-    solv1 = (0..4).inject((x1+x2)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
-    solv2 = (0..4).inject(x2+(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
-    @f3_solve  = [solv0,solv1,solv2]
+    if  discriminant && discriminant >= 0
+      unless self.f3_x1
+        x12 = (x1+x2)*0.5
+        self.f3_x1 = (0..4).inject(x1-(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
+        self.f3_x2 = (0..4).inject((x1+x2)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
+        self.f3_x3 = (0..4).inject(x2+(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
+        save
+      end
+      @f3_solve  = [self.f3_x1, self.f3_x2 , self.f3_x3]
+    else
+      @f3_solve  =  []
+    end
   end
+
   def f3x1 ;f3_solve[0];end
   def f3x2 ;f3_solve[1];end
   def f3x3 ;f3_solve[2];end
@@ -267,13 +298,16 @@ class Shimada::Power < ActiveRecord::Base
 
   def discriminant ; 36*na[3]*na[3] - 96*na[2]*na[4]   ;  end
   def f2_solve
-    @f2_solve ||=  
-      unless discriminant && discriminant >= 0
-        []
-      else
-#logger.debug("Math.sqrt  #{discriminant},#{na[3]} #{36*na[3]*na[3] - discriminant}")
+    @f2_solve ||=
+      if  self.f2_x1  ; [self.f2_x1,self.f2_x2]
+      elsif discriminant && discriminant >= 0
+        #logger.debug("Math.sqrt  #{discriminant},#{na[3]} #{36*na[3]*na[3] - discriminant}")
         sqrt = Math.sqrt(discriminant)
-        [(-na[3]*6 + sqrt)/(24*na[4]), (-na[3]*6 - sqrt)/(24*na[4])].sort
+        self.f2_x1,self.f2_x2 = [(-na[3]*6 + sqrt)/(24*na[4]), (-na[3]*6 - sqrt)/(24*na[4])].sort
+        save 
+        [self.f2_x1,self.f2_x2]
+      else
+        []
       end
   end
   def x1       ; f2_solve.first ;end
@@ -323,10 +357,22 @@ class Shimada::Power < ActiveRecord::Base
   end
 
   def difference
+    return @differences if @differences
+    if difference00
+      @differences = ("00".."23").map{ |h| self["difference#{h}"] }
+    else
+      y0 = revise_by_temp.first
+      diff = { }
+      @differences = revise_by_temp[1..-1].map{ |y| dif = y - y0; y0 = y ;  dif}
+      update_attributes(Hash[*Differences.zip(@differences).flatten])
+    end
+      @differences 
+  end
+
+  def difference_revise_by_temp
     y0 = revise_by_temp_ave.first
     revise_by_temp_ave[1..-1].map{ |y| dif = y - y0; y0 = y ; dif} 
   end
-
   def difference_ave(num=3)
     n = num/2
     
