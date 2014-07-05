@@ -20,10 +20,21 @@ class Shimada::Power < ActiveRecord::Base
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
 
+  @@average_diff = nil
+
   Differences = ("difference00".."difference23").to_a
   Lines = [(0..300),(300..400),(400..560),(560..680),(680..800),(800..1000)]
-  Shapes = %w(F U D I R O)
+  Shapes = self.all.map(&:shape).compact.uniq
   Header = "時刻"
+
+  Paterns = {
+    "S" => %w(0S 1S)        ,"4H" => %w(4H)    ,"4F" => %w(400 4F),"4D" => %w(4-- 4-+ 4-0 4d),
+    "3F" => %w(3-- 30- 3F 300 3O),"3H" => %w(3H)    ,"3D" => %w(3d),
+    "2F" => %w(2O),
+    "OT" => %w(1他 2他 3他 4他)
+   }
+  AllPatern = %w(0 1 2 3 4 5).product(Shapes).map{ |l,s| l+s } 
+  Un_sorted = AllPatern - Paterns.values.flatten
 
   Differ = ("00".."23").map{ |h| "difference#{h}" }
   NA     = ("f4_na0".."f4_na4").to_a
@@ -96,11 +107,16 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def shape_calc
     return nil unless lines
     if lines < 2  ; "S"
+    elsif max_diff_from_average_difference > 200 ; "他"
+    elsif [diffdiff.max,-diffdiff.min].max >  190 ; "他"
     elsif discriminant.abs < 0.000002       ;"00"
-    elsif na[4] > 0  &&  revise_by_temp[6] > 400    ; "O"
-    elsif revise_by_temp[6] < 400     
-      logger.debug("===== ID=#{id} #{date} 他  revise_by_temp[6] revise_by_temp[6]=#{ revise_by_temp[6]}")
-               "他"
+    elsif revise_by_temp[6] < 400           ;     "他"
+    elsif na[4] > 0
+logger.debug("PW_PEAKS: date=#{date} pw_peaks.join(',')")
+      if f3x3 < 9 && pw_peaks[1]-pw_peaks[2] > 120  ; "d" 
+      elsif f3x1 >-12 && pw_peaks[1]-pw_peaks[0] > 120  ; "d" 
+      else      ; "O"
+      end
     elsif discriminant < 0.0                ; "F"
     elsif y1     >  Err && y2.abs <   Err   ;  "+0"
     elsif y1     >  Err && y2     >   Err   ;  "++"
@@ -124,6 +140,12 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     elsif y1.abs <  Err && y2     <  -Err   ;  "0-"
     else      ;   "他"
     end
+  end
+
+  def max_diff_from_average_difference
+logger.debug("MAX_DIFF_FROM_AVERAGE_DIFFERENCE id=#{id} date=#{date}")
+    ave_difference = self.class.average_diff.difference
+    difference.zip(ave_difference).map{ |a,b| (a-b).abs if a&&b}.compact.max
   end
 
   Sdev = [0,6000,90000]
@@ -187,7 +209,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   def f4(x) ;    (((na[4] * x + na[3])*x + na[2])*x + na[1])*x+na[0] ;  end
   def f4_peaks ;@f4_peaks ||= f3_solve.map{ |x| f4(x)} ;end
-  def pw_peaks ;f3_solve.map{ |x| powers[x+PolyFitX0]} ;end
+  def pw_peaks ;f3_solve.map{ |x| powers[x+PolyFitX0] || 0 };end
 
   def difference_peak_vary
     (powers[f3x1+PolyFitX0,3] + powers[f3x3+PolyFitX0,3]).max -
@@ -243,8 +265,11 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def y2       ; x2 ? f3(x2) : nil ;end
 
   def weather
+logger.debug("WEATHER id=#{id} date=#{date}")
     return db_weather if db_weather
     db_weather = Weather.find_or_feach("maebashi", date)
+    save
+    db_weather
   end
 
   def temps 
@@ -262,6 +287,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def revise_by_temp
     return @revise_by_temp if @revise_by_temp
     unless self.rev01
+      #return unless weather
       revs = Hours.map{ |h|
         power = self[h]
         temp  = weather[h]
@@ -274,25 +300,26 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   end
 
   def diffdiff(num=5)
-    n = num/2
-    y0 = difference_ave.first
-    diff =difference_ave[1..-1].map{ |y| dif = y - y0; y0 = y ; dif*4}
-    aves = (0..diff.size-1).map{ |h| ary = diff[[0,h-n].max..[h+n,diff.size-1].min]
-      ary.inject(0){ |s,e| s+e}/ary.size
-    } 
+    logger.debug("DIFFDIFF: id=#{id} date=#{date} #{difference.join(',')}")
+    diff = (1..difference.size).
+      map{ |i| difference[i] -  difference[i-1] if  difference[i] &&  difference[i-1]
+    }.compact
   end
 
   def difference
     return @differences if @differences
     if difference00
       @differences = ("00".."23").map{ |h| self["difference#{h}"] }
+    elsif date.nil?
+      @differences=[]
     else
       y0 = revise_by_temp.first
       diff = { }
-      @differences = revise_by_temp[1..-1].map{ |y| dif = y - y0; y0 = y ;  dif}
+      @differences = revise_by_temp[1..-1].map{ |y| dif = y - y0; y0 = y ;  dif}.compact
       update_attributes(Hash[*Differences.zip(@differences).flatten])
     end
-      @differences 
+    @differences.compact
+    @differences
   end
 
   def difference_revise_by_temp

@@ -10,23 +10,25 @@ module Shimada::GraphAllMonth
         [:popup,:graph_all_month_lines4F,"稼働4full",{ :win_name => "graph"}],
         [:popup,:graph_all_month_lines4D,"稼働4から3へ",{ :win_name => "graph"}],
         [:popup,:graph_all_month_lines3F,"稼働3full",{ :win_name => "graph"}],
+        [:popup,:graph_all_month_lines3D,"稼働3から2へ",{ :win_name => "graph"}],
+        [:popup,:graph_all_month_lines2F,"稼働2full",{ :win_name => "graph"}],
         [:popup,:graph_all_month_lines3H,"稼働3一時低下",{ :win_name => "graph"}],
         [:popup,:graph_all_month_lines4H,"稼働4一時低下",{ :win_name => "graph"}],
         [:popup,:graph_all_month_linesOT ,"その他",{ :win_name => "graph"}],
-        [:popup,:graph_all_month_linesE ,"未分類",{ :win_name => "graph"}],
 
         [:popup,:graph_all_month_reviced,"全月度温度補正",{ :win_name => "graph"} ],
         [:popup,:graph_all_month_reviced_ave,"全月度温度補正平均化",{ :win_name => "graph"} ],
+        [:popup,:graph_all_month_linesE ,"未分類",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_mm","3line--",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_mp","3line-+",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_m0","3line-0",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_00","3line00",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_F" ,"3lineF" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_O" ,"3lineO" ,{ :win_name => "graph"}],
-        [:popup,"graph_all_month_line3_0p","3line0+",{ :win_name => "graph"}],
 
 
         [:popup,:graph_all_month_nomalized,"全月度正規化",{ :win_name => "graph"}  ] ,
+        [:popup,"graph_all_month_line3_0p","3line0+",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line4_mm","4line--",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line4_m0","4line-0",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line4_mp","4line-+",{ :win_name => "graph"}],
@@ -94,13 +96,13 @@ module Shimada::GraphAllMonth
   def graph_all_month_line3_00;graph_all_month_line_shape( 3,"00") ;  end
   def graph_all_month_line4_00;graph_all_month_line_shape( 4,"00") ;  end
   def graph_all_month_line5_00;graph_all_month_line_shape( 5,"00") ;  end
-  def graph_all_month_line3_0m;graph_all_month_line_shape( 3,"0-") ;  end
+  def graph_all_month_line3_0m;graph_all_month_line_shape( "30-") ;  end
   def graph_all_month_line4_0m;graph_all_month_line_shape( 4,"0-") ;  end
   def graph_all_month_line5_0m;graph_all_month_line_shape( 5,"0-") ;  end
   def graph_all_month_line3_0p;graph_all_month_line_shape( 3,"0+") ;  end
   def graph_all_month_line4_0p;graph_all_month_line_shape( 4,"0+") ;  end
   def graph_all_month_line5_0p;graph_all_month_line_shape( 5,"0+") ;  end
-  def graph_all_month_line3_m0;graph_all_month_line_shape( 3,"-0") ;  end
+  def graph_all_month_line3_m0;graph_all_month_line_shape( "3-0") ;  end
   def graph_all_month_line4_m0;graph_all_month_line_shape( 4,"-0") ;  end
   def graph_all_month_line5_m0;graph_all_month_line_shape( 5,"-0") ;  end
   def graph_all_month_line3_mm;graph_all_month_line_shape( 3,"--") ;  end
@@ -143,7 +145,9 @@ module Shimada::GraphAllMonth
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{opt[:graph_file]}.gif") == true
       months = Shimada::Month.all
       @power=months.map{ |m| m.powers}.flatten
+logger.debug("GRAPH_ALL_MONTH_SUB: @power.size=#{@power.size} find=#{opt[:find].to_a.join(',')}")
       @power = select_by_( @power,opt[:find]) if  opt[:find] 
+logger.debug("GRAPH_ALL_MONTH_SUB: @power.size=#{@power.size}")
       Shimada::Power.gnuplot(@power,method,opt)
     end
 
@@ -168,17 +172,13 @@ module Shimada::GraphAllMonth
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
-  Paterns = {
-    "S" => %w(0S 1S)          ,"4H" => %w(4H)    ,"4F" => %w(400 4F),"4D" => %w(4-- 4-+ 4-0),
-    "3F" => %w(3-- 30- 3F 300),"3H" => %w(3H)    ,"OT" => %w(1他 2他 3他 4他)   }
-  AllPatern = %w(0 1 2 3 4 5).product(Shimada::Power::Shapes).map{ |l,s| l+s } 
-  Un_sorted = AllPatern - Paterns.values.flatten
-
   def graph_all_month_linesS;  graph_all_month_patern(:revise_by_temp,"稼働無"       ,"S"  ) ;  end
   def graph_all_month_lines4F; graph_all_month_patern(:revise_by_temp,"稼働4"        ,"4F" ) ;  end
   def graph_all_month_lines4D; graph_all_month_patern(:revise_by_temp,"稼働4→3"     ,"4D" ) ;  end
   
+  def graph_all_month_lines2F; graph_all_month_patern(:revise_by_temp,"稼働2"        ,"2F" ) ;  end
   def graph_all_month_lines3F; graph_all_month_patern(:revise_by_temp,"稼働3"        ,"3F" ) ;  end
+  def graph_all_month_lines3D; graph_all_month_patern(:revise_by_temp,"稼働3→2"     ,"3D" ) ;  end
   def graph_all_month_lines3H; graph_all_month_patern(:revise_by_temp,"稼働3一時低下","3H" ) ;  end
   def graph_all_month_lines4H; graph_all_month_patern(:revise_by_temp,"稼働4一時低下","4H" ) ;  end
   def graph_all_month_linesOT; graph_all_month_patern(:revise_by_temp,"その他"       ,"OT" ) ;  end
