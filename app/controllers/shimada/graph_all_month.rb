@@ -10,19 +10,17 @@ module Shimada::GraphAllMonth
         [:popup,:graph_all_month_reviced_ave,"全月度温度補正平均化",{ :win_name => "graph"} ],
         [:popup,:graph_all_month_nomalized,"全月度正規化",{ :win_name => "graph"}  ] ,
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
-        [:popup,:graph_all_month_difference,"全月度差分",{ :win_name => "graph"} ],
+        [:popup,:graph_all_month_difference,"全月度差分",{ :win_name => "graph"} ]
+      ] +
+       [["稼働無","S"],     ["稼働4full","4F"],   ["稼働4→3","4D"],  ["稼働2","2F"],
+        ["稼働3","3F"],     ["稼働3→2","3D"],    ["稼働2full","2F"], ["稼働3一時低下","3H"],
+        ["稼働4一時低下","4H"],   ["その他","OT"],   ["未分類","E"],
 
-        [:popup,:graph_all_month_linesS ,"稼働無",{ :win_name => "graph"}],
-        [:popup,:graph_all_month_lines4F,"稼働4full",{ :win_name => "graph"}],
-        [:popup,:graph_all_month_lines4D,"稼働4から3へ",{ :win_name => "graph"}],
-        [:popup,:graph_all_month_lines3F,"稼働3full",{ :win_name => "graph"}],
-        [:popup,:graph_all_month_lines3D,"稼働3から2へ",{ :win_name => "graph"}],
-        [:popup,:graph_all_month_lines2F,"稼働2full",{ :win_name => "graph"}],
-        [:popup,:graph_all_month_lines3H,"稼働3一時低下",{ :win_name => "graph"}],
-        [:popup,:graph_all_month_lines4H,"稼働4一時低下",{ :win_name => "graph"}],
-        [:popup,:graph_all_month_linesOT ,"その他",{ :win_name => "graph"}],
-        [:popup,:graph_all_month_linesE ,"未分類",{ :win_name => "graph"}]
-       ] +
+       ].map{ |lbl,shape,action| 
+         [:popup,:graph_all_month_lines,lbl,
+          {:win_name => "graph",:action=> :revise_by_temp,:label => lbl,:shape => shape}]
+       } +
+
        %w(3-- 3-+ 3-0 3F 3O 30+ 4-- 4-0 400 4F 4H 3他 4他 0S 1S 200  2O
          ). map{ |patern| line,shape = patern.split("",2); 
          [:popup,"graph_all_month_pat","#{line}line#{shape}",
@@ -86,19 +84,13 @@ module Shimada::GraphAllMonth
     @TYTLE = title
     render :action => :graph,:layout => "hospital_error_disp"
   end
-
-  def graph_all_month_linesS;  graph_all_month_patern(:revise_by_temp,"稼働無"       ,"S"  ) ;  end
-  def graph_all_month_lines4F; graph_all_month_patern(:revise_by_temp,"稼働4"        ,"4F" ) ;  end
-  def graph_all_month_lines4D; graph_all_month_patern(:revise_by_temp,"稼働4→3"     ,"4D" ) ;  end
-  
-  def graph_all_month_lines2F; graph_all_month_patern(:revise_by_temp,"稼働2"        ,"2F" ) ;  end
-  def graph_all_month_lines3F; graph_all_month_patern(:revise_by_temp,"稼働3"        ,"3F" ) ;  end
-  def graph_all_month_lines3D; graph_all_month_patern(:revise_by_temp,"稼働3→2"     ,"3D" ) ;  end
-  def graph_all_month_lines3H; graph_all_month_patern(:revise_by_temp,"稼働3一時低下","3H" ) ;  end
-  def graph_all_month_lines4H; graph_all_month_patern(:revise_by_temp,"稼働4一時低下","4H" ) ;  end
-  def graph_all_month_linesOT; graph_all_month_patern(:revise_by_temp,"その他"       ,"OT" ) ;  end
-  def graph_all_month_linesE;  graph_all_month_patern(:revise_by_temp,"未分類"       ,nil  ) ;  end
-
+  def graph_all_month_lines
+    action = params[@Domain][:action]
+    label  = params[@Domain][:label]
+    shape  =  params[@Domain][:shape]
+    shape  = nil if shape == "E"
+    graph_all_month_patern(action,label,shape)
+  end
 
   def graph_all_month_temp
     months = Shimada::Month.all
