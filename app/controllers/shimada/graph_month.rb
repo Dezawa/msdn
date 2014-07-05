@@ -24,55 +24,13 @@ module  Shimada::GraphMonth
 
     Month_action_buttoms =
       [12,
-       [[:input_and_action,"graph_month_line_shape_","数型",{:size=>2 ,:popup => "graph_month"}],
-        [:popup,"graph_line3_mm","3line--",{ :win_name => "graph"}],
-        [:popup,"graph_line4_mm","4line--",{ :win_name => "graph"}],
-        #[:popup,"graph_line5_mm","5line--",{ :win_name => "graph"}],
-        [:popup,"graph_line3_m0","3line-0",{ :win_name => "graph"}],
-        [:popup,"graph_line4_m0","4line-0",{ :win_name => "graph"}],
-        #[:popup,"graph_line5_m0","5line-0",{ :win_name => "graph"}],
-        [:popup,"graph_line3_mp","3line-+",{ :win_name => "graph"}],
-        [:popup,"graph_line4_mp","4line-+",{ :win_name => "graph"}],
-        #[:popup,"graph_line5_mp","5line-+",{ :win_name => "graph"}],
-        #[:popup,"graph_line3_pm","3line+-",{ :win_name => "graph"}],
-        #[:popup,"graph_line4_pm","4line+-",{ :win_name => "graph"}],
-        #[:popup,"graph_line5_pm","5line+-",{ :win_name => "graph"}],
-        #[:popup,"graph_line3_p0","3line+0",{ :win_name => "graph"}],
-        #[:popup,"graph_line4_p0","4line+0",{ :win_name => "graph"}],
-        #[:popup,"graph_line5_p0","5line+0",{ :win_name => "graph"}],
-        #[:popup,"graph_line3_pp","3line++",{ :win_name => "graph"}],
-        #[:popup,"graph_line4_pp","4line++",{ :win_name => "graph"}],
-        #[:popup,"graph_line5_pp","5line++",{ :win_name => "graph"}],
-        [:popup,"graph_line2_00","2line00",{ :win_name => "graph"}],
-        [:popup,"graph_line3_00","3line00",{ :win_name => "graph"}],
-        [:popup,"graph_line4_00","4line00",{ :win_name => "graph"}],
-        #[:popup,"graph_line5_00","5line00",{ :win_name => "graph"}],
-        #[:popup,"graph_line3_0p","3line0+",{ :win_name => "graph"}],
-        #[:popup,"graph_line4_0p","4line0+",{ :win_name => "graph"}],
-        #[:popup,"graph_line5_0p","5line0+",{ :win_name => "graph"}],
-        #[:popup,"graph_line3_pp","3line0-",{ :win_name => "graph"}],
-        #[:popup,"graph_line4_pp","4line0-",{ :win_name => "graph"}],
-        #[:popup,"graph_line5_pp","5line0-",{ :win_name => "graph"}],
-        [:popup,"graph_line3_F","3lineF",{ :win_name => "graph"}],
-        [:popup,"graph_line4_F","5lineF",{ :win_name => "graph"}],
-        #[:popup,"graph_line5_F","4lineF",{ :win_name => "graph"}],
-        [:popup,"graph_line3_O","3lineO",{ :win_name => "graph"}],
-        [:popup,"graph_line4_O","4lineO",{ :win_name => "graph"}],
-        #[:popup,"graph_line5_O","5lineO",{ :win_name => "graph"}],
-        [:popup,"graph_line3_OT","3line他",{ :win_name => "graph"}],
-        [:popup,"graph_line4_OT","4line他",{ :win_name => "graph"}],
-        #[:popup,"graph_line5_OT","5line他",{ :win_name => "graph"}]
-       ]
+       [[:input_and_action,"graph_month_line_shape_","数型",{:size=>2 ,:popup => "graph_month"}]] +
+       %w(3-- 4-- 3-0 4-0 3-+ 4-+ 200 300 400 3F 4F 3O 4O 3他 4他).
+       map{ |patern| line,shape = patern.split("",2); 
+         [:popup,"graph_line","#{line}line#{shape}",{ :win_name => "graph",:shape => patern}]
+       }
       ]
-      #[7,
-      # (0..5).map{ |run| [:popup,"graph_line#{run}","#{run}ライン稼働",{ :win_name => "graph"}] } +
-      # [[:popup,"graph_line_all","ライン稼働数別",{ :win_name => "graph"}],
-      #  [:popup,"graph_shape_all_F","稼働フラット",{ :win_name => "graph"}],
-      #  [:popup,"graph_shape_all_D","稼働ダウン",{ :win_name => "graph"}],
-      #  [:popup,"graph_shape_all_O","稼働その他",{ :win_name => "graph"}],
-      #  [:popup,"graph_shape_all","稼働変化別",{ :win_name => "graph"}]
-      # ]
-      #]
+
   def graph_month_sub(method,title,opt={ })
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
     month =  @Model.find(id)
@@ -94,50 +52,14 @@ module  Shimada::GraphMonth
   end
 
   def graph_line_shape(lines,shape=nil)
+logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
     lines,shape = lines.split("",2) unless shape
     graph_month_sub(:revise_by_temp,"#{lines}line #{shape}",:by_day => true,
                     :find => {:lines => lines.to_i,:shape_is => shape},
                     :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")) 
   end
 
-  def graph_line3_p0;graph_line_shape( 3,"+0") ;  end
-  def graph_line4_p0;graph_line_shape( 4,"+0") ;  end
-  def graph_line5_p0;graph_line_shape( 5,"+0") ;  end
-  def graph_line3_pp;graph_line_shape( 3,"++") ;  end
-  def graph_line4_pp;graph_line_shape( 4,"++") ;  end
-  def graph_line5_pp;graph_line_shape( 5,"++") ;  end
-  def graph_line3_pm;graph_line_shape( 3,"+-") ;  end
-  def graph_line4_pm;graph_line_shape( 4,"+-") ;  end
-  def graph_line5_pm;graph_line_shape( 5,"+-") ;  end
-  def graph_line2_00;graph_line_shape( 2,"00") ;  end
-  def graph_line3_00;graph_line_shape( 3,"00") ;  end
-  def graph_line4_00;graph_line_shape( 4,"00") ;  end
-  def graph_line5_00;graph_line_shape( 5,"00") ;  end
-  def graph_line3_0m;graph_line_shape( 3,"0-") ;  end
-  def graph_line4_0m;graph_line_shape( 4,"0-") ;  end
-  def graph_line5_0m;graph_line_shape( 5,"0-") ;  end
-  def graph_line3_0p;graph_line_shape( 3,"0+") ;  end
-  def graph_line4_0p;graph_line_shape( 4,"0+") ;  end
-  def graph_line5_0p;graph_line_shape( 5,"0+") ;  end
-  def graph_line3_m0;graph_line_shape( 3,"-0") ;  end
-  def graph_line4_m0;graph_line_shape( 4,"-0") ;  end
-  def graph_line5_m0;graph_line_shape( 5,"-0") ;  end
-  def graph_line3_mm;graph_line_shape( 3,"--") ;  end
-  def graph_line4_mm;graph_line_shape( 4,"--") ;  end
-  def graph_line5_mm;graph_line_shape( 5,"--") ;  end
-  def graph_line3_mp;graph_line_shape( 3,"-+") ;  end
-  def graph_line4_mp;graph_line_shape( 4,"-+") ;  end
-  def graph_line5_mp;graph_line_shape( 5,"-+") ;  end
-  def graph_line3_F;graph_line_shape( 3,"F") ;  end
-  def graph_line4_F;graph_line_shape( 4,"F") ;  end
-  def graph_line5_F;graph_line_shape( 5,"F") ;  end
-  def graph_line3_O;graph_line_shape( 3,"O") ;  end
-  def graph_line4_O;graph_line_shape( 4,"O") ;  end
-  def graph_line5_O;graph_line_shape( 5,"O") ;  end
-  def graph_line3_OT;graph_line_shape( 3,"他") ;  end
-  def graph_line4_OT;graph_line_shape( 4,"他") ;  end
-  def graph_line5_OT;graph_line_shape( 5,"他") ;  end
-
+  def graph_line ;   graph_line_shape( params[@Domain][:shape] ) ;  end
 
   def graph_month         ;graph_month_sub(:powers,"消費電力推移") ; end
   def graph_month_reviced ;graph_month_sub(:revise_by_temp,"補正消費電力推移") ; end
