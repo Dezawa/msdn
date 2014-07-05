@@ -61,9 +61,13 @@ class Shimada::MonthController <  Shimada::Controller
     @model = @Model.find(params[:id])
     @page = params[:id]
     @models = @model.powers
+    @TYTLE_post = @models.first.date.strftime("(%Y年%m月)")
+    show_sub
+  end
+ 
+  def show_sub
     @Show = @Edit = @Delete = nil
     @Graph = true
-    @TYTLE_post = @models.first.date.strftime("(%Y年%m月)")
     @TableEdit  =  [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
                     [:popup,:graph_month,"月度グラフ",{ :win_name => "graph"} ],
                     [:popup,:graph_month_reviced,"月度温度補正",{ :win_name => "graph"} ],
@@ -77,6 +81,7 @@ class Shimada::MonthController <  Shimada::Controller
     @action_buttoms = Month_action_buttoms
     @labels = PowerLabels
     @TableHeaderDouble = [7,[13,"係数"],[24,"時刻"]]
+    render :action => :show
   end
 
   def reset_reevice_and_ave

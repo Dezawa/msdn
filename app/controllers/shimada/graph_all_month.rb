@@ -27,9 +27,23 @@ module Shimada::GraphAllMonth
           { :win_name => "graph",:patern => patern}
          ]
        }+
-        [[:input_and_action,"graph_all_month_","数型",{:size=>2 ,:popup => "graph_all_month"}]]
+        [[:input_and_action,"graph_all_month_","数型グラフ",{:size=>2 ,:popup => "graph_all_month"}],
+         [:input_and_action,"index_all_month_","数型の一覧",{:size=>2 ,:popup => "graph_all_month"}]
+        ]
 
       ]
+
+
+  def index_all_month_
+    line,shape = patern = params[@Domain][:index_all_month_].split("",2)
+    #@models = Shimada::Power.all(:conditions => ["line=? and shape = ?",line,shape])
+    @models = Shimada::Power.all( #:order => "date",
+                                  :conditions => ["line = ? and shape = n? ",line.to_i,shape]
+                                )
+    @TYTLE_post = "(#{patern})"
+    show_sub
+  end
+
 
   def graph_all_month_reviced ;    graph_all_month_sub(:revise_by_temp, "補正消費電力推移 全月度",:by_month => true) ;  end
   def graph_all_month_reviced_ave ; graph_all_month_sub(:revise_by_temp_ave,"補正消費電力平均化推移 全月度",:by_month => true);end
@@ -43,9 +57,11 @@ module Shimada::GraphAllMonth
   def graph_all_month_pat
     graph_all_month_line_shape(params[@Domain][:patern])
   end
-   def graph_all_month_
+  
+  def graph_all_month_
     graph_all_month_line_shape(params[@Domain][:graph_all_month_])
   end
+
   def graph_all_month_line_shape(lines,shape=nil)
     lines,shape = lines.split("",2) unless shape
     logger.debug("\n** GRAPH_ALL_MONTH_LINE_SHAPE: line=#{lines} shape=#{shape} **")
