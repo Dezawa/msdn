@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140702095520) do
+ActiveRecord::Schema.define(:version => 20140705114950) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -325,6 +325,7 @@ ActiveRecord::Schema.define(:version => 20140702095520) do
     t.float   "f3_x3"
     t.float   "f2_x1"
     t.float   "f2_x2"
+    t.integer "line"
   end
 
   create_table "top_pages", :force => true do |t|
