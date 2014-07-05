@@ -40,7 +40,7 @@ class Shimada::Power < ActiveRecord::Base
   NA     = ("f4_na0".."f4_na4").to_a
   F3_SOLVE = %w(f3_x1 f3_x2 f3_x3)
   F2_SOLVE = %w(f2_x1 f2_x2)
-  CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["shape"]
+  CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["line"]
 
   def self.reset_reevice_and_ave
     self.all.each{ |power|
@@ -55,7 +55,7 @@ class Shimada::Power < ActiveRecord::Base
       CashColumns.each{ |sym| pw[sym] = nil}
       pw.save
     }
-      File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
+      reculc_shapes
   end
 
   def self.reculc_shapes
@@ -63,6 +63,7 @@ class Shimada::Power < ActiveRecord::Base
     self.update_all("shape = null")
     @shpe_is = nil
     File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
+    self.all(:conditions => "date is not null").each{ |pw| pw.lines;pw.shape_is}
   end
 
   def self.average_diff
@@ -86,7 +87,11 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   end
 
   def lines
-    Lines.index{ |line| line.include?(revise_by_temp_ave[7..-1].max) }
+    return @lines if @lines
+    unless line
+      update_attribute(:line , Lines.index{ |l| l.include?(revise_by_temp_ave[7..-1].max) })
+    end
+    @lines = line
   end
 
   def shape_is
