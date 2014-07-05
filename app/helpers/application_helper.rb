@@ -206,36 +206,6 @@ input_and_action(action,label,opt)
     html + "\n</form>"
   end
 
-  def popupform_buttom_old(action,label,opt ={ },htmlopt={ })
-    form_notclose = opt.delete(:form_notclose) if opt.class==Hash
-
-    win_name = opt.delete(:win_name) || ""
-    if @model
-      fmt =
-        %Q!<form action="/%s/%s">
-  <input name="authenticity_token" type="hidden" value="%s" />
-  <input id="%s_id" name="%s[id]" type="hidden" value="%d" />
-  <input name="commit" type="submit"  value="%s" onclick="window.open('/%s/%s?id=%d', '%s', 'width=500,height=400'); target='%s'">
-</form>!
-      fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,@model.id,win_name,win_name]
-    elsif form_notclose
-      %Q!<form action="/shimada/month/graph_selected_months" method="post" target='graph'><div style="margin:0;padding:0"><input name="authenticity_token" type="hidden" value="d2eaef964366b120c255747e4653c7a436b1af06" /></div><input type='hidden' name='page' value='1'><input name="commit" type="submit" value="選択月度グラフ" target='graph' />!
-    elsif nil #form_notclose
-      fmt =
-        %Q!<form action="/%s/%s" >
-  <input name="authenticity_token" type="hidden" value="%s" />
-  <input name="commit" type="submit"  value="%s" target="%s">!
-      fmt%[@Domain,action,form_authenticity_token,label,win_name]
-    else
-      fmt =
-        %Q!<form action="/%s/%s">
-  <input name="authenticity_token" type="hidden" value="%s" />
-  <input name="commit" type="submit"  value="%s" onclick="window.open('/%s/%s', '%s', 'width=500,height=400'); target='%s'">
-</form>!
-      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,win_name]
-    end 
-  end
-
   def form_buttom(action,label,opt ={ },htmlopt={ })
     hidden = opt.delete(:hidden) if opt.class==Hash
     hidden_value = opt.delete(:hidden_value) if opt.class==Hash
