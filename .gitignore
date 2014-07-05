@@ -30,3 +30,6 @@ tmp/cache
 tmp/pids
 
 /tmp/ubr
+tmp/hospital/Shift*
+tmp/hospital/log/stat
+tmp/shimada/*/*gif
