@@ -169,6 +169,7 @@ end
   #- ［［function,action,label],,,,]
   def action_buttom(buttom)
     function,action,label,opt,htmlopt = buttom
+     logger.debug(":ACTION_BUTTOM function=#{function} opt.nil?#{opt.nil?} opt=#{opt}")
     case function
     when :form ;form_buttom(action,label,opt,htmlopt)
     when :popup ;popupform_buttom(action,label,opt,htmlopt)
@@ -176,11 +177,36 @@ end
     when :add_buttom       ;add_buttom(@Domain)
     when :edit_bottom       ;edit_bottom(opt||{ })
     when :csv_up_buttom     ;csv_up_buttom
-    when :input_and_action  ;input_and_action(action,label,opt)
+    when :input_and_action  ;
+      logger.debug(":INPUT_AND_ACTION: opt.nil?#{opt.nil?} opt=#{opt}")
+input_and_action(action,label,opt)
     else function.to_s
     end
   end
+
+  PopupHead =  %Q!<form action="/%s/%s">
+  <input name="authenticity_token" type="hidden" value="%s" />
+  <input name="commit" type="submit"  value="%s" 
+!
+  PopupWithOUTModel = %Q! onclick="window.open('/%s/%s', '%s', 'width=500,height=400'); target='%s'">
+!
+  PopupWithModel = %Q!  onclick="window.open('/%s/%s?id=%d', '%s', 'width=500,height=400'); target='%s'">
+  <input id="%s_id" name="%s[id]" type="hidden" value="%d" />
+!
+
   def popupform_buttom(action,label,opt ={ },htmlopt={ })
+    win_name = opt.delete(:win_name) || ""
+    html = PopupHead%[@Domain,action,form_authenticity_token,label]
+    if @model
+      html += PopupWithModel%[@Domain,action,@model.id,win_name,win_name,@Domain,@Domain,@model.id] 
+    else
+      html += PopupWithOUTModel%[@Domain,action,win_name,win_name]
+    end
+    opt.each{ |k,v|  html += hidden_field(@Domain,k,:value => v) +"\n"  }
+    html + "\n</form>"
+  end
+
+  def popupform_buttom_old(action,label,opt ={ },htmlopt={ })
     form_notclose = opt.delete(:form_notclose) if opt.class==Hash
 
     win_name = opt.delete(:win_name) || ""
