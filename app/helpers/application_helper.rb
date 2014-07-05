@@ -169,7 +169,6 @@ end
   #- ［［function,action,label],,,,]
   def action_buttom(buttom)
     function,action,label,opt,htmlopt = buttom
-     logger.debug(":ACTION_BUTTOM function=#{function} opt.nil?#{opt.nil?} opt=#{opt}")
     case function
     when :form ;form_buttom(action,label,opt,htmlopt)
     when :popup ;popupform_buttom(action,label,opt,htmlopt)
