@@ -24,7 +24,7 @@ module  Shimada::GraphMonth
 
     Month_action_buttoms =
       [12,
-       [
+       [[:input_and_action,"graph_month_line_shape_","数型",{:size=>2 ,:popup => "graph_month"}],
         [:popup,"graph_line3_mm","3line--",{ :win_name => "graph"}],
         [:popup,"graph_line4_mm","4line--",{ :win_name => "graph"}],
         #[:popup,"graph_line5_mm","5line--",{ :win_name => "graph"}],
@@ -89,10 +89,14 @@ module  Shimada::GraphMonth
       render :action => :graph,:layout => "hospital_error_disp"
   end
 
+  def graph_month_line_shape_
+    graph_line_shape(params[@Domain][:graph_month_line_shape_])
+  end
 
-  def graph_line_shape(lines,shape)
-    graph_month_sub(:revise_by_temp,"#{lines}line #{shape}",:by_month => true,
-                    :find => {:lines => lines,:shape_is => shape},
+  def graph_line_shape(lines,shape=nil)
+    lines,shape = lines.split("",2) unless shape
+    graph_month_sub(:revise_by_temp,"#{lines}line #{shape}",:by_day => true,
+                    :find => {:lines => lines.to_i,:shape_is => shape},
                     :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")) 
   end
 

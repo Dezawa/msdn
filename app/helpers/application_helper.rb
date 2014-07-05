@@ -225,16 +225,35 @@ end
       (opt.class==Symbol ? send(opt) : "") +
       submit_tag(label)+from_notclose
   end
-  def input_and_action(action,label,opt)
+  def input_and_action(action,label,opt={ })
     hidden = opt.delete(:hidden)
     hidden_value = opt.delete(:hidden_value)
-    form_tag(:action => action) + 
-      "<input type='hidden' name='page' value='#{@page}'>"+
-      (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
-       else;"";end
-       )+
-      submit_tag(label)+
-      text_field( @Domain,action,opt ) +  "</form>"
+    if win_name = opt[:popup]
+      if @model
+      fmt =
+ "<form action='/%s/%s'>
+  <input name='authenticity_token' type='hidden' value='%s' />
+  <input id='%s_id' name='%s[id]' type='hidden' value='%d' />
+  <input name='commit' type='submit'  value='%s' onclick=\"window.open('/%s/%s', '%s', 'width=500,height=400'); target='%s'\">
+" + text_field( @Domain,action,opt ) +  "</form>"
+      fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,win_name,win_name]
+      else
+      fmt =
+ "<form action='/%s/%s'>
+  <input name='authenticity_token' type='hidden' value='%s' />
+  <input name='commit' type='submit'  value='%s' onclick=\"window.open('/%s/%s', '%s', 'width=500,height=400'); target='%s'\">
+" + text_field( @Domain,action,opt ) +  "</form>"
+      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,win_name]
+      end
+    else
+      form_tag(:action => action) + 
+        "<input type='hidden' name='page' value='#{@page}'>"+
+        (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
+         else;"";end
+         )+
+        submit_tag(label)+
+        text_field( @Domain,action,opt ) +  "</form>"
+    end
   end
 
   def action_buttoms(buttoms)

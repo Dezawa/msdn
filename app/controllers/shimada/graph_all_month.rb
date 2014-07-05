@@ -34,15 +34,16 @@ module Shimada::GraphAllMonth
         [:popup,"graph_all_month_line4_F" ,"4lineF" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line4_O" ,"4lineO" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line4_H" ,"4lineH" ,{ :win_name => "graph"}],
-        [:popup,"graph_all_month_line4_OT","4line他",{ :win_name => "graph"}],
 
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
         [:popup,:graph_all_month_difference,"全月度差分",{ :win_name => "graph"} ],
+        [:popup,"graph_all_month_line4_OT","4line他",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line0_S" ,"0lineS" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line1_S" ,"1lineS" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line2_00","2line00",{ :win_name => "graph"}],
         [:popup,"graph_all_month_line2_O" ,"2lineO" ,{ :win_name => "graph"}],
         [:popup,"graph_all_month_line3_OT","3line他",{ :win_name => "graph"}],
+        [:input_and_action,"graph_all_month_line_shape_","数型",{:size=>2 ,:popup => "graph_all_month"}],
 
         #[:popup,:graph_all_month_ave,"全月度平均化",{ :win_name => "graph"}  ] ,
         #[:popup,"graph_all_month_line5_mm","5line--",{ :win_name => "graph"}],
@@ -122,9 +123,14 @@ module Shimada::GraphAllMonth
   def graph_all_month_line4_OT;graph_all_month_line_shape( 4,"他") ;  end
   def graph_all_month_line5_OT;graph_all_month_line_shape( 5,"他") ;  end
 
-  def graph_all_month_line_shape(lines,shape)
+  def graph_all_month_line_shape_
+    graph_all_month_line_shape(params[@Domain][:graph_all_month_line_shape_])
+  end
+  def graph_all_month_line_shape(lines,shape=nil)
+    lines,shape = lines.split("",2) unless shape
+    logger.debug("\n** GRAPH_ALL_MONTH_LINE_SHAPE: line=#{lines} shape=#{shape} **")
     graph_all_month_sub(:revise_by_temp,"#{lines}line #{shape}",
-                        :find => {:lines => lines,:shape_is => shape},:by_month => true,
+                        :find => {:lines => lines.to_i,:shape_is => shape},:by_month => true,
                         :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")) 
   end
   def graph_all_month_sub(method,title,opt={ })
@@ -147,13 +153,14 @@ module Shimada::GraphAllMonth
   def graph_all_month_patern(method,title,shapes)
     @graph_file =  "giffiles/all_month_patern_" + ( shapes || "unsorted")
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
-      line_shape = ( if   shapes ; Paterns[shapes]
-                     else Un_sorted
+      line_shape = ( if   shapes ; Shimada::Power::Paterns[shapes]
+                     else Shimada::Power::Un_sorted
                      end ).map{ |ls| ls.split("",2)}
       months = Shimada::Month.all
       @power=months.map{ |m| m.powers}.flatten.
         select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
-      Shimada::Power.gnuplot(@power,method,:by_line_shape => true,
+ logger.debug("GRAPH_ALL_MONTH_PATERN: @power.size=#{@power.size}")
+     Shimada::Power.gnuplot(@power,method,:by_line_shape => true,
                              :graph_file => @graph_file
                              )
     end
