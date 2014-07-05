@@ -43,131 +43,29 @@ class Shimada::Power < ActiveRecord::Base
       pw.shape_is =  pw.na = pw.f4_peaks = pw.f3_solve = pw.f2_solve =  pw.differences = nil
       CashColumns.each{ |sym| pw[sym] = nil}
       pw.save
-      File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
     }
+      File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
   end
 
   def self.reculc_shapes
-    self.all.each{ |pw|
-      pw.update_attribute(:shape,nil)
-      File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
-    }
-  end
-
-  def self.output_plot_data(powers,method,opt = { },&block)
-    path = []
-    keys = nil
-    ary_powres = if by_month = opt[:by_month]
-                   powers.group_by{ |p| p.date.strftime("%y/%m")} 
-                 elsif opt[:by_line]
-                   keys = (0..5).to_a
-                   powers.group_by{ |p| "稼働数-#{p.lines}"}
-                   
-                 elsif opt[:by_line_shape]
-                   #keys = Shapes
-                   p=powers.group_by{ |p| "#{p.lines}#{p.shape_calc}"}#.sort_by{ |p,v| p}#.reverse
-                   keys = p.keys.compact.sort
-                   p
-                 elsif opt[:by_shape]
-                   p=powers.group_by{ |p| p.shape_calc}#.sort_by{ |p,v| p}#.reverse
-                   keys = p.keys.compact.sort
-                   p
-                 else
-                   powers.size > 0 ? { powers.first.date.strftime("%y/%m")=>powers} : {"" =>[]}
-                     
-                 end
-    keys ||= ary_powres.keys.sort
-    keys.each_with_index{ |k,idx|
-      #ary_powres.each_with_index{ |month_powers,idx|
-      path << "/tmp/shimada/shimada_power_temp%d"%idx
-      open(path.last,"w"){ |f|
-        #f.puts "時刻 #{month_powers.first}"
-        f.puts "時刻 #{k}"
-        #month_powers.last.each{ |power|
-        ary_powres[k].each{ |power|
-          yield f,power #power.send(method).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
-          f.puts
-        }
-      }
-    }
-    path
-  end
-
-  def self.average_out(power,method)
-      open("/tmp/shimada/shimada_power_diff_ave","w"){ |f|
-        f.puts "時刻 平均"
-        power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+1,h ) if h } 
-      f.puts
-    }
-  end
-
-  def self.gnuplot(powers,method,opt={ })
-    path = output_plot_data(powers,method,opt){ |f,power| 
-      power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+1,h ) if h }
-    }
-    def_file = "/tmp/shimada/power.def"
-    graph_file = opt[:graph_file] || "power"
-    by_month = ( opt.keys & [:by_month,:by_line,:by_shape,:by_line_shape] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
-    preunble = ( case method
-                 when :normalized ;  Nomalized_def
-                 when :difference, :difference_ave ,:diffdiff;  Differ_def 
-                 else             ; Power_def 
-                 end)% [ graph_file , by_month ]
-
-    open(def_file,"w"){ |f|
-      f.puts preunble 
-      f.print "plot " + path.map{ |p| "'#{p}' using 1:2  with line"}.join(" , ")
-      if opt[:by_line] 
-        f.print " , " + Lines.map{ |line| line.last}.join(" , ")
-      elsif opt[:fitting]
-        i=0
-#logger.debug("powers = #{powers.first.class}")
-        a = method == :normalized ? powers.first.na : powers.first.a
-#        logger.debug("powers.a = #{powers.first.a.join(',')}")
-        f.print  ",1,\\\n #{a[0]}"+ 
-          a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{PolyFitX0+1})**#{i}" }.join + " lt -1" +
-          ",\\\n (((%+f * (x-#{PolyFitX0+1}) %+f)*(x-#{PolyFitX0+1}) %+f)*(x-#{PolyFitX0+1}) %+f)*5+1"%[
-          a[4] * 4,a[3]*3,a[2]*2,a[1]] +
-          ", \\\n((%+f * (x-#{PolyFitX0+1}) %+f) * (x-#{PolyFitX0+1}) %+f)*5 +1"%[a[4] * 12,a[3]*6,a[2]*2]
-      elsif method == :difference
-        average_out(average_diff,:difference)
-        f.print ",\\\n  '/tmp/shimada/shimada_power_diff_ave'  using 1:2  with line lt -1"
-      end
-        f.puts
-    }
-    `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
-  end
-
-  def self.gnuplot_by_temp(powers,opt={ })
-    path = output_plot_data(powers,:powers,opt){ |f,power| 
-      temperatures = Weather.find_or_feach("maebashi", power.date).temperatures
-      power.powers.each_with_index{ |h,idx| f.printf( "%.1f %.1f\n",temperatures[idx],h ) if h && temperatures[idx] }
-    }
-#    path = gnuplot_data_by_temp(powers,opt)
-    def_file = "/tmp/shimada/power_temp.def"
-    graph_file = opt[:graph_file] || "power"
-    open(def_file,"w"){ |f|
-      f.puts Temp_power_def % graph_file
-      f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") +
-      #if opt[:with_Approximation]
-        ", 780+9*(x-20) ,670+3*(x-20), 0.440*(x-5)**1.8+750"
-      #else
-      #  ""
-      #end
-    }
-    `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
+    #self.update(self.all.map(&:id), :shape => nil)
+    self.update_all("shape = null")
+    @shpe_is = nil
+    File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
   end
 
   def self.average_diff
+    return @@average_diff if @@average_diff
     ave_power = Shimada::Power.find_by_date(nil)
-    ave_power = create_average_diff unless ave_power && ave_power.differences
-    ave_power
+    ave_power = create_average_diff unless ave_power && ave_power.difference[0]
+    @@average_diff = ave_power
   end
 
   def self.create_average_diff
     ave_power = Shimada::Power.find_or_create_by_date(nil)
     all_powers = Shimada::Power.all(:conditions => "date is  not null")
     diffs = all_powers.inject([0]*24){ |s,v|
+logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
       v.difference.each_with_index{ |diff,idx| s[idx]+=( diff || 0 )};s
     }
     diffs =  diffs.map{ |d| d/all_powers.size}
