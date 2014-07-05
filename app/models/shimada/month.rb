@@ -13,6 +13,7 @@ class Shimada::Month < ActiveRecord::Base
 
     def csv_upload(file)
       csv_files(file).each{ |csvfile|  create_month_by(csvfile) }
+      Shimada::Power.delete_all("hour01 = '0.0'")
     end
 
     def  create_month_by(csvfile)
