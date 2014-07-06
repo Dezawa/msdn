@@ -12,12 +12,9 @@ module Shimada::GraphAllMonth
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
         [:popup,:graph_all_month_difference,"全月度差分",{ :win_name => "graph"} ]
       ] +
-       [
-        ["稼働無","S"],      ["稼働2","2F"], ["稼働3","3F"],  ["稼働4full","4F"],   ["稼働4→3","4D"], 
-           ["稼働3→2","3D"],   ["稼働3一時低下","3H"],   ["稼働4一時低下","4H"],   ["その他","OT"],   ["未分類","E"],
-       ].map{ |lbl,shape,action| 
+       Shimada::Power::PaternsKey.map{ |lbl| 
          [:popup,:graph_all_month_lines,lbl,
-          {:win_name => "graph_patarn_all_month",:action=> :revise_by_temp,:label => lbl,:shape => shape}]
+          {:win_name => "graph_patarn_all_month",:action=> :revise_by_temp,:label => lbl,:shape => lbl}]
        } +
 
        #%w( #3-- 3-+ 3-0 3F 3O 30+ 4-- 4-0 400 4F 4H 3他 4他 0S 1S 200  2O
@@ -120,7 +117,7 @@ module Shimada::GraphAllMonth
     action = params[@Domain][:action]
     label  = params[@Domain][:label]
     shape  =  params[@Domain][:shape]
-    shape  = nil if shape == "E"
+    shape  = nil if shape == "未分類"
     graph_all_month_patern(action,label,shape)
   end
 

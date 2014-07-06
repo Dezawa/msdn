@@ -3,11 +3,13 @@ module Shimada::Patern
   #module ClassStatic
 
   Paterns = {
-    "S" => %w(0S 1S)        ,"4H" => %w(4H)    ,"4F" => %w(400 4F),"4D" => %w(4-- 4-+ 4-0 4d),
-    "3F" => %w(3-- 30- 3F 300 3O),"3H" => %w(3H)    ,"3D" => %w(3d),
-    "2F" => %w(2O),
-    "OT" => %w(1他遅 2他遅 3他遅 4他遅 1他急変 2他急変 3他急変 4他急変)
+    "稼働無" => %w(0S 1S)        ,"稼働4一時低下" => %w(4H)    ,"稼働4" => %w(400 4F),"稼働4→3" => %w(4-- 4-+ 4-0 4d),
+    "稼働3" => %w(3-- 30- 3F 300 3O),"稼働3一時低下" => %w(3H)    ,"稼働3→2" => %w(3d),
+    "稼働2" => %w(2O),
+    "その他" => %w(1他遅 2他遅 3他遅 4他遅 1他急変 2他急変 3他急変 4他急変),
+    "未分類" => nil
    }
+  PaternsKey = %w(稼働無 稼働4一時低下 稼働4 稼働4→3 稼働3 稼働3一時低下 稼働3→2 稼働2 その他 未分類)
   Shapes = Shimada::Power.all.map(&:shape).compact.uniq
   AllPatern = %w(0 1 2 3 4 5).product(Shapes).map{ |l,s| l+s } 
   Un_sorted = AllPatern - Paterns.values.flatten
