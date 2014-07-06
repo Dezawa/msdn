@@ -2,7 +2,7 @@
 module Shimada::GraphAllMonth
 
     AllMonthaction_buttoms = 
-      [9 ,
+      [6 ,
        [
         [:popup,:graph_all_month,"全月度グラフ",{ :win_name => "graph"} ],
         #[:popup,:graph_all_month_lines_types,"全月度稼働変化別",{ :win_name => "graph"} ],
@@ -12,23 +12,22 @@ module Shimada::GraphAllMonth
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
         [:popup,:graph_all_month_difference,"全月度差分",{ :win_name => "graph"} ]
       ] +
-       [["稼働無","S"],     ["稼働4full","4F"],   ["稼働4→3","4D"],  ["稼働2","2F"],
-        ["稼働3","3F"],     ["稼働3→2","3D"],    ["稼働2full","2F"], ["稼働3一時低下","3H"],
-        ["稼働4一時低下","4H"],   ["その他","OT"],   ["未分類","E"],
-
+       [
+        ["稼働無","S"],      ["稼働2","2F"], ["稼働3","3F"],  ["稼働4full","4F"],   ["稼働4→3","4D"], 
+           ["稼働3→2","3D"],   ["稼働3一時低下","3H"],   ["稼働4一時低下","4H"],   ["その他","OT"],   ["未分類","E"],
        ].map{ |lbl,shape,action| 
          [:popup,:graph_all_month_lines,lbl,
-          {:win_name => "graph",:action=> :revise_by_temp,:label => lbl,:shape => shape}]
+          {:win_name => "graph_patarn_all_month",:action=> :revise_by_temp,:label => lbl,:shape => shape}]
        } +
 
-       %w(3-- 3-+ 3-0 3F 3O 30+ 4-- 4-0 400 4F 4H 3他 4他 0S 1S 200  2O
-         ). map{ |patern| line,shape = patern.split("",2); 
-         [:popup,"graph_all_month_pat","#{line}line#{shape}",
-          { :win_name => "graph",:patern => patern}
-         ]
-       }+
-        [[:input_and_action,"graph_all_month_","数型グラフ",{:size=>2 ,:popup => "graph_all_month"}],
-         [:input_and_action,"index_all_month_","数型の一覧",{:size=>2 ,:popup => "graph_all_month"}]
+       #%w( #3-- 3-+ 3-0 3F 3O 30+ 4-- 4-0 400 4F 4H 3他 4他 0S 1S 200  2O
+       #  ). map{ |patern| line,shape = patern.split("",2); 
+       #  [:popup,"graph_all_month_pat","#{line}line#{shape}",
+       #   { :win_name => "graph",:patern => patern}
+       #  ]
+       #}+
+        [[:input_and_action,"graph_all_month_","数型グラフ",{:size=>7 ,:popup => "graph_all_month"}],
+         [:input_and_action,"index_all_month_","数型の一覧",{:size=>7 ,:popup => "index_all_month",:scroll => true}]
         ]
 
       ]
@@ -37,15 +36,32 @@ module Shimada::GraphAllMonth
   def index_all_month_
     line,shape = patern = params[@Domain][:index_all_month_].split("",2)
     #@models = Shimada::Power.all(:conditions => ["line=? and shape = ?",line,shape])
-    @models = Shimada::Power.all( #:order => "date",
+    @models = Shimada::Power.all( :order => "date",
                                   :conditions => ["line = ? and shape = n? ",line.to_i,shape]
                                 )
     @TYTLE_post = "(#{patern})"
+
+    @TableEdit  =  [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
+                    [:popup,:graph_patern,"補正後電力",{ :win_name => "graph",:patern => patern,:method => :revise_by_temp} ],
+                    [:popup,:graph_patern,"正規化",{ :win_name => "graph",:patern => patern,:method => :normalized} ],
+                    [:popup,:graph_patern,"差分",{ :win_name => "graph",:patern => patern,:method => :difference} ]
+                   ]
+    @action_buttoms = nil
     show_sub
   end
 
+  def graph_patern
+    line,shape = patern = params[@Domain][:patern].split("",2)
+    method =  params[@Domain][:method]
 
-  def graph_all_month_reviced ;    graph_all_month_sub(:revise_by_temp, "補正消費電力推移 全月度",:by_month => true) ;  end
+    @power=Shimada::Power.all(   :conditions => ["line = ? and shape = n? ",line.to_i,shape]  )
+    Shimada::Power.gnuplot(@power,method.to_sym,:by_monthday => true)
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_all_month_reviced ;    graph_all_month_sub(:revise_by_temp, "補正消費電力推移 全月度",:by_month => true) 
+  end
+
   def graph_all_month_reviced_ave ; graph_all_month_sub(:revise_by_temp_ave,"補正消費電力平均化推移 全月度",:by_month => true);end
   def graph_all_month_ave ;    graph_all_month_sub(:move_ave,"平均消費電力推移 全月度",:by_month => true);  end
   def graph_all_month_nomalized ; graph_all_month_sub(:normalized, "正規化消費電力推移 全月度",:by_shape => true);  end
