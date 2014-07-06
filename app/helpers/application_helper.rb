@@ -221,6 +221,7 @@ input_and_action(action,label,opt)
       submit_tag(label)+from_notclose
   end
   def input_and_action(action,label,opt={ })
+    scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
     hidden = opt.delete(:hidden)
     hidden_value = opt.delete(:hidden_value)
     if win_name = opt[:popup]
@@ -229,16 +230,16 @@ input_and_action(action,label,opt)
  "<form action='/%s/%s'>
   <input name='authenticity_token' type='hidden' value='%s' />
   <input id='%s_id' name='%s[id]' type='hidden' value='%d' />
-  <input name='commit' type='submit'  value='%s' onclick=\"window.open('/%s/%s', '%s', 'width=500,height=400'); target='%s'\">
+  <input name='commit' type='submit'  value='%s' onclick=\"newwindow=window.open('/%s/%s', '%s' 'width=500,height=400%s'); target='%s'\">
 " + text_field( @Domain,action,opt ) +  "</form>"
-      fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,win_name,win_name]
+      fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,win_name,scroll,win_name]
       else
       fmt =
  "<form action='/%s/%s'>
   <input name='authenticity_token' type='hidden' value='%s' />
-  <input name='commit' type='submit'  value='%s' onclick=\"window.open('/%s/%s', '%s', 'width=500,height=400'); target='%s'\">
+  <input name='commit' type='submit'  value='%s' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400%s'); target='%s'\">
 " + text_field( @Domain,action,opt ) +  "</form>"
-      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,win_name]
+      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,scroll,win_name]
       end
     else
       form_tag(:action => action) + 
