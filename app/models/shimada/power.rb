@@ -31,7 +31,7 @@ class Shimada::Power < ActiveRecord::Base
     "S" => %w(0S 1S)        ,"4H" => %w(4H)    ,"4F" => %w(400 4F),"4D" => %w(4-- 4-+ 4-0 4d),
     "3F" => %w(3-- 30- 3F 300 3O),"3H" => %w(3H)    ,"3D" => %w(3d),
     "2F" => %w(2O),
-    "OT" => %w(1他 2他 3他 4他)
+    "OT" => %w(1他遅 2他遅 3他遅 4他遅 1他急変 2他急変 3他急変 4他急変)
    }
   AllPatern = %w(0 1 2 3 4 5).product(Shapes).map{ |l,s| l+s } 
   Un_sorted = AllPatern - Paterns.values.flatten
@@ -112,10 +112,10 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def shape_calc
     return nil unless lines
     if lines < 2  ; "S"
-    elsif max_diff_from_average_difference > 200 ; "他"
-    elsif [diffdiff.max,-diffdiff.min].max >  190 ; "他"
+    elsif max_diff_from_average_difference > 200 ; "他急変1"
+    elsif [diffdiff(3..20).max,-diffdiff(3..20).min].max >  190 ; "他急変2"
     elsif discriminant.abs < 0.000002       ;"00"
-    elsif revise_by_temp[6] < 400           ;     "他"
+    elsif revise_by_temp[6] < 400           ;     "他遅"
     elsif na[4] > 0
 logger.debug("PW_PEAKS: date=#{date} pw_peaks.join(',')")
       if f3x3 < 9 && pw_peaks[1]-pw_peaks[2] > 120  ; "d" 
@@ -304,11 +304,12 @@ logger.debug("WEATHER id=#{id} date=#{date}")
     @revise_by_temp = Revs.map{ |r| self[r]}
   end
 
-  def diffdiff(num=5)
+  def diffdiff(range=(1..22))
     logger.debug("DIFFDIFF: id=#{id} date=#{date} #{difference.join(',')}")
-    diff = (1..difference.size).
+    @diffdiff ||= (1..difference.size).
       map{ |i| difference[i] -  difference[i-1] if  difference[i] &&  difference[i-1]
     }.compact
+    @diffdiff[range]
   end
 
   def difference
