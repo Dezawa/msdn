@@ -8,6 +8,8 @@ module Shimada::GnuplotDef
       keys = nil
       ary_powres = if by_month = opt[:by_month]
                      powers.group_by{ |p| p.date.strftime("%y/%m")}
+                   elsif by_month = opt[:by_monthday]
+                     powers.group_by{ |p| p.date.strftime("%m/%d")} 
                    elsif by_month = opt[:by_day]
                      powers.group_by{ |p| p.date.strftime("%d")} 
                    elsif opt[:by_line]
@@ -59,7 +61,7 @@ module Shimada::GnuplotDef
       }
       def_file = "/tmp/shimada/power.def"
       graph_file = opt[:graph_file] || "power"
-      by_month = ( opt.keys & [:by_month,:by_day,:by_line,:by_shape,:by_line_shape] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
+      by_month = ( opt.keys & [:by_month,:by_monthday,:by_day,:by_line,:by_shape,:by_line_shape] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
       preunble = ( case method
                    when :normalized ;  Nomalized_def
                    when :difference, :difference_ave ,:diffdiff;  Differ_def 
