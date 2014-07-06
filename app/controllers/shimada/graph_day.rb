@@ -9,7 +9,7 @@ module Shimada::GraphDay
       #HtmlLink.new(:id,"",:link => { :link_label => "補正後平均",:url => "/shimada/month/graph_reviced_ave", tmloption => Popup}),
       #HtmlLink.new(:id,"",:link => { :link_label => "対温度"   , :url => "/shimada/month/graph_temp"    , htmloption =>Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "正規化"   , :url => "/shimada/month/graph_nomalize" , :htmloption =>Popup}),
-      HtmlLink.new(:id,"",:link => { :link_label => "差分"     , :url => "/shimada/month/graph_difference",:htmloption =>Popup}),
+      HtmlLink.new(:id,"",:link => { :link_label => "差分"     , :url => "/shimada/month/graph_difference",:htmloption =>Popup}),     HtmlLink.new(:id,"",:link => { :link_label => "差分差分" , :url => "/shimada/month/graph_diffdiff",:htmloption =>Popup}),
       #HtmlCeckForSelect.new(:id,""),
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
       HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
@@ -43,6 +43,7 @@ module Shimada::GraphDay
   def graph_reviced_ave; graph_sub(:revise_by_temp_ave,"補正後平均 消費電力推移") ;  end
   def graph_nomalize   ; graph_sub(:normalized,"正規化消費電力推移",:fitting => true) ;  end
   def graph_difference ; graph_sub(:difference,"差分") ;  end
+  def graph_diffdiff ; graph_sub(:diffdiff,"差分差分") ;  end
 
   def graph_temp    
     @power = Shimada::Power.find(params[:id])
