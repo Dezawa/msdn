@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140626100332) do
+ActiveRecord::Schema.define(:version => 20140702095520) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -294,6 +294,40 @@ ActiveRecord::Schema.define(:version => 20140626100332) do
     t.float   "ave23"
     t.float   "ave24"
     t.string  "shape"
+    t.float   "difference00"
+    t.float   "difference01"
+    t.float   "difference02"
+    t.float   "difference03"
+    t.float   "difference04"
+    t.float   "difference05"
+    t.float   "difference06"
+    t.float   "difference07"
+    t.float   "difference08"
+    t.float   "difference09"
+    t.float   "difference10"
+    t.float   "difference11"
+    t.float   "difference12"
+    t.float   "difference13"
+    t.float   "difference14"
+    t.float   "difference15"
+    t.float   "difference16"
+    t.float   "difference17"
+    t.float   "difference18"
+    t.float   "difference19"
+    t.float   "difference20"
+    t.float   "difference21"
+    t.float   "difference22"
+    t.float   "difference23"
+    t.float   "f4_na0"
+    t.float   "f4_na1"
+    t.float   "f4_na2"
+    t.float   "f4_na3"
+    t.float   "f4_na4"
+    t.float   "f3_x1"
+    t.float   "f3_x2"
+    t.float   "f3_x3"
+    t.float   "f2_x1"
+    t.float   "f2_x2"
   end
 
   create_table "top_pages", :force => true do |t|
