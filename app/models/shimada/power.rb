@@ -2,8 +2,13 @@
 require "tempfile"
 
 class Shimada::Power < ActiveRecord::Base
+  set_table_name 'shimada_powers'
+  belongs_to :month     ,:class_name => "Shimada::Month"
+  belongs_to :db_weather,:class_name => "Weather" 
+
   include Shimada::GnuplotDef
   include PolyFit
+  include Shimada::Patern
 
   attr_accessor :shape_is, :na, :f4_peaks, :f3_solve, :f2_solve, :differences
 
@@ -11,25 +16,22 @@ class Shimada::Power < ActiveRecord::Base
   PolyFitHour = (5 .. 23)  # 6時～23時
   PolyFitX0   = 14.0       # 15時
   PolyLevel   = 4
-  Err         = 0.01
 
-  set_table_name 'shimada_powers'
-  belongs_to :month     ,:class_name => "Shimada::Month"
-  belongs_to :db_weather,:class_name => "Weather"
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
 
+  @@average_diff = nil
+
   Differences = ("difference00".."difference23").to_a
   Lines = [(0..300),(300..400),(400..560),(560..680),(680..800),(800..1000)]
-  Shapes = %w(F U D I R O)
   Header = "時刻"
 
   Differ = ("00".."23").map{ |h| "difference#{h}" }
   NA     = ("f4_na0".."f4_na4").to_a
   F3_SOLVE = %w(f3_x1 f3_x2 f3_x3)
   F2_SOLVE = %w(f2_x1 f2_x2)
-  CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["shape"]
+  CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["line"]
 
   def self.reset_reevice_and_ave
     self.all.each{ |power|
@@ -43,113 +45,44 @@ class Shimada::Power < ActiveRecord::Base
       pw.shape_is =  pw.na = pw.f4_peaks = pw.f3_solve = pw.f2_solve =  pw.differences = nil
       CashColumns.each{ |sym| pw[sym] = nil}
       pw.save
-      File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
     }
+      reculc_shapes
   end
 
   def self.reculc_shapes
-    self.all.each{ |pw|
-      pw.update_attribute(:shape,nil)
-      File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
-    }
+    #self.update(self.all.map(&:id), :shape => nil)
+    self.update_all("shape = null")
+    @shpe_is = nil
+    File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
+    self.all(:conditions => "date is not null").each{ |pw| pw.lines;pw.shape_is}
   end
 
-
-  def self.output_plot_data(powers,method,opt = { },&block)
-    path = []
-    keys = nil
-    ary_powres = if by_month = opt[:by_month]
-                   powers.group_by{ |p| p.date.strftime("%y/%m")} 
-                 elsif opt[:by_line]
-                   keys = (0..5).to_a
-                   powers.group_by{ |p| "稼働数-#{p.lines}"}
-                   
-                 elsif opt[:by_line_shape]
-                   #keys = Shapes
-                   p=powers.group_by{ |p| "#{p.lines}#{p.shape_calc}"}#.sort_by{ |p,v| p}#.reverse
-                   keys = p.keys.compact.sort
-                   p
-                 elsif opt[:by_shape]
-                   p=powers.group_by{ |p| p.shape_calc}#.sort_by{ |p,v| p}#.reverse
-                   keys = p.keys.compact.sort
-                   p
-                 else
-                   powers.size > 0 ? { powers.first.date.strftime("%y/%m")=>powers} : {"" =>[]}
-                     
-                 end
-    keys ||= ary_powres.keys.sort
-    keys.each_with_index{ |k,idx|
-      #ary_powres.each_with_index{ |month_powers,idx|
-      path << "/tmp/shimada/shimada_power_temp%d"%idx
-      open(path.last,"w"){ |f|
-        #f.puts "時刻 #{month_powers.first}"
-        f.puts "時刻 #{k}"
-        #month_powers.last.each{ |power|
-        ary_powres[k].each{ |power|
-          yield f,power #power.send(method).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
-          f.puts
-        }
-      }
-    }
-    path
+  def self.average_diff
+    return @@average_diff if @@average_diff
+    ave_power = Shimada::Power.find_by_date(nil)
+    ave_power = create_average_diff unless ave_power && ave_power.difference[0]
+    @@average_diff = ave_power
   end
 
-  def self.gnuplot(powers,method,opt={ })
-    path = output_plot_data(powers,method,opt){ |f,power| 
-      power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+1,h ) if h }
+  def self.create_average_diff
+    ave_power = Shimada::Power.find_or_create_by_date(nil)
+    all_powers = Shimada::Power.all(:conditions => "date is  not null")
+    diffs = all_powers.inject([0]*24){ |s,v|
+logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
+      v.difference.each_with_index{ |diff,idx| s[idx]+=( diff || 0 )};s
     }
-    def_file = "/tmp/shimada/power.def"
-    graph_file = opt[:graph_file] || "power"
-    by_month = ( opt.keys & [:by_month,:by_line,:by_shape,:by_line_shape] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
-    preunble = ( case method
-                 when :normalized ;  Nomalized_def
-                 when :difference, :difference_ave ,:diffdiff;  Differ_def 
-                 else             ; Power_def 
-                 end)% [ graph_file , by_month ]
-
-    open(def_file,"w"){ |f|
-      f.puts preunble 
-      f.print "plot " + path.map{ |p| "'#{p}' using 1:2  with line"}.join(" , ")
-      if opt[:by_line] 
-        f.print " , " + Lines.map{ |line| line.last}.join(" , ")
-      elsif opt[:fitting]
-        i=0
-#logger.debug("powers = #{powers.first.class}")
-        a = method == :normalized ? powers.first.na : powers.first.a
-#        logger.debug("powers.a = #{powers.first.a.join(',')}")
-        f.print  ",1,\\\n #{a[0]}"+ 
-          a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{PolyFitX0+1})**#{i}" }.join + " lt -1" +
-          ",\\\n (((%+f * (x-#{PolyFitX0+1}) %+f)*(x-#{PolyFitX0+1}) %+f)*(x-#{PolyFitX0+1}) %+f)*5+1"%[
-          a[4] * 4,a[3]*3,a[2]*2,a[1]] +
-          ", \\\n((%+f * (x-#{PolyFitX0+1}) %+f) * (x-#{PolyFitX0+1}) %+f)*5 +1"%[a[4] * 12,a[3]*6,a[2]*2]
-      end
-        f.puts
-    }
-    `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
-  end
-
-  def self.gnuplot_by_temp(powers,opt={ })
-    path = output_plot_data(powers,:powers,opt){ |f,power| 
-      temperatures = Weather.find_or_feach("maebashi", power.date).temperatures
-      power.powers.each_with_index{ |h,idx| f.printf( "%.1f %.1f\n",temperatures[idx],h ) if h && temperatures[idx] }
-    }
-#    path = gnuplot_data_by_temp(powers,opt)
-    def_file = "/tmp/shimada/power_temp.def"
-    graph_file = opt[:graph_file] || "power"
-    open(def_file,"w"){ |f|
-      f.puts Temp_power_def % graph_file
-      f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") +
-      #if opt[:with_Approximation]
-        ", 780+9*(x-20) ,670+3*(x-20), 0.440*(x-5)**1.8+750"
-      #else
-      #  ""
-      #end
-    }
-    `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
+    diffs =  diffs.map{ |d| d/all_powers.size}
+    ave_power.update_attributes(Hash[*Differences.zip(diffs).flatten])
+    ave_power.difference
+    ave_power
   end
 
   def lines
-    Lines.index{ |line| line.include?(revise_by_temp_ave[7..-1].max) }
+    return @lines if @lines
+    unless line
+      update_attribute(:line , Lines.index{ |l| l.include?(revise_by_temp_ave[7..-1].max) })
+    end
+    @lines = line
   end
 
   def shape_is
@@ -158,46 +91,9 @@ class Shimada::Power < ActiveRecord::Base
     @shape_is = shape
   end
 
-    # F Flat          ほぼ平ら。稼働ライン数が一定なのだろう
-    # U step Up       階段状に増える。稼働ラインが途中から増えたのだろう
-    # D step Down     階段状に減る。　稼働ラインが途中で減ったのだろう
-    # I Increace      ズルズル増える  稼働ラインの変化ではなく、なんかある？
-    # R Reduce        ズルズル減る。  稼働ラインの変化ではなく、なんかある？
-    # C Cup           途中で稼働ライン一時的に止めた
-    # H Hat           途中で一時的に増えている。なんかある？
-    # S Sleep         稼働なし
-  Shapes = %w(- 0 +).product(%w(- 0 +)).map{ |a,b| a+b }+%w(F O S H)
-  def shape_calc
-    return nil unless lines
-    if lines < 2  ; "S"
-    elsif discriminant.abs < 0.000002       ;"00"
-    elsif na[4] > 0  &&  revise_by_temp[6] > 400    ; "O"
-    elsif revise_by_temp[6] < 400     
-      logger.debug("===== ID=#{id} #{date} 他  revise_by_temp[6] revise_by_temp[6]=#{ revise_by_temp[6]}")
-               "他"
-    elsif discriminant < 0.0                ; "F"
-    elsif y1     >  Err && y2.abs <   Err   ;  "+0"
-    elsif y1     >  Err && y2     >   Err   ;  "++"
-    elsif y1     >  Err && y2     <  -Err   
-      max_powers[0] - min_powers[0]  > 120 ? "H" :  "+-"
-    elsif y1     < -Err && y2.abs <   Err   ;  "-0"
-    elsif y1     < -Err && y2     <  -Err   ;  "--"
-    elsif y1     < -Err && y2     >   Err   # -+
-      pw_values = pw_peaks
-      unless f3_solve.all?{ |x| PolyFitHour.include?(x+PolyFitX0)}
-         "-+"
-      else
-      #logger.debug("===== pw_values = #{pw_values.join(',')} f3_solve=#{f3_solve.join(',')}")
-      logger.debug("===== ID=#{id} #{date} difference_peak_vary = #{difference_peak_vary} difference_peaks=#{difference_peaks}")
-      difference_peak_vary > 99 && difference_peaks < 100  ? "H" : "-+" # H
-      end
-    elsif y1.abs <  Err && y2.abs <   Err   ;  "00" #
-    elsif y1.abs <  Err && y2     >   Err    
-      x0 = f3_solve((x1+x2)*0.5)
-      max_powers[0] - min_powers[0] > 150 ? "H" :  "0+"
-    elsif y1.abs <  Err && y2     <  -Err   ;  "0-"
-    else      ;   "他"
-    end
+  def max_diff_from_average_difference
+    ave_difference = self.class.average_diff.difference
+    difference.zip(ave_difference).map{ |a,b| (a-b).abs if a&&b}.compact.max
   end
 
   Sdev = [0,6000,90000]
@@ -261,7 +157,7 @@ class Shimada::Power < ActiveRecord::Base
 
   def f4(x) ;    (((na[4] * x + na[3])*x + na[2])*x + na[1])*x+na[0] ;  end
   def f4_peaks ;@f4_peaks ||= f3_solve.map{ |x| f4(x)} ;end
-  def pw_peaks ;f3_solve.map{ |x| powers[x+PolyFitX0]} ;end
+  def pw_peaks ;f3_solve.map{ |x| powers[x+PolyFitX0] || 0 };end
 
   def difference_peak_vary
     (powers[f3x1+PolyFitX0,3] + powers[f3x3+PolyFitX0,3]).max -
@@ -317,8 +213,11 @@ class Shimada::Power < ActiveRecord::Base
   def y2       ; x2 ? f3(x2) : nil ;end
 
   def weather
+logger.debug("WEATHER id=#{id} date=#{date}")
     return db_weather if db_weather
     db_weather = Weather.find_or_feach("maebashi", date)
+    save
+    db_weather
   end
 
   def temps 
@@ -336,6 +235,7 @@ class Shimada::Power < ActiveRecord::Base
   def revise_by_temp
     return @revise_by_temp if @revise_by_temp
     unless self.rev01
+      #return unless weather
       revs = Hours.map{ |h|
         power = self[h]
         temp  = weather[h]
@@ -347,26 +247,28 @@ class Shimada::Power < ActiveRecord::Base
     @revise_by_temp = Revs.map{ |r| self[r]}
   end
 
-  def diffdiff(num=5)
-    n = num/2
-    y0 = difference_ave.first
-    diff =difference_ave[1..-1].map{ |y| dif = y - y0; y0 = y ; dif*4}
-    aves = (0..diff.size-1).map{ |h| ary = diff[[0,h-n].max..[h+n,diff.size-1].min]
-      ary.inject(0){ |s,e| s+e}/ary.size
-    } 
+  def diffdiff(range=(1..22))
+    logger.debug("DIFFDIFF: id=#{id} date=#{date} #{difference.join(',')}")
+    @diffdiff ||= (1..difference.size).
+      map{ |i| difference[i] -  difference[i-1] if  difference[i] &&  difference[i-1]
+    }.compact
+    @diffdiff[range]
   end
 
   def difference
     return @differences if @differences
     if difference00
       @differences = ("00".."23").map{ |h| self["difference#{h}"] }
+    elsif date.nil?
+      @differences=[]
     else
       y0 = revise_by_temp.first
       diff = { }
-      @differences = revise_by_temp[1..-1].map{ |y| dif = y - y0; y0 = y ;  dif}
+      @differences = revise_by_temp[1..-1].map{ |y| dif = y - y0; y0 = y ;  dif}.compact
       update_attributes(Hash[*Differences.zip(@differences).flatten])
     end
-      @differences 
+    @differences.compact
+    @differences
   end
 
   def difference_revise_by_temp
@@ -374,11 +276,14 @@ class Shimada::Power < ActiveRecord::Base
     revise_by_temp_ave[1..-1].map{ |y| dif = y - y0; y0 = y ; dif} 
   end
   def difference_ave(num=3)
-    n = num/2
-    
-    aves = (0..difference.size-1).map{ |h| ary = difference[[0,h-n].max..[h+n,difference.size-1].min]
-      ary.inject(0){ |s,e| s+e}/ary.size
-    }
+    @difference_ave ||= 
+      (
+       n = num/2
+       aves = (0..difference.size-1).map{ |h| 
+         ary = difference[[0,h-n].max..[h+n,difference.size-1].min]
+         ary.inject(0){ |s,e| s+(e||0)}/ary.size
+       }
+       )
   end
 
   def revise_by_temp_ave(num=3)
@@ -435,3 +340,5 @@ class Shimada::Power < ActiveRecord::Base
   end
 # 629.36, [624.6, 629.6, 630.6, 630.8, 631.2]
 end
+
+

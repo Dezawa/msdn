@@ -129,6 +129,17 @@ module ApplicationHelper
     }.join("</tr>\n")
     th + tb + "</table>"
 end
+ def action_buttom_table_test
+    return "" unless @action_buttoms
+    clms,action_buttoms =  @action_buttoms
+   html = 
+      (0..action_buttoms.size-1).step(clms).
+      map{ |c| 
+      (1..clms).map{ |d|  
+        buttom = action_buttoms.shift 
+        action_buttom(buttom)  if buttom}.compact.join
+    }.join
+end
   def table_edit
     case @TableEdit
     when TrueClass ; add_edit_buttoms(@Domain) 
@@ -176,38 +187,33 @@ end
     when :add_buttom       ;add_buttom(@Domain)
     when :edit_bottom       ;edit_bottom(opt||{ })
     when :csv_up_buttom     ;csv_up_buttom
-    when :input_and_action  ;input_and_action(action,label,opt)
+    when :input_and_action  ;
+      logger.debug(":INPUT_AND_ACTION: opt.nil?#{opt.nil?} opt=#{opt}")
+input_and_action(action,label,opt)
     else function.to_s
     end
   end
-  def popupform_buttom(action,label,opt ={ },htmlopt={ })
-    form_notclose = opt.delete(:form_notclose) if opt.class==Hash
 
-    win_name = opt.delete(:win_name) || ""
-    if @model
-      fmt =
-        %Q!<form action="/%s/%s">
+  PopupHead =  %Q!<form action="/%s/%s">
   <input name="authenticity_token" type="hidden" value="%s" />
+  <input name="commit" type="submit"  value="%s" style="margin-top: -12px; left;"
+!
+  PopupWithOUTModel = %Q! onclick="window.open('/%s/%s', '%s', 'width=500,height=400'); target='%s'">
+!
+  PopupWithModel = %Q!  onclick="window.open('/%s/%s?id=%d', '%s', 'width=500,height=400'); target='%s'">
   <input id="%s_id" name="%s[id]" type="hidden" value="%d" />
-  <input name="commit" type="submit"  value="%s" onclick="window.open('/%s/%s?id=%d', '%s', 'width=500,height=400'); target='%s'">
-</form>!
-      fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,@model.id,win_name,win_name]
-    elsif form_notclose
-      %Q!<form action="/shimada/month/graph_selected_months" method="post" target='graph'><div style="margin:0;padding:0"><input name="authenticity_token" type="hidden" value="d2eaef964366b120c255747e4653c7a436b1af06" /></div><input type='hidden' name='page' value='1'><input name="commit" type="submit" value="選択月度グラフ" target='graph' />!
-    elsif nil #form_notclose
-      fmt =
-        %Q!<form action="/%s/%s" >
-  <input name="authenticity_token" type="hidden" value="%s" />
-  <input name="commit" type="submit"  value="%s" target="%s">!
-      fmt%[@Domain,action,form_authenticity_token,label,win_name]
+!
+
+  def popupform_buttom(action,label,opt ={ },htmlopt={ })
+    win_name = opt.delete(:win_name) || ""
+    html = PopupHead%[@Domain,action,form_authenticity_token,label]
+    if @model
+      html += PopupWithModel%[@Domain,action,@model.id,win_name,win_name,@Domain,@Domain,@model.id] 
     else
-      fmt =
-        %Q!<form action="/%s/%s">
-  <input name="authenticity_token" type="hidden" value="%s" />
-  <input name="commit" type="submit"  value="%s" onclick="window.open('/%s/%s', '%s', 'width=500,height=400'); target='%s'">
-</form>!
-      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,win_name]
-    end 
+      html += PopupWithOUTModel%[@Domain,action,win_name,win_name]
+    end
+    opt.each{ |k,v|  html += hidden_field(@Domain,k,:value => v) +"\n"  }
+    html + "\n</form>"
   end
 
   def form_buttom(action,label,opt ={ },htmlopt={ })
@@ -225,16 +231,36 @@ end
       (opt.class==Symbol ? send(opt) : "") +
       submit_tag(label)+from_notclose
   end
-  def input_and_action(action,label,opt)
+  def input_and_action(action,label,opt={ })
+    scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
     hidden = opt.delete(:hidden)
     hidden_value = opt.delete(:hidden_value)
-    form_tag(:action => action) + 
-      "<input type='hidden' name='page' value='#{@page}'>"+
-      (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
-       else;"";end
-       )+
-      submit_tag(label)+
-      text_field( @Domain,action,opt ) +  "</form>"
+    if win_name = opt[:popup]
+      if @model
+      fmt =
+ "<div><form action='/%s/%s'>
+  <input name='authenticity_token' type='hidden' value='%s' />
+  <input id='%s_id' name='%s[id]' type='hidden' value='%d' />
+  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' 'width=500,height=400%s'); target='%s'\">
+" + text_field( @Domain,action,opt ) +  "</form></div>"
+      fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,win_name,scroll,win_name]
+      else
+      fmt =
+ "<div><form action='/%s/%s'>
+  <input name='authenticity_token' type='hidden' value='%s' />
+  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400%s'); target='%s'\">
+" + text_field( @Domain,action,opt.merge("style" =>"margin-top: -12px;") ) +  "</form></div>"
+      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,scroll,win_name]
+      end
+    else
+      "<div>"+form_tag(:action => action) + 
+        "<input type='hidden' name='page' value='#{@page}'>"+
+        (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
+         else;"";end
+         )+
+        submit_tag(label)+
+        text_field( @Domain,action,opt.merge("style" =>"margin-top: -12px;")) +  "</form></div>"
+    end
   end
 
   def action_buttoms(buttoms)
