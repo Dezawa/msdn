@@ -276,11 +276,14 @@ logger.debug("WEATHER id=#{id} date=#{date}")
     revise_by_temp_ave[1..-1].map{ |y| dif = y - y0; y0 = y ; dif} 
   end
   def difference_ave(num=3)
-    n = num/2
-    
-    aves = (0..difference.size-1).map{ |h| ary = difference[[0,h-n].max..[h+n,difference.size-1].min]
-      ary.inject(0){ |s,e| s+e}/ary.size
-    }
+    @difference_ave ||= 
+      (
+       n = num/2
+       aves = (0..difference.size-1).map{ |h| 
+         ary = difference[[0,h-n].max..[h+n,difference.size-1].min]
+         ary.inject(0){ |s,e| s+(e||0)}/ary.size
+       }
+       )
   end
 
   def revise_by_temp_ave(num=3)
