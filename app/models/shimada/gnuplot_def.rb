@@ -83,7 +83,7 @@ module Shimada::GnuplotDef
             ",\\\n (((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*5+1"%
             [ a[4] * 4,a[3]*3,a[2]*2,a[1]] +
             ", \\\n((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f) * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*5 +1"%[a[4] * 12,a[3]*6,a[2]*2]
-        elsif method == :difference
+        elsif [:difference, :difference_ave].include? method
           average_out(average_diff,:difference)
           f.print ",\\\n  '/tmp/shimada/shimada_power_diff_ave'  using 1:2  with line lt -1"
         end
