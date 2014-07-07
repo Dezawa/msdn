@@ -118,16 +118,17 @@ module ApplicationHelper
 
   def action_buttom_table
     return "" unless @action_buttoms
-    clms,action_buttoms =  @action_buttoms
-    th = "<table><tr>"+"<td></td>"* clms +"</tr>\n"
+    clms_num =  @action_buttoms.first
+    action_buttoms = @action_buttoms.last.dup
+    th = "<table>\n" #<tr>"+"<td></td>"* clms +"</tr>\n"
     tb = "<tr>" +
-      (0..action_buttoms.size-1).step(clms).
+      (0..action_buttoms.size-1).step(clms_num).
       map{ |c| 
-      (1..clms).map{ |d|  
+      (1..clms_num).map{ |d|  
         buttom = action_buttoms.shift 
         "<td>"+action_buttom(buttom) + "</td>" if buttom}.compact.join
-    }.join("</tr>\n")
-    th + tb + "</table>"
+    }.join("</tr><tr>\n")
+    th + tb + "</tr></table>"
 end
  def action_buttom_table_test
     return "" unless @action_buttoms
@@ -197,7 +198,7 @@ input_and_action(action,label,opt)
 #  <input name="commit" type="submit"  value="%s" style="margin-top: -12px; left;"
   PopupHead =  %Q!<form action="/%s/%s">
   <input name="authenticity_token" type="hidden" value="%s" />
-  <input name="commit" type="submit"  value="%s" 
+  <input name="commit" type="submit"  value="%s" style='margin-top: -12px; left;' 
 !
   PopupWithOUTModel = %Q! onclick="window.open('/%s/%s', '%s', 'width=500,height=400'); target='%s'">
 !
