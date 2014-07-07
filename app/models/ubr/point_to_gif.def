@@ -4,6 +4,52 @@ set multiplot layout 3,2
 set style line 9 lw 2 lt rgb "black" 
 set style line 8 lt 1
 
+
+set key autotitle columnheader
+set y2range [0:500]
+set y2tics  
+set yrange [0:100]
+set ytics nomirror
+set ytics
+set auto x
+set xtics nomirror rotate by -90 scale 0 
+
+
+set title "倉庫エリア別在庫量推移" font ",14"
+unset label
+set label "総在庫/千ton" at graph -0.13,0.5 center rotate 
+set label "倉庫別在庫/千ton" at graph  1.12,0.5 center rotate 
+unset y2tics
+unset ytics
+set yrange [21:29   ]
+set y2range [0:6  ]
+set ytics
+set y2tics
+plot 'tmp/ubr/SCM_stock_stat_products.ave' using 2:xtic(1)  with line ,\
+     '' using 3 with line axes x1y2,\
+     '' using 4 with line axes x1y2, \
+     '' using 5 with line axes x1y2, \
+     '' using 6 with line axes x1y2, \
+     '' using 8 with line axes x1y2, \
+     '' using 7 with line axes x1y2
+
+
+set title "原料・再処理・長期在庫 在庫量推移" font ",14"
+set yrange [0:2500]
+unset label
+set label "在庫/ton" at graph -0.17,0.5 center rotate 
+
+unset y2range
+unset y2tics
+unset ytics
+set ytics
+plot 'tmp/ubr/SCM_stock_stat_not_products.ave' using 2:xtic(1)  with line ,\
+     '' using 3 with line,\
+     '' using 4 with line,\
+     '' using 5 with line,\
+     '' using 6 with line
+
+
 set title "倉庫:穴数、通路置き量_1_～_3" font ",14"
 set label "空き枠数" at graph -0.17,0.5 center rotate 
 set label "通路置/ton" at graph  1.18,0.5 center rotate 
@@ -42,42 +88,6 @@ plot 'tmp/ubr/SCM_stock_stat_tuuro.ave' using 22:xtic(1)  with line ,\
      '' using 23 with line,\
      '' using 24 with line, \
      '' using 25 with line ls 9 axes x1y2 
-
-
-set title "倉庫エリア別在庫量推移" font ",14"
-unset label
-set label "総在庫/千ton" at graph -0.13,0.5 center rotate 
-set label "倉庫別在庫/千ton" at graph  1.12,0.5 center rotate 
-unset y2tics
-unset ytics
-set yrange [21:27   ]
-set y2range [0:6  ]
-set ytics
-set y2tics
-plot 'tmp/ubr/SCM_stock_stat_products.ave' using 2:xtic(1)  with line ,\
-     '' using 3 with line axes x1y2,\
-     '' using 4 with line axes x1y2, \
-     '' using 5 with line axes x1y2, \
-     '' using 6 with line axes x1y2, \
-     '' using 8 with line axes x1y2, \
-     '' using 7 with line axes x1y2
-
-
-set title "原料・再処理・長期在庫 在庫量推移" font ",14"
-set yrange [0:2500]
-unset label
-set label "在庫/ton" at graph -0.17,0.5 center rotate 
-
-unset y2range
-unset y2tics
-unset ytics
-set ytics
-plot 'tmp/ubr/SCM_stock_stat_not_products.ave' using 2:xtic(1)  with line ,\
-     '' using 3 with line,\
-     '' using 4 with line,\
-     '' using 5 with line,\
-     '' using 6 with line
-
 
 
 
