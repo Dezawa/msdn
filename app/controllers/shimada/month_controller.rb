@@ -40,18 +40,6 @@ class Shimada::MonthController <  Shimada::Controller
     #@CSVatrs = CSVatrs; @CSVlabels = CSVlabels
   end
 
-  def edit_on_table
-    @labels = EditOnTable
-    @model = @Model.find(params[:page])
-    @models = @model.powers
-    render  :file => 'application/edit_on_table',:layout => 'application'
-  end
-
-  def update_on_table
-    @Model = Shimada::Power
-    super
-  end
-
   def index
         @FindOption = { :order => "month" }
     super
@@ -83,6 +71,18 @@ class Shimada::MonthController <  Shimada::Controller
     @labels = PowerLabels
     @TableHeaderDouble = [7,[13,"係数"],[24,"時刻"]]
     render :action => :show
+  end
+
+  def edit_on_table
+    @labels = EditOnTable
+    @model = @Model.find(params[:page])
+    @models = @model.powers
+    render  :file => 'application/edit_on_table',:layout => 'application'
+  end
+
+  def update_on_table
+    @Model = Shimada::Power
+    super
   end
 
   def reset_reevice_and_ave

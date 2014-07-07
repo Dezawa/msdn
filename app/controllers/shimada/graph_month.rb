@@ -35,7 +35,7 @@ module  Shimada::GraphMonth
         HtmlNum.new( h.to_sym,h.sub(/hour0?/,""),:tform => "%.0f",:size => 3)
       }
 
-    Month_action_buttoms =
+  Month_action_buttoms =
       [12,
        [[:input_and_action,"graph_month_line_shape_","数型",{:size=>2 ,:popup => "graph_month"}]] +
        %w(3-- 4-- 3-0 4-0 3-+ 4-+ 200 300 400 3F 4F 3O 4O 3他 4他).

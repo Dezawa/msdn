@@ -194,9 +194,10 @@ input_and_action(action,label,opt)
     end
   end
 
+#  <input name="commit" type="submit"  value="%s" style="margin-top: -12px; left;"
   PopupHead =  %Q!<form action="/%s/%s">
   <input name="authenticity_token" type="hidden" value="%s" />
-  <input name="commit" type="submit"  value="%s" style="margin-top: -12px; left;"
+  <input name="commit" type="submit"  value="%s" 
 !
   PopupWithOUTModel = %Q! onclick="window.open('/%s/%s', '%s', 'width=500,height=400'); target='%s'">
 !
