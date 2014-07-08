@@ -9,7 +9,7 @@ module Shimada::GraphDay
   end
 
   def graph         ;    graph_sub(:powers,"消費電力推移") ;  end
-  def graph_reviced ;    graph_sub(:revise_by_temp,"温度補正後 消費電力推移",:fitting => true) ;  end
+  def graph_reviced ;    graph_sub(:revise_by_temp,"温度補正後 消費電力推移",:fitting => false ) ;  end
   def graph_reviced_ave; graph_sub(:revise_by_temp_ave,"補正後平均 消費電力推移") ;  end
   def graph_nomalize   ; graph_sub(:normalized,"正規化消費電力推移",:fitting => true) ;  end
   def graph_difference ; graph_sub(:difference,"差分") ;  end
