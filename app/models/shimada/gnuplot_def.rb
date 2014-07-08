@@ -79,11 +79,10 @@ module Shimada::GnuplotDef
         if  opt[:by_line] 
           f.print " , " + Lines.map{ |line| line.last}.join(" , ")
         elsif opt[:fitting]
-          i=0
           #logger.debug("powers = #{powers.first.class}")
           a = method == :normalized ? powers.first.na : powers.first.a
           #        logger.debug("powers.a = #{powers.first.a.join(',')}")
-          f.print f2_f3_f4_line
+          f.print f2_f3_f4_line(a)
         elsif [:difference, :difference_ave].include? method
           average_out(average_diff,:difference)
           f.print ",\\\n  '/tmp/shimada/shimada_power_diff_ave'  using 1:2  with line lt -1"
@@ -98,7 +97,8 @@ replot
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
     end
 
-    def f2_f3_f4_line
+    def f2_f3_f4_line(a)
+          i=0
        ",1,\\\n #{a[0]}"+ 
             a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{Shimada::Power::PolyFitX0+1})**#{i}" }.join + " lt -1" +
             ",\\\n (((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*5+1"%
