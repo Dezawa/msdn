@@ -6,7 +6,9 @@ module Shimada::GnuplotDef
     def output_plot_data(powers,method,opt = { },&block)
       path = []
       keys = nil
-      ary_powres = if by_month = opt[:by_month]
+      ary_powres = if by_month = opt[:by_date]
+                     powers.group_by{ |p| p.date.strftime(by_month)}
+                   elsif by_month = opt[:by_month]
                      powers.group_by{ |p| p.date.strftime("%y/%m")}
                    elsif by_month = opt[:by_monthday]
                      powers.group_by{ |p| p.date.strftime("%m/%d")} 
@@ -54,6 +56,9 @@ module Shimada::GnuplotDef
       }
     end
 
+    DefaultTitle ={:normalized => "正規化消費電力",:difference => "温度差分",:powers => "消費電力",
+      :difference_ave => "差分平均",:revise_by_temp => "温度補正電力",:diffdiff => "二階差分"}
+
     def gnuplot(powers,method,opt={ })
       logger.debug("GNUPLOT: powers.size=#{powers.size}")
       path = output_plot_data(powers,method,opt){ |f,power| 
@@ -61,35 +66,44 @@ module Shimada::GnuplotDef
       }
       def_file = "/tmp/shimada/power.def"
       graph_file = opt[:graph_file] || "power"
-      by_month = ( opt.keys & [:by_month,:by_monthday,:by_day,:by_line,:by_shape,:by_line_shape] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
+      by_month = ( opt.keys & [:by_month,:by_monthday,:by_day,:by_line,:by_shape,:by_line_shape,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
       preunble = ( case method
                    when :normalized ;  Nomalized_def
                    when :difference, :difference_ave ,:diffdiff;  Differ_def 
                    else             ; Power_def 
-                   end)% [ graph_file , by_month ]
+                   end)% [ graph_file , opt[:title] || DefaultTitle[method ],by_month ]
 
       open(def_file,"w"){ |f|
         f.puts preunble 
         f.print "plot " + path.map{ |p| "'#{p}' using 1:2  with line"}.join(" , ")
-        if opt[:by_line] 
+        if  opt[:by_line] 
           f.print " , " + Lines.map{ |line| line.last}.join(" , ")
         elsif opt[:fitting]
           i=0
           #logger.debug("powers = #{powers.first.class}")
           a = method == :normalized ? powers.first.na : powers.first.a
           #        logger.debug("powers.a = #{powers.first.a.join(',')}")
-          f.print  ",1,\\\n #{a[0]}"+ 
-            a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{Shimada::Power::PolyFitX0+1})**#{i}" }.join + " lt -1" +
-            ",\\\n (((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*5+1"%
-            [ a[4] * 4,a[3]*3,a[2]*2,a[1]] +
-            ", \\\n((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f) * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*5 +1"%[a[4] * 12,a[3]*6,a[2]*2]
+          f.print f2_f3_f4_line
         elsif [:difference, :difference_ave].include? method
           average_out(average_diff,:difference)
           f.print ",\\\n  '/tmp/shimada/shimada_power_diff_ave'  using 1:2  with line lt -1"
         end
         f.puts
+        #f.puts "set terminal  eps enhanced color 'GothicBBB-Medium-UniJIS-UTF8-H'
+        f.puts "set terminal  jpeg 
+set out 'tmp/shimada/file.jpeg'
+replot
+"
       }
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
+    end
+
+    def f2_f3_f4_line
+       ",1,\\\n #{a[0]}"+ 
+            a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{Shimada::Power::PolyFitX0+1})**#{i}" }.join + " lt -1" +
+            ",\\\n (((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*5+1"%
+            [ a[4] * 4,a[3]*3,a[2]*2,a[1]] +
+            ", \\\n((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f) * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*5 +1"%[a[4] * 12,a[3]*6,a[2]*2]
     end
 
     def gnuplot_by_temp(powers,opt={ })
@@ -103,13 +117,16 @@ module Shimada::GnuplotDef
       def_file = "/tmp/shimada/power_temp.def"
       graph_file = opt[:graph_file] || "power"
       open(def_file,"w"){ |f|
-        f.puts Temp_power_def % graph_file
+        f.puts Temp_power_def%[graph_file,opt[:title]||"温度-消費電力 "]
         f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") +
         #if opt[:with_Approximation]
         ", 780+9*(x-20) ,670+3*(x-20), 0.440*(x-5)**1.8+750"
         #else
         #  ""
-        #end
+        f.puts "set terminal  jpeg 
+set out 'tmp/shimada/file_temp.jpeg'
+replot
+"        #end
       }
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
     end
@@ -123,7 +140,7 @@ Temp_power_def =
 %Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/shimada/%s.gif'
 
-set title "温度-消費電力 " 
+set title "%s" #"温度-消費電力 " 
 set key outside autotitle columnheader
 set yrange [0:1000]
 set xrange [-10:40]
@@ -135,7 +152,7 @@ Power_def =
 set out 'tmp/shimada/%s.gif'
 #set terminal x11
 
-set title "消費電力 " 
+set title "%s" #"消費電力 " 
 %s
 set yrange [0:1000]
 set xrange [1:24]
@@ -148,7 +165,7 @@ Differ_def =
 set out 'tmp/shimada/%s.gif'
 #set terminal x11
 
-set title "消費電力 " 
+set title "%s" # "消費電力 " 
 %s
 set yrange [-250:250]
 set xrange [1:24]
@@ -162,7 +179,7 @@ Nomalized_def=
 set out 'tmp/shimada/%s.gif'
 #set terminal x11
 
-set title "正規化消費電力 " 
+set title "%s" #"正規化消費電力 " 
 %s
 set yrange [0.0:1.1]
 #set xrange [1:24]
