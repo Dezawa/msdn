@@ -53,11 +53,8 @@ module Shimada::GraphAllMonth
 
 
   def index_all_month_
-    line,shape = patern = params[@Domain][:index_all_month_].split("",2)
-    #@models = Shimada::Power.all(:conditions => ["line=? and shape = ?",line,shape])
-    @models = Shimada::Power.all( :order => "date",
-                                  :conditions => ["line = ? and shape = n? ",line.to_i,shape]
-                                )
+    line,shape, @models = get_power_by_line_and_shape(params[@Domain][:index_all_month_])
+    patern = [line,shape]
     @TYTLE_post = "(#{patern})"
 
     @TableEdit  =  [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
@@ -71,12 +68,25 @@ module Shimada::GraphAllMonth
   end
 
   def graph_patern
-    line,shape = patern = params[@Domain][:patern].split("",2)
+    line,shape, @power = get_power_by_line_and_shape(params[@Domain][:patern])
     method =  params[@Domain][:method]
 
-    @power=Shimada::Power.all(   :conditions => ["line = ? and shape = n? ",line.to_i,shape]  )
     Shimada::Power.gnuplot(@power,method.to_sym,:by_monthday => true)
     render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def get_power_by_line_and_shape(patern)
+    line,shape = patern.split("",2)
+    [line,shape,if /\d/ =~ line
+                  Shimada::Power.all( :order => "date",
+                                     :conditions => ["line = ? and shape = n? ",line.to_i,shape]
+                                     )
+                else Shimada::Power::Un_sorted
+                 Shimada::Power.all( :order => "date",
+                                     :conditions => ["shape = n? ",shape]
+                                     )
+                end
+    ]
   end
 
   def graph_all_month_reviced ;    graph_all_month_sub(:revise_by_temp, "補正消費電力推移 全月度",:by_month => true) 
@@ -114,9 +124,11 @@ module Shimada::GraphAllMonth
 
   def graph_all_month_line_shape(lines,shape=nil)
     lines,shape = lines.split("",2) unless shape
+    find = /\d/ =~ lines ? {:lines => lines.to_i,:shape_is => shape} : {:shape_is => shape}
+
     logger.debug("\n** GRAPH_ALL_MONTH_LINE_SHAPE: line=#{lines} shape=#{shape} **")
     graph_all_month_sub(:revise_by_temp,"#{lines}line #{shape}",
-                        :find => {:lines => lines.to_i,:shape_is => shape},:by_month => true,
+                        :find => find,:by_month => true,
                         :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")) 
   end
   def graph_all_month_sub(method,title,opt={ })
