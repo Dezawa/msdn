@@ -36,7 +36,7 @@ module Shimada::GraphAllMonth
        Shimada::Power::PaternsKey.map{ |lbl| 
          [:popup,:graph_all_month_lines,lbl,
           {:win_name => "graph_patarn_all_month",:action=> :revise_by_temp,:label => lbl,:shape => lbl}]
-       } +
+       } 
 
        #%w( #3-- 3-+ 3-0 3F 3O 30+ 4-- 4-0 400 4F 4H 3他 4他 0S 1S 200  2O
        #  ). map{ |patern| line,shape = patern.split("",2); 
@@ -44,13 +44,47 @@ module Shimada::GraphAllMonth
        #   { :win_name => "graph",:patern => patern}
        #  ]
        #}+
+      ]
+    AllMonthaction_buttoms2 = 
+    [ 2,
+      [[:input_and_action,"graph_almighty","line,shape,deform,month,method",{:size=>40 ,:popup => "graph_almighty"}]
+      ]
+    ]
+      
+    AllMonthaction_buttoms3 = 
+    [ 3,
         [[:input_and_action,"graph_all_month_","数型グラフ",{:size=>7 ,:popup => "graph_all_month"}],
          [:input_and_action,"index_all_month_","数型の一覧",{:size=>7 ,:popup => "index_all_month",:scroll => true}],
          [:input_and_action,"graph_the_day","日付指定グラフ",{:size=>14 ,:popup => "graph_all_month"}],
         ]
-
       ]
 
+  def graph_almighty
+    args_list = params[@Domain][:graph_almighty]
+    args = Hash[*args_list.split(",").
+                map{ |arg| arg.split("=")}.flatten] # =>"line=4,shpe=-0,month=2013/4
+    method = args.delete("method") || "revise_by_temp"
+    method = case method
+             when /^dif.*dif/ ; "diffdiff"
+             when /^dif.*ave/ ; "difference_ave"
+             when /^dif/ ; "difference"
+             when /^norm/ ; "normalized"
+             when /^rev/  ; "revise_by_temp"
+             when /^pow/  ; "powers"
+             end
+    if month=args.delete("month")
+      month = Time.local(*month.split(/[-\/]/))
+      args["month_id"] = Shimada::Month.find_by_month(month).id
+      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")
+      @power = Shimada::Power.all( :order => "date", :conditions => [query,*args.values] )
+      Shimada::Power.gnuplot(@power,method.to_sym,:by_date => "%m/%d",:title => args_list )
+    else
+      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")
+      @power = Shimada::Power.all( :order => "date", :conditions => [query,*args.values] )
+      Shimada::Power.gnuplot(@power,method.to_sym,:by_date => "%y/%m",:title => args_list )
+    end
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
 
   def index_all_month_
     line,shape, @models = get_power_by_line_and_shape(params[@Domain][:index_all_month_])

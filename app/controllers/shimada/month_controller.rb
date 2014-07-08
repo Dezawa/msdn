@@ -31,6 +31,8 @@ class Shimada::MonthController <  Shimada::Controller
        [:form,:reculc_all,"再計算"],
        [:form,:reculc_shapes,"再分類"]]
     @action_buttoms = AllMonthaction_buttoms
+    @action_buttoms3 = AllMonthaction_buttoms3
+    @action_buttoms2 = AllMonthaction_buttoms2
 
     @Show = true
     @Delete = true
