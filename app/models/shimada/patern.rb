@@ -4,7 +4,7 @@ module Shimada::Patern
 
   Paterns = {
     "稼働無" => %w(0S 1S)        ,"稼働4一時低下" => %w(4H)    ,"稼働4" => %w(400 4F),"稼働4→3" => %w(4-- 4-+ 4-0 4d),
-    "稼働3" => %w(3-- 30- 3F 300 3O),"稼働3一時低下" => %w(3H)    ,"稼働3→2" => %w(3d),
+    "稼働3" => %w(3-- 30- 3F 300 3O),"稼働3一時低下" => %w(3H)    ,"稼働3→2" => %w(3d 3-0),
     "稼働2" => %w(2O),
     #"その他" => %w(1他遅 2他遅 3他遅 4他遅 1他急変 2他急変 3他急変 4他急変),
     "他遅" => %w(1他遅 2他遅 3他遅 4他遅), 
@@ -39,30 +39,33 @@ module Shimada::Patern
     elsif discriminant.abs < 0.000002       ;"00"
     elsif revise_by_temp[6] < 400           ;     "他遅"
     elsif na[4] > 0
-      if f3x3 < 9 && pw_peaks[1]-pw_peaks[2] > 120  ; "d" 
-      elsif f3x1 >-12 && pw_peaks[1]-pw_peaks[0] > 120  ; "d" 
-      else      ; "O"
-      end
+     # if f3x3 < 9 && pw_peaks[1]-pw_peaks[2] > 120  ; "d" 
+     # elsif f3x1 >-12 && pw_peaks[1]-pw_peaks[0] > 120  ; "d" 
+     # else
+        "O"
+     # end
     elsif discriminant < 0.0                ; "F"
     elsif y1     >  Err && y2.abs <   Err   ;  "+0"
     elsif y1     >  Err && y2     >   Err   ;  "++"
     elsif y1     >  Err && y2     <  -Err   
-      max_powers[0] - min_powers[0]  > 120 ? "H" :  "+-"
+      #max_powers[0] - min_powers[0]  > 120 ? "H" : 
+      "+-"
     elsif y1     < -Err && y2.abs <   Err   ;  "-0"
     elsif y1     < -Err && y2     <  -Err   ;  "--"
     elsif y1     < -Err && y2     >   Err   # -+
       pw_values = pw_peaks
-      unless f3_solve.all?{ |x| Shimada::Power::PolyFitHour.include?(x+Shimada::Power::PolyFitX0)}
+      #unless f3_solve.all?{ |x| Shimada::Power::PolyFitHour.include?(x+Shimada::Power::PolyFitX0)}
          "-+"
-      else
+      #else
       #logger.debug("===== pw_values = #{pw_values.join(',')} f3_solve=#{f3_solve.join(',')}")
-      logger.debug("===== ID=#{id} #{date} difference_peak_vary = #{difference_peak_vary} difference_peaks=#{difference_peaks}")
-      difference_peak_vary > 99 && difference_peaks < 100  ? "H" : "-+" # H
-      end
+      #logger.debug("===== ID=#{id} #{date} difference_peak_vary = #{difference_peak_vary} difference_peaks=#{difference_peaks}")
+     # difference_peak_vary > 99 && difference_peaks < 100  ? "H" : "-+" # H
+     # end
     elsif y1.abs <  Err && y2.abs <   Err   ;  "00" #
     elsif y1.abs <  Err && y2     >   Err    
-      x0 = f3_solve((x1+x2)*0.5)
-      max_powers[0] - min_powers[0] > 150 ? "H" :  "0+"
+   #   x0 = f3_solve((x1+x2)*0.5)
+    #  max_powers[0] - min_powers[0] > 150 ? "H" :
+      "0+"
     elsif y1.abs <  Err && y2     <  -Err   ;  "0-"
     else      ;   "他"
     end
