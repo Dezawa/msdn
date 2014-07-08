@@ -116,10 +116,11 @@ module ApplicationHelper
     }.compact.join("</td>" + td )+"</td></tr>"
   end
 
-  def action_buttom_table
-    return "" unless @action_buttoms
-    clms_num =  @action_buttoms.first
-    action_buttoms = @action_buttoms.last.dup
+  def action_buttom_table(actionbuttoms=nil)
+    return "" unless action_buttoms = actionbuttoms ||  @action_buttoms
+    
+    clms_num =  action_buttoms.first
+    action_buttoms = action_buttoms.last.dup
     th = "<table>\n" #<tr>"+"<td></td>"* clms +"</tr>\n"
     tb = "<tr>" +
       (0..action_buttoms.size-1).step(clms_num).
