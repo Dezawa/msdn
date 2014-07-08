@@ -17,7 +17,7 @@ module  Shimada::GraphMonth
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
       HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
       HtmlText.new(:shape_is,"形<br>状",:ro => true,:size =>2,:ro => true),
-      HtmlText.new(:shape,"形<br>状",:ro => true,:size =>2)
+      HtmlText.new(:deform,"変形",:ro => true,:size =>4)
       
     ] + 
     (1..4).map{ |i| HtmlNum.new("na#{i}".to_sym,"na#{i}",:tform => "%.3f")}+
