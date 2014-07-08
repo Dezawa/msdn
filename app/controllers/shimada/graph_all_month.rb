@@ -45,7 +45,8 @@ module Shimada::GraphAllMonth
        #  ]
        #}+
         [[:input_and_action,"graph_all_month_","数型グラフ",{:size=>7 ,:popup => "graph_all_month"}],
-         [:input_and_action,"index_all_month_","数型の一覧",{:size=>7 ,:popup => "index_all_month",:scroll => true}]
+         [:input_and_action,"index_all_month_","数型の一覧",{:size=>7 ,:popup => "index_all_month",:scroll => true}],
+         [:input_and_action,"graph_the_day","日付指定グラフ",{:size=>14 ,:popup => "graph_all_month"}],
         ]
 
       ]
@@ -92,7 +93,21 @@ module Shimada::GraphAllMonth
   def graph_all_month_pat
     graph_all_month_line_shape(params[@Domain][:patern])
   end
-  
+
+    Graph_the_day = [ [/^rev(ise)?/,"補正電力",:revise_by_temp],
+               [/^diffdiff/,"二階差分"         ,:difference],
+               [/^dif.*ave/,"差分平均",:difference_ave],
+               [/^dif/,"差分"         ,:difference],
+               [/./,"消費電力",:powers],
+             ]
+  def graph_the_day
+    days,method = params[@Domain][:graph_the_day].split
+    _,title,method = Graph_the_day[ method ? Graph_the_day.find_index{ |a| a.first =~ method} : -1]
+
+    @power = Shimada::Power.all(:conditions => ["date in (?)",days.split(",")])
+    Shimada::Power.gnuplot(@power,method,:by_date=>"%y/%m/%d",:yitle =>title )
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
   def graph_all_month_
     graph_all_month_line_shape(params[@Domain][:graph_all_month_])
   end
@@ -112,7 +127,7 @@ module Shimada::GraphAllMonth
       months = Shimada::Month.all
       @power=months.map{ |m| m.powers}.flatten
       @power = select_by_( @power,opt[:find]) if  opt[:find] 
-      Shimada::Power.gnuplot(@power,method,opt)
+      Shimada::Power.gnuplot(@power,method,opt.merge(:title => title))
     end
 
     @TYTLE = title
@@ -128,7 +143,7 @@ module Shimada::GraphAllMonth
       @power=months.map{ |m| m.powers}.flatten.
         select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
  logger.debug("GRAPH_ALL_MONTH_PATERN: @power.size=#{@power.size}")
-     Shimada::Power.gnuplot(@power,method,:by_line_shape => true,
+     Shimada::Power.gnuplot(@power,method,:by_line_shape => true,:title => params[@Domain][:shape],#shapes,
                              :graph_file => @graph_file
                              )
     end
