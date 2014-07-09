@@ -80,9 +80,13 @@ module Shimada::GnuplotDef
           f.print " , " + Lines.map{ |line| line.last}.join(" , ")
         elsif opt[:fitting]
           #logger.debug("powers = #{powers.first.class}")
-          a = method == :normalized ? powers.first.na : powers.first.a
-          #        logger.debug("powers.a = #{powers.first.a.join(',')}")
-          f.print f2_f3_f4_line(a)
+          #a = method == :normalized ? powers.first.na : powers.first.a
+                  logger.debug("method = #{method}")
+          if method == :normalized 
+            f.print f2_f3_f4_normalize( powers.first.na,1) 
+          else
+            f.print f2_f3_f4_line( powers.first.a,800) 
+          end 
         elsif [:difference, :difference_ave].include? method
           average_out(average_diff,:difference)
           f.print ",\\\n  '/tmp/shimada/shimada_power_diff_ave'  using 1:2  with line lt -1 lw 2"
@@ -97,13 +101,22 @@ replot
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
     end
 
-    def f2_f3_f4_line(a)
-          i=0
+    def f2_f3_f4_line(a,offset)
+      i=0
        ",1,\\\n #{a[0]}"+ 
-            a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{Shimada::Power::PolyFitX0+1})**#{i}" }.join + " lt -1" +
-            ",\\\n (((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*5+1"%
+            a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{Shimada::Power::PolyFitX0})**#{i}" }.join + " lt -1" +
+        ",\\\n (((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0}) %+f)+#{offset}"%
             [ a[4] * 4,a[3]*3,a[2]*2,a[1]] +
-            ", \\\n((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f) * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*5 +1"%[a[4] * 12,a[3]*6,a[2]*2]
+        ", \\\n((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f) * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*5 +#{offset}"%[a[4] * 12,a[3]*6,a[2]*2]
+    end
+
+    def f2_f3_f4_normalize(a,offset)
+      i=0
+       ",1,\\\n #{a[0]}"+ 
+            a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{Shimada::Power::PolyFitX0+offset})**#{i}" }.join + " lt -1" +
+            ",\\\n (((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+offset}) %+f)*5+1"%
+            [ a[4] * 4,a[3]*3,a[2]*2,a[1]] +
+        ", \\\n((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f) * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*5 +#{offset}"%[a[4] * 12,a[3]*6,a[2]*2]
     end
 
     def gnuplot_by_temp(powers,opt={ })
