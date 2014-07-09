@@ -62,9 +62,10 @@ module Shimada::GraphAllMonth
       ]
 
   def graph_almighty
-    args_list = params[@Domain][:graph_almighty]
-    args = Hash[*args_list.split(",").
-                map{ |arg| arg.split("=")}.flatten] # =>"line=4,shpe=-0,month=2013/4
+    patern = params[@Domain][:graph_almighty]
+    args = patern.split(",").map{ |arg| arg.split("=")}
+    list = args.delete(["list"])
+    args = Hash[*args.flatten] # =>"line=4,shpe=-0,month=2013/4
     method = args.delete("method") || "revise_by_temp"
     method = case method
              when /^dif.*dif/ ; "diffdiff"
@@ -79,27 +80,47 @@ module Shimada::GraphAllMonth
       month = Time.local(*month.split(/[-\/]/))
       args["month_id"] = Shimada::Month.find_by_month(month).id
       query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")
-      @power = Shimada::Power.all( :order => "date", :conditions => [query,*args.values] )
-      Shimada::Power.gnuplot(@power,method.to_sym,:by_date => "%m/%d",:title => args_list )
+      args_list.split(",").map{ |arg| arg.split("=")}
+      @models = Shimada::Power.all( :order => "date", 
+                                   :conditions => [query,*args.values] )
+      by_date = "%m/%d"
     else
       query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")
-      @power = Shimada::Power.all( :order => "date", :conditions => [query,*args.values] )
-      Shimada::Power.gnuplot(@power,method.to_sym,:by_date => "%y/%m",:title => args_list )
+      @models = Shimada::Power.all( :order => "date", :conditions => [query,*args.values] )
+      by_date = "%y/%m"
     end
-    render :action => :graph,:layout => "hospital_error_disp"
+
+    if list
+    @TableEdit  =  
+    [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
+     [:popup,:graph_patern,"補正後電力",{ :win_name => "graph",:patern => patern,:method => :revise_by_temp} ],
+     [:popup,:graph_patern,"正規化",{ :win_name => "graph",:patern => patern,:method => :normalized} ],
+     [:popup,:graph_patern,"差分",{ :win_name => "graph",:patern => patern,:method => :difference} ],
+     [:popup,:graph_patern,"差分平均",{ :win_name => "graph",:patern => patern,:method => :difference_ave} ]
+    ]
+    @action_buttoms = nil
+    show_sub
+
+    else
+    Shimada::Power.gnuplot(@models,method.to_sym,:by_date => by_date,
+                           :title => args_list )
+      render :action => :graph,:layout => "hospital_error_disp"
+    end
   end
+
 
   def index_all_month_
     line,shape, @models = get_power_by_line_and_shape(params[@Domain][:index_all_month_])
     patern = [line,shape]
     @TYTLE_post = "(#{patern})"
 
-    @TableEdit  =  [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
-                    [:popup,:graph_patern,"補正後電力",{ :win_name => "graph",:patern => patern,:method => :revise_by_temp} ],
-                    [:popup,:graph_patern,"正規化",{ :win_name => "graph",:patern => patern,:method => :normalized} ],
-                    [:popup,:graph_patern,"差分",{ :win_name => "graph",:patern => patern,:method => :difference} ],
-                    [:popup,:graph_patern,"差分平均",{ :win_name => "graph",:patern => patern,:method => :difference_ave} ]
-                   ]
+    @TableEdit  =  
+    [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
+     [:popup,:graph_patern,"補正後電力",{ :win_name => "graph",:patern => patern,:method => :revise_by_temp} ],
+     [:popup,:graph_patern,"正規化",{ :win_name => "graph",:patern => patern,:method => :normalized} ],
+     [:popup,:graph_patern,"差分",{ :win_name => "graph",:patern => patern,:method => :difference} ],
+     [:popup,:graph_patern,"差分平均",{ :win_name => "graph",:patern => patern,:method => :difference_ave} ]
+    ]
     @action_buttoms = nil
     show_sub
   end
@@ -191,7 +212,7 @@ module Shimada::GraphAllMonth
       months = Shimada::Month.all
       @power=months.map{ |m| m.powers}.flatten.
         select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
- logger.debug("GRAPH_ALL_MONTH_PATERN: @power.size=#{@power.size}")
+ logger.debug("GRAPH_ALL_MONTH_PATERN: line_shape=#{line_shape} @power.size=#{@power.size}")
      Shimada::Power.gnuplot(@power,method,:by_line_shape => true,:title => params[@Domain][:shape],#shapes,
                              :graph_file => @graph_file
                              )
