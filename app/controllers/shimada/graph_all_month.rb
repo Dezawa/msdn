@@ -63,8 +63,8 @@ module Shimada::GraphAllMonth
 
   def graph_almighty
     patern = params[@Domain][:graph_almighty]
+    list = patern.sub!(/,?list/,"")
     args = patern.split(",").map{ |arg| arg.split("=")}
-    list = args.delete(["list"])
     args = Hash[*args.flatten] # =>"line=4,shpe=-0,month=2013/4
     method = args.delete("method") || "revise_by_temp"
     method = case method
