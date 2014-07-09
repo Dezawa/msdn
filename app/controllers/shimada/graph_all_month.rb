@@ -66,7 +66,7 @@ module Shimada::GraphAllMonth
     list = patern.sub!(/,?list/,"")
     args = patern.split(",").map{ |arg| arg.split("=")}
     args = Hash[*args.flatten] # =>"line=4,shpe=-0,month=2013/4
-    method = args.delete("method") || "revise_by_temp"
+    method = args.delete("method") || params[@Domain][:method] || "revise_by_temp"
     method = case method
              when /^dif.*dif/ ; "diffdiff"
              when /^dif.*ave/ ; "difference_ave"
@@ -91,6 +91,7 @@ module Shimada::GraphAllMonth
     end
 
     if list
+      patern.delete("method")
     @TableEdit  =  
     [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
      [:popup,:graph_almighty,"補正後電力",{ :win_name => "graph",:graph_almighty => patern,:method => :revise_by_temp} ],
@@ -103,7 +104,7 @@ module Shimada::GraphAllMonth
 
     else
     Shimada::Power.gnuplot(@models,method.to_sym,:by_date => by_date,
-                           :title => args_list )
+                           :title => patern )
       render :action => :graph,:layout => "hospital_error_disp"
     end
   end
