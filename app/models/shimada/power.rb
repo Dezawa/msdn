@@ -89,7 +89,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   def shape_is
     return @shape_is if @shape_is
-    update_attribute(:shape , shape_calc) unless shape
+    update_attributes(:shape => shape_calc,:deform => self.deform) unless shape
     @shape_is = shape
   end
 
@@ -160,6 +160,10 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def f4(x) ;    (((na[4] * x + na[3])*x + na[2])*x + na[1])*x+na[0] ;  end
   def f4_peaks ;@f4_peaks ||= f3_solve.map{ |x| f4(x)} ;end
   def pw_peaks ;f3_solve.map{ |x| powers[x+PolyFitX0] || 0 };end
+
+  def difference_peak_sholder
+    revise_by_temp_ave[f3x1+PolyFitX0+1] - revise_by_temp_ave[x2+PolyFitX0+1]
+  end
 
   def difference_peak_vary
     (powers[f3x1+PolyFitX0,3] + powers[f3x3+PolyFitX0,3]).max -
