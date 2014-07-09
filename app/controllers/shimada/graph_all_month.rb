@@ -93,10 +93,10 @@ module Shimada::GraphAllMonth
     if list
     @TableEdit  =  
     [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
-     [:popup,:graph_almighty,"補正後電力",{ :win_name => "graph",:patern => patern,:method => :revise_by_temp} ],
-     [:popup,:graph_almighty,"正規化",{ :win_name => "graph",:patern => patern,:method => :normalized} ],
-     [:popup,:graph_almighty,"差分",{ :win_name => "graph",:patern => patern,:method => :difference} ],
-     [:popup,:graph_almighty,"差分平均",{ :win_name => "graph",:patern => patern,:method => :difference_ave} ]
+     [:popup,:graph_almighty,"補正後電力",{ :win_name => "graph",:graph_almighty => patern,:method => :revise_by_temp} ],
+     [:popup,:graph_almighty,"正規化",{ :win_name => "graph",:graph_almighty => patern,:method => :normalized} ],
+     [:popup,:graph_almighty,"差分",{ :win_name => "graph",:graph_almighty => patern,:method => :difference} ],
+     [:popup,:graph_almighty,"差分平均",{ :win_name => "graph",:graph_almighty => patern,:method => :difference_ave} ]
     ]
     @action_buttoms = nil
     show_sub
