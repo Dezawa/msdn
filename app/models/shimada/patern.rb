@@ -34,10 +34,10 @@ module Shimada::Patern
   def shape_calc
     return nil unless lines
     if lines < 2  ; "S"
-    elsif max_diff_from_average_difference > 200 ; "他急変1"
-    elsif [diffdiff(3..20).max,-diffdiff(3..20).min].max >  190 ; "他急変2"
+    #elsif max_diff_from_average_difference > 200 ; "他急変1"
+    #elsif [diffdiff(3..20).max,-diffdiff(3..20).min].max >  190 ; "他急変2"
     elsif discriminant.abs < 0.000002       ;"00"
-    elsif revise_by_temp[6] < 400           ;     "他遅"
+    #elsif revise_by_temp[6] < 400           ;     "他遅"
     elsif na[4] > 0
      # if f3x3 < 9 && pw_peaks[1]-pw_peaks[2] > 120  ; "d" 
      # elsif f3x1 >-12 && pw_peaks[1]-pw_peaks[0] > 120  ; "d" 
