@@ -29,7 +29,9 @@ class Shimada::MonthController <  Shimada::Controller
     @TableEdit  = 
       [:csv_up_buttom ,[:form,:reset_reevice_and_ave,"再補正・再平均"],
        [:form,:reculc_all,"再計算"],
-       [:form,:reculc_shapes,"再分類"]]
+       [:form,:reculc_shapes,"再分類"],
+       [:form,:rm_gif,"グラフ再作成"]
+      ]
     @action_buttoms = AllMonthaction_buttoms
     @action_buttoms3 = AllMonthaction_buttoms3
     @action_buttoms2 = AllMonthaction_buttoms2
@@ -90,8 +92,13 @@ class Shimada::MonthController <  Shimada::Controller
   def reset_reevice_and_ave
     Shimada::Power.reset_reevice_and_ave
     redirect_to :action => :index
-    #render  :file => 'application/index',:layout => 'application'
   end
+
+  def rm_gif 
+    Shimada::Power.rm_gif
+    redirect_to :action => :index
+  end
+
 
   def reculc_all
     Shimada::Power.reculc_all

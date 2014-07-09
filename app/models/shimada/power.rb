@@ -53,9 +53,11 @@ class Shimada::Power < ActiveRecord::Base
     #self.update(self.all.map(&:id), :shape => nil)
     self.update_all("shape = null")
     @shpe_is = nil
-    File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif"))
+    rm_gif
     self.all(:conditions => "date is not null").each{ |pw| pw.lines;pw.shape_is}
   end
+
+  def self.rm_gif ;    File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif")) ;end
 
   def self.average_diff
     return @@average_diff if @@average_diff
