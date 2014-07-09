@@ -177,8 +177,10 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
       unless self.f3_x1
         x12 = (x1+x2)*0.5
         self.f3_x1 = (0..4).inject(x1-(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
-        self.f3_x2 = (0..4).inject((x1+x2)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
-        self.f3_x3 = (0..4).inject(x2+(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
+        if y1 * y2 < 0
+          self.f3_x2 = (0..4).inject((x1+x2)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
+          self.f3_x3 = (0..4).inject(x2+(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
+        end 
         save
       end
       @f3_solve  = [self.f3_x1, self.f3_x2 , self.f3_x3]
