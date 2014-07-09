@@ -80,7 +80,6 @@ module Shimada::GraphAllMonth
       month = Time.local(*month.split(/[-\/]/))
       args["month_id"] = Shimada::Month.find_by_month(month).id
       query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")
-      args_list.split(",").map{ |arg| arg.split("=")}
       @models = Shimada::Power.all( :order => "date", 
                                    :conditions => [query,*args.values] )
       by_date = "%m/%d"
