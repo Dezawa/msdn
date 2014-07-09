@@ -2,23 +2,25 @@
 module Shimada::GraphAllMonth
   Popup = %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"! 
   # メイン画面での各月のリンクボタン
+  SGRPH="/shimada/month/graph"
+  POPUP = {:htmloption => Popup}
   Labels = 
     [#HtmlCeckForSelect.new(:id,""),
      HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month", :link_label => "グラフ", :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_nomalized",:link_label => "正規化", :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_reviced", :link_label => "温度補正",  :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_reviced_ave",:link_label => "温度補正平均",:htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_temp", :link_label => "対温度", :htmloption => Popup}),
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働数"   , :url => "/shimada/month/graph_line_all"   , :htmloption => Popup}),
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働変化別",:url => "/shimada/month/graph_month_lines_types",:htmloption => Popup}), 
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働F",:url => "/shimada/month/graph_shape_all_F"  , :htmloption => Popup}), 
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働D",:url => "/shimada/month/graph_shape_all_D"  , :htmloption => Popup}), 
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働O",:url => "/shimada/month/graph_shape_all_O"  , :htmloption => Popup}), 
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_difference", :link_label => "差分",  :htmloption => Popup}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_difference_ave", :link_label => "差分平均",:htmloption => Popup}),
-     #HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_diffdiff", :link_label => "二階差", :htmloption => Popup}),
-     #HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_ave", :link_label => "平均化",  :htmloption => Popup}),
+     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month", :link_label => "グラフ"}.merge(POPUP)),
+     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month_nomalized",:link_label => "正規化"}.merge(POPUP)),
+     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month_reviced", :link_label => "温度補正"}.merge(POPUP)),
+     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month_reviced_ave",:link_label => "温度補正平均"}.merge(POPUP)),
+     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month_temp", :link_label => "対温度"}.merge(POPUP)),
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働数"   , :url => "#{SGRPH}_line_all"   }.merge(POPUP)),
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働変化別",:url => "#{SGRPH}_month_lines_types" }.merge(POPUP)), 
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働F",:url => "#{SGRPH}_shape_all_F"  }.merge(POPUP)), 
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働D",:url => "#{SGRPH}_shape_all_D"  }.merge(POPUP)), 
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働O",:url => "#{SGRPH}_shape_all_O"  }.merge(POPUP)), 
+     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month_difference", :link_label => "差分"}.merge(POPUP)),
+     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month_difference_ave", :link_label => "差分平均"}.merge(POPUP)),
+     #HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month_diffdiff", :link_label => "二階差"}.merge(POPUP)),
+     #HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month_ave", :link_label => "平均化"}.merge(POPUP)),
     ]
 
     AllMonthaction_buttoms = 
@@ -69,6 +71,7 @@ module Shimada::GraphAllMonth
              when /^dif.*ave/ ; "difference_ave"
              when /^dif/ ; "difference"
              when /^norm/ ; "normalized"
+             when /^rev.*ave/  ; "revise_by_temp_ave"
              when /^rev/  ; "revise_by_temp"
              when /^pow/  ; "powers"
              end
