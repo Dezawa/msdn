@@ -73,7 +73,7 @@ class Shimada::MonthController <  Shimada::Controller
     @Show = @Edit = @Delete = nil
     @Graph = true
     @labels = PowerLabels
-    @TableHeaderDouble = [7,[13,"係数"],[24,"時刻"]]
+    @TableHeaderDouble = [10,[13,"係数"],[24,"時刻"]]
     render :action => :show
   end
 
