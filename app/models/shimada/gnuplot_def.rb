@@ -105,9 +105,9 @@ replot
       i=0
        ",1,\\\n #{a[0]}"+ 
             a[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{Shimada::Power::PolyFitX0+1})**#{i}" }.join + " lt -1" +
-        ",\\\n (((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)+#{offset}"%
+        ",\\\n (((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*(x-#{Shimada::Power::PolyFitX0+1}) %+f)*10+#{offset}"%
             [ a[4] * 4,a[3]*3,a[2]*2,a[1]] +
-        ", \\\n((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f) * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*5 +#{offset}"%[a[4] * 12,a[3]*6,a[2]*2]
+        ", \\\n((%+f * (x-#{Shimada::Power::PolyFitX0+1}) %+f) * (x-#{Shimada::Power::PolyFitX0+1}) %+f)*10 +#{offset}"%[a[4] * 12,a[3]*6,a[2]*2]
     end
 
     def f2_f3_f4_normalize(a,offset)
