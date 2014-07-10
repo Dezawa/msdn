@@ -157,12 +157,17 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def na5 ; (na[5] || 0.0)*100000;end
   def na6 ; (na[6] || 0.0)*1000000;end
 
-  def f4(x) ;    (((na[4] * x + na[3])*x + na[2])*x + na[1])*x+na[0] ;  end
+  def f4(x) ;    (((a[4] * x + a[3])*x + a[2])*x + a[1])*x+a[0] ;  end
   def f4_peaks ;@f4_peaks ||= f3_solve.map{ |x| f4(x)} ;end
+  def nf4(x) ;    (((na[4] * x + na[3])*x + na[2])*x + na[1])*x+na[0] ;  end
+  def nf4_peaks ;@nf4_peaks ||= nf3_solve.map{ |x| nf4(x)} ;end
   def pw_peaks ;f3_solve.map{ |x| powers[x+PolyFitX0] || 0 };end
 
   def difference_peak_sholder
-    revise_by_temp_ave[f3x1+PolyFitX0+1] - revise_by_temp_ave[x2+PolyFitX0+1]
+    #logger.debug("DIFFERENCE_PEAK_SHOLDER: x2=#{x2},f3x1=#{f3x1} f3x1+PolyFitX0+1=#{f3x1+PolyFitX0+1}")
+    #logger.debug("DIFFERENCE_PEAK_SHOLDER: revise_by_temp_ave #{revise_by_temp_ave.join(',')}" )
+    revise_by_temp_ave[f3x1+PolyFitX0+1] - 
+      ( revise_by_temp_ave[x2+PolyFitX0+1] || revise_by_temp_ave.last)
   end
 
   def difference_peak_vary
@@ -174,7 +179,8 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     (powers[f3x1+PolyFitX0,3].max - powers[f3x3+PolyFitX0,3].max ).abs
   end
 
-  def f3(x) ;    ((na[4] * 4 * x + na[3]*3)*x + na[2]*2)*x + na[1] ;  end
+  def f3(x) ;    ((a[4] * 4 * x + a[3]*3)*x + a[2]*2)*x + a[1] ;  end
+  def nf3(x) ;    ((na[4] * 4 * x + na[3]*3)*x + na[2]*2)*x + na[1] ;  end
   def f3_solve(initial_x=nil)
     return @f3_solve if @f3_solve
     if  discriminant && discriminant >= 0
@@ -192,24 +198,58 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
       @f3_solve  =  []
     end
   end
+  def nf3_solve(initial_x=nil)
+    return @nf3_solve if @nf3_solve
+    if  ndiscriminant && ndiscriminant >= 0
+      unless self.nf3_x1
+        nx12 = (nx1+nx2)*0.5
+        self.nf3_x1 = (0..4).inject(nx1-(nx2-nx1)*0.5){ |nx0,i| x0 - nf3(x0)/nf2(x0) }
+        if ny1 * ny2 < 0
+          self.nf3_x2 = (0..4).inject((nx1+nx2)*0.5){ |x0,i| x0 - nf3(x0)/nf2(x0) }
+          self.nf3_x3 = (0..4).inject(nx2+(nx2-nx1)*0.5){ |x0,i| x0 - nf3(x0)/nf2(x0) }
+        end 
+        save
+      end
+      @nf3_solve  = [nf3x1, nf3x2 , nf3x3]
+    else
+      @nf3_solve  =  []
+    end
+  end
 
   def f3x1 ;f3_solve[0];end
   def f3x2 ;f3_solve[1];end
   def f3x3 ;f3_solve[2];end
 
+  def nf3x1 ;nf3_solve[0];end
+  def nf3x2 ;nf3_solve[1];end
+  def nf3x3 ;nf3_solve[2];end
   # 12x^2 + 6x + 2a1
-  def f2(x) ;    (na[4] * 12 * x + na[3]*6)*x + na[2]*2 ;  end
+  def f2(x) ;    (a[4] * 12 * x + a[3]*6)*x + a[2]*2 ;  end
+  def nf2(x) ;    (na[4] * 12 * x + na[3]*6)*x + na[2]*2 ;  end
 
-  def discriminant ; 36*na[3]*na[3] - 96*na[2]*na[4]   ;  end
+  def ndiscriminant ; 36*na[3]*na[3] - 96*na[2]*na[4]   ;  end
+  def discriminant ; 36*a[3]*a[3] - 96*a[2]*a[4]   ;  end
   def f2_solve
     @f2_solve ||=
       if  self.f2_x1  ; [self.f2_x1,self.f2_x2]
       elsif discriminant && discriminant >= 0
-        #logger.debug("Math.sqrt  #{discriminant},#{na[3]} #{36*na[3]*na[3] - discriminant}")
+        #logger.debug("Math.sqrt  #{discriminant},#{a[3]} #{36*a[3]*a[3] - discriminant}")
         sqrt = Math.sqrt(discriminant)
-        self.f2_x1,self.f2_x2 = [(-na[3]*6 + sqrt)/(24*na[4]), (-na[3]*6 - sqrt)/(24*na[4])].sort
+        self.f2_x1,self.f2_x2 = [(-a[3]*6 + sqrt)/(24*a[4]), (-a[3]*6 - sqrt)/(24*a[4])].sort
         save 
         [self.f2_x1,self.f2_x2]
+      else
+        []
+      end
+  end
+   def nf2_solve
+    @nf2_solve ||=
+      if  nf2x1  ; [nf2x1,nf2x2]
+      elsif discriminant && discriminant >= 0
+        #logger.debug("Math.sqrt  #{discriminant},#{na[3]} #{36*na[3]*na[3] -ndiscriminant}")
+        sqrt = Math.sqrt(discriminant)
+        f2x1,f2x2 = [(-na[3]*6 + sqrt)/(24*na[4]), (-na[3]*6 - sqrt)/(24*na[4])].sort
+        [f2x1,f2x2]
       else
         []
       end
@@ -219,6 +259,12 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   def y1       ; x1 ? f3(x1) : nil ;end
   def y2       ; x2 ? f3(x2) : nil ;end
+
+  def nx1       ; nf2_solve.first ;end
+  def nx2       ; nf2_solve.last ;end
+
+  def ny1       ; x1 ? nf3(nx1) : nil ;end
+  def ny2       ; x2 ? nf3(nx2) : nil ;end
 
   def weather
 logger.debug("WEATHER id=#{id} date=#{date}")
