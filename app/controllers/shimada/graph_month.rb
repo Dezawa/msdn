@@ -7,7 +7,7 @@ module  Shimada::GraphMonth
   PowerLabels =
     [ HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => "/shimada/month/graph"            , :htmloption => Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => "/shimada/month/graph_reviced"    , :htmloption => Popup}),
-      #HtmlLink.new(:id,"",:link => { :link_label => "補正後平均",:url => "/shimada/month/graph_reviced_ave", tmloption => Popup}),
+      HtmlLink.new(:id,"",:link => { :link_label => "補正後平均",:url => "/shimada/month/graph_reviced_ave",:htmloption => Popup}),
       #HtmlLink.new(:id,"",:link => { :link_label => "対温度"   , :url => "/shimada/month/graph_temp"    , htmloption =>Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "正規化"   , :url => "/shimada/month/graph_nomalize" , :htmloption =>Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "差分"     , :url => "/shimada/month/graph_difference",:htmloption =>Popup}),
@@ -20,8 +20,13 @@ module  Shimada::GraphMonth
       HtmlText.new(:deform,"変形",:ro => true,:size =>4)
       
     ] + 
-    (1..4).map{ |i| HtmlNum.new("na#{i}".to_sym,"na#{i}",:tform => "%.3f")}+
-    [HtmlNum.new(:discriminant,"判別式",:size =>2,:tform => "%.6f"),
+    #(1..4).map{ |i| HtmlNum.new("na#{i}".to_sym,"na#{i}",:tform => "%.3f")}+
+    [HtmlNum.new("na#{4}".to_sym,"na#{4}",:tform => "%.3f"),
+     HtmlNum.new(:discriminant,"判別式",:size =>2,:tform => "%.6f"),
+     HtmlNum.new(:pw_vary,"谷",:size =>2,:tform => "%.1f"),
+     HtmlNum.new(:pw_peak1,"山1",:size =>2,:tform => "%.1f"),
+     HtmlNum.new(:pw_peak2,"山2",:size =>2,:tform => "%.1f"),
+     HtmlNum.new(:difference_peak_vary,"山谷",:size =>2,:tform => "%.1f"),
      HtmlNum.new(:x1,"x1",:size =>2,:tform => "%.1f"),
      HtmlNum.new(:x2,"x2",:size =>2,:tform => "%.1f"),
      HtmlNum.new(:y1,"f3(左)",:size =>2,:tform => "%.3f"),
