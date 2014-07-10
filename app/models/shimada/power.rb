@@ -161,22 +161,20 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def f4_peaks ;@f4_peaks ||= f3_solve.map{ |x| f4(x)} ;end
   def nf4(x) ;    (((na[4] * x + na[3])*x + na[2])*x + na[1])*x+na[0] ;  end
   def nf4_peaks ;@nf4_peaks ||= nf3_solve.map{ |x| nf4(x)} ;end
-  def pw_peaks ;f3_solve.map{ |x| powers[x+PolyFitX0] || 0 };end
+  def pw_peaks ;f3_solve.map{ |x| ( revise_by_temp_ave[x+PolyFitX0] || 0) if x };end
 
   def difference_peak_sholder
-    #logger.debug("DIFFERENCE_PEAK_SHOLDER: x2=#{x2},f3x1=#{f3x1} f3x1+PolyFitX0+1=#{f3x1+PolyFitX0+1}")
-    #logger.debug("DIFFERENCE_PEAK_SHOLDER: revise_by_temp_ave #{revise_by_temp_ave.join(',')}" )
-    revise_by_temp_ave[f3x1+PolyFitX0+1] - 
-      ( revise_by_temp_ave[x2+PolyFitX0+1] || revise_by_temp_ave.last)
+    revise_by_temp_ave[f3x1+PolyFitX0] - 
+      ( revise_by_temp_ave[x2+PolyFitX0] || revise_by_temp_ave.last)
   end
 
   def difference_peak_vary
-    (powers[f3x1+PolyFitX0,3] + powers[f3x3+PolyFitX0,3]).max -
-      powers[f3x2+PolyFitX0,3].min
+    [revise_by_temp_ave[f3x1+PolyFitX0] ,revise_by_temp_ave[f3x3+PolyFitX0]].max -
+      revise_by_temp_ave[f3x2+PolyFitX0]
   end
 
   def difference_peaks
-    (powers[f3x1+PolyFitX0,3].max - powers[f3x3+PolyFitX0,3].max ).abs
+    (revise_by_temp_ave[f3x1+PolyFitX0] -revise_by_temp_ave[f3x3+PolyFitX0]).abs
   end
 
   def f3(x) ;    ((a[4] * 4 * x + a[3]*3)*x + a[2]*2)*x + a[1] ;  end
