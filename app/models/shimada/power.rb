@@ -161,21 +161,35 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def f4_peaks ;@f4_peaks ||= f3_solve.map{ |x| f4(x)} ;end
   def nf4(x) ;    (((na[4] * x + na[3])*x + na[2])*x + na[1])*x+na[0] ;  end
   def nf4_peaks ;@nf4_peaks ||= nf3_solve.map{ |x| nf4(x)} ;end
-  def pw_peaks ;f3_solve.map{ |x| ( revise_by_temp_ave[x+PolyFitX0] || 0) if x };end
+  def pw_peaks 
+    logger.debug("PW_PEAKS:#{date} f3_solve=#{f3_solve.join(',')}")
+    if f3x2 
+      [ revise_by_temp_ave[0..[f3x2+PolyFitX0,1].max].max, 
+        revise_by_temp_ave[[f3x2+PolyFitX0,22].min..23].max]
+    else
+      [revise_by_temp_ave.max]
+    end
+  end
+  def pw_peak1 ;pw_peaks[0] ;end
+  def pw_peak2 ;pw_peaks[1] ;end
+
+
+  def pw_vary
+    if  f3x2 ; revise_by_temp_ave[ [8,f3x1+PolyFitX0].max .. [f3x3 + PolyFitX0,20].min ].min
+    elsif x2 ; revise_by_temp_ave[x2+PolyFitX0] || revise_by_temp_ave.last
+    end
+  end
 
   def difference_peak_sholder
-    revise_by_temp_ave[f3x1+PolyFitX0] - 
+    pw_peaks[0] - 
       ( revise_by_temp_ave[x2+PolyFitX0] || revise_by_temp_ave.last)
   end
 
   def difference_peak_vary
-    [revise_by_temp_ave[f3x1+PolyFitX0] ,revise_by_temp_ave[f3x3+PolyFitX0]].max -
-      revise_by_temp_ave[f3x2+PolyFitX0]
+    pw_peaks.max - pw_vary if pw_vary
   end
 
-  def difference_peaks
-    (revise_by_temp_ave[f3x1+PolyFitX0] -revise_by_temp_ave[f3x3+PolyFitX0]).abs
-  end
+  def difference_peaks ;  ( pw_peaks.first - pw_peaks.last ).abs ;  end
 
   def f3(x) ;    ((a[4] * 4 * x + a[3]*3)*x + a[2]*2)*x + a[1] ;  end
   def nf3(x) ;    ((na[4] * 4 * x + na[3]*3)*x + na[2]*2)*x + na[1] ;  end
@@ -186,14 +200,15 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
         x12 = (x1+x2)*0.5
         self.f3_x1 = (0..4).inject(x1-(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
         if y1 * y2 < 0
-          self.f3_x2 = (0..4).inject((x1+x2)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
+          self.f3_x2 = (0..4).inject((x1+x2)*0.5){    |x0,i| x0 - f3(x0)/f2(x0) }
           self.f3_x3 = (0..4).inject(x2+(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
         end 
         save
       end
       @f3_solve  = [self.f3_x1, self.f3_x2 , self.f3_x3]
     else
-      @f3_solve  =  []
+      self.f3_x1 = (0..4).inject(-0.5*a[1]/a[2]){ |x0,i| x0 - f3(x0)/f2(x0) }
+      @f3_solve  =  [self.f3_x1]
     end
   end
   def nf3_solve(initial_x=nil)

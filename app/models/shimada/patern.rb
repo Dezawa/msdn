@@ -2,13 +2,17 @@
 module Shimada::Patern
   #module ClassStatic
 
-  Paterns = {   "稼働無" => %w(0S 1S) , "稼働2" => %w(200 2O 2--F),
+  Paterns = {   "稼働無" => %w(0S 1S) ,  "稼働2" => %w(200 2O 2-+F),
+    "稼働3" => %w(3F 3++ 3-+F 3--F),"稼働4" => %w(4F 4++ 4-+F 4--F), 
+    "稼働3一時低下" => %w(3-+H)    ,"稼働4一時低下" => %w(4-+H)    ,
+    "稼働3→2" => %w(3-+D 3--D)   ,"稼働4→3" =>  %w(4-+D 4--D)  ,
+     "未分類" => nil
+   }
+{ "稼働2" => %w(200 2O 2--F),
     "稼働3" => %w(3-- 3--F 30- 3F 300 3O),"稼働4" => %w(400 4O 4F 4--F 4+-),
     "稼働3→2" => %w(3--D 3-+ 3-0)   ,"稼働4→3" =>  %w(4--D 4-+ 4-0),
     "稼働4一時低下" => %w(40+)    ,"稼働3一時低下" => %w(30+)    ,
-    "未分類" => nil
-   }
-{ 
+
     "稼働4→3" => %w(4-- 4-+ 4-0 4d),
    "稼働3→2" => %w(3d 3-0),
     "稼働2" => %w(2O),
@@ -58,15 +62,15 @@ module Shimada::Patern
       if difference_peak_sholder > 100 ;self.deform =  "D" ; "--D"
       else ; self.deform =  "F" ; "--F"
       end
+      #"--"
     elsif y1     < -Err && y2     >   Err   # -+
-      pw_values = pw_peaks
-      #unless f3_solve.all?{ |x| Shimada::Power::PolyFitHour.include?(x+Shimada::Power::PolyFitX0)}
-         "-+"
-      #else
-      #logger.debug("===== pw_values = #{pw_values.join(',')} f3_solve=#{f3_solve.join(',')}")
-      #logger.debug("===== ID=#{id} #{date} difference_peak_vary = #{difference_peak_vary} difference_peaks=#{difference_peaks}")
-     # difference_peak_vary > 99 && difference_peaks < 100  ? "H" : "-+" # H
-     # end
+      logger.debug("SHAPE-+: #{ date} #{difference_peaks < 100} && #{difference_peak_vary} > 150")
+      if difference_peaks < 100 && difference_peak_vary > 100
+         "-+H" #凹(H)は f3x1,f3x3 におけるf4の差が少なく、f3x2のf4の落ち込みが大
+      elsif pw_peaks[0] - pw_peaks[1] > 100  ; "-+D"
+      elsif pw_peaks[1] - pw_peaks[0] > 100  ; "-+U"
+      else              ; "-+F"
+      end
     elsif y1.abs <  Err && y2.abs <   Err   ;  "00" #
     elsif y1.abs <  Err && y2     >   Err    
    #   x0 = f3_solve((x1+x2)*0.5)
