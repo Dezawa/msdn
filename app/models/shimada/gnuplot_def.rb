@@ -34,7 +34,7 @@ module Shimada::GnuplotDef
       keys ||= ary_powres.keys.sort
       keys.each_with_index{ |k,idx|
         #ary_powres.each_with_index{ |month_powers,idx|
-        path << "/tmp/shimada/shimada_power_temp%d"%idx
+        path << RAILS_ROOT+"/tmp/shimada/shimada_power_temp%d"%idx
         open(path.last,"w"){ |f|
           #f.puts "時刻 #{month_powers.first}"
           f.puts "時刻 #{k}"
@@ -49,7 +49,7 @@ module Shimada::GnuplotDef
     end
 
     def average_out(power,method)
-      open("/tmp/shimada/shimada_power_diff_ave","w"){ |f|
+      open(RAILS_ROOT+"/tmp/shimada/shimada_power_diff_ave","w"){ |f|
         f.puts "時刻 平均"
         power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+1,h ) if h } 
         f.puts
@@ -64,7 +64,7 @@ module Shimada::GnuplotDef
       path = output_plot_data(powers,method,opt){ |f,power| 
         power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+1,h ) if h }
       }
-      def_file = "/tmp/shimada/power.def"
+      def_file = RAILS_ROOT+"/tmp/shimada/power.def"
       graph_file = opt[:graph_file] || "power"
       by_month = ( opt.keys & [:by_month,:by_monthday,:by_day,:by_line,:by_shape,:by_line_shape,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
       preunble = ( case method
@@ -89,7 +89,7 @@ module Shimada::GnuplotDef
           end 
         elsif [:difference, :difference_ave].include? method
           average_out(average_diff,:difference)
-          f.print ",\\\n  '/tmp/shimada/shimada_power_diff_ave'  using 1:2  with line lt -1 lw 2"
+          f.print ",\\\n  'tmp/simada/shimada_power_diff_ave'  using 1:2  with line lt -1 lw 2"
         end
         f.puts
         #f.puts "set terminal  eps enhanced color 'GothicBBB-Medium-UniJIS-UTF8-H'
@@ -127,7 +127,7 @@ replot
         }
       }
       #    path = gnuplot_data_by_temp(powers,opt)
-      def_file = "/tmp/shimada/power_temp.def"
+      def_file = RAILS_ROOT+"/tmp/shimada/power_temp.def"
       graph_file = opt[:graph_file] || "power"
       open(def_file,"w"){ |f|
         f.puts Temp_power_def%[graph_file,opt[:title]||"温度-消費電力 "]
