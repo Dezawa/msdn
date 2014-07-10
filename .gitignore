@@ -33,3 +33,6 @@ tmp/pids
 tmp/hospital/Shift*
 tmp/hospital/log/stat
 tmp/shimada/*/*gif
+tmp/shimada/shimada*
+tmp/shimada/power.*
+tmp/shimada/file*
