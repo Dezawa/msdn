@@ -158,6 +158,7 @@ set key outside autotitle columnheader
 set yrange [0:1000]
 set xrange [-10:40]
 set xtics -10,5
+set x2tics 3,3
 !
 
 Power_def =
@@ -170,6 +171,8 @@ set title "%s" #"消費電力 "
 set yrange [0:1000]
 set xrange [1:24]
 set xtics 1,1
+set x2tics 3,3
+#set grid  xtics 3,3
 set grid ytics
 !
 
@@ -183,6 +186,7 @@ set title "%s" # "消費電力 "
 set yrange [-250:250]
 set xrange [1:24]
 set xtics 1,1
+set x2tics 3,3
 set ytics -250,50
 set grid ytics
 !
