@@ -262,18 +262,17 @@ module Shimada::GraphAllMonth
     @graph_file =  "giffiles/all_month_patern_" + deform_lbl
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
       deform = Shimada::Power::Deforms[deform_lbl]
-      @power = if deform == "all"
-                 Shimada::Power.all(:conditions => "deform is not null")
+      @power,by_ = if deform == "all"
+                 [ Shimada::Power.all(:conditions => "deform is not null"),{:by_deform => true}]
                elsif deform == "null"
-                 Shimada::Power.all(:conditions => "deform is null and date is not null")
+                 [ Shimada::Power.all(:conditions => "deform is null and date is not null"),
+                   { :by_date => "%y/%m"  }]
                else
-                 Shimada::Power.all(:conditions => "deform like '%#{deform}%'")
+                 [ Shimada::Power.all(:conditions => "deform like '%#{deform}%'"),{:by_date => "%y/%m/%d" }]
                end
-      by_date = deform == "null" ?   "%y/%m" :  "%y/%m/%d"
-     Shimada::Power.gnuplot(@power,method,:by_date => by_date,:title => deform_lbl,#shapes,
-                             :graph_file => @graph_file
-                             )
-    end
+      opt = { :title => deform_lbl,:graph_file => @graph_file}.merge(by_)
+      Shimada::Power.gnuplot(@power,method,opt) 
+   end
     @TYTLE = title
     render :action => :graph,:layout => "hospital_error_disp"
   end
