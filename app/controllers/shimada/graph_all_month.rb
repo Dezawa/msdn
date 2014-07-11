@@ -34,19 +34,21 @@ module Shimada::GraphAllMonth
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
         [:popup,:graph_all_month_difference,"全月度差分",{ :win_name => "graph"} ],
         [:popup,:graph_all_month_difference_ave,"全月度差分平均",{ :win_name => "graph"} ]
-      ] +
-       Shimada::Power::PaternsKey.map{ |lbl| 
+       ] 
+      ]
+    AllMonthaction_buttomsPaterns = 
+      [9,   Shimada::Power::PaternsKey.map{ |lbl| 
          [:popup,:graph_all_month_lines,lbl,
           {:win_name => "graph_patarn_all_month",:action=> :revise_by_temp_3,:label => lbl,:shape => lbl}]
        } 
-
+      ]
        #%w( #3-- 3-+ 3-0 3F 3O 30+ 4-- 4-0 400 4F 4H 3他 4他 0S 1S 200  2O
        #  ). map{ |patern| line,shape = patern.split("",2); 
        #  [:popup,"graph_all_month_pat","#{line}line#{shape}",
        #   { :win_name => "graph",:patern => patern}
        #  ]
        #}+
-      ]
+
     AllMonthaction_buttoms2 = 
     [ 2,
       [[:input_and_action,"graph_almighty","line,shape,deform,month,method",{:size=>40 ,:popup => "graph_almighty",:scroll => true}]
