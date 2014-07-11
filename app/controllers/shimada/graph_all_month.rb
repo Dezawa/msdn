@@ -24,7 +24,7 @@ module Shimada::GraphAllMonth
     ]
 
     AllMonthaction_buttoms = 
-      [6 ,
+      [7 ,
        [
         [:popup,:graph_all_month,"全月度グラフ",{ :win_name => "graph"} ],
         #[:popup,:graph_all_month_lines_types,"全月度稼働変化別",{ :win_name => "graph"} ],
@@ -84,11 +84,11 @@ module Shimada::GraphAllMonth
     cnd_dform= 
       if deform = args.delete("deform")
         if deform == "all"
-          cnd = " and deform is not null"
+          cnd = " deform is not null"
         elsif deform == "null"
-          cnd = " and deform is  null"
+          cnd = " deform is  null"
         else
-          cnd = " and (" + deform.split("").map{ |d| "deform like '%#{d}%'"}.join(" or ")  +")"
+          cnd = " (" + deform.split("").map{ |d| "deform like '%#{d}%'"}.join(" or ")  +")"
         end
       else ;  ""
       end
@@ -96,13 +96,16 @@ module Shimada::GraphAllMonth
     if month=args.delete("month")
       month = Time.local(*month.split(/[-\/]/))
       args["month_id"] = Shimada::Month.find_by_month(month).id
-      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")+cnd_dform
+      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")+" and " + cnd_dform
       @models = Shimada::Power.all( :order => "date", 
                                    :conditions => [query,*args.values] )
       by_date = "%m/%d"
-    else
-      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")+cnd_dform
+    elsif args.size > 0
+      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")+" and " +cnd_dform
       @models = Shimada::Power.all( :order => "date", :conditions => [query,*args.values] )
+      by_date = "%y/%m"
+    else
+      @models = Shimada::Power.all( :order => "date", :conditions => cnd_dform )
       by_date = "%y/%m"
     end
 
@@ -259,10 +262,13 @@ module Shimada::GraphAllMonth
       deform = Shimada::Power::Deforms[deform_lbl]
       @power = if deform == "all"
                  Shimada::Power.all(:conditions => "deform is not null")
+               elsif deform == "null"
+                 Shimada::Power.all(:conditions => "deform is null and date is not null")
                else
                  Shimada::Power.all(:conditions => "deform like '%#{deform}%'")
                end
-     Shimada::Power.gnuplot(@power,method,:by_date => "%y/%m/%d",:title => deform_lbl,#shapes,
+      by_date = deform == "null" ?   "%y/%m" :  "%y/%m/%d"
+     Shimada::Power.gnuplot(@power,method,:by_date => by_date,:title => deform_lbl,#shapes,
                              :graph_file => @graph_file
                              )
     end
