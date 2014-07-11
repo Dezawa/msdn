@@ -125,7 +125,9 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   end
 
   def powers ; Hours.map{ |h| self[h]} ; end
-  def powers_3 ; powers[3..23] + self.class.find_by_date(date.tomorrow).powers[0..2];end
+  def powers_3 
+    powers[3..23] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.powers[0..2] : [])
+  end
 
   # Array a of \sum_{i=0}^{次元数}(a_i x^i)
   # 
@@ -302,7 +304,7 @@ logger.debug("WEATHER id=#{id} date=#{date}")
   end
 
   def revise_by_temp_3
-    revise_by_temp[3..23] + self.class.find_by_date(date.tomorrow).revise_by_temp[0..2]
+    revise_by_temp[3..23] +(( pw = self.class.find_by_date(date.tomorrow)) ? pw.revise_by_temp[0..2] : [])
   end
   def revise_by_temp
     return @revise_by_temp if @revise_by_temp
@@ -320,7 +322,7 @@ logger.debug("WEATHER id=#{id} date=#{date}")
   end
 
   def diffdiff_3
-    diffdiff[3..21] + self.class.find_by_date(date.tomorrow).diffdiff[0..2]
+    diffdiff[3..21] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.diffdiff[0..2] : [])
   end
   def diffdiff(range=(1..22))
     logger.debug("DIFFDIFF: id=#{id} date=#{date} #{difference.join(',')}")
@@ -331,8 +333,9 @@ logger.debug("WEATHER id=#{id} date=#{date}")
   end
 
   def difference_3
-    difference[3..22] + self.class.find_by_date(date.tomorrow).difference[0..2]
+    difference[3..22] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.difference[0..2] : [])
   end
+
   def difference
     return @differences if @differences
     if difference00

@@ -72,21 +72,21 @@ module  Shimada::GraphMonth
   def graph_line_shape(lines,shape=nil)
 logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
     lines,shape = lines.split("",2) unless shape
-    graph_month_sub(:revise_by_temp,"#{lines}line #{shape}",:by_day => true,
+    graph_month_sub(:revise_by_temp_3,"#{lines}line #{shape}",:by_day => true,
                     :find => {:lines => lines.to_i,:shape_is => shape},
                     :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")) 
   end
 
   def graph_line ;   graph_line_shape( params[@Domain][:shape] ) ;  end
 
-  def graph_month         ;graph_month_sub(:powers,"消費電力推移") ; end
-  def graph_month_reviced ;graph_month_sub(:revise_by_temp,"補正消費電力推移") ; end
+  def graph_month         ;graph_month_sub(:powers_3,"消費電力推移") ; end
+  def graph_month_reviced ;graph_month_sub(:revise_by_temp_3,"補正消費電力推移") ; end
   def graph_month_reviced_ave ;graph_month_sub(:revise_by_temp_ave,"補正平均消費電力推移") ; end
   def graph_month_nomalized ;graph_month_sub(:normalized,"正規化消費電力推移",:by_shape => true) ; end
   def graph_month_ave   ;graph_month_sub(:move_ave,"平均消費電力推移") ; end
-  def graph_month_difference   ;graph_month_sub(:difference,"月度差分",:by_shape => true) ; end
+  def graph_month_difference   ;graph_month_sub(:difference_3,"月度差分",:by_shape => true) ; end
   def graph_month_difference_ave   ;graph_month_sub(:difference_ave,"月度差分平均",:by_shape => true) ; end
-  def graph_month_diffdiff   ;graph_month_sub(:diffdiff,"月度二階差",:by_shape => true) ; end
+  def graph_month_diffdiff   ;graph_month_sub(:diffdiff_3,"月度二階差",:by_shape => true) ; end
   def graph_line0       ; graph_month_sub(:revise_by_temp_ave,"稼働０ライン",:find => {:lines => 0}) ;  end
   def graph_line1       ; graph_month_sub(:revise_by_temp_ave,"稼働１ライン",:find => {:lines => 1}) ;  end
   def graph_line2       ; graph_month_sub(:revise_by_temp_ave,"稼働２ライン",:find => {:lines => 2}) ;  end

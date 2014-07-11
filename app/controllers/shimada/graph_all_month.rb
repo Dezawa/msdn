@@ -37,7 +37,7 @@ module Shimada::GraphAllMonth
       ] +
        Shimada::Power::PaternsKey.map{ |lbl| 
          [:popup,:graph_all_month_lines,lbl,
-          {:win_name => "graph_patarn_all_month",:action=> :revise_by_temp,:label => lbl,:shape => lbl}]
+          {:win_name => "graph_patarn_all_month",:action=> :revise_by_temp_3,:label => lbl,:shape => lbl}]
        } 
 
        #%w( #3-- 3-+ 3-0 3F 3O 30+ 4-- 4-0 400 4F 4H 3他 4他 0S 1S 200  2O
@@ -66,15 +66,15 @@ module Shimada::GraphAllMonth
     list = patern.sub!(/,?list/,"")
     args = patern.split(",").map{ |arg| arg.split("=")}
     args = Hash[*args.flatten] # =>"line=4,shpe=-0,month=2013/4
-    method = args.delete("method") || params[@Domain][:method] || "revise_by_temp"
+    method = args.delete("method") || params[@Domain][:method] || "revise_by_temp_3"
     method = case method
-             when /^dif.*dif/ ; "diffdiff"
+             when /^dif.*dif/ ; "diffdiff_3"
              when /^dif.*ave/ ; "difference_ave"
-             when /^dif/ ; "difference"
+             when /^dif/ ; "difference_3"
              when /^norm/ ; "normalized"
              when /^rev.*ave/  ; "revise_by_temp_ave"
-             when /^rev/  ; "revise_by_temp"
-             when /^pow/  ; "powers"
+             when /^rev/  ; "revise_by_temp_3"
+             when /^pow/  ; "powers_3"
              end
     cnd_dform= 
       if deform = args.delete("deform")
@@ -105,9 +105,9 @@ module Shimada::GraphAllMonth
       patern.delete("method")
     @TableEdit  =  
     [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
-     [:popup,:graph_almighty,"補正後電力",{ :win_name => "graph",:graph_almighty => patern,:method => :revise_by_temp} ],
+     [:popup,:graph_almighty,"補正後電力",{ :win_name => "graph",:graph_almighty => patern,:method => :revise_by_temp_3} ],
      [:popup,:graph_almighty,"正規化",{ :win_name => "graph",:graph_almighty => patern,:method => :normalized} ],
-     [:popup,:graph_almighty,"差分",{ :win_name => "graph",:graph_almighty => patern,:method => :difference} ],
+     [:popup,:graph_almighty,"差分",{ :win_name => "graph",:graph_almighty => patern,:method => :difference_3} ],
      [:popup,:graph_almighty,"差分平均",{ :win_name => "graph",:graph_almighty => patern,:method => :difference_ave} ]
     ]
     @action_buttoms = nil
@@ -128,9 +128,9 @@ module Shimada::GraphAllMonth
 
     @TableEdit  =  
     [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
-     [:popup,:graph_patern,"補正後電力",{ :win_name => "graph",:patern => patern,:method => :revise_by_temp} ],
+     [:popup,:graph_patern,"補正後電力",{ :win_name => "graph",:patern => patern,:method => :revise_by_temp_3} ],
      [:popup,:graph_patern,"正規化",{ :win_name => "graph",:patern => patern,:method => :normalized} ],
-     [:popup,:graph_patern,"差分",{ :win_name => "graph",:patern => patern,:method => :difference} ],
+     [:popup,:graph_patern,"差分",{ :win_name => "graph",:patern => patern,:method => :difference_3} ],
      [:popup,:graph_patern,"差分平均",{ :win_name => "graph",:patern => patern,:method => :difference_ave} ]
     ]
     @action_buttoms = nil
@@ -159,14 +159,14 @@ module Shimada::GraphAllMonth
     ]
   end
 
-  def graph_all_month_reviced ;    graph_all_month_sub(:revise_by_temp, "補正消費電力推移 全月度",:by_month => true) 
+  def graph_all_month_reviced ;    graph_all_month_sub(:revise_by_temp_3, "補正消費電力推移 全月度",:by_month => true) 
   end
 
   def graph_all_month_reviced_ave ; graph_all_month_sub(:revise_by_temp_ave,"補正消費電力平均化推移 全月度",:by_month => true);end
   def graph_all_month_ave ;    graph_all_month_sub(:move_ave,"平均消費電力推移 全月度",:by_month => true);  end
   def graph_all_month_nomalized ; graph_all_month_sub(:normalized, "正規化消費電力推移 全月度",:by_shape => true);  end
-  def graph_all_month            ; graph_all_month_sub(:powers,"消費電力推移 全月度",:by_month => true) ;end
-  def graph_all_month_difference           ; graph_all_month_sub(:difference,"差分 全月度",:by_month => true) ;end
+  def graph_all_month            ; graph_all_month_sub(:powers_3,"消費電力推移 全月度",:by_month => true) ;end
+  def graph_all_month_difference           ; graph_all_month_sub(:difference_3,"差分 全月度",:by_month => true) ;end
   def graph_all_month_difference_ave           ; graph_all_month_sub(:difference_ave,"差分平均 全月度",:by_month => true) ;end
   def graph_all_month_lines_types;graph_all_month_sub(:revise_by_temp_ave,"月度稼働数・型",:by_line_shape => true ) ;  end
 
@@ -174,11 +174,11 @@ module Shimada::GraphAllMonth
     graph_all_month_line_shape(params[@Domain][:patern])
   end
 
-    Graph_the_day = [ [/^rev(ise)?/,"補正電力",:revise_by_temp],
-               [/^diffdiff/,"二階差分"         ,:difference],
+    Graph_the_day = [ [/^rev(ise)?/,"補正電力",:revise_by_temp_3],
+               [/^diffdiff/,"二階差分"         ,:difference_3],
                [/^dif.*ave/,"差分平均",:difference_ave],
-               [/^dif/,"差分"         ,:difference],
-               [/./,"消費電力",:powers],
+               [/^dif/,"差分"         ,:difference_3],
+               [/./,"消費電力",:powers_3],
              ]
   def graph_the_day
     days,method = params[@Domain][:graph_the_day].split
@@ -197,7 +197,7 @@ module Shimada::GraphAllMonth
     find = /\d/ =~ lines ? {:lines => lines.to_i,:shape_is => shape} : {:shape_is => shape}
 
     logger.debug("\n** GRAPH_ALL_MONTH_LINE_SHAPE: line=#{lines} shape=#{shape} **")
-    graph_all_month_sub(:revise_by_temp,"#{lines}line #{shape}",
+    graph_all_month_sub(:revise_by_temp_3,"#{lines}line #{shape}",
                         :find => find,:by_month => true,
                         :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")) 
   end
