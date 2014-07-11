@@ -20,6 +20,7 @@ class Shimada::Power < ActiveRecord::Base
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
+  DayOffset = [(3..23),(0..3)]
 
   @@average_diff = nil
 
@@ -125,9 +126,15 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   end
 
   def powers ; Hours.map{ |h| self[h]} ; end
-  def powers_3 
-    powers[3..23] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.powers[0..2] : [])
+
+  def offset_3(method,last=23)
+    send(method)[3..last] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.send(method)[0..3] : [])
   end
+
+  def powers_3 ;    offset_3(:powers) ;  end
+  def revise_by_temp_3 ; offset_3(:revise_by_temp) ;  end
+  def difference_3 ; offset_3(:difference,22) ;  end
+  def diffdiff_3 ; offset_3(:diffdiff,21) ;  end
 
   # Array a of \sum_{i=0}^{次元数}(a_i x^i)
   # 
@@ -151,8 +158,8 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
       save
     end
     @na =   [ f4_na0, f4_na1, f4_na2, f4_na3, f4_na4 ]
-
   end
+
   def na0 ; (na[0] || 0.0);end
   def na1 ; (na[1] || 0.0)*10;end
   def na2 ; (na[2] || 0.0)*100;end
@@ -303,9 +310,6 @@ logger.debug("WEATHER id=#{id} date=#{date}")
     sigma  = revise_by_temp_ave[from..to].inject(0.0){ |s,e| s += (e-ave)*(e-ave)}
   end
 
-  def revise_by_temp_3
-    revise_by_temp[3..23] +(( pw = self.class.find_by_date(date.tomorrow)) ? pw.revise_by_temp[0..2] : [])
-  end
   def revise_by_temp
     return @revise_by_temp if @revise_by_temp
     unless self.rev01
@@ -313,7 +317,10 @@ logger.debug("WEATHER id=#{id} date=#{date}")
       revs = Hours.map{ |h|
         power = self[h]
         temp  = weather[h]
-          temp > 15.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20) if power && temp
+         if power && temp
+          temp > 15.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20)
+         else power ? power : 0
+         end
       }
       Revs.each{ |r|  self[r] = revs.shift}
       save
@@ -321,19 +328,12 @@ logger.debug("WEATHER id=#{id} date=#{date}")
     @revise_by_temp = Revs.map{ |r| self[r]}
   end
 
-  def diffdiff_3
-    diffdiff[3..21] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.diffdiff[0..2] : [])
-  end
   def diffdiff(range=(1..22))
     logger.debug("DIFFDIFF: id=#{id} date=#{date} #{difference.join(',')}")
     @diffdiff ||= (1..difference.size).
       map{ |i| difference[i] -  difference[i-1] if  difference[i] &&  difference[i-1]
     }.compact
     @diffdiff[range]
-  end
-
-  def difference_3
-    difference[3..22] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.difference[0..2] : [])
   end
 
   def difference

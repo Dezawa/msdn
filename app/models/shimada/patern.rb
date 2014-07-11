@@ -22,8 +22,9 @@ module Shimada::Patern
     "未分類" => nil
    }
   PaternsKey = %w(稼働無 稼働2 稼働3 稼働4 稼働3→2 稼働4→3 稼働3一時低下 稼働4一時低下 未分類)
-  Deforms    = { "異常全て" => "all", "急変1" => "V" ,"急変2" => "U" ,"立ち遅れ" => "d" }
-  DeformKey  = %w(異常全て 急変1 急変2 立ち遅れ)
+  Deforms    = { "異常無" => "null",  "異常全て" => "all", "急変1" => "V" ,"急変2" => "U" ,
+    "立ち遅れ" => "d","立上り乱れ" => "E" ,    "後引き" => "A" , "早朝稼働" => "O"}
+  DeformKey  = %w(異常無 異常全て 急変1 急変2 立ち遅れ 立上り乱れ 後引き 早朝稼働)
 
   Shapes = Shimada::Power.all.map(&:shape).compact.uniq
   AllPatern = %w(0 1 2 3 4 5).product(Shapes).map{ |l,s| l+s } 
@@ -51,7 +52,10 @@ module Shimada::Patern
       if max_diff_from_average_difference > 200 ;  deforme("V") #; "他急変1"
       elsif [diffdiff(5..20).max,-diffdiff(5..20).min].max >  190 ; deforme("U")  #; "他急変2"
       end
-      deforme("d") if revise_by_temp[6] < 400          #  ;     "他遅"
+      deforme("d") if revise_by_temp[6]  < 400          #  ;     "他遅"
+      deforme("A") if revise_by_temp[23] > 600         #  
+      deforme("O") if revise_by_temp_3[-3,3].max > 500 #  0 => 4時、2,3,4時
+      deforme("E") if difference[4,3].min < -50 # || diffdiff[4,3].map{ |dd| dd.abs}.max>100
     end
 
     if lines < 2  ; "S"
