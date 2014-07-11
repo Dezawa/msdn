@@ -49,7 +49,7 @@ module Shimada::GraphAllMonth
       ]
     AllMonthaction_buttoms2 = 
     [ 2,
-      [[:input_and_action,"graph_almighty","line,shape,deform,month,method",{:size=>40 ,:popup => "graph_almighty"}]
+      [[:input_and_action,"graph_almighty","line,shape,deform,month,method",{:size=>40 ,:popup => "graph_almighty",:scroll => true}]
       ]
     ]
       
@@ -103,12 +103,13 @@ module Shimada::GraphAllMonth
 
     if list
       patern.delete("method")
+      winoption = {:win_name => "list", :graph_almighty => patern }
     @TableEdit  =  
     [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
-     [:popup,:graph_almighty,"補正後電力",{ :win_name => "graph",:graph_almighty => patern,:method => :revise_by_temp_3} ],
-     [:popup,:graph_almighty,"正規化",{ :win_name => "graph",:graph_almighty => patern,:method => :normalized} ],
-     [:popup,:graph_almighty,"差分",{ :win_name => "graph",:graph_almighty => patern,:method => :difference_3} ],
-     [:popup,:graph_almighty,"差分平均",{ :win_name => "graph",:graph_almighty => patern,:method => :difference_ave} ]
+     [:popup,:graph_almighty,"補正後電力",winoption.merge({:method => :revise_by_temp_3}) ],
+     [:popup,:graph_almighty,"正規化"    ,winoption.merge({:method => :normalized      }) ],
+     [:popup,:graph_almighty,"差分"      ,winoption.merge({ :method => :difference_3   }) ],
+     [:popup,:graph_almighty,"差分平均"  ,winoption.merge({:method => :difference_ave  }) ]
     ]
     @action_buttoms = nil
     show_sub

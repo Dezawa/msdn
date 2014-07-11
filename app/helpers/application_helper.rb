@@ -201,19 +201,20 @@ input_and_action(action,label,opt)
   <input name="authenticity_token" type="hidden" value="%s" />
   <input name="commit" type="submit"  value="%s" style='margin-top: -12px; left;' 
 !
-  PopupWithOUTModel = %Q! onclick="window.open('/%s/%s', '%s', 'width=500,height=400'); target='%s'">
+  PopupWithOUTModel = %Q! onclick="window.open('/%s/%s', '%s', 'width=500,height=400 %s'); target='%s'">
 !
-  PopupWithModel = %Q!  onclick="window.open('/%s/%s?id=%d', '%s', 'width=500,height=400'); target='%s'">
+  PopupWithModel = %Q!  onclick="window.open('/%s/%s?id=%d', '%s', 'width=500,height=400 %s'); target='%s'">
   <input id="%s_id" name="%s[id]" type="hidden" value="%d" />
 !
 
   def popupform_buttom(action,label,opt ={ },htmlopt={ })
     win_name = opt.delete(:win_name) || ""
+    scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
     html = PopupHead%[@Domain,action,form_authenticity_token,label]
     if @model
-      html += PopupWithModel%[@Domain,action,@model.id,win_name,win_name,@Domain,@Domain,@model.id] 
+      html += PopupWithModel%[@Domain,action,@model.id,win_name,scroll,win_name,@Domain,@Domain,@model.id] 
     else
-      html += PopupWithOUTModel%[@Domain,action,win_name,win_name]
+      html += PopupWithOUTModel%[@Domain,action,win_name,scroll,win_name]
     end
     opt.each{ |k,v|  html += hidden_field(@Domain,k,:value => v) +"\n"  }
     html + "\n</form>"
