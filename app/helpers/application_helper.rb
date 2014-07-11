@@ -118,7 +118,14 @@ module ApplicationHelper
 
   def action_buttom_table(actionbuttoms=nil)
     return "" unless action_buttoms = actionbuttoms ||  @action_buttoms
-    
+    case action_buttoms.first
+    when Integer ; action_buttom_table_sub(action_buttoms)
+    when Array   ; action_buttoms.map{ |ab| action_buttom_table_sub(ab) }.join
+    else         ; ""
+    end
+  end
+  def action_buttom_table_sub(action_buttoms=nil)
+    return "" unless action_buttoms && action_buttoms.size > 0 
     clms_num =  action_buttoms.first
     action_buttoms = action_buttoms.last.dup
     th = "<table>\n" #<tr>"+"<td></td>"* clms +"</tr>\n"
