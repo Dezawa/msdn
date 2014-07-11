@@ -60,7 +60,7 @@ module Shimada::GnuplotDef
       :difference_ave => "差分平均",:revise_by_temp => "温度補正電力",:diffdiff => "二階差分"}
 
     def gnuplot(powers,method,opt={ })
-      time_ofset,xrange =  /_3$/ =~ method.to_s ? [ 4,"[4:27]"] : [1,"[1:24]"]
+      time_ofset,xrange =  /_3$/ =~ method.to_s ? [ 4,"[4:28]"] : [1,"[1:24]"]
       path = output_plot_data(powers,method,opt){ |f,power| 
         power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+time_ofset,h ) if h }
       }
@@ -156,9 +156,9 @@ set out 'tmp/shimada/%s.gif'
 set title "%s" #"温度-消費電力 " 
 set key outside autotitle columnheader
 set yrange [0:1000]
-set xrange %s #[-10:40]
+set xrange [-10:40]
 set xtics -10,5
-set x2tics 3,3
+set x2tics -10,5
 !
 
 Power_def =
@@ -171,7 +171,7 @@ set title "%s" #"消費電力 "
 set yrange [0:1000]
 set xrange %s # [1:24]
 set xtics 1,1
-set x2tics 3,3
+set x2tics 2,2
 #set grid  xtics 3,3
 set grid ytics
 !
@@ -186,7 +186,7 @@ set title "%s" # "消費電力 "
 set yrange [-250:250]
 set xrange %s #[1:24]
 set xtics 1,1
-set x2tics 3,3
+set x2tics 2,2
 set ytics -250,50
 set grid ytics
 !
@@ -203,7 +203,7 @@ set yrange [0.0:1.1]
 #set yrange [0.0:10.1]
 set xrange %s #[-1:30]
 set xtics 1,1
-set x2tics 3,3
+set x2tics 2,2
 set grid x2tics
 !
 
