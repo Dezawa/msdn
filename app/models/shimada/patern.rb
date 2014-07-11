@@ -21,7 +21,10 @@ module Shimada::Patern
     "他急変1" => %w(1他急変1 2他急変1 3他急変1 4他急変1),    "他急変2" => %w(1他急変2 2他急変2 3他急変2 4他急変2),
     "未分類" => nil
    }
-  PaternsKey = %w(稼働無 稼働2 稼働3 稼働4 稼働3→2 稼働4→3 稼働3一時低下 稼働4一時低下 他遅 他急変1 他急変2 未分類)
+  PaternsKey = %w(稼働無 稼働2 稼働3 稼働4 稼働3→2 稼働4→3 稼働3一時低下 稼働4一時低下 未分類)
+  Deforms    = { "異常全て" => "all", "急変1" => "V" ,"急変2" => "U" ,"立ち遅れ" => "d" }
+  DeformKey  = %w(異常全て 急変1 急変2 立ち遅れ)
+
   Shapes = Shimada::Power.all.map(&:shape).compact.uniq
   AllPatern = %w(0 1 2 3 4 5).product(Shapes).map{ |l,s| l+s } 
   Un_sorted = AllPatern - Paterns.values.flatten
@@ -44,11 +47,12 @@ module Shimada::Patern
   def shape_calc
     return nil unless lines
 
-    if max_diff_from_average_difference > 200 ;  deforme("V") #; "他急変1"
-    elsif [diffdiff(5..20).max,-diffdiff(5..20).min].max >  190 ; deforme("v")  #; "他急変2"
+    unless lines < 2
+      if max_diff_from_average_difference > 200 ;  deforme("V") #; "他急変1"
+      elsif [diffdiff(5..20).max,-diffdiff(5..20).min].max >  190 ; deforme("U")  #; "他急変2"
+      end
+      deforme("d") if revise_by_temp[6] < 400          #  ;     "他遅"
     end
-    deforme("d") if revise_by_temp[6] < 400  && lines > 1         #  ;     "他遅"
-
 
     if lines < 2  ; "S"
     elsif discriminant.abs < 0.000002       ;"00"

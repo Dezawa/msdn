@@ -60,7 +60,12 @@ module Shimada::GraphAllMonth
          [:input_and_action,"graph_the_day","日付指定グラフ",{:size=>14 ,:popup => "graph_all_month"}],
         ]
       ]
-
+  AllMonthaction_buttomsDeform = 
+    [8,Shimada::Power::DeformKey.map{ |lbl| 
+         [:popup,:graph_deform,lbl,
+          {:win_name => "graph_patarn_all_month",:action=> :revise_by_temp_3,:label => lbl,:deform => lbl}]
+       } 
+    ]
   def graph_almighty
     patern = params[@Domain][:graph_almighty]
     list = patern.sub!(/,?list/,"")
@@ -239,6 +244,30 @@ module Shimada::GraphAllMonth
     shape  =  params[@Domain][:shape]
     shape  = nil if shape == "未分類"
     graph_all_month_patern(action,label,shape)
+  end
+  def graph_deform
+    action = params[@Domain][:action]
+    label  = params[@Domain][:label]
+    deform  =  params[@Domain][:deform]
+
+    graph_all_month_deform(action,label,deform)
+
+  end
+  def graph_all_month_deform(method,title,deform_lbl)
+    @graph_file =  "giffiles/all_month_patern_" + deform_lbl
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
+      deform = Shimada::Power::Deforms[deform_lbl]
+      @power = if deform == "all"
+                 Shimada::Power.all(:conditions => "deform is not null")
+               else
+                 Shimada::Power.all(:conditions => "deform like '%#{deform}%'")
+               end
+     Shimada::Power.gnuplot(@power,method,:by_date => "%y/%m/%d",:title => deform_lbl,#shapes,
+                             :graph_file => @graph_file
+                             )
+    end
+    @TYTLE = title
+    render :action => :graph,:layout => "hospital_error_disp"
   end
 
   def graph_all_month_temp

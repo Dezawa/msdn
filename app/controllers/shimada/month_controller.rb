@@ -32,9 +32,11 @@ class Shimada::MonthController <  Shimada::Controller
        [:form,:reculc_shapes,"再分類"],
        [:form,:rm_gif,"グラフ再作成"]
       ]
-    @action_buttoms = AllMonthaction_buttoms
-    @action_buttoms3 = AllMonthaction_buttoms3
-    @action_buttoms2 = AllMonthaction_buttoms2
+    @action_buttoms = #AllMonthaction_buttoms 
+[ AllMonthaction_buttoms, AllMonthaction_buttoms3,
+                        AllMonthaction_buttoms2,
+                        AllMonthaction_buttomsDeform
+                      ]
 
     @Show = true
     @Delete = true
