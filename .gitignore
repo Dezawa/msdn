@@ -38,3 +38,4 @@ tmp/shimada/power.*
 tmp/shimada/file*
 public/lips/tmp
 tmp/hospital
+tmp/shimada/*def
