@@ -76,15 +76,27 @@ module Shimada::GraphAllMonth
              when /^rev/  ; "revise_by_temp"
              when /^pow/  ; "powers"
              end
+    cnd_dform= 
+      if deform = args.delete("deform")
+        if deform == "all"
+          cnd = " and deform is not null"
+        elsif deform == "null"
+          cnd = " and deform is  null"
+        else
+          cnd = " and (" + deform.split("").map{ |d| "deform like '%#{d}%'"}.join(" or ")  +")"
+        end
+      else ;  ""
+      end
+
     if month=args.delete("month")
       month = Time.local(*month.split(/[-\/]/))
       args["month_id"] = Shimada::Month.find_by_month(month).id
-      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")
+      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")+cnd_dform
       @models = Shimada::Power.all( :order => "date", 
                                    :conditions => [query,*args.values] )
       by_date = "%m/%d"
     else
-      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")
+      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")+cnd_dform
       @models = Shimada::Power.all( :order => "date", :conditions => [query,*args.values] )
       by_date = "%y/%m"
     end

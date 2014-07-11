@@ -89,7 +89,7 @@ module Shimada::GnuplotDef
           end 
         elsif [:difference, :difference_ave].include? method
           average_out(average_diff,:difference)
-          f.print ",\\\n  'tmp/simada/shimada_power_diff_ave'  using 1:2  with line lt -1 lw 2"
+          f.print ",\\\n  '" + RAILS_ROOT+"/tmp/shimada/shimada_power_diff_ave'  using 1:2  with line lt -1 lw 2"
         end
         f.puts
         #f.puts "set terminal  eps enhanced color 'GothicBBB-Medium-UniJIS-UTF8-H'

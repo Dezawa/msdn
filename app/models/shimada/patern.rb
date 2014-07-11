@@ -43,11 +43,15 @@ module Shimada::Patern
 
   def shape_calc
     return nil unless lines
-    if lines < 2  ; self.deform = "S"
-    #elsif max_diff_from_average_difference > 200 ; "他急変1"
-    #elsif [diffdiff(3..20).max,-diffdiff(3..20).min].max >  190 ; "他急変2"
+
+    if max_diff_from_average_difference > 200 ;  deforme("V") #; "他急変1"
+    elsif [diffdiff(5..20).max,-diffdiff(5..20).min].max >  190 ; deforme("v")  #; "他急変2"
+    end
+    deforme("d") if revise_by_temp[6] < 400  && lines > 1         #  ;     "他遅"
+
+
+    if lines < 2  ; "S"
     elsif discriminant.abs < 0.000002       ;"00"
-    #elsif revise_by_temp[6] < 400           ;     "他遅"
     elsif na[4] > 0
      # if f3x3 < 9 && pw_peaks[1]-pw_peaks[2] > 120  ; "d" 
      # elsif f3x1 >-12 && pw_peaks[1]-pw_peaks[0] > 120  ; "d" 
@@ -59,8 +63,8 @@ module Shimada::Patern
     elsif y1     >  Err && y2     >   Err   ;  "++" 
     elsif y1     < -Err && y2.abs <   Err   ;  "-0"
     elsif y1     < -Err && y2     <  -Err   
-      if difference_peak_sholder > 100 ;self.deform =  "D" ; "--D"
-      else ; self.deform =  "F" ; "--F"
+      if difference_peak_sholder > 100 ; "--D"
+      else ; "--F"
       end
       #"--"
     elsif y1     < -Err && y2     >   Err   # -+
@@ -81,6 +85,9 @@ module Shimada::Patern
     end
   end
 
+  def deforme(type)
+    self.deform = self.deform ? self.deform + type : type
+  end
 end
 
 

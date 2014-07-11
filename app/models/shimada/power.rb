@@ -52,6 +52,7 @@ class Shimada::Power < ActiveRecord::Base
   def self.reculc_shapes
     #self.update(self.all.map(&:id), :shape => nil)
     self.update_all("shape = null")
+    self.update_all("deform = null")
     @shpe_is = nil
     rm_gif
     self.all(:conditions => "date is not null").each{ |pw| pw.lines;pw.shape_is}
