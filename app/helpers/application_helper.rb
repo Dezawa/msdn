@@ -260,7 +260,7 @@ input_and_action(action,label,opt)
  "<div><form action='/%s/%s'>
   <input name='authenticity_token' type='hidden' value='%s' />
   <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400%s'); target='%s'\">
-" + text_field( @Domain,action,opt.merge("style" =>"margin-top: -12px;") ) +  "</form></div>"
+" + text_field( @Domain,action,opt ) +  "</form></div>"
       fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,scroll,win_name]
       end
     else
@@ -270,7 +270,7 @@ input_and_action(action,label,opt)
          else;"";end
          )+
         submit_tag(label)+
-        text_field( @Domain,action,opt.merge("style" =>"margin-top: -12px;")) +  "</form></div>"
+        text_field( @Domain,action,opt) +  "</form></div>"
     end
   end
 
