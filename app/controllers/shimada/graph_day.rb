@@ -8,13 +8,13 @@ module Shimada::GraphDay
     render  :action => :graph,:layout => "hospital_error_disp"
   end
 
-  def graph         ;    graph_sub(:powers,"消費電力推移") ;  end
-  def graph_reviced ;    graph_sub(:revise_by_temp,"温度補正後 消費電力推移",:fitting => true ) ;  end
+  def graph         ;    graph_sub(:powers_3,"消費電力推移") ;  end
+  def graph_reviced ;    graph_sub(:revise_by_temp_3,"温度補正後 消費電力推移",:fitting => true ) ;  end
   def graph_reviced_ave; graph_sub(:revise_by_temp_ave,"補正後平均 消費電力推移",:fitting => true) ;  end
   def graph_nomalize   ; graph_sub(:normalized,"正規化消費電力推移",:fitting => true) ;  end
-  def graph_difference ; graph_sub(:difference,"差分") ;  end
+  def graph_difference ; graph_sub(:difference_3,"差分") ;  end
   def graph_difference_ave ; graph_sub(:difference_ave,"差分平均") ;  end
-  def graph_diffdiff ; graph_sub(:diffdiff,"差分差分") ;  end
+  def graph_diffdiff ; graph_sub(:diffdiff_3,"差分差分") ;  end
 
   def graph_temp    
     @power = Shimada::Power.find(params[:id])

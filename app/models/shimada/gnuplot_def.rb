@@ -60,18 +60,18 @@ module Shimada::GnuplotDef
       :difference_ave => "差分平均",:revise_by_temp => "温度補正電力",:diffdiff => "二階差分"}
 
     def gnuplot(powers,method,opt={ })
-      logger.debug("GNUPLOT: powers.size=#{powers.size}")
+      time_ofset,xrange =  /_3$/ =~ method.to_s ? [ 4,"[4:27]"] : [1,"[1:24]"]
       path = output_plot_data(powers,method,opt){ |f,power| 
-        power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+1,h ) if h }
+        power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+time_ofset,h ) if h }
       }
       def_file = RAILS_ROOT+"/tmp/shimada/power.def"
       graph_file = opt[:graph_file] || "power"
       by_month = ( opt.keys & [:by_month,:by_monthday,:by_day,:by_line,:by_shape,:by_line_shape,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
-      preunble = ( case method
-                   when :normalized ;  Nomalized_def
-                   when :difference, :difference_ave ,:diffdiff;  Differ_def 
-                   else             ; Power_def 
-                   end)% [ graph_file , opt[:title] || DefaultTitle[method ],by_month ]
+      preunble = ( case method.to_s
+                   when /^normalized/ ;  Nomalized_def
+                   when /^diff/       ;  Differ_def 
+                   else               ;  Power_def 
+                   end)% [ graph_file , opt[:title] || DefaultTitle[method ],by_month ,xrange ]
 
       open(def_file,"w"){ |f|
         f.puts preunble 
@@ -87,7 +87,7 @@ module Shimada::GnuplotDef
           else
             f.print f2_f3_f4_line( powers.first.a,800) 
           end 
-        elsif [:difference, :difference_ave].include? method
+        elsif /^difference/ =~ method.to_s
           average_out(average_diff,:difference)
           f.print ",\\\n  '" + RAILS_ROOT+"/tmp/shimada/shimada_power_diff_ave'  using 1:2  with line lt -1 lw 2"
         end
@@ -156,7 +156,7 @@ set out 'tmp/shimada/%s.gif'
 set title "%s" #"温度-消費電力 " 
 set key outside autotitle columnheader
 set yrange [0:1000]
-set xrange [-10:40]
+set xrange %s #[-10:40]
 set xtics -10,5
 set x2tics 3,3
 !
@@ -169,7 +169,7 @@ set out 'tmp/shimada/%s.gif'
 set title "%s" #"消費電力 " 
 %s
 set yrange [0:1000]
-set xrange [1:24]
+set xrange %s # [1:24]
 set xtics 1,1
 set x2tics 3,3
 #set grid  xtics 3,3
@@ -184,7 +184,7 @@ set out 'tmp/shimada/%s.gif'
 set title "%s" # "消費電力 " 
 %s
 set yrange [-250:250]
-set xrange [1:24]
+set xrange %s #[1:24]
 set xtics 1,1
 set x2tics 3,3
 set ytics -250,50
@@ -201,7 +201,7 @@ set title "%s" #"正規化消費電力 "
 set yrange [0.0:1.1]
 #set xrange [1:24]
 #set yrange [0.0:10.1]
-set xrange [-1:30]
+set xrange %s #[-1:30]
 set xtics 1,1
 set x2tics 3,3
 set grid x2tics
