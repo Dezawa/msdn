@@ -152,7 +152,7 @@ module Shimada::GraphAllMonth
     line,shape, @power = get_power_by_line_and_shape(params[@Domain][:patern])
     method =  params[@Domain][:method]
 
-    Shimada::Power.gnuplot(@power,method.to_sym,:by_monthday => true)
+    Shimada::Power.gnuplot(@power,method.to_sym,:by_date => "%m/%d" )
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
@@ -170,15 +170,15 @@ module Shimada::GraphAllMonth
     ]
   end
 
-  def graph_all_month_reviced ;    graph_all_month_sub(:revise_by_temp_3, "補正消費電力推移 全月度",:by_month => true) 
+  def graph_all_month_reviced ;    graph_all_month_sub(:revise_by_temp_3, "補正消費電力推移 全月度",:by_date  => "%y/%m") 
   end
 
-  def graph_all_month_reviced_ave ; graph_all_month_sub(:revise_by_temp_ave,"補正消費電力平均化推移 全月度",:by_month => true);end
-  def graph_all_month_ave ;    graph_all_month_sub(:move_ave,"平均消費電力推移 全月度",:by_month => true);  end
+  def graph_all_month_reviced_ave ; graph_all_month_sub(:revise_by_temp_ave,"補正消費電力平均化推移 全月度",:by_date  => "%y/%m");end
+  def graph_all_month_ave ;    graph_all_month_sub(:move_ave,"平均消費電力推移 全月度",:by_date  => "%y/%m");  end
   def graph_all_month_nomalized ; graph_all_month_sub(:normalized, "正規化消費電力推移 全月度",:by_shape => true);  end
-  def graph_all_month            ; graph_all_month_sub(:powers_3,"消費電力推移 全月度",:by_month => true) ;end
-  def graph_all_month_difference           ; graph_all_month_sub(:difference_3,"差分 全月度",:by_month => true) ;end
-  def graph_all_month_difference_ave           ; graph_all_month_sub(:difference_ave,"差分平均 全月度",:by_month => true) ;end
+  def graph_all_month            ; graph_all_month_sub(:powers_3,"消費電力推移 全月度",:by_date  => "%y/%m") ;end
+  def graph_all_month_difference           ; graph_all_month_sub(:difference_3,"差分 全月度",:by_date => "%y/%m") ;end
+  def graph_all_month_difference_ave           ; graph_all_month_sub(:difference_ave,"差分平均 全月度",:by_date => "%y/%m") ;end
   def graph_all_month_lines_types;graph_all_month_sub(:revise_by_temp_ave,"月度稼働数・型",:by_line_shape => true ) ;  end
 
   def graph_all_month_pat
@@ -209,7 +209,7 @@ module Shimada::GraphAllMonth
 
     logger.debug("\n** GRAPH_ALL_MONTH_LINE_SHAPE: line=#{lines} shape=#{shape} **")
     graph_all_month_sub(:revise_by_temp_3,"#{lines}line #{shape}",
-                        :find => find,:by_month => true,
+                        :find => find,:by_date => "%y/%m",
                         :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")) 
   end
   def graph_all_month_sub(method,title,opt={ })
@@ -281,7 +281,7 @@ module Shimada::GraphAllMonth
   def graph_all_month_temp
     months = Shimada::Month.all
     @power=months.map{ |m| m.powers}.flatten
-    Shimada::Power.gnuplot_by_temp(@power,:by_month => true,:with_Approximation => true)
+    Shimada::Power.gnuplot_by_temp(@power,:by_date => "%y/%m",:with_Approximation => true)
     @TYTLE = "温度-消費電力 全月度"
     render :action => :graph,:layout => "hospital_error_disp"
   end

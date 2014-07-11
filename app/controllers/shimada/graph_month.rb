@@ -72,7 +72,7 @@ module  Shimada::GraphMonth
   def graph_line_shape(lines,shape=nil)
 logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
     lines,shape = lines.split("",2) unless shape
-    graph_month_sub(:revise_by_temp_3,"#{lines}line #{shape}",:by_day => true,
+    graph_month_sub(:revise_by_temp_3,"#{lines}line #{shape}",:by_date => "%d",
                     :find => {:lines => lines.to_i,:shape_is => shape},
                     :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")) 
   end
