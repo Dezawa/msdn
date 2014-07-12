@@ -26,14 +26,14 @@ module Shimada::GraphAllMonth
     AllMonthaction_buttoms = 
       [7 ,
        [
-        [:popup,:graph_all_month,"全月度グラフ",{ :win_name => "graph"} ],
+        [:popup,:graph_all_month,"全月度グラフ",{ :win_name => "graph",:method => :powers_3} ],
         #[:popup,:graph_all_month_lines_types,"全月度稼働変化別",{ :win_name => "graph"} ],
-        [:popup,:graph_all_month_reviced,"全月度温度補正",{ :win_name => "graph"} ],
-        [:popup,:graph_all_month_reviced_ave,"全月度温度補正平均化",{ :win_name => "graph"} ],
-        [:popup,:graph_all_month_nomalized,"全月度正規化",{ :win_name => "graph"}  ] ,
+        [:popup,:graph_all_month,"全月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
+        [:popup,:graph_all_month,"全月度温度補正平均化",{ :win_name => "graph",:method => :revise_by_temp_ave} ],
+        [:popup,:graph_all_month,"全月度正規化",{ :win_name => "graph",:method => :normalized}  ] ,
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
-        [:popup,:graph_all_month_difference,"全月度差分",{ :win_name => "graph"} ],
-        [:popup,:graph_all_month_difference_ave,"全月度差分平均",{ :win_name => "graph"} ]
+        [:popup,:graph_all_month,"全月度差分",{ :win_name => "graph",:method => :difference_3} ],
+        [:popup,:graph_all_month,"全月度差分平均",{ :win_name => "graph",:method => :difference_ave} ]
        ] 
       ]
     AllMonthaction_buttomsPaterns = 
@@ -166,17 +166,20 @@ module Shimada::GraphAllMonth
     ]
   end
 
-  def graph_all_month_reviced ;    graph_all_month_sub(:revise_by_temp_3, "補正消費電力推移 全月度",:by_date  => "%y/%m") 
-  end
-
-  def graph_all_month_reviced_ave ; graph_all_month_sub(:revise_by_temp_ave,"補正消費電力平均化推移 全月度",:by_date  => "%y/%m");end
-  def graph_all_month_ave ;    graph_all_month_sub(:move_ave,"平均消費電力推移 全月度",:by_date  => "%y/%m");  end
-  def graph_all_month_nomalized ; graph_all_month_sub(:normalized, "正規化消費電力推移 全月度",:by_ => :shape);  end
-  def graph_all_month            ; graph_all_month_sub(:powers_3,"消費電力推移 全月度",:by_date  => "%y/%m") ;end
-  def graph_all_month_difference           ; graph_all_month_sub(:difference_3,"差分 全月度",:by_date => "%y/%m") ;end
-  def graph_all_month_difference_ave           ; graph_all_month_sub(:difference_ave,"差分平均 全月度",:by_date => "%y/%m") ;end
   def graph_all_month_lines_types;graph_all_month_sub(:revise_by_temp_ave,"月度稼働数・型",:by_ => :line_shape ) ;  end
 
+  TITLE_ALLMONTH = { 
+    :powers_3           => [ "消費電力推移 全月度",{ :by_date  => "%y/%m"} ],
+    :revise_by_temp_3   => [ "補正消費電力推移 全月度",{ :by_date  => "%y/%m"} ],
+    :revise_by_temp_ave => [ "補正消費電力平均化推移 全月度",{ :by_date  => "%y/%m"} ],
+    :normalized         => [ "正規化消費電力推移 全月度",{ :by_ => :shape} ],
+    :difference_3       => [ "差分 全月度",{ :by_date => "%y/%m"} ],
+    :difference_ave     => [ "差分平均 全月度",{ :by_date => "%y/%m"} ],
+  }
+  def graph_all_month   
+    method = params[@Domain][:method].to_sym
+    graph_all_month_sub(method,*TITLE_ALLMONTH[method])
+  end 
   def graph_all_month_pat
     graph_all_month_line_shape(params[@Domain][:patern])
   end
