@@ -175,7 +175,7 @@ module Shimada::GraphAllMonth
 
   def graph_all_month_reviced_ave ; graph_all_month_sub(:revise_by_temp_ave,"補正消費電力平均化推移 全月度",:by_date  => "%y/%m");end
   def graph_all_month_ave ;    graph_all_month_sub(:move_ave,"平均消費電力推移 全月度",:by_date  => "%y/%m");  end
-  def graph_all_month_nomalized ; graph_all_month_sub(:normalized, "正規化消費電力推移 全月度",:by_shape => true);  end
+  def graph_all_month_nomalized ; graph_all_month_sub(:normalized, "正規化消費電力推移 全月度",:by_ => :shape);  end
   def graph_all_month            ; graph_all_month_sub(:powers_3,"消費電力推移 全月度",:by_date  => "%y/%m") ;end
   def graph_all_month_difference           ; graph_all_month_sub(:difference_3,"差分 全月度",:by_date => "%y/%m") ;end
   def graph_all_month_difference_ave           ; graph_all_month_sub(:difference_ave,"差分平均 全月度",:by_date => "%y/%m") ;end
@@ -263,7 +263,7 @@ module Shimada::GraphAllMonth
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
       deform = Shimada::Power::Deforms[deform_lbl]
       @power,by_ = if deform == "all"
-                 [ Shimada::Power.all(:conditions => "deform is not null"),{:by_deform => true}]
+                 [ Shimada::Power.all(:conditions => "deform is not null"),{ :by_ => :deform}] #{:by_deform  => true}]
                elsif deform == "null"
                  [ Shimada::Power.all(:conditions => "deform is null and date is not null"),
                    { :by_date => "%y/%m"  }]

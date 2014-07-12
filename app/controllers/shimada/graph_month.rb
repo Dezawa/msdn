@@ -82,11 +82,11 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
   def graph_month         ;graph_month_sub(:powers_3,"消費電力推移") ; end
   def graph_month_reviced ;graph_month_sub(:revise_by_temp_3,"補正消費電力推移") ; end
   def graph_month_reviced_ave ;graph_month_sub(:revise_by_temp_ave,"補正平均消費電力推移") ; end
-  def graph_month_nomalized ;graph_month_sub(:normalized,"正規化消費電力推移",:by_shape => true) ; end
+  def graph_month_nomalized ;graph_month_sub(:normalized,"正規化消費電力推移",:by_ => :shape) ; end
   def graph_month_ave   ;graph_month_sub(:move_ave,"平均消費電力推移") ; end
-  def graph_month_difference   ;graph_month_sub(:difference_3,"月度差分",:by_shape => true) ; end
-  def graph_month_difference_ave   ;graph_month_sub(:difference_ave,"月度差分平均",:by_shape => true) ; end
-  def graph_month_diffdiff   ;graph_month_sub(:diffdiff_3,"月度二階差",:by_shape => true) ; end
+  def graph_month_difference   ;graph_month_sub(:difference_3,"月度差分",:by_ => :shape) ; end
+  def graph_month_difference_ave   ;graph_month_sub(:difference_ave,"月度差分平均",:by_ => :shape) ; end
+  def graph_month_diffdiff   ;graph_month_sub(:diffdiff_3,"月度二階差",:by_ => :shape) ; end
   def graph_line0       ; graph_month_sub(:revise_by_temp_ave,"稼働０ライン",:find => {:lines => 0}) ;  end
   def graph_line1       ; graph_month_sub(:revise_by_temp_ave,"稼働１ライン",:find => {:lines => 1}) ;  end
   def graph_line2       ; graph_month_sub(:revise_by_temp_ave,"稼働２ライン",:find => {:lines => 2}) ;  end
@@ -95,12 +95,12 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
   def graph_line5       ; graph_month_sub(:revise_by_temp_ave,"稼働５ライン",:find => {:lines => 5}) ;  end
   def graph_line_all    ; graph_month_sub(:revise_by_temp_ave,"稼働５ライン",:by_line => true ) ;  end
   def graph_month_lines_types
-    graph_month_sub(:revise_by_temp_ave,"月度稼働数・型",:by_line_shape => true,:graph_file => " lines_types") 
+    graph_month_sub(:revise_by_temp_ave,"月度稼働数・型",:by_ => :line_shape,:graph_file => " lines_types") 
   end
   def graph_shape_all_F ; graph_month_sub(:revise_by_temp_ave,"稼働F",:find => {:shape => "Flat"} ) ;  end
   def graph_shape_all_D ; graph_month_sub(:revise_by_temp_ave,"稼働D"  ,:find => {:shape => "Reduce"});end
   def graph_shape_all_O ; graph_month_sub(:revise_by_temp_ave,"稼働O"  ,:find => {:shape => "Other"} ) ;  end
-  def graph_shape_all   ; graph_month_sub(:revise_by_temp_ave,"稼働変化別",:by_shape => true ) ;  end
+  def graph_shape_all   ; graph_month_sub(:revise_by_temp_ave,"稼働変化別",:by_ => :shape ) ;  end
 
   def graph_month_temp(opt={ })
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 

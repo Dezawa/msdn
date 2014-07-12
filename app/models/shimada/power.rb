@@ -89,6 +89,8 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     @lines = line
   end
 
+  def line_shape ; "#{lines}#{shape}" ;end
+
   def shape_is
     return @shape_is if @shape_is
     update_attributes(:shape => shape_calc,:deform => self.deform) unless shape

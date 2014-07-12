@@ -8,20 +8,8 @@ module Shimada::GnuplotDef
       keys = nil
       ary_powres = if by_month = opt[:by_date]
                      powers.group_by{ |p| p.date.strftime(by_month)}
-                   elsif opt[:by_line]
-                     keys = (0..5).to_a
-                     powers.group_by{ |p| "稼働数-#{p.lines}"}
-                   elsif opt[:by_line_shape]
-                     #keys = Shapes
-                     pws=powers.group_by{ |p| "#{p.lines}#{p.shape_calc}"}#.sort_by{ |p,v| p}#.reverse
-                     keys = pws.keys.compact.sort
-                     pws
-                   elsif opt[:by_shape]
-                     pws=powers.group_by{ |p| p.shape_calc}#.sort_by{ |p,v| p}#.reverse
-                     keys = pws.keys.compact.sort
-                     pws
-                   elsif opt[:by_deform]
-                     pws=powers.group_by{ |p| p.deform}#.sort_by{ |p,v| p}#.reverse
+                   elsif opt[:by_]
+                     pws=powers.group_by{ |p| p.send(opt[ :by_ ])}#.sort_by{ |p,v| p}#.reverse
                      keys = pws.keys.compact.sort
                      pws
                    else
@@ -63,12 +51,12 @@ module Shimada::GnuplotDef
       }
       def_file = RAILS_ROOT+"/tmp/shimada/power.def"
       graph_file = opt[:graph_file] || "power"
-      by_month = ( opt.keys & [:by_deform,:by_line,:by_shape,:by_line_shape,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
+      group_by = ( opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
       preunble = ( case method.to_s
                    when /^normalized/ ;  Nomalized_def
                    when /^diff/       ;  Differ_def 
                    else               ;  Power_def 
-                   end)% [ graph_file , opt[:title] || DefaultTitle[method ],by_month ,xrange ]
+                   end)% [ graph_file , opt[:title] || DefaultTitle[method ],group_by ,xrange ]
 
       open(def_file,"w"){ |f|
         f.puts preunble 
