@@ -84,15 +84,11 @@ module Shimada::GraphAllMonth
              when /^pow/  ; "powers_3"
              end
     cnd_dform= 
-      if deform = args.delete("deform")
-        if deform == "all"
-          cnd = " deform is not null"
-        elsif deform == "null"
-          cnd = " deform is  null"
-        else
-          cnd = " (" + deform.split("").map{ |d| "deform like '%#{d}%'"}.join(" or ")  +")"
-        end
-      else ;  ""
+      case deform = args.delete("deform")
+      when nil   ;  ""
+      when "all" ;  " deform is not null"
+      when "null";  " deform is  null"
+      else       ;  " (" + deform.split("").map{ |d| "deform like '%#{d}%'"}.join(" or ")  +")"
       end
 
     if month=args.delete("month")
@@ -140,9 +136,9 @@ module Shimada::GraphAllMonth
     @TableEdit  =  
     [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
      [:popup,:graph_patern,"補正後電力",{ :win_name => "graph",:patern => patern,:method => :revise_by_temp_3} ],
-     [:popup,:graph_patern,"正規化",{ :win_name => "graph",:patern => patern,:method => :normalized} ],
-     [:popup,:graph_patern,"差分",{ :win_name => "graph",:patern => patern,:method => :difference_3} ],
-     [:popup,:graph_patern,"差分平均",{ :win_name => "graph",:patern => patern,:method => :difference_ave} ]
+     [:popup,:graph_patern,"正規化"    ,{ :win_name => "graph",:patern => patern,:method => :normalized} ],
+     [:popup,:graph_patern,"差分"      ,{ :win_name => "graph",:patern => patern,:method => :difference_3} ],
+     [:popup,:graph_patern,"差分平均"  ,{ :win_name => "graph",:patern => patern,:method => :difference_ave} ]
     ]
     @action_buttoms = nil
     show_sub
@@ -179,7 +175,7 @@ module Shimada::GraphAllMonth
   def graph_all_month            ; graph_all_month_sub(:powers_3,"消費電力推移 全月度",:by_date  => "%y/%m") ;end
   def graph_all_month_difference           ; graph_all_month_sub(:difference_3,"差分 全月度",:by_date => "%y/%m") ;end
   def graph_all_month_difference_ave           ; graph_all_month_sub(:difference_ave,"差分平均 全月度",:by_date => "%y/%m") ;end
-  def graph_all_month_lines_types;graph_all_month_sub(:revise_by_temp_ave,"月度稼働数・型",:by_line_shape => true ) ;  end
+  def graph_all_month_lines_types;graph_all_month_sub(:revise_by_temp_ave,"月度稼働数・型",:by_ => :line_shape ) ;  end
 
   def graph_all_month_pat
     graph_all_month_line_shape(params[@Domain][:patern])
@@ -235,8 +231,7 @@ module Shimada::GraphAllMonth
       months = Shimada::Month.all
       @power=months.map{ |m| m.powers}.flatten.
         select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
- logger.debug("GRAPH_ALL_MONTH_PATERN: line_shape=#{line_shape} @power.size=#{@power.size}")
-     Shimada::Power.gnuplot(@power,method,:by_line_shape => true,:title => params[@Domain][:shape],#shapes,
+     Shimada::Power.gnuplot(@power,method,:by_ => :line_shape,:title => params[@Domain][:shape],#shapes,
                              :graph_file => @graph_file
                              )
     end
@@ -262,14 +257,12 @@ module Shimada::GraphAllMonth
     @graph_file =  "giffiles/all_month_patern_" + deform_lbl
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
       deform = Shimada::Power::Deforms[deform_lbl]
-      @power,by_ = if deform == "all"
-                 [ Shimada::Power.all(:conditions => "deform is not null"),{ :by_ => :deform}] #{:by_deform  => true}]
-               elsif deform == "null"
-                 [ Shimada::Power.all(:conditions => "deform is null and date is not null"),
-                   { :by_date => "%y/%m"  }]
-               else
-                 [ Shimada::Power.all(:conditions => "deform like '%#{deform}%'"),{:by_date => "%y/%m/%d" }]
-               end
+      @power,by_ = 
+        case deform
+        when "all" ; [ Shimada::Power.all(:conditions => "deform is not null"),{ :by_ => :deform}]
+        when "null"; [ Shimada::Power.all(:conditions => "deform is null and date is not null"),{ :by_date => "%y/%m"}]
+        else       ; [ Shimada::Power.all(:conditions => "deform like '%#{deform}%'"),{:by_date => "%y/%m/%d" }]
+        end
       opt = { :title => deform_lbl,:graph_file => @graph_file}.merge(by_)
       Shimada::Power.gnuplot(@power,method,opt) 
    end
