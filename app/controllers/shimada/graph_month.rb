@@ -92,7 +92,13 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
     :diffdiff_3 => "月度二階差" 
   }
   def graph_month
-    method = params[@Domain][:method].to_sym
+    method =  if params[@Domain] 
+                params[@Domain][:method].to_sym
+              else
+                m,id = params[:method].split("/")
+                params[:id] = id.to_i
+                m.to_sym
+              end
     graph_month_sub(method,TITLES[method])
   end
 
