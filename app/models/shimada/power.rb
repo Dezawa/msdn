@@ -130,7 +130,11 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def powers ; Hours.map{ |h| self[h]} ; end
 
   def offset_3(method,last=23)
-    send(method)[3..last] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.send(method)[0..3] : [])
+    if date 
+      send(method)[3..last] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.send(method)[0..3] : [])
+    else
+      send(method)[3..last] + send(method)[0..3]
+    end
   end
 
   def powers_3 ;    offset_3(:powers) ;  end

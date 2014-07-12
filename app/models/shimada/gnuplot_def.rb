@@ -33,10 +33,10 @@ module Shimada::GnuplotDef
       path
     end
 
-    def average_out(power,method)
+    def average_out(power,method,time_ofset)
       open(RAILS_ROOT+"/tmp/shimada/shimada_power_diff_ave","w"){ |f|
         f.puts "時刻 平均"
-        power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+1,h ) if h } 
+        power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+time_ofset,h ) if h } 
         f.puts
       }
     end
@@ -73,7 +73,7 @@ module Shimada::GnuplotDef
             f.print f2_f3_f4_line( powers.first.a,800) 
           end 
         elsif /^difference/ =~ method.to_s
-          average_out(average_diff,:difference)
+          average_out(average_diff,method,time_ofset)
           f.print ",\\\n  '" + RAILS_ROOT+"/tmp/shimada/shimada_power_diff_ave'  using 1:2  with line lt -1 lw 2"
         end
         f.puts
