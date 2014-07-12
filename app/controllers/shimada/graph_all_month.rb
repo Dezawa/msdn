@@ -85,21 +85,21 @@ module Shimada::GraphAllMonth
              end
     cnd_dform= 
       case deform = args.delete("deform")
-      when nil   ;  ""
+      when nil   ;  nil
       when "all" ;  " deform is not null"
       when "null";  " deform is  null"
       else       ;  " (" + deform.split("").map{ |d| "deform like '%#{d}%'"}.join(" or ")  +")"
       end
 
     if month=args.delete("month")
-      month = Time.local(*month.split(/[-\/]/))
+      month = Time.local(*month.split(/[-\/]/)).beginning_of_month
       args["month_id"] = Shimada::Month.find_by_month(month).id
-      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")+" and " + cnd_dform
+      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and") + ( cnd_dform ? " and " + cnd_dform : "" )
       @models = Shimada::Power.all( :order => "date", 
                                    :conditions => [query,*args.values] )
       by_date = "%m/%d"
     elsif args.size > 0
-      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")+" and " +cnd_dform
+      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")+( cnd_dform ? " and " + cnd_dform : "" )
       @models = Shimada::Power.all( :order => "date", :conditions => [query,*args.values] )
       by_date = "%y/%m"
     else
@@ -213,7 +213,7 @@ module Shimada::GraphAllMonth
   end
   def graph_all_month_sub(method,title,opt={ })
     graph_file = opt[:graph_file] ? opt[:graph_file].sub(/\+/,"p") : ""
-    opt.merge!(:graph_file => "giffiles/all_month#{graph_file}_#{method}" ) 
+    opt.merge!(:graph_file => "all_month#{graph_file}_#{method}" ) 
     @graph_file =  opt[:graph_file]
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{opt[:graph_file]}.gif") == true
       months = Shimada::Month.all
@@ -226,7 +226,7 @@ module Shimada::GraphAllMonth
     render :action => :graph,:layout => "hospital_error_disp"
   end
   def graph_all_month_patern(method,title,shapes)
-    @graph_file =  "giffiles/all_month_patern_" + ( shapes || "unsorted")
+    @graph_file =  "all_month_patern_" + ( shapes || "unsorted")
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
       line_shape = ( if   shapes ; Shimada::Power::Paterns[shapes]
                      else Shimada::Power::Un_sorted
@@ -257,7 +257,7 @@ module Shimada::GraphAllMonth
 
   end
   def graph_all_month_deform(method,title,deform_lbl)
-    @graph_file =  "giffiles/all_month_patern_" + deform_lbl
+    @graph_file =  "all_month_patern_" + deform_lbl
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
       deform = Shimada::Power::Deforms[deform_lbl]
       @power,by_ = 

@@ -50,7 +50,7 @@ module Shimada::GnuplotDef
         power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+time_ofset,h ) if h }
       }
       def_file = RAILS_ROOT+"/tmp/shimada/power.def"
-      graph_file = opt[:graph_file] || "power"
+      graph_file = opt[:graph_file] ||  "power"
       group_by = ( opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
       preunble = ( case method.to_s
                    when /^normalized/ ;  Nomalized_def
@@ -78,7 +78,7 @@ module Shimada::GnuplotDef
         end
         f.puts
         #f.puts "set terminal  eps enhanced color 'GothicBBB-Medium-UniJIS-UTF8-H'
-        f.puts "set terminal  jpeg \nset out 'tmp/shimada/file.jpeg'\nreplot\n"
+        f.puts "set terminal  jpeg \nset out 'tmp/shimada/jpeg/#{graph_file}.jpeg'\nreplot\n"
       }
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
     end
@@ -120,7 +120,7 @@ module Shimada::GnuplotDef
         ", 780+9*(x-20) ,670+3*(x-20), 0.440*(x-5)**1.8+750"
         #else
         #  ""
-        f.puts "set terminal  jpeg \nset out 'tmp/shimada/file_temp.jpeg'\nreplot\n"        #end
+        f.puts "set terminal  jpeg \nset out 'tmp/shimada/jpeg/#{graph_file}.jpeg'\nreplot\n"        #end
       }
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
     end
@@ -132,7 +132,7 @@ module Shimada::GnuplotDef
   ########## ↓ GNUPLOT ############
 Temp_power_def =
 %Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
-set out 'tmp/shimada/%s.gif'
+set out 'tmp/shimada/giffiles/%s.gif'
 
 set title "%s" #"温度-消費電力 " 
 set key outside autotitle columnheader
@@ -144,7 +144,7 @@ set x2tics -10,5
 
 Power_def =
 %Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
-set out 'tmp/shimada/%s.gif'
+set out 'tmp/shimada/giffiles/%s.gif'
 #set terminal x11
 
 set title "%s" #"消費電力 " 
@@ -159,7 +159,7 @@ set grid ytics
 
 Differ_def =
 %Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
-set out 'tmp/shimada/%s.gif'
+set out 'tmp/shimada/giffiles/%s.gif'
 #set terminal x11
 
 set title "%s" # "消費電力 " 
@@ -174,7 +174,7 @@ set grid ytics
 
 Nomalized_def=
 %Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
-set out 'tmp/shimada/%s.gif'
+set out 'tmp/shimada/giffiles/%s.gif'
 #set terminal x11
 
 set title "%s" #"正規化消費電力 " 

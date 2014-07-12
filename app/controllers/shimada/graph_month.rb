@@ -55,7 +55,7 @@ logger.debug("GRAPH_MONTH_SUB: opt = #{opt}")
     id =  ( params[@Domain] ? params[@Domain][:id] : params[:id] ) || opt.delete(:id)
     month =  @Model.find(id)
     
-    opt.merge!(:graph_file => "giffiles/month_#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{method}" ) 
+    opt.merge!(:graph_file => "month_#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{method}" ) 
     @graph_file =  opt[:graph_file]
     @TYTLE = title + month.month.strftime("(%Y年%m月)")
 
@@ -123,7 +123,7 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
     @power = month.powers
     @TYTLE = "温度-消費電力" + @power.first.date.strftime("(%Y年%m月)")
  
-    opt.merge!(:graph_file => "giffiles/month_temp#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}" ,
+    opt.merge!(:graph_file => "month_temp#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}" ,
                :title => @TYTLE
                ) 
     @graph_file =  opt[:graph_file]
