@@ -39,3 +39,4 @@ tmp/shimada/file*
 public/lips/tmp
 tmp/hospital
 tmp/shimada/*def
+tmp/shimada/jpeg/*jpeg
