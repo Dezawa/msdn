@@ -33,8 +33,11 @@ class Shimada::MonthController <  Shimada::Controller
        [:form,:rm_gif,"グラフ再作成"]
       ]
     @action_buttoms = #AllMonthaction_buttoms 
-[ AllMonthaction_buttoms, AllMonthaction_buttomsDeform,AllMonthaction_buttomsPaterns,AllMonthaction_buttoms3,
-                        AllMonthaction_buttoms2
+[ AllMonthaction_buttoms,         # 全月度グラフ ....
+  AllMonthaction_buttomsPaterns,  # パターン分析結果
+  AllMonthaction_buttomsDeform,   # 異常パターン
+  AllMonthaction_buttoms3,        # 数、型指定しての、グラフなど
+  AllMonthaction_buttoms2         # 
                         
                       ]
 

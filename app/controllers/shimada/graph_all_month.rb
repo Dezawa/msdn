@@ -37,7 +37,7 @@ module Shimada::GraphAllMonth
        ] 
       ]
     AllMonthaction_buttomsPaterns = 
-      [9,   Shimada::Power::PaternsKey.map{ |lbl| 
+      [10,   Shimada::Power::PaternsKey.map{ |lbl| 
          [:popup,:graph_all_month_lines,lbl,
           {:win_name => "graph_patarn_all_month",:action=> :revise_by_temp_3,:label => lbl,:shape => lbl}]
        } 
