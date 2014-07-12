@@ -61,13 +61,13 @@ class Shimada::MonthController <  Shimada::Controller
     @TYTLE_post = @models.first.date.strftime("(%Y年%m月)")
 
     @TableEdit  =  [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
-                    [:popup,:graph_month,"月度グラフ",{ :win_name => "graph"} ],
-                    [:popup,:graph_month_reviced,"月度温度補正",{ :win_name => "graph"} ],
-                    [:popup,:graph_month_reviced_ave,"月度温度補正平均",{ :win_name => "graph"} ],
-                    [:popup,:graph_month_temp,"月度対温度",{ :win_name => "graph"} ],
-                    [:popup,:graph_month_lines_types,"月度稼働・型",{ :win_name => "graph"} ],
+                    [:popup,:graph_month,"月度グラフ",{ :win_name => "graph",:method => :powers_3} ],
+                    [:popup,:graph_month,"月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
+                    [:popup,:graph_month,"月度温度補正平均",{ :win_name => "graph",:method =>:revise_by_temp_ave } ],
+                    [:popup,:graph_month_temp,"月度対温度",{ :win_name => "graph" } ],
+                    [:popup,:graph_month_lines_types,"月度稼働・型",{ :win_name => "graph" } ],
                     #:popup,:graph_month_difference_ave,"月度差分平均",{ :win_name => "graph"} ],
-                    [:popup,:graph_month_difference,"月度差分",{ :win_name => "graph"} ]
+                    [:popup,:graph_month,"月度差分",{ :win_name => "graph",:method => :difference_3} ]
                    ]
 
     @action_buttoms = Month_action_buttoms
