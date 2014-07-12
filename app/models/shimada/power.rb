@@ -25,7 +25,7 @@ class Shimada::Power < ActiveRecord::Base
   @@average_diff = nil
 
   Differences = ("difference00".."difference23").to_a
-  Lines = [(0..300),(300..400),(400..560),(560..680),(680..800),(800..1000)]
+  Lines = [(0..300),(300..430),(430..560),(560..680),(680..800),(800..1000)]
   Header = "時刻"
 
   Differ = ("00".."23").map{ |h| "difference#{h}" }
