@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 require 'matrix'
 require 'pp'
-module PolyFit
+module Statistics
   def polyfit(xary,yary,level=3)
     level = level.to_i
     raise if level >= xary.size
@@ -35,6 +35,20 @@ module PolyFit
     }
     matrix = (0..level).map{ |i| xsums[i,level+1] }
     Matrix.rows(matrix)
+  end
+end
+class Array
+  def average
+    inject(0.0) { |sum, i| sum += i } / size
+  end
+
+  def variance
+    ave = average
+    inject(0.0) { |sum, i| sum += (i - ave)**2 } / size
+  end
+
+  def standard_devitation
+    Math::sqrt(variance)
   end
 end
 
