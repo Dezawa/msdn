@@ -7,7 +7,7 @@ class Shimada::Power < ActiveRecord::Base
   belongs_to :db_weather,:class_name => "Weather" 
 
   include Shimada::GnuplotDef
-  include PolyFit
+  include Statistics
   include Shimada::Patern
 
   attr_accessor :shape_is, :na, :f4_peaks, :f3_solve, :f2_solve, :differences
@@ -21,7 +21,7 @@ class Shimada::Power < ActiveRecord::Base
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
   DayOffset = [(3..23),(0..3)]
-
+  TimeOffset = 2
   @@average_diff = nil
 
   Differences = ("difference00".."difference23").to_a
@@ -33,6 +33,8 @@ class Shimada::Power < ActiveRecord::Base
   F3_SOLVE = %w(f3_x1 f3_x2 f3_x3)
   F2_SOLVE = %w(f2_x1 f2_x2)
   CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["line"]
+
+  def self.power_all ; self.all(:conditions => "date is not null") ; end
 
   def self.reset_reevice_and_ave
     self.all.each{ |power|
@@ -131,9 +133,9 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   def offset_3(method,last=23)
     if date 
-      send(method)[3..last] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.send(method)[0..3] : [])
+      send(method)[TimeOffset..last] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.send(method)[0..TimeOffset] : [])
     else
-      send(method)[3..last] + send(method)[0..3]
+      send(method)[TimeOffset..last] + send(method)[0..TimeOffset]
     end
   end
 
