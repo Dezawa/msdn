@@ -425,6 +425,11 @@ logger.debug("WEATHER id=#{id} date=#{date}")
   def max_ave(num=3)
     move_ave(num).sort.last(num).inject(0){ |s,e| s+=e}/num
   end
+
+  def deviation_of_difference(range = 4..22 )
+    difference[range].standard_devitation
+  end
+
 # 629.36, [624.6, 629.6, 630.6, 630.8, 631.2]
 end
 
