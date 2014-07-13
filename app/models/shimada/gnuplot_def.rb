@@ -62,6 +62,7 @@ module Shimada::GnuplotDef
                    else               ;  Power_def 
                    end)% [ graph_file , opt[:title] || DefaultTitle[method ],group_by ,xrange ]
 
+      size = "600,400"
       open(def_file,"w"){ |f|
         f.puts preunble 
         f.print "plot " + path.map{ |p| "'#{p}' using 1:2  with line"}.join(" , ")
@@ -76,13 +77,14 @@ module Shimada::GnuplotDef
           else
             f.print f2_f3_f4_line( powers.first.a,800) 
           end 
-        elsif /^difference/ =~ method.to_s
+        elsif /^difference/ =~ method.to_s 
+          size = "600,350"
           average_out(average_diff,method,time_ofset)
           f.print ",\\\n  '" + RAILS_ROOT+"/tmp/shimada/shimada_power_diff_ave'  using 1:2  with line lt -1 lw 2"
         end
         f.puts
         #f.puts "set terminal  eps enhanced color 'GothicBBB-Medium-UniJIS-UTF8-H'
-        f.puts "set terminal  jpeg \nset out 'tmp/shimada/jpeg/#{graph_file}.jpeg'\nreplot\n"
+        f.puts "set terminal  jpeg size #{size}\nset out 'tmp/shimada/jpeg/#{graph_file}.jpeg'\nreplot\n"
       }
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
     end
@@ -110,27 +112,28 @@ module Shimada::GnuplotDef
     def gnuplot_by_temp(powers,opt={ })
       path = output_plot_data(powers,:powers,opt){ |f,power| 
         weather = Weather.find_or_feach("maebashi", power.date)#.temperatures
-        if (method = opt[:method])
-          f.printf( "%.1f %.1f\n",weather.max_temp, power.send(method)) if  weather
-        else
+        if /^difference/ =~ (method = opt[:method]).to_s
           power.powers.each_with_index{ |h,idx| 
             f.printf( "%.1f %.1f\n",weather.temperatures[idx],h ) if h && weather.temperatures[idx] 
           }
+        else
+          f.printf( "%.1f %.1f\n",weather.max_temp, power.send(method)) if  weather
         end
       }
       #    path = gnuplot_data_by_temp(powers,opt)
       def_file = RAILS_ROOT+"/tmp/shimada/power_temp.def"
       graph_file = opt[:graph_file] || "power"
       open(def_file,"w"){ |f|
-        if opt[:method]
-          f.puts Temp_something_def%[graph_file,opt[:title] ]
-          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ")
-        else
+        if/^difference/ =~ opt[:method].to_s      #end
           f.puts Temp_power_def%[graph_file,opt[:title]||"温度-消費電力 "]
           f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") +
             ", 780+9*(x-20) ,670+3*(x-20), 0.440*(x-5)**1.8+750"
+          f.puts "set terminal  jpeg  size 600,400 \nset out 'tmp/shimada/jpeg/#{graph_file}.jpeg'\nreplot\n" 
+        else
+          f.puts Temp_something_def%[graph_file,opt[:title] ]
+          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ")
+          f.puts "set terminal  jpeg  size 600,200 \nset out 'tmp/shimada/jpeg/#{graph_file}.jpeg'\nreplot\n"         #end
         end
-          f.puts "set terminal  jpeg \nset out 'tmp/shimada/jpeg/#{graph_file}.jpeg'\nreplot\n"        #end
         }
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
     end
@@ -180,7 +183,7 @@ set grid #ytics
 !
 
 Differ_def =
-%Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+%Q!set terminal gif enhanced size 600,300 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/shimada/giffiles/%s.gif'
 #set terminal x11
 
