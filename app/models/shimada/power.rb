@@ -429,8 +429,14 @@ logger.debug("WEATHER id=#{id} date=#{date}")
   end
 
   def deviation_of_difference(range = 4..22 )
+    #difference.zip(self.class.average_diff.difference)[range].map{ |d,a| d-a }.standard_devitation
     difference[range].standard_devitation
   end
+
+  def deviation_of_revice(range = 4..22 )
+    revise_by_temp.zip(revise_by_temp_ave)[range].map{ |d,a| d-a }.standard_devitation
+  end
+
 
 # 629.36, [624.6, 629.6, 630.6, 630.8, 631.2]
 end

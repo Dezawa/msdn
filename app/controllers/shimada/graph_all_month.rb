@@ -34,10 +34,14 @@ module Shimada::GraphAllMonth
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
         [:popup,:graph_all_month,"全月度差分",{ :win_name => "graph",:method => :difference_3} ],
         [:popup,:graph_all_month,"全月度差分平均",{ :win_name => "graph",:method => :difference_ave} ],
-        [:popup,:graph_all_month_dev_of_diff_temp,"全月度差分分散対気温",
+        [:popup,:graph_all_month_deviation_vs_temp,"全月度差分分散対気温",
          { :win_name => "graph_temp",:method => :deviation_of_difference,:by_ => :lines}],
-        [:popup,:graph_all_month_dev_of_diff_temp,"全月度差分分散対気温",
-         { :win_name => "graph_temp",:method => :deviation_of_difference, :by_ => :shape}]
+        #[:popup,:graph_all_month_deviation_vs_temp,"全月度差分分散対気温by_shape",
+        # { :win_name => "graph_temp",:method => :deviation_of_difference, :by_ => :shape}],
+        [:popup,:graph_all_month_deviation_vs_temp,"全月度電力分散対気温",
+         { :win_name => "graph_temp",:method => :deviation_of_revice,:by_ => :lines}],
+        #[:popup,:graph_all_month_deviation_vs_temp,"全月度電力分散対気温by_shape",
+        # { :win_name => "graph_temp",:method => :deviation_of_revice, :by_ => :shape}]
        ] 
       ]
     AllMonthaction_buttomsPaterns = 
@@ -285,10 +289,14 @@ module Shimada::GraphAllMonth
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
-  def graph_all_month_dev_of_diff_temp
+  def graph_all_month_deviation_vs_temp
     @power=Shimada::Power.power_all
-    Shimada::Power.gnuplot_by_temp(@power,:by_ => params[@Domain][:by_] ,:method => :deviation_of_difference)
-    @TYTLE = "最高温度-差分分散 全月度"
+    by_ = params[@Domain][:by_]
+    method = params[@Domain][:method].to_sym
+    title = { :deviation_of_revice => "電力", :deviation_of_difference => "差分"}[method]
+    @TYTLE = "最高温度-#{title}分散 全月度"
+    Shimada::Power.gnuplot_by_temp(@power,:by_ => by_ ,:method => method,
+                                   :title => @TYTLE)
     render :action => :graph,:layout => "hospital_error_disp"
   end
 end

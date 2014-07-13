@@ -110,7 +110,7 @@ module Shimada::GnuplotDef
     def gnuplot_by_temp(powers,opt={ })
       path = output_plot_data(powers,:powers,opt){ |f,power| 
         weather = Weather.find_or_feach("maebashi", power.date)#.temperatures
-        if (method = opt[:method]) == :deviation_of_difference
+        if (method = opt[:method])
           f.printf( "%.1f %.1f\n",weather.max_temp, power.send(method)) if  weather
         else
           power.powers.each_with_index{ |h,idx| 
