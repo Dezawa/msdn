@@ -4,6 +4,7 @@ module Shimada::GraphAllMonth
   # メイン画面での各月のリンクボタン
   SGRPH="/shimada/month/graph_month?method="
   POPUP = {:htmloption => Popup}
+  ColumnNames = Shimada::Power.column_names
   Labels = 
     [#HtmlCeckForSelect.new(:id,""),
      HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
@@ -79,8 +80,8 @@ module Shimada::GraphAllMonth
   def graph_almighty
     patern = params[@Domain][:graph_almighty]
     list = patern.sub!(/,?list/,"")
-    args = patern.split(",").map{ |arg| arg.split("=")}
-    args = Hash[*args.flatten] # =>"line=4,shpe=-0,month=2013/4
+    args = patern.split(",").map{ |arg| a=arg.split(/([<=>]+)/);[a.first,a[1..-1]]}
+    args = Hash[*args.flatten(1)] ;args.delete(nil) # =>"line=4,shpe=-0,month=2013/4
     method = args.delete("method") || params[@Domain][:method] || "revise_by_temp_3"
     method = case method
              when /^dif.*dif/ ; "diffdiff_3"
@@ -89,31 +90,55 @@ module Shimada::GraphAllMonth
              when /^norm/ ; "normalized"
              when /^rev.*ave/  ; "revise_by_temp_ave"
              when /^rev/  ; "revise_by_temp_3"
+             when /^devi/  ; "deviation_of_difference"
              when /^pow/  ; "powers_3"
              end
+#logger.debug("GRAPH_ALMIGHTY:args[deform]=>[#{args["deform"][0]},#{args["deform"][1]}]")
     cnd_dform= 
       case deform = args.delete("deform")
       when nil   ;  nil
-      when "all" ;  " deform is not null"
-      when "null";  " deform is  null"
-      else       ;  " (" + deform.split("").map{ |d| "deform like '%#{d}%'"}.join(" or ")  +")"
+      when ["=","all"] ;  " deform is not null"
+      when ["=","null"];  " deform is  null"
+      else       ;  " (" + deform[1].split("").map{ |d| "deform like '%#{d}%'"}.join(" or ")  +")"
       end
 
-    if month=args.delete("month")
-      month = Time.local(*month.split(/[-\/]/)).beginning_of_month
-      args["month_id"] = Shimada::Month.find_by_month(month).id
-      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and") + ( cnd_dform ? " and " + cnd_dform : "" )
-      @models = Shimada::Power.all( :order => "date", 
-                                   :conditions => [query,*args.values] )
-      by_date = "%m/%d"
-    elsif args.size > 0
-      query = args.keys.map{ |clm| " #{clm} = ? "}.join("and")+( cnd_dform ? " and " + cnd_dform : "" )
-      @models = Shimada::Power.all( :order => "date", :conditions => [query,*args.values] )
-      by_date = "%y/%m"
-    else
-      @models = Shimada::Power.all( :order => "date", :conditions => cnd_dform )
-      by_date = "%y/%m"
+    month_query = 
+      if month=args.delete("month")
+        the_month = Time.local(*month[1].split(/[-\/]/)).beginning_of_month
+        if month[0] == "=" 
+          args["month_id"] = ["=",Shimada::Month.find_by_month(the_month).id]
+          "month_id = #{Shimada::Month.find_by_month(the_month).id}"
+        else
+          month_id = Shimada::Month.all(:conditions => [ "month #{month[0]} ? ",the_month ] ).map(&:id)
+          "month_id in (#{month_id.join(',')})"
+        end
+      end
+    
+    date_query =
+      if date = args.delete("date") ;  "date #{date[0]} '#{date[1]}'" ;end
+    
+    args_query = 
+      if args.size > 0 
+        args.keys.map{ |clm| " #{clm} #{args[clm][0]} ? " if ColumnNames.include?(clm)}.compact.join("and")
+      end
+    method_keys =  args.keys - ColumnNames 
+
+    query = [cnd_dform,month_query,date_query,args_query].compact.join(" and ")
+logger.debug("GRAPH_ALMIGHTY: query = #{query}")
+    @models = Shimada::Power.all( :order => "date", 
+                                   :conditions => [query,*args.values.map{ |a| a[1]}] )
+    if method_keys.size > 0
+      @models = @models.select{ |pw|  method_keys.
+        all?{ |method| comp,value = args[method] ; eval("pw.send(method.to_sym) #{comp} value.to_f") }
+      }
     end
+
+    by_date = 
+      if    month_query ; "%y/%m"
+      elsif date_query || args_query ; "%m/%d"
+      else
+      by_date = "%y/%m"
+      end
 
     if list
       patern.delete("method")
