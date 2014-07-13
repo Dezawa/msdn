@@ -17,6 +17,7 @@ module  Shimada::GraphMonth
       #HtmlCeckForSelect.new(:id,""),
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
       HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
+      HtmlNum.new(:deviation_of_difference,"差分の偏差",:ro => true,:size =>3,:tform => "%.1f"),
       HtmlText.new(:shape_is,"形<br>状",:ro => true,:size =>2,:ro => true),
       HtmlText.new(:deform,"変形",:ro => true,:size =>4)
       
