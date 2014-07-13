@@ -45,7 +45,11 @@ module Shimada::GnuplotDef
       :difference_ave => "差分平均",:revise_by_temp => "温度補正電力",:diffdiff => "二階差分"}
 
     def gnuplot(powers,method,opt={ })
-      time_ofset,xrange =  /_3$/ =~ method.to_s ? [ 4,"[4:28]"] : [1,"[1:24]"]
+      time_ofset,xrange =  
+        if /_3$/ =~ method.to_s
+          [ Shimada::Power::TimeOffset+1,"[#{Shimada::Power::TimeOffset+1}:#{Shimada::Power::TimeOffset+25}]"]
+        else ;  [1,"[1:24]"]
+        end
       path = output_plot_data(powers,method,opt){ |f,power| 
         power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+time_ofset,h ) if h }
       }
@@ -105,23 +109,29 @@ module Shimada::GnuplotDef
 
     def gnuplot_by_temp(powers,opt={ })
       path = output_plot_data(powers,:powers,opt){ |f,power| 
-        temperatures = Weather.find_or_feach("maebashi", power.date).temperatures
-        power.powers.each_with_index{ |h,idx| 
-          f.printf( "%.1f %.1f\n",temperatures[idx],h ) if h && temperatures[idx] 
-        }
+        weather = Weather.find_or_feach("maebashi", power.date)#.temperatures
+        if (method = opt[:method]) == :deviation_of_difference
+          f.printf( "%.1f %.1f\n",weather.max_temp, power.send(method)) if  weather
+        else
+          power.powers.each_with_index{ |h,idx| 
+            f.printf( "%.1f %.1f\n",weather.temperatures[idx],h ) if h && weather.temperatures[idx] 
+          }
+        end
       }
       #    path = gnuplot_data_by_temp(powers,opt)
       def_file = RAILS_ROOT+"/tmp/shimada/power_temp.def"
       graph_file = opt[:graph_file] || "power"
       open(def_file,"w"){ |f|
-        f.puts Temp_power_def%[graph_file,opt[:title]||"温度-消費電力 "]
-        f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") +
-        #if opt[:with_Approximation]
-        ", 780+9*(x-20) ,670+3*(x-20), 0.440*(x-5)**1.8+750"
-        #else
-        #  ""
-        f.puts "set terminal  jpeg \nset out 'tmp/shimada/jpeg/#{graph_file}.jpeg'\nreplot\n"        #end
-      }
+        if opt[:method]
+          f.puts Temp_something_def%[graph_file,opt[:title] ]
+          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ")
+        else
+          f.puts Temp_power_def%[graph_file,opt[:title]||"温度-消費電力 "]
+          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") +
+            ", 780+9*(x-20) ,670+3*(x-20), 0.440*(x-5)**1.8+750"
+        end
+          f.puts "set terminal  jpeg \nset out 'tmp/shimada/jpeg/#{graph_file}.jpeg'\nreplot\n"        #end
+        }
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
     end
 
@@ -130,6 +140,18 @@ module Shimada::GnuplotDef
   def self.included(base) ;    base.extend(ClassMethod) ;end
 
   ########## ↓ GNUPLOT ############
+Temp_something_def =
+%Q!set terminal gif enhanced size 600,200 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+set out 'tmp/shimada/giffiles/%s.gif'
+
+set title "%s"
+set key outside autotitle columnheader
+#set yrange [0:1000]
+set xrange [-10:40]
+set xtics -10,5
+set x2tics -10,5
+set grid
+!
 Temp_power_def =
 %Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/shimada/giffiles/%s.gif'
@@ -151,10 +173,10 @@ set title "%s" #"消費電力 "
 %s
 set yrange [0:1000]
 set xrange %s # [1:24]
-set xtics 1,1
-set x2tics 2,2
+set xtics 3,3 #1,1
+set x2tics 3,3 # 2,2
 #set grid  xtics 3,3
-set grid ytics
+set grid #ytics
 !
 
 Differ_def =
@@ -166,10 +188,10 @@ set title "%s" # "消費電力 "
 %s
 set yrange [-250:250]
 set xrange %s #[1:24]
-set xtics 1,1
-set x2tics 2,2
+set xtics 3,3 #1,1
+set x2tics 3,3
 set ytics -250,50
-set grid ytics
+set grid #ytics
 !
 
 Nomalized_def=
