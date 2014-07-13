@@ -21,6 +21,7 @@ class Weather < ActiveRecord::Base
   end
 
   def temperatures ;   Temperature.map{ |t| self[t]} ; end
+  def max_temp ; temperatures.max ; end
 
 end
 __END__
