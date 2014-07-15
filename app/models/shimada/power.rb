@@ -332,7 +332,9 @@ logger.debug("WEATHER id=#{id} date=#{date}")
         power = self[h]
         temp  = weather[h]
          if power && temp
-          temp > 15.0 ? power - 9 * (temp - 20) : power - 3 * (temp - 20)
+          temp > ReviceParms[:threshold_temp]  ? 
+           power -  ReviceParms[:slope_higher] * (temp - ReviceParms[:threshold_temp]) : 
+             power - ReviceParms[:slope_lower] * (temp - ReviceParms[:threshold_temp])
          else power ? power : 0
          end
       }
@@ -434,12 +436,12 @@ logger.debug("WEATHER id=#{id} date=#{date}")
     move_ave(num).sort.last(num).inject(0){ |s,e| s+=e}/num
   end
 
-  def deviation_of_difference(range = 4..22 )
+  def deviation_of_difference(range = 8..20 )
     #difference.zip(self.class.average_diff.difference)[range].map{ |d,a| d-a }.standard_devitation
     difference[range].standard_devitation
   end
 
-  def deviation_of_revice(range = 4..22 )
+  def deviation_of_revice(range = 8..20 )
     revise_by_temp.zip(revise_by_temp_ave)[range].map{ |d,a| d-a }.standard_devitation
   end
 
