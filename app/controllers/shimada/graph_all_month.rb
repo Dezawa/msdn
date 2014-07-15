@@ -124,12 +124,12 @@ module Shimada::GraphAllMonth
       if date = args.delete("date") ;  "date #{date[0]} '#{date[1]}'" ;end
     
     args_query = 
-      if args.size > 0 
+      if (args.keys & ColumnNames).size > 0 
         args.keys.map{ |clm| " #{clm} #{args[clm][0]} ? " if ColumnNames.include?(clm)}.compact.join("and")
       end
     method_keys =  args.keys - ColumnNames 
 
-    query = [cnd_dform,month_query,date_query,args_query].compact.join(" and ")
+    query = ["date is not null",cnd_dform,month_query,date_query,args_query].compact.join(" and ")
 logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     @models = Shimada::Power.all( :order => "date", 
                                    :conditions => [query,*args.values.map{ |a| a[1]}] )
