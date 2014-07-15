@@ -121,15 +121,21 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
   def graph_month_temp(opt={ })
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
     month = @Model.find(id)
-    @power = month.powers
-    @TYTLE = "温度-消費電力" + @power.first.date.strftime("(%Y年%m月)")
- 
-    opt.merge!(:graph_file => "month_temp#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}" ,
-               :title => @TYTLE
-               ) 
-    @graph_file =  opt[:graph_file]
-   Shimada::Power.gnuplot_by_temp(@power,opt)
+    graph_temp_(month,opt)
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
+  def graph_temp_(month,opt={ })
+    @graph_file =  "month_temp#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}"
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
+      @power = month.powers
+      @TYTLE = "温度-消費電力" + @power.first.date.strftime("(%Y年%m月)")
+ 
+      opt.merge!(:graph_file => "month_temp#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}" ,
+                 :title => @TYTLE,:graph_size => "600,400",:range => (7..19)
+                 ) 
+      #@graph_file =  opt[:graph_file]
+      Shimada::Power.gnuplot_by_temp(@power,opt)
+    end
+  end
 end

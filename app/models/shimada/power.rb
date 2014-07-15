@@ -28,13 +28,19 @@ class Shimada::Power < ActiveRecord::Base
   Lines = [(0..300),(300..430),(430..560),(560..680),(680..800),(800..1000)]
   Header = "時刻"
 
+  ReviceParms = { :threshold_temp => 10.0, :slope_lower => 3.0, :slope_higher => 9.0,:y0 => 600}
+
   Differ = ("00".."23").map{ |h| "difference#{h}" }
   NA     = ("f4_na0".."f4_na4").to_a
   F3_SOLVE = %w(f3_x1 f3_x2 f3_x3)
   F2_SOLVE = %w(f2_x1 f2_x2)
   CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["line"]
 
-  def self.power_all ; self.all(:conditions => "date is not null") ; end
+  def self.power_all(conditions = ["", [] ])
+    self.all(:conditions => ["date is not null" +
+conditions[0] ,
+ *conditions[1] ] ) 
+  end
 
   def self.reset_reevice_and_ave
     self.all.each{ |power|
@@ -71,7 +77,7 @@ class Shimada::Power < ActiveRecord::Base
   end
 
   def self.create_average_diff
-    ave_power = Shimada::Power.find_or_create_by_date(nil)
+    ave_power = Shimada::Power.find_or_create_by_date_and_line(nil,nil)
     all_powers = Shimada::Power.all(:conditions => "date is  not null")
     diffs = all_powers.inject([0]*24){ |s,v|
 logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
