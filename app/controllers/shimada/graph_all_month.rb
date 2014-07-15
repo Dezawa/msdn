@@ -32,7 +32,13 @@ module Shimada::GraphAllMonth
         [:popup,:graph_all_month,"全月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
         [:popup,:graph_all_month,"全月度温度補正平均化",{ :win_name => "graph",:method => :revise_by_temp_ave} ],
         [:popup,:graph_all_month,"全月度正規化",{ :win_name => "graph",:method => :normalized}  ] ,
+        [:popup,:graph_standerd,"3稼働標準",{ :win_name => "graph",:lines => 3}  ] ,
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
+        [:popup,:graph_all_month_temp,"全月度月別対温度",{ :win_name => "graph",:each_month => true} ],
+        [:popup,:graph_all_month_temp,"全月度対温度 稼働無",{ :win_name => "graph",:line => 0 } ],
+        [:popup,:graph_all_month_temp,"全月度対温度 稼働2",{ :win_name => "graph",:line => 2 } ],
+        [:popup,:graph_all_month_temp,"全月度対温度 稼働3",{ :win_name => "graph",:line => 3 } ],
+        [:popup,:graph_all_month_temp,"全月度対温度 稼働4",{ :win_name => "graph",:line => 4 } ],
         [:popup,:graph_all_month,"全月度差分",{ :win_name => "graph",:method => :difference_3} ],
         [:popup,:graph_all_month,"全月度差分平均",{ :win_name => "graph",:method => :difference_ave} ],
         [:popup,:graph_all_month_deviation_vs_temp,"全月度差分分散対気温",
@@ -258,6 +264,21 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     @TYTLE = title
     render :action => :graph,:layout => "hospital_error_disp"
   end
+
+  def graph_standerd
+    line = opt[:lines].to_i
+    graph_file = "standerd_#{opt[:lines]}"
+    opt.merge!(:graph_file => graph_file )
+    @graph_file =  opt[:graph_file]
+    @TYTLE = "標準電力消費 #{line}稼働"
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{opt[:graph_file]}.gif") == true
+      @power = [ Shimada::Power.average_line(line) ]
+      Shimada::Power.gnuplot_standerd(@power,method,opt.merge(:title => @TYTLE ))
+    end
+
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
   def graph_all_month_patern(method,title,shapes)
     @graph_file =  "all_month_patern_" + ( shapes || "unsorted")
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
@@ -307,10 +328,21 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
   end
 
   def graph_all_month_temp
-    months = Shimada::Month.all
-    @power=months.map{ |m| m.powers}.flatten
-    Shimada::Power.gnuplot_by_temp(@power,:by_date => "%y/%m",:with_Approximation => true)
-    @TYTLE = "温度-消費電力 全月度"
+    line =  (params[@Domain] && params[@Domain][:line]) ? params[@Domain][:line] : nil 
+    if params[@Domain] && params[@Domain][:each_month]
+      Shimada::Month.all.each{ |month| graph_temp_(month)}
+    else
+    @graph_file =  "all_month_vs_temp_" + (line ? line : "")
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
+      conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
+      @power = Shimada::Power.power_all(conditions)
+      @TYTLE = "温度-消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
+
+      Shimada::Power.gnuplot_by_temp(@power,:by_date => "%y/%m",:title => @TYTLE,:graph_file =>  @graph_file,
+                                     :with_Approximation => true,
+                                     :range => (7..19))
+    end
+    end
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
