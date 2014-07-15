@@ -21,13 +21,17 @@ module Shimada::GraphDay
   }
   def graph  
     method,id = params[:method].split("/")
+    opt = case method
+          when /^revise|^normal/ ; { :fitting => true }
+          else                  ; { }
+          end
     method = method.to_sym
      params[:id] = id.to_i
-    graph_sub(method,TITLE_DAY[method])
+    graph_sub(method,TITLE_DAY[method],opt)
   end
   def graph_temp    
     @power = Shimada::Power.find(params[:id])
-    Shimada::Power.gnuplot_by_temp([@power])
+    Shimada::Power.gnuplot([@power])
     @TYTLE = "温度-消費電力" + @power.date.strftime("(%Y年%m月%d日)")
     render :action => :graph,:layout => "hospital_error_disp"
   end

@@ -16,22 +16,20 @@ module Shimada::GnuplotDef
       :difference_ave => "差分平均",:revise_by_temp => "温度補正電力",:diffdiff => "二階差分"}
 
     def gnuplot(powers,method,opt={ })
-      case method.to_s
-      when /^normalized/ ;  return Shimada::Gnuplot::Nomalized.new(powers,method,opt).plot
-      when /^diff/       ;  return Shimada::Gnuplot::Differ.new(powers,method,opt).plot
-      else               ;  return Shimada::Gnuplot::Power.new(powers,method,opt).plot
+      if opt[:vs_temp]
+        case method.to_s 
+        when /^deviation/ ;Shimada::Gnuplot::TempDeff.new(powers,method,opt).plot
+        else              ;Shimada::Gnuplot::Temp.new(powers,method,opt).plot
+        end
+      else
+        case method.to_s
+        when /^normalized/ ;  Shimada::Gnuplot::Nomalized.new(powers,method,opt).plot
+        when /^diff/       ;  Shimada::Gnuplot::Differ.new(powers,method,opt).plot
+        when /^standerd/   ;  Shimada::Gnuplot::Standerd.new(powers,method,opt).plot
+        else               ;  Shimada::Gnuplot::Power.new(powers,method,opt).plot
+        end
       end
    end
-
-    def gnuplot_by_temp(powers,opt={ })
-      method = opt[:method]
-      if/^deviation/ =~ opt[:method].to_s 
-        return Shimada::Gnuplot::TempDeff.new(powers,method,opt).plot
-      else
-        return Shimada::Gnuplot::Temp.new(powers,method,opt).plot
-      end
-    end
-
   end # of module
 
   def self.included(base) ;    base.extend(ClassMethod) ;end

@@ -7,7 +7,7 @@ module  Shimada::GraphMonth
   URL_GRAPH = "/shimada/month/graph?method="
   PowerLabels =
     [ HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => URL_GRAPH+"powers_3"   , :htmloption => Popup}),
-      HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => URL_GRAPH+"revise_by_temp_3",:htmloption => Popup}),
+      HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => URL_GRAPH+"revise_by_temp_3",:htmloption => Popup }),
       HtmlLink.new(:id,"",:link => { :link_label => "補正後平均",:url => URL_GRAPH+"revise_by_temp_ave",:htmloption => Popup}),
       #HtmlLink.new(:id,"",:link => { :link_label => "対温度"   , :url => URL_GRAPH+"temp"    , htmloption =>Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "正規化"   , :url => URL_GRAPH+"normalized"   , :htmloption =>Popup}),
@@ -133,10 +133,10 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
       @TYTLE = "温度-消費電力" + @power.first.date.strftime("(%Y年%m月)")
  
       opt.merge!(:graph_file => "month_temp#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}" ,
-                 :title => @TYTLE,:graph_size => "600,400",:range => (7..19)
+                 :title => @TYTLE,:graph_size => "600,400",:range => (7..19),:vs_temp => true
                  ) 
       #@graph_file =  opt[:graph_file]
-      Shimada::Power.gnuplot_by_temp(@power,opt)
+      Shimada::Power.gnuplot(@power,opt.delete(:method)||:powers,opt)
     end
   end
 end

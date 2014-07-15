@@ -69,7 +69,7 @@ module Shimada::Gnuplot
         if  @opt[:by_line] 
           f.print " , " + Lines.map{ |line| line.last}.join(" , ")
         elsif @opt[:fitting]
-          f.print f2_f3_f4_line( powers.first.a,800) 
+          f.print f2_f3_f4_line( @powers.first,800) 
         end
         f.puts
         #f.puts "set terminal  eps enhanced color 'GothicBBB-Medium-UniJIS-UTF8-H'
@@ -97,7 +97,8 @@ set grid #ytics
       @Def = Def
     end
 
-    def f2_f3_f4_line(a,offset)
+    def f2_f3_f4_line(power,offset)
+      a = power.a
       i=0
       x_offset = Shimada::Power::PolyFitX0+1
       ",1,\\\n #{a[0]}"+ 
@@ -108,6 +109,12 @@ set grid #ytics
     end
     
   end # of Power
+
+  class Standerd < Power
+
+
+  end
+
 
   class Nomalized <  Shimada::Gnuplot::Plot
     Def = %Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
@@ -131,7 +138,8 @@ set grid x2tics
       @Def = Def
     end
 
-    def f2_f3_f4_line(a,offset)
+    def f2_f3_f4_line(power,offset)
+      a = power.na
       i=0
       x_offset = Shimada::Power::PolyFitX0+1
       ",1,\\\n #{a[0]}"+ 

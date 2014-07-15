@@ -273,7 +273,7 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     @TYTLE = "標準電力消費 #{line}稼働"
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{opt[:graph_file]}.gif") == true
       @power = [ Shimada::Power.average_line(line) ]
-      Shimada::Power.gnuplot_standerd(@power,method,opt.merge(:title => @TYTLE ))
+      Shimada::Power.gnuplot(@power,:standerd,opt.merge(:title => @TYTLE ))
     end
 
     render :action => :graph,:layout => "hospital_error_disp"
@@ -338,8 +338,8 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
       @power = Shimada::Power.power_all(conditions)
       @TYTLE = "温度-消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
 
-      Shimada::Power.gnuplot_by_temp(@power,:by_date => "%y/%m",:title => @TYTLE,:graph_file =>  @graph_file,
-                                     :with_Approximation => true,
+      Shimada::Power.gnuplot(@power,:powers,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => true,
+                                     :graph_file =>  @graph_file, :with_Approximation => true,
                                      :range => (7..19))
     end
     end
@@ -352,8 +352,7 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     method = params[@Domain][:method].to_sym
     title = { :deviation_of_revice => "電力", :deviation_of_difference => "差分"}[method]
     @TYTLE = "最高温度-#{title}分散 全月度"
-    Shimada::Power.gnuplot_by_temp(@power,:by_ => by_ ,:method => method,
-                                   :title => @TYTLE)
+    Shimada::Power.gnuplot(@power,method,:by_ => by_ , :title => @TYTLE,:vs_temp => true)
     render :action => :graph,:layout => "hospital_error_disp"
   end
 end
