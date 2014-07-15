@@ -89,6 +89,27 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     ave_power
   end
 
+  @@average_line = { }
+  # Ave => 平均 、difference => SDEV、powers => +2σ、rev => -2σ
+  def self.average_line(line)
+    return @@average_line[line] if @@average_line[line]
+
+    average_line = Shimada::Power.find_or_create_by_date_and_line(nil,line)
+    
+    powers = self.power_all([" and line = ?", line])
+    aves = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.average}
+    sdev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.standard_devitation}
+    high = (0..23).map{ |i| aves[i]+2*sdev[i] }
+    lows = (0..23).map{ |i| aves[i]-2*sdev[i] }
+
+    average_line.update_attributes( Hash[*Aves.zip(aves).flatten].
+                                    merge(Hash[*Differences.zip(sdev).flatten]).
+                                    merge(Hash[*Hours.zip(high).flatten]).
+                                    merge(Hash[*Revs.zip(lows).flatten]))
+    #ave_power.difference
+    @@average_line[line] = average_line
+  end
+
   def lines
     return @lines if @lines
     unless line
