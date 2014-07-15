@@ -110,14 +110,18 @@ module Shimada::GnuplotDef
     end
 
     def gnuplot_by_temp(powers,opt={ })
+      range = opt.delete(:range) || (0..23)
+      graph_size = opt[:graph_size] || "700,400"
       path = output_plot_data(powers,:powers,opt){ |f,power| 
         weather = Weather.find_or_feach("maebashi", power.date)#.temperatures
         if /^difference/ =~ (method = opt[:method]).to_s
-          power.powers.each_with_index{ |h,idx| 
-            f.printf( "%.1f %.1f\n",weather.temperatures[idx],h ) if h && weather.temperatures[idx] 
-          }
-        else
           f.printf( "%.1f %.1f\n",weather.max_temp, power.send(method)) if  weather
+        else
+          #power.powers[range].each_with_index{ |h,idx| 
+          #  f.printf( "%.1f %.1f\n",weather.temperatures[idx],h ) if h && weather.temperatures[idx] 
+          power.powers.zip(weather.temperatures)[range].each{ |pw,tmp| 
+            f.printf( "%.1f %.1f\n",tmp,pw ) if pw && tmp
+          }
         end
       }
       #    path = gnuplot_data_by_temp(powers,opt)
@@ -125,14 +129,15 @@ module Shimada::GnuplotDef
       graph_file = opt[:graph_file] || "power"
       open(def_file,"w"){ |f|
         if/^difference/ =~ opt[:method].to_s      #end
-          f.puts Temp_power_def%[graph_file,opt[:title]||"温度-消費電力 "]
-          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") +
-            ", 780+9*(x-20) ,670+3*(x-20), 0.440*(x-5)**1.8+750"
-          f.puts "set terminal  jpeg  size 600,400 \nset out 'tmp/shimada/jpeg/#{graph_file}.jpeg'\nreplot\n" 
-        else
           f.puts Temp_something_def%[graph_file,opt[:title] ]
           f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ")
           f.puts "set terminal  jpeg  size 600,200 \nset out 'tmp/shimada/jpeg/#{graph_file}.jpeg'\nreplot\n"         #end
+        else
+          f.puts Temp_power_def%[graph_size,graph_file,opt[:title]||"温度-消費電力 "]
+          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") +
+            ",  (x>20) ? 700+9*(x-20) : 700+3*(x-20) title '温度補償' lt -1 lw 1.5, \\
+ 0.440*(x-5)**1.8+750 title 'TopLine' lc rgbcolor '#FF0000' lw 1.5"
+          f.puts "set terminal  jpeg  size #{graph_size} \nset out 'tmp/shimada/jpeg/#{graph_file}.jpeg'\nreplot\n" 
         end
         }
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
@@ -156,11 +161,11 @@ set x2tics -10,5
 set grid
 !
 Temp_power_def =
-%Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+%Q!set terminal gif enhanced size %s enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/shimada/giffiles/%s.gif'
 
 set title "%s" #"温度-消費電力 " 
-set key outside autotitle columnheader
+set key outside  autotitle columnheader samplen 1 width -5
 set yrange [0:1000]
 set xrange [-10:40]
 set xtics -10,5
