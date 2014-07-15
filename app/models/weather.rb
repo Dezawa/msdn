@@ -3,14 +3,21 @@ require 'pp'
 
 class Weather < ActiveRecord::Base
   Temperature = ("hour01".."hour24").to_a
+  Vaper       = ("vaper01".."vaper24").to_a
+  Humidity    = ("humidity01".."humidity24").to_a
   class << self
     def fetch(location,day)
       y,m,d = [day.year, day.month, day.day]
-      temp = `/usr/local/bin/weather_past.rb #{location} #{y} #{m} #{d}`
+      temp_vaper_humidity = `/usr/local/bin/weather_past.rb #{location} #{y} #{m} #{d}`
+      temp,vaper,humidity = temp_vaper_humidity.split(/[\n\r]+/)
       logger.info("WEATHER:: #{temp.class}")
       return unless temp
       weather = self.create( { :location => location,:date => day,:month => day.beginning_of_month}.
-                             merge(Hash[*Temperature.zip(temp.split(/\s+/)).flatten]))
+                             merge(Hash[*Temperature.zip(temp.split(/\s+/)).flatten]).
+                             merge(Hash[*Vaper.zip(vaper.split(/\s+/)).flatten]).
+                             merge(Hash[*Humidity.zip(humidity.split(/\s+/)).flatten])
+
+                             )
     end
 
     def find_or_feach(location,day)

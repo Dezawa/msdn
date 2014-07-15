@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140708122554) do
+ActiveRecord::Schema.define(:version => 20140715040758) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -208,6 +208,11 @@ ActiveRecord::Schema.define(:version => 20140708122554) do
   create_table "nurces_roles", :id => false, :force => true do |t|
     t.integer "nurce_id"
     t.integer "role_id"
+  end
+
+  create_table "shimada_factories", :force => true do |t|
+    t.string "name"
+    t.string "weather_location"
   end
 
   create_table "shimada_months", :force => true do |t|
@@ -653,6 +658,54 @@ ActiveRecord::Schema.define(:version => 20140708122554) do
     t.float  "hour23"
     t.float  "hour24"
     t.date   "month"
+    t.float  "vaper01"
+    t.float  "vaper02"
+    t.float  "vaper03"
+    t.float  "vaper04"
+    t.float  "vaper05"
+    t.float  "vaper06"
+    t.float  "vaper07"
+    t.float  "vaper08"
+    t.float  "vaper09"
+    t.float  "vaper10"
+    t.float  "vaper11"
+    t.float  "vaper12"
+    t.float  "vaper13"
+    t.float  "vaper14"
+    t.float  "vaper15"
+    t.float  "vaper16"
+    t.float  "vaper17"
+    t.float  "vaper18"
+    t.float  "vaper19"
+    t.float  "vaper20"
+    t.float  "vaper21"
+    t.float  "vaper22"
+    t.float  "vaper23"
+    t.float  "vaper24"
+    t.float  "humidity01"
+    t.float  "humidity02"
+    t.float  "humidity03"
+    t.float  "humidity04"
+    t.float  "humidity05"
+    t.float  "humidity06"
+    t.float  "humidity07"
+    t.float  "humidity08"
+    t.float  "humidity09"
+    t.float  "humidity10"
+    t.float  "humidity11"
+    t.float  "humidity12"
+    t.float  "humidity13"
+    t.float  "humidity14"
+    t.float  "humidity15"
+    t.float  "humidity16"
+    t.float  "humidity17"
+    t.float  "humidity18"
+    t.float  "humidity19"
+    t.float  "humidity20"
+    t.float  "humidity21"
+    t.float  "humidity22"
+    t.float  "humidity23"
+    t.float  "humidity24"
   end
 
 end

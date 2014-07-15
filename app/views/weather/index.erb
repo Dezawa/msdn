@@ -17,16 +17,19 @@
   <tr id='<%= obj.id %>'><% @labels.each{|html_cell| 
         next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
   <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
-  <% if @Show %>
-    <td><%= link_to '表示', :controller => :weather, :action => :monthly,
+
+    <td><%= link_to '気温', :controller => :weather, :action => :temperatuer,
       :month => obj.month ,:location => obj.location%></td>
-  <% end %>
+    <td><%= link_to '蒸気圧', :controller => :weather, :action => :vaper,
+      :month => obj.month ,:location => obj.location%></td>
+    <td><%= link_to '湿度', :controller => :weather, :action => :humidity,
+      :month => obj.month ,:location => obj.location%></td>
+
   <% if @Edit %>
     <td><%= link_to 'Edit', :action => :edit ,:page => @page,:id => obj.id %>
     </td>
   <% end %>
-  <%= delete_if_accepted obj %>
-  </tr>
+    </tr>
 <% end -%>
 </table>
 <%= will_page %>
