@@ -21,10 +21,12 @@ module Shimada::GraphDay
   }
   def graph  
     method,id = params[:method].split("/")
+    
     opt = case method
           when /^revise|^normal/ ; { :fitting => true }
           else                  ; { }
           end
+    opt[:fitting] = params[:fitting].to_sym if params[:fitting]
     method = method.to_sym
      params[:id] = id.to_i
     graph_sub(method,TITLE_DAY[method],opt)

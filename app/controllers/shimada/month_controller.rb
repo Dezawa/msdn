@@ -7,6 +7,36 @@ class Shimada::MonthController <  Shimada::Controller
   include Shimada::GraphAllMonth
 
 
+  URL_GRAPH0 = "/shimada/month/graph?fitting=standerd&method="
+  Labels = 
+    [
+     HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
+     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}powers_3", :link_label => "グラフ",:fitting => :standerd}.merge(POPUP)),
+     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}revise_by_temp_3", :link_label => "温度補正",:fitting => :standerd}.merge(POPUP)),
+    ]
+
+   Action_buttoms = 
+      [5 ,
+       AllMonthaction_buttomsPaterns[1] +
+       [
+        [:popup,:graph_all_month,"全月度グラフ",{ :win_name => "graph",:method => :powers_3} ],
+        [:popup,:graph_all_month,"全月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
+       ]
+      ]
+  DaylyLabels =
+    [
+      HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
+     HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => URL_GRAPH0+"powers_3"   , :htmloption => Popup}),
+      HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => URL_GRAPH0+"revise_by_temp_3",:htmloption => Popup }),
+      #HtmlCeckForSelect.new(:id,""),
+      HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
+      HtmlText.new(:shape_is,"形<br>状",:ro => true,:size =>2,:ro => true),
+      HtmlText.new(:deform,"変形",:ro => true,:size =>4)
+      
+    ] + 
+      Shimada::Power::Hours.map{ |h| 
+        HtmlNum.new( h.to_sym,h.sub(/hour0?/,""),:tform => "%.0f",:size => 3)
+      }
 
   EditOnTable = 
     [ 
@@ -27,12 +57,10 @@ class Shimada::MonthController <  Shimada::Controller
     @labels=Labels
     @AssosiationLabels = PowerLabels
     @TableEdit  = 
-      [:csv_up_buttom ,[:form,:reset_reevice_and_ave,"再補正・再平均"],
-       [:form,:reculc_all,"再計算"],
-       [:form,:reculc_shapes,"再分類"],
-       [:form,:rm_gif,"グラフ再作成"]
+      [
+       [:form,:factory,"戻る"] # ,{ :controller => "shimada"}]
       ]
-    @action_buttoms = #AllMonthaction_buttoms 
+    @action_buttoms = Action_buttoms
 [ AllMonthaction_buttoms,         # 全月度グラフ ....
   AllMonthaction_buttomsPaterns,  # パターン分析結果
   AllMonthaction_buttomsDeform,   # 異常パターン
@@ -47,6 +75,20 @@ class Shimada::MonthController <  Shimada::Controller
     # @Refresh = :kamokus
     @SortBy    = :month
     #@CSVatrs = CSVatrs; @CSVlabels = CSVlabels
+  end
+  def factory
+    redirect_to :controller => "shimada/factory",:action => :index
+  end
+
+  def analyze
+    factory = Shimada::Factory.find(params[:id])
+    redirect_to :action => :index
+  end
+
+
+  def results
+    factory = Shimada::Factory.find(params[:id])
+    redirect_to :action => :index
   end
 
   def index
@@ -63,6 +105,24 @@ class Shimada::MonthController <  Shimada::Controller
     @TableEdit  =  [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
                     [:popup,:graph_month,"月度グラフ",{ :win_name => "graph",:method => :powers_3} ],
                     [:popup,:graph_month,"月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
+                   ]
+
+    @action_buttoms = nil; #Month_action_buttoms
+    @labels = DaylyLabels
+    @TableHeaderDouble = [6,[24,"時刻"]]
+    show_sub
+  end
+ 
+
+  def show_analize ;
+    @model = @Model.find(params[:id])
+    @page = params[:id]
+    @models = @model.powers
+    @TYTLE_post = @models.first.date.strftime("(%Y年%m月)")
+
+    @TableEdit  =  [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
+                    [:popup,:graph_month,"月度グラフ",{ :win_name => "graph",:method => :powers_3} ],
+                    [:popup,:graph_month,"月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
                     [:popup,:graph_month,"月度温度補正平均",{ :win_name => "graph",:method =>:revise_by_temp_ave } ],
                     [:popup,:graph_month_temp,"月度対温度",{ :win_name => "graph" } ],
                     [:popup,:graph_month_lines_types,"月度稼働・型",{ :win_name => "graph" } ],
@@ -71,14 +131,13 @@ class Shimada::MonthController <  Shimada::Controller
                    ]
 
     @action_buttoms = Month_action_buttoms
+    @TableHeaderDouble = [10,[13,"係数"],[24,"時刻"]]
+    @labels = PowerLabels
     show_sub
   end
- 
-  def show_sub
+   def show_sub
     @Show = @Edit = @Delete = nil
     @Graph = true
-    @labels = PowerLabels
-    @TableHeaderDouble = [10,[13,"係数"],[24,"時刻"]]
     render :action => :show
   end
 

@@ -5,7 +5,7 @@ module Shimada::GraphAllMonth
   SGRPH="/shimada/month/graph_month?method="
   POPUP = {:htmloption => Popup}
   ColumnNames = Shimada::Power.column_names
-  Labels = 
+  AllMonthLabels = 
     [#HtmlCeckForSelect.new(:id,""),
      HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
      HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}powers_3", :link_label => "グラフ"}.merge(POPUP)),
