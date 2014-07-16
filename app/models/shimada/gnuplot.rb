@@ -130,7 +130,7 @@ set grid #ytics
         f.print "時刻 平均 上限 下限\n"
         (0..24).
         each{ |h| f.printf( "%d %.3f %.3f %.3f\n",
-                            @time_ofset+h,pw.aves_3[h],pw.powers_3[h],pw.revise_by_temp_3[h]
+                            @time_ofset+h,pw.revise_by_temp_3[h],pw.powers_3[h],pw.aves_3[h]
                             )
         }
       }

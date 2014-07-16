@@ -90,7 +90,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   end
 
   @@average_line = { }
-  # Ave => 平均 、difference => SDEV、powers => +2σ、rev => -2σ
+  # rev => 平均 、difference => SDEV、powers => +2σ、ave => -2σ
   def self.average_line(line)
     return @@average_line[line] if @@average_line[line]
 
