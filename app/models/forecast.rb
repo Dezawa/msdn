@@ -115,5 +115,27 @@ class Forecast < ActiveRecord::Base
        [weather[8,8],temperature[8,8],humidity[8,8]]
       ]
     end
+
+  def temperature24(location,date)
+    date=date.to_date
+    fore = self.find_or_fetch(location,date) || self.find_or_fetch(location,date,date-1)
+    ret = fore.temperature.map{ |t| [0,0,t]}.flatten
+    # 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4
+    # 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t
+    (2..20).step(3).each{ |h| 
+      ret[h+1] = (ret[h]*2 + ret[h+3])/3.0 
+      ret[h+2] = (ret[h]   + ret[h+3] * 2)/3.0 
+    }
+    slope = (ret[5]-ret[2])/3.0
+    ret[0] = ret[2] - 2*slope
+    ret[1] = ret[2] - slope
+    ret
   end
+
+  end
+
+  def temperature ;    Temp.map{ |sym| self[sym]} ;  end
+
+  def humidity ;    Humi.map{ |sym| self[sym]} ;  end
+
 end
