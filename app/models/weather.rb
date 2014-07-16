@@ -25,6 +25,7 @@ class Weather < ActiveRecord::Base
       return weather if weather
       fetch(location,day)
     end
+
   end
 
   def temperatures ;   Temperature.map{ |t| self[t]} ; end
@@ -32,7 +33,7 @@ class Weather < ActiveRecord::Base
 
 end
 __END__
-s = Time.local(2014,6,1).beginning_of_day
+s = Time.local(2013,1,1).beginning_of_day
 e = Time.local(2014,6,26).beginning_of_day
 date = s
   Weather.fetch("maebashi",date)
