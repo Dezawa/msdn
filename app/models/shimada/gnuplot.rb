@@ -98,9 +98,10 @@ set grid #ytics
     def initialize(powers,method,opt)
       super
       @Def = Def
+      @std_data_file = RAILS_ROOT+"/tmp/shimada/"+@graph_file
     end
 
-    def fitting_line(power,offset)
+    def fitting_poly(power,offset)
       a = power.a
       i=0
       x_offset = Shimada::Power::PolyFitX0+1
@@ -110,13 +111,35 @@ set grid #ytics
         [ a[4] * 4,a[3]*3,a[2]*2,a[1]] +
         ", \\\n((%+f * (x-#{x_offset}) %+f) * (x-#{x_offset}) %+f)*10 +#{offset}"%[a[4] * 12,a[3]*6,a[2]*2]
     end
+
+
+    def fitting_line(power,offset)
+      if @opt[:fitting]
+        output_stdfile(power.line)
+        ",\\\n '#{@std_data_file}' using 1:3 with line lt -1 lw 1.5, \\
+        '' using 1:2 with line   lt -1  lw 2 ,\\
+        '' using 1:4 with line  lt -1 lw 1.5 "
+      else
+        fitting_poly(power,offset)
+      end
+    end
     
+   def output_stdfile(line)
+      pw = Shimada::Power.average_line(line)
+      open(@std_data_file,"w"){ |f|
+        f.print "時刻 平均 上限 下限\n"
+        (0..24).
+        each{ |h| f.printf( "%d %.3f %.3f %.3f\n",
+                            @time_ofset+h,pw.aves_3[h],pw.powers_3[h],pw.revise_by_temp_3[h]
+                            )
+        }
+      }
+    end
   end # of Power
 
   class Standerd < Power
     def initialize(powers,method,opt)
       super
-      @std_data_file = RAILS_ROOT+"/tmp/shimada/"+@graph_file
       @time_ofset,@xrange =  [ Shimada::Power::TimeOffset+1,
                                "[#{Shimada::Power::TimeOffset+1}:#{Shimada::Power::TimeOffset+25}]"]
       @method = @opt[:mode] || :revise_by_temp_3
@@ -135,24 +158,6 @@ set grid #ytics
 @f.puts group_by
       output_def_file(path, group_by)
       `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{@def_file})`
-    end
-   def output_stdfile(line)
-      pw = Shimada::Power.average_line(line)
-      open(@std_data_file,"w"){ |f|
-        f.print "時刻 平均 上限 下限\n"
-        (0..24).
-        each{ |h| f.printf( "%d %.3f %.3f %.3f\n",
-                            @time_ofset+h,pw.aves_3[h],pw.powers_3[h],pw.revise_by_temp_3[h]
-                            )
-        }
-      }
-    end
-
-    def fitting_line(power,offset)
-      output_stdfile(power.line)
-      ",\\\n '#{@std_data_file}' using 1:3 with line lt -1 lw 1.5, \\
-        '' using 1:2 with line   lt -1  lw 2 ,\\
-        '' using 1:4 with line  lt -1 lw 1.5 "
     end
   end
 
