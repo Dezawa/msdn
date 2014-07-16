@@ -21,15 +21,7 @@ module Shimada::Gnuplot
     def output_plot_data(&block)
       path = []
       keys = nil
-      ary_powres = if by_month = @opt[:by_date]
-                     @powers.group_by{ |p| p.date.strftime(by_month)}
-                   elsif @opt[:by_]
-                     pws=@powers.group_by{ |p| p.send(@opt[ :by_ ])}#.sort_by{ |p,v| p}#.reverse
-                     keys = pws.keys.compact.sort
-                     pws
-                   else
-                     @powers.size > 0 ? { @powers.first.date.strftime("%y/%m") => @powers} : {"" =>[]}
-                   end
+      ary_powres = powers_group_by
       keys ||= ary_powres.keys.sort
       keys.each_with_index{ |k,idx|
         #ary_powres.each_with_index{ |month_powers,idx|
@@ -47,6 +39,18 @@ module Shimada::Gnuplot
       path
     end
 
+    def powers_group_by
+      if by_month = @opt[:by_date]
+        @powers.group_by{ |p| p.date.strftime(by_month)}
+      elsif @opt[:by_]
+        pws=@powers.group_by{ |p| p.send(@opt[ :by_ ])}#.sort_by{ |p,v| p}#.reverse
+        keys = pws.keys.compact.sort
+        pws
+      else
+        @powers.size > 0 ? { @powers.first.date.strftime("%y/%m") => @powers} : {"" =>[]}
+      end
+    end
+
     def output_path
       output_plot_data{ |f,power| 
         power.send(@method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+@time_ofset,h ) if h }
@@ -54,7 +58,6 @@ module Shimada::Gnuplot
     end
 
     def plot()
-
       path = output_path
       group_by = ( @opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
       output_def_file(path, group_by)
@@ -111,8 +114,46 @@ set grid #ytics
   end # of Power
 
   class Standerd < Power
+    def initialize(powers,method,opt)
+      super
+      @std_data_file = RAILS_ROOT+"/tmp/shimada/"+@graph_file
+      @time_ofset,@xrange =  [ Shimada::Power::TimeOffset+1,
+                               "[#{Shimada::Power::TimeOffset+1}:#{Shimada::Power::TimeOffset+25}]"]
+      @method = @opt[:mode] || :revise_by_temp_3
+      @opt[:fitting] = true
 
+@f=open("/tmp/debug","w")
+@f.puts "END init:powers"
+    end
 
+ 
+    def plot()
+@f.puts "BF output_path"
+      path = output_path
+@f.puts path.size
+      group_by = ( @opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
+@f.puts group_by
+      output_def_file(path, group_by)
+      `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{@def_file})`
+    end
+   def output_stdfile(line)
+      pw = Shimada::Power.average_line(line)
+      open(@std_data_file,"w"){ |f|
+        f.print "時刻 平均 上限 下限\n"
+        (0..24).
+        each{ |h| f.printf( "%d %.3f %.3f %.3f\n",
+                            @time_ofset+h,pw.aves_3[h],pw.powers_3[h],pw.revise_by_temp_3[h]
+                            )
+        }
+      }
+    end
+
+    def fitting_line(power,offset)
+      output_stdfile(power.line)
+      ",\\\n '#{@std_data_file}' using 1:3 with line lt -1 lw 1.5, \\
+        '' using 1:2 with line   lt -1  lw 2 ,\\
+        '' using 1:4 with line  lt -1 lw 1.5 "
+    end
   end
 
 

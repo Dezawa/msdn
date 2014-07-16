@@ -157,6 +157,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   end
 
   def powers ; Hours.map{ |h| self[h]} ; end
+  def aves   ; Aves.map{ |h|  self[h]} ; end
 
   def offset_3(method,last=23)
     if date 
@@ -170,6 +171,8 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def revise_by_temp_3 ; offset_3(:revise_by_temp) ;  end
   def difference_3 ; offset_3(:difference,22) ;  end
   def diffdiff_3 ; offset_3(:diffdiff,21) ;  end
+  def aves_3     ; offset_3(:aves);end
+
 
   # Array a of \sum_{i=0}^{次元数}(a_i x^i)
   # 

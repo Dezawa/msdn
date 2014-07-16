@@ -32,7 +32,6 @@ module Shimada::GraphAllMonth
         [:popup,:graph_all_month,"全月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
         [:popup,:graph_all_month,"全月度温度補正平均化",{ :win_name => "graph",:method => :revise_by_temp_ave} ],
         [:popup,:graph_all_month,"全月度正規化",{ :win_name => "graph",:method => :normalized}  ] ,
-        [:popup,:graph_standerd,"3稼働標準",{ :win_name => "graph",:lines => 3}  ] ,
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
         [:popup,:graph_all_month_temp,"全月度月別対温度",{ :win_name => "graph",:each_month => true} ],
         [:popup,:graph_all_month_temp,"全月度対温度 稼働無",{ :win_name => "graph",:line => 0 } ],
@@ -266,20 +265,20 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
   end
 
   def graph_standerd
-    line = opt[:lines].to_i
-    graph_file = "standerd_#{opt[:lines]}"
-    opt.merge!(:graph_file => graph_file )
-    @graph_file =  opt[:graph_file]
+    line = params[@Domain][:lines].to_i
+    @graph_file = "standerd_#{line}"
+    opt = { :graph_file => @graph_file }
+
     @TYTLE = "標準電力消費 #{line}稼働"
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{opt[:graph_file]}.gif") == true
-      @power = [ Shimada::Power.average_line(line) ]
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
+      @power = Shimada::Power.all(:conditions => ["line = ?",line])
       Shimada::Power.gnuplot(@power,:standerd,opt.merge(:title => @TYTLE ))
     end
 
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
-  def graph_all_month_patern(method,title,shapes)
+  def graph_all_month_patern(method,title,shapes,opt={ })
     @graph_file =  "all_month_patern_" + ( shapes || "unsorted")
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
       line_shape = ( if   shapes ; Shimada::Power::Paterns[shapes]
@@ -288,9 +287,8 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
       months = Shimada::Month.all
       @power=months.map{ |m| m.powers}.flatten.
         select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
-     Shimada::Power.gnuplot(@power,method,:by_ => :line_shape,:title => params[@Domain][:shape],#shapes,
-                             :graph_file => @graph_file
-                             )
+      opt.merge!({ :by_ => :line_shape,:title => params[@Domain][:shape], :graph_file => @graph_file})
+     Shimada::Power.gnuplot(@power,method,opt)
     end
     @TYTLE = title
     render :action => :graph,:layout => "hospital_error_disp"
@@ -300,7 +298,7 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     label  = params[@Domain][:label]
     shape  =  params[@Domain][:shape]
     shape  = nil if shape == "未分類"
-    graph_all_month_patern(action,label,shape)
+    graph_all_month_patern(:standerd,label,shape,{ :mode =>:revise_by_temp_3 })
   end
   def graph_deform
     action = params[@Domain][:action]
