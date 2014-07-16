@@ -37,7 +37,7 @@ class Shimada::Power < ActiveRecord::Base
   CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["line"]
 
   def self.power_all(conditions = ["", [] ])
-    self.all(:conditions => ["date is not null" +
+    self.all(:conditions => ["month_id is not null" +
 conditions[0] ,
  *conditions[1] ] ) 
   end
