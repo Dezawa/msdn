@@ -26,20 +26,30 @@ class Shimada::FactoryController <  Shimada::Controller
     @power = Shimada::Power.find_by_month((Time.now-1.year))
   end
 
+  def update_tomorrow
+    line = params[:power][:line]
+    tomorrow_graph(line)
+  end
+
   def tomorrow
     factory = @Model.find params[:id]
+    line = 3
+    tomorrow_graph(line)
+  end
+
+  def tomorrow_graph(line)
     @today= Time.now.to_date
     @tomorrow = @today.tomorrow.to_date
     #month = tomorrow.beginning_of_month
     #shimada_month = Shimada::Month.find_or_create_by_month(month)
-    @power = Shimada::Power.find_or_create_by_date(@tomorrow)
+    @power = Shimada::Power.new(:date => @tomorrow,:line => line)
     #@power.month = shimada_month
     @date = @tomorrow
-    @power.line = 3
-    @power.tomorrow_graph()
+    @power.tomorrow_graph(line)
     forecast = Forecast.find_or_fetch(:maebashi,@tomorrow,@today)
     @temp = forecast.temperature
     @humi = forecast.humidity
+    render :action => :tomorrow
   end
 
   def show_gif

@@ -137,6 +137,30 @@ set grid #ytics
     end
   end # of Power
 
+ class Tomorrow < Power
+    def output_path
+      output_plot_data{ |f,pw| 
+        f.print "時刻 中央 上限 下限\n"
+        (0..23).
+        each{ |h| f.printf( "%d %.3f %.3f %.3f\n",
+                            @time_ofset+h,pw.revise_by_temp[h],pw.powers[h],pw.aves[h]
+                            )
+        }
+      }
+    end
+    def output_def_file(path, group_by)
+      preunble = @Def% [ @graph_file , @opt[:title] || "消費電力予想" ,group_by ,@xrange ]
+      open(@def_file,"w"){ |f|
+        f.puts preunble 
+        f.print "plot '#{path[0]}'" + 
+        " using 1:2 with line lt -1 ,'' using 1:3 with line lt -1,'' using 1:4 with line lt -1"
+        #f.puts "set terminal  eps enhanced color 'GothicBBB-Medium-UniJIS-UTF8-H'
+        f.puts "set terminal  jpeg size #{@size}\nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n"
+      }
+    end
+
+ end
+
   class Standerd < Power
     def initialize(powers,method,opt)
       super

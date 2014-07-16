@@ -102,13 +102,45 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     high = (0..23).map{ |i| aves[i]+2*sdev[i] }
     lows = (0..23).map{ |i| aves[i]-2*sdev[i] }
 
-    average_line.update_attributes( Hash[*Aves.zip(aves).flatten].
+    average_line.update_attributes( Hash[*Revs.zip(aves).flatten].
                                     merge(Hash[*Differences.zip(sdev).flatten]).
                                     merge(Hash[*Hours.zip(high).flatten]).
-                                    merge(Hash[*Revs.zip(lows).flatten]))
+                                    merge(Hash[*Aves.zip(lows).flatten]))
     #ave_power.difference
     @@average_line[line] = average_line
   end
+
+
+  def copy_revise
+    std = self.class.average_line(self.line)
+    Revs.each{ |sym|  self[sym] = std[sym] }
+    self
+  end
+
+  def inv_revise(temperature)
+    temperature.each_with_index{ |temp,idx|
+      rev = self[Revs[idx]]
+      self[Hours[idx]] = temp >  ReviceParms[:threshold_temp]  ?
+      rev + ReviceParms[:slope_higher] * (temp - ReviceParms[:threshold_temp]) : 
+      rev + ReviceParms[:slope_lower] * (temp - ReviceParms[:threshold_temp])
+    }
+    self
+  end
+
+  Keys = { :revise => Revs,:sdev => Differences,:max => Hours,:min => Aves}
+  def copy_and_inv_revise(temperature,method = :revise)
+    std = self.class.average_line(self.line)
+    temperature.each_with_index{ |temp,idx|
+      Keys[method].each{ |hour|  
+        value  = std[hour]
+        self[hour] = temp >  ReviceParms[:threshold_temp]  ?
+        value + ReviceParms[:slope_higher] * (temp - ReviceParms[:threshold_temp]) : 
+        value + ReviceParms[:slope_lower] * (temp - ReviceParms[:threshold_temp])
+      }
+    }
+    self
+  end
+
 
   def lines
     return @lines if @lines
