@@ -46,7 +46,7 @@ module Shimada::Patern
 #  Shapes = %w(- 0 +).product(%w(- 0 +)).map{ |a,b| a+b }+%w(F O S H)
 
   def shape_calc
-    return nil unless lines
+    return nil unless lines && max_diff_from_average_difference
 
     unless lines < 2
       if max_diff_from_average_difference > 200 ;  deforme("V") #; "他急変1"

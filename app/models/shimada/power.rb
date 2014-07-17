@@ -17,6 +17,25 @@ class Shimada::Power < ActiveRecord::Base
   PolyFitX0   = 14.0       # 15時
   PolyLevel   = 4
 
+  PolyFits = { 
+    2 => 
+    { :ave => [390.50, -4.0929, 0.800, -0.118, -0.0413],
+      :max => [610.61, -1.3898, -0.44, -0.007, -0.0114],
+      :min => [500.55, -2.7414, 0.178, -0.062, -0.0264]
+    },
+    3 => 
+    { :ave => [585.34, -2.8946, 0.543, -0.027, -0.0271],
+      :max => [681.88, -2.1609, 1.009, 0.0151, -0.0245],
+      :min => [488.80, -3.6284, 0.077, -0.069, -0.0297]
+    },
+    4 => 
+    { :ave => [671.31, -11.046, 0.424, 0.0538, -0.0320],
+      :max => [775.74, -1.0035, 0.763, -0.018, -0.0335],
+      :min => [566.87, -21.088, 0.084, 0.1262, -0.0305]
+    }
+
+  }
+
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
@@ -71,17 +90,18 @@ conditions[0] ,
 
   def self.average_diff
     return @@average_diff if @@average_diff
-    ave_power = Shimada::Power.find_by_date(nil)
-    ave_power = create_average_diff unless ave_power && ave_power.difference[0]
+    #ave_power = Shimada::Power.power_all
+    ave_power = create_average_diff #unless ave_power && ave_power.first.difference[0]
     @@average_diff = ave_power
   end
 
   def self.create_average_diff
     ave_power = Shimada::Power.find_or_create_by_date_and_line(nil,nil)
-    all_powers = Shimada::Power.all(:conditions => "date is  not null")
+    all_powers = Shimada::Power.power_all
     diffs = all_powers.inject([0]*24){ |s,v|
 logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
-      v.difference.each_with_index{ |diff,idx| s[idx]+=( diff || 0 )};s
+      v.difference.each_with_index{ |diff,idx| s[idx]+=( diff || 0 )} if v.difference
+      s
     }
     diffs =  diffs.map{ |d| d/all_powers.size}
     ave_power.update_attributes(Hash[*Differences.zip(diffs).flatten])
@@ -97,8 +117,8 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     average_line = Shimada::Power.find_or_create_by_date_and_line(nil,line)
     
     powers = self.power_all([" and line = ?", line])
-    aves = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.average}
-    sdev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.standard_devitation}
+    aves = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.average}
+    sdev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.standard_devitation}
     high = (0..23).map{ |i| aves[i]+2*sdev[i] }
     lows = (0..23).map{ |i| aves[i]-2*sdev[i] }
 
@@ -159,7 +179,8 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   end
 
   def max_diff_from_average_difference
-    ave_difference = self.class.average_diff.difference
+    return nil unless difference
+    return nil unless ave_difference = self.class.average_diff.difference
     difference.zip(ave_difference).map{ |a,b| (a-b).abs if a&&b}.compact.max
   end
 
@@ -361,15 +382,18 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def ny2       ; x2 ? nf3(nx2) : nil ;end
 
   def weather
-logger.debug("WEATHER id=#{id} date=#{date}")
-    return db_weather if db_weather
-    db_weather = Weather.find_or_feach("maebashi", date)
+logger.debug("WEATHER id=#{id} date=#{date} ")
+    return @weather if @weather
+    return @weather = db_weather if db_weather
+    return nil unless date
+    db_weather = Weather.find_or_feach("maebashi", self.date)
     save
-    db_weather
+   @weather = db_weather
   end
 
   def temps 
     return @temps if @temps
+    return nil unless weather
     @temps = Hours.map{ |h| weather[h]}
     save
     @temps
@@ -383,7 +407,7 @@ logger.debug("WEATHER id=#{id} date=#{date}")
   def revise_by_temp
     return @revise_by_temp if @revise_by_temp
     unless self.rev01
-      #return unless weather
+      return [] unless weather
       revs = Hours.map{ |h|
         power = self[h]
         temp  = weather[h]
@@ -410,6 +434,7 @@ logger.debug("WEATHER id=#{id} date=#{date}")
 
   def difference
     return @differences if @differences
+    return nil unless revise_by_temp && revise_by_temp.first
     if difference00
       @differences = ("00".."23").map{ |h| self["difference#{h}"] }
     elsif date.nil?
@@ -505,4 +530,34 @@ logger.debug("WEATHER id=#{id} date=#{date}")
 # 629.36, [624.6, 629.6, 630.6, 630.8, 631.2]
 end
 
+__END__
+>> ave3.a
+=> [585.344448512587, -2.8946985333208, 0.543465592966868, -0.0273597742127158, -0.0271368587272631]
+>> ave4.a
+=> [671.311419302734, -11.046155811208, 0.424149932237185, 0.0538818174000054, -0.0320642544879384]
+>> ave2.a
+=> [390.506310135954, -4.09290092097442, 0.800845654009422, -0.118680606373331, -0.0413615377084879]
+>> 
 
+>> ave3.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave3.revise_by_temp[PolyFitHour],n)
+=> [585.344448512587, -2.8946985333208, 0.543465592966868, -0.0273597742127158, -0.0271368587272631]
+>> ave3.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave3.powers[PolyFitHour],n)
+=> [681.880767263428, -2.16091644385028, 1.00939574410472, 0.0151249061825689, -0.0245542670105259]
+>> ave3.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave3.aves[PolyFitHour],n)
+=> [488.807671961234, -3.62848992635336, 0.0775723702054876, -0.0698439229758882, -0.0297197879828015]
+>> 
+
+>> ave.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave.revise_by_temp[PolyFitHour],n)
+=> [671.311419302734, -11.046155811208, 0.424149932237185, 0.0538818174000054, -0.0320642544879384]
+>> ave.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave.powers[PolyFitHour],n)
+=> [775.743610849375, -1.00351300544133, 0.763666749521605, -0.0184740946617896, -0.033552131134333]
+>> ave.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave.aves[PolyFitHour],n)
+=> [566.879582177953, -21.0886685977422, 0.0846391388986092, 0.126236193201364, -0.0305765463560064]
+
+>> ave.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave.revise_by_temp[PolyFitHour],n)
+=> [390.506310135954, -4.09290092097442, 0.800845654009422, -0.118680606373331, -0.0413615377084879]
+>> ave.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave.powers[PolyFitHour],n)
+=> [610.610527123437, -1.38989022969643, -0.44405480799054, -0.007231545329454, -0.0114488937191251]
+>> ave.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave.aves[PolyFitHour],n)
+=> [500.55827931081, -2.74142026691058, 0.178407164847272, -0.0629558940801201, -0.0264053476445685]
+>> 

@@ -8,6 +8,7 @@ class Shimada::MonthController <  Shimada::Controller
 
 
   URL_GRAPH0 = "/shimada/month/graph?fitting=standerd&method="
+  URL_GRAPH1 = "/shimada/month/graph?fitting=std_temp&method="
   Labels = 
     [
      HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
@@ -26,7 +27,7 @@ class Shimada::MonthController <  Shimada::Controller
   DaylyLabels =
     [
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
-     HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => URL_GRAPH0+"powers_3"   , :htmloption => Popup}),
+     HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => URL_GRAPH1+"powers_3"   , :htmloption => Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => URL_GRAPH0+"revise_by_temp_3",:htmloption => Popup }),
       #HtmlCeckForSelect.new(:id,""),
       HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
@@ -53,7 +54,7 @@ class Shimada::MonthController <  Shimada::Controller
   def set_instanse_variable
     super
     @Model= Shimada::Month
-    @TYTLE = "シマダ:月度データ"
+    @TYTLE = "シマダヤ:月度データ"
     @labels=Labels
     @AssosiationLabels = PowerLabels
     @TableEdit  = 

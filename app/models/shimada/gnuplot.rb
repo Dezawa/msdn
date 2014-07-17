@@ -114,16 +114,61 @@ set grid #ytics
 
 
     def fitting_line(power,offset)
-      if @opt[:fitting]
-        output_stdfile(power.line)
+      if @opt[:fitting] == :standerd
+        line = power.line
+        return "" unless (2..4).include?(line)
+        polyfits = Shimada::Power::PolyFits[line]
+        a=polyfits[:ave]
+        u=polyfits[:max]
+        l=polyfits[:min]
+
+        x_offset = Shimada::Power::PolyFitX0+1
+        i=j=k=0
+        ",\\\n #{u[0]}"+ u[1..-1].map{ |aa| i+=1 ;"+ #{aa}  * (x-#{x_offset})**#{i}" }.join + " lt -1" +
+        ",\\\n #{a[0]}"+ a[1..-1].map{ |aa| j+=1 ;"+ #{aa}  * (x-#{x_offset})**#{j}" }.join + " lt -1 lw 2" +
+        ",\\\n #{l[0]}"+ l[1..-1].map{ |aa| k+=1 ;"+ #{aa}  * (x-#{x_offset})**#{k}" }.join + " lt -1" 
+
+      elsif @opt[:fitting] == :std_temp
+         output_std_temp_file(power)
         ",\\\n '#{@std_data_file}' using 1:3 with line lt -1 lw 1.5, \\
         '' using 1:2 with line   lt -1  lw 2 ,\\
         '' using 1:4 with line  lt -1 lw 1.5 "
-      else
+     else
         fitting_poly(power,offset)
       end
     end
-    
+ 
+    def f4(h,a)
+      x = h - Shimada::Power::PolyFitX0
+      (((a[4] * x + a[3])*x + a[2])*x + a[1])*x+a[0] 
+    end
+
+    def inv_revice(pw,temp)
+      params = Shimada::Power::ReviceParms
+      temp >  params[:threshold_temp]  ?
+        pw + params[:slope_higher] * (temp - params[:threshold_temp]) : 
+        pw + params[:slope_lower] * (temp - params[:threshold_temp])
+    end
+
+
+   def output_std_temp_file(power)
+     line = power.line
+     temp =  power.temps || Forecast.temperature24(:maebashi,power.date)
+     ave = (0..23).map{ |h| inv_revice(f4(h,Shimada::Power::PolyFits[line][:ave]),temp[h])}
+     min = (0..23).map{ |h| inv_revice(f4(h,Shimada::Power::PolyFits[line][:min]),temp[h])}
+     max = (0..23).map{ |h| inv_revice(f4(h,Shimada::Power::PolyFits[line][:max]),temp[h])}
+     if @time_ofset > 1
+       l = @time_ofset -1
+       ave = ave[l..-1]+ave[0 .. l-1]
+       min = min[l..-1]+min[0 .. l-1]
+       max = max[l..-1]+max[0 .. l-1]
+     end
+     open(@std_data_file,"w"){ |f|
+        f.print "時刻 平均 上限 下限\n"
+        (0..23).
+       each{ |h| f.printf( "%d %.3f %.3f %.3f\n", @time_ofset+h,ave[h],max[h],min[h]) }
+      }
+    end   
    def output_stdfile(line)
       pw = Shimada::Power.average_line(line)
       open(@std_data_file,"w"){ |f|
@@ -139,6 +184,7 @@ set grid #ytics
 
  class Tomorrow < Power
     def output_path
+      return [@std_data_file] #unless @powers
       output_plot_data{ |f,pw| 
         f.print "時刻 中央 上限 下限\n"
         (0..23).
@@ -148,7 +194,7 @@ set grid #ytics
         }
       }
     end
-    def output_def_file(path, group_by)
+    def doutput_def_file(path, group_by)
       preunble = @Def% [ @graph_file , @opt[:title] || "消費電力予想" ,group_by ,@xrange ]
       open(@def_file,"w"){ |f|
         f.puts preunble 

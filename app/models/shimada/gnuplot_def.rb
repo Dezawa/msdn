@@ -36,8 +36,13 @@ module Shimada::GnuplotDef
 
   def tomorrow_graph(line)
     temperature = Forecast.temperature24(:maebashi,self.date)
-    self.copy_revise.inv_revise(temperature)
-    [:revise,:max,:min].each{ |method| self.copy_and_inv_revise(temperature,method)  }
-    Shimada::Gnuplot::Tomorrow.new([self],:powers,{:graph_file => "tomorrow"  }).plot
+    #[:revise,:max,:min].each{ |method| self.copy_and_inv_revise(temperature,method)  }
+    Shimada::Gnuplot::Tomorrow.new([self],:powers,{:graph_file => "tomorrow"  ,
+                                :fitting => :std_temp }).plot
+  end
+  def today_graph
+    temperature = Forecast.temperature24(:maebashi,self.date)
+    Shimada::Gnuplot::Power.new([self],:powers,{:graph_file => "today" ,
+                                :fitting => :std_temp }).plot
   end
 end

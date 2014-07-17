@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 class Shimada::FactoryController <  Shimada::Controller
 
+  PopupToday = %Q!onClick="window.open('/shimada/factory/today','today','width=800,height=500,scrollbars=yes');" target="today"! 
   Labels = 
     [
      HtmlText.new(:name,"工場名",:size => 8 ),
      HtmlText.new(:weather_location,"気象予報エリア名",:size => 8),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/today",:link_label => "本日実績"}),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/today",:link_label => "本日実績", :htmloption =>PopupToday}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/tomorrow",:link_label => "明日予報"}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/results",:link_label => "過去実績"}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/analyze",:link_label => "分析"})
@@ -14,7 +15,7 @@ class Shimada::FactoryController <  Shimada::Controller
     super
     @Model= Shimada::Factory
     @Domain= @Model.name.underscore
-    @TYTLE = "但馬屋工場電力管理"
+    @TYTLE = "シマダヤ工場電力管理"
     @labels=Labels
     @TableEdit  = true
     @Show = @Delete = @Edir = true
@@ -22,8 +23,26 @@ class Shimada::FactoryController <  Shimada::Controller
   end
 
   def today
+    today_graph    
+  end
+  def update_today
+    line = params[:power][:line]
+    today_graph  line
+  end
+
+  def today_graph(line = nil)
     factory = @Model.find params[:id]
-    @power = Shimada::Power.find_by_month((Time.now-1.year))
+    @today= Time.now.to_date
+    @power = Shimada::Power.find_or_create_by_date(@today)
+    month = Shimada::Month.find_or_create_by_month(@today.beginning_of_month)
+    @power.month = month;@power.save
+    line ||=  @power.line || 3
+    @power.update_attribute(:line,line)  if @power.line != line
+    @power.today_graph
+    forecast = Forecast.find_or_fetch(:maebashi,@today)
+    @temp = forecast.temperature
+    @humi = forecast.humidity
+    render :action => :today,:layout => "refresh"
   end
 
   def update_tomorrow
@@ -40,10 +59,7 @@ class Shimada::FactoryController <  Shimada::Controller
   def tomorrow_graph(line)
     @today= Time.now.to_date
     @tomorrow = @today.tomorrow.to_date
-    #month = tomorrow.beginning_of_month
-    #shimada_month = Shimada::Month.find_or_create_by_month(month)
     @power = Shimada::Power.new(:date => @tomorrow,:line => line)
-    #@power.month = shimada_month
     @date = @tomorrow
     @power.tomorrow_graph(line)
     forecast = Forecast.find_or_fetch(:maebashi,@tomorrow,@today)
