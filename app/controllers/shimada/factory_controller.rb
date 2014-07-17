@@ -21,6 +21,23 @@ class Shimada::FactoryController <  Shimada::Controller
     @Show = @Delete = @Edir = true
     
   end
+  def add_on_table
+    @labels =  [
+     HtmlText.new(:name,"工場名",:size => 8 ),
+     HtmlText.new(:weather_location,"気象予報エリア名",:size => 8)
+               ]
+    super
+  end
+
+
+  def edit_on_table
+    @labels =  [
+     HtmlText.new(:name,"工場名",:size => 8 ),
+     HtmlText.new(:weather_location,"気象予報エリア名",:size => 8)
+               ]
+    super
+  end
+
 
   def today
     path = RAILS_ROOT+"/app/models/shimada/update_mysql.rb"
