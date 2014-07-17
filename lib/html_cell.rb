@@ -126,7 +126,7 @@ class HtmlLink   < HtmlCell
     @ro = true
     super
   end
-  def edit_text(object,htmlopt="")
+  def edit_text(domain,object,htmlopt="")
     disp(object,htmlopt="")
   end
   def disp(object,htmlopt="")
