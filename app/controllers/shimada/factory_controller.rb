@@ -55,6 +55,7 @@ class Shimada::FactoryController <  Shimada::Controller
         f.puts dmypw.powers.join(" ")
       }
     end
+    @interbal = 10
     render :action => :today,:layout => "refresh"
   end
 
