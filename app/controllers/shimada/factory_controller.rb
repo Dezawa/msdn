@@ -23,25 +23,38 @@ class Shimada::FactoryController <  Shimada::Controller
   end
 
   def today
+    path = RAILS_ROOT+"/app/models/shimada/update_mysql.rb"
+    
     today_graph    
   end
   def update_today
-    line = params[:power][:line]
-    today_graph  line
+    line = params[:power][:line]  
+    @today= Time.now.to_date
+    @power = Shimada::Power.find_by_date(@today) 
+    @power.update_attribute(:line,line)  
+    redirect_to :action => :today
   end
 
-  def today_graph(line = nil)
-    factory = @Model.find params[:id]
+  def today_graph
+    #factory = @Model.find params[:id]
     @today= Time.now.to_date
     @power = Shimada::Power.find_or_create_by_date(@today)
     month = Shimada::Month.find_or_create_by_month(@today.beginning_of_month)
     @power.month = month;@power.save
-    line ||=  @power.line || 3
-    @power.update_attribute(:line,line)  if @power.line != line
+    @power.update_attribute(:line,3)  unless @power.line
     @power.today_graph
     forecast = Forecast.find_or_fetch(:maebashi,@today)
     @temp = forecast.temperature
     @humi = forecast.humidity
+
+    dmypwfile = RAILS_ROOT+"/tmp/shimada/dmydata"
+    unless File.exist?(dmypwfile)
+      dmypw = Shimada::Power.find_or_create_by_date(@today.last_year)
+      open(dmypwfile,"w"){ |f|
+        f.puts @today.strftime("%Y %m %d")
+        f.puts dmypw.powers.join(" ")
+      }
+    end
     render :action => :today,:layout => "refresh"
   end
 
