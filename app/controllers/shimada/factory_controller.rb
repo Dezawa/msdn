@@ -64,16 +64,20 @@ class Shimada::FactoryController <  Shimada::Controller
     @temp = forecast.temperature
     @humi = forecast.humidity
 
-    dmypwfile = RAILS_ROOT+"/tmp/shimada/dmydata"
-    unless File.exist?(dmypwfile)
-      dmypw = Shimada::Power.find_or_create_by_date(@today.last_year)
-      open(dmypwfile,"w"){ |f|
-        f.puts @today.strftime("%Y %m %d")
-        f.puts dmypw.powers.join(" ")
-      }
+    ############  Demo用 ####################
+    if hr = @power.powers.index(nil)
+      dmypw = Shimada::Power.find_or_create_by_date(@today.last_year).powers
+      @power.update_attribute( "hour%02d"%(hr+1) , dmypw[hr])
     end
+    #########################################
     @interbal = 10
     render :action => :today,:layout => "refresh"
+  end
+
+  def clear_today
+    @today= Time.now.to_date
+    ( pw = Shimada::Power.find_by_date(@today) ) && pw.delete 
+    redirect_to :action => :today 
   end
 
   def update_tomorrow
