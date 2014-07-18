@@ -164,6 +164,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   def lines
     return @lines if @lines
+    return 0 if revise_by_temp.size == 0
     unless line
       update_attribute(:line , Lines.index{ |l| l.include?(revise_by_temp_ave[7..-1].max) })
     end
@@ -213,10 +214,11 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def aves   ; Aves.map{ |h|  self[h]} ; end
 
   def offset_3(method,last=23)
+    return [] if ( values = send(method) ).size < TimeOffset
     if date 
-      send(method)[TimeOffset..last] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.send(method)[0..TimeOffset] : [])
+      values[TimeOffset..last] + (( pw = self.class.find_by_date(date.tomorrow)) ? values[0..TimeOffset] : [])
     else
-      send(method)[TimeOffset..last] + send(method)[0..TimeOffset]
+      values[TimeOffset..last] + values[0..TimeOffset]
     end
   end
 
@@ -244,8 +246,8 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def na(n=PolyLevel)
     return @na if @na
     unless self.f4_na0 
-            self.f4_na0, self.f4_na1, self.f4_na2, self.f4_na3, self.f4_na4 = 
-              polyfit(PolyFitHour.map{ |h| h-PolyFitX0},normalized_ave[PolyFitHour],n)
+      self.f4_na0, self.f4_na1, self.f4_na2, self.f4_na3, self.f4_na4 = 
+        polyfit(PolyFitHour.map{ |h| h-PolyFitX0},normalized_ave[PolyFitHour],n)
       save
     end
     @na =   [ f4_na0, f4_na1, f4_na2, f4_na3, f4_na4 ]
@@ -264,6 +266,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def nf4(x) ;    (((na[4] * x + na[3])*x + na[2])*x + na[1])*x+na[0] ;  end
   def nf4_peaks ;@nf4_peaks ||= nf3_solve.map{ |x| nf4(x)} ;end
   def pw_peaks 
+    return if revise_by_temp.size == 0
     logger.debug("PW_PEAKS:#{date} f3_solve=#{f3_solve.join(',')}")
     if f3x2 
       [ revise_by_temp_ave[0..[f3x2+PolyFitX0,1].max].max, 
@@ -277,12 +280,14 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
 
   def pw_vary
+    return if revise_by_temp.size == 0
     if  f3x2 ; revise_by_temp_ave[ [8,f3x1+PolyFitX0].max .. [f3x3 + PolyFitX0,20].min ].min
     elsif x2 ; revise_by_temp_ave[x2+PolyFitX0] || revise_by_temp_ave.last
     end
   end
 
   def difference_peak_sholder
+    return nil if revise_by_temp_ave.size ==0
     pw_peaks[0] - 
       ( revise_by_temp_ave[x2+PolyFitX0] || revise_by_temp_ave.last)
   end
@@ -400,8 +405,10 @@ logger.debug("WEATHER id=#{id} date=#{date} ")
   end
 
   def variance_revise(from = 8,to = 18)
-    ave = revise_by_temp_ave[from..to].inject(0.0){ |s,e| s += e}/(to-from+1)
-    sigma  = revise_by_temp_ave[from..to].inject(0.0){ |s,e| s += (e-ave)*(e-ave)}
+    revises = revise_by_temp_ave[from..to].compact
+    return nil if revises.size > 0
+    ave = revises.inject(0.0){ |s,e| s += e}/revises.size
+    sigma  = revises.inject(0.0){ |s,e| s += (e-ave)*(e-ave)}
   end
 
   def revise_by_temp
@@ -434,7 +441,7 @@ logger.debug("WEATHER id=#{id} date=#{date} ")
 
   def difference
     return @differences if @differences
-    return nil unless revise_by_temp && revise_by_temp.first
+    return [] unless revise_by_temp && revise_by_temp.first
     if difference00
       @differences = ("00".."23").map{ |h| self["difference#{h}"] }
     elsif date.nil?
@@ -450,10 +457,12 @@ logger.debug("WEATHER id=#{id} date=#{date} ")
   end
 
   def difference_revise_by_temp
+    return [ ] if revise_by_temp.size == 0
     y0 = revise_by_temp_ave.first
     revise_by_temp_ave[1..-1].map{ |y| dif = y - y0; y0 = y ; dif} 
   end
   def difference_ave(num=3)
+    return [] if difference.size ==0 
     @difference_ave ||= 
       (
        n = num/2
@@ -465,6 +474,7 @@ logger.debug("WEATHER id=#{id} date=#{date} ")
   end
 
   def revise_by_temp_ave(num=3)
+    return [] if revise_by_temp.size ==0 
     return @revise_by_temp_ave if @revise_by_temp_ave
     unless self.ave01
       n = num/2
@@ -499,6 +509,7 @@ logger.debug("WEATHER id=#{id} date=#{date} ")
   end
 
   def normalized(num=5)
+    return [] if powers.size == 0
     ave = max_ave(num)
     #move_ave(num)
     #Hours.map{ |h| self[h]/ave}
