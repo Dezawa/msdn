@@ -22,6 +22,7 @@ module Shimada::GraphAllMonth
      HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}difference_ave", :link_label => "差分平均"}.merge(POPUP)),
      #HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month_diffdiff", :link_label => "二階差"}.merge(POPUP)),
      #HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month_ave", :link_label => "平均化"}.merge(POPUP)),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/show_analyze",:link_label => "月度一覧表示" })
     ]
 
     AllMonthaction_buttoms = 

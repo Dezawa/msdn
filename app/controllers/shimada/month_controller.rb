@@ -62,16 +62,17 @@ class Shimada::MonthController <  Shimada::Controller
        [:form,:factory,"戻る"] # ,{ :controller => "shimada"}]
       ]
     @action_buttoms = Action_buttoms
-[ AllMonthaction_buttoms,         # 全月度グラフ ....
-  AllMonthaction_buttomsPaterns,  # パターン分析結果
-  AllMonthaction_buttomsDeform,   # 異常パターン
-  AllMonthaction_buttoms3,        # 数、型指定しての、グラフなど
-  AllMonthaction_buttoms2         # 
-                        
-                      ]
+    @action_buttoms_analize =[# Action_buttoms,
+                               AllMonthaction_buttoms,         # 全月度グラフ ....
+                               AllMonthaction_buttomsPaterns,  # パターン分析結果
+                               AllMonthaction_buttomsDeform,   # 異常パターン
+                               AllMonthaction_buttoms3,        # 数、型指定しての、グラフなど
+                               AllMonthaction_buttoms2         # 
+                               
+                             ]
 
-    @Show = true
-    @Delete = true
+
+    #@Delete = true
     @Domain= @Model.name.underscore
     # @Refresh = :kamokus
     @SortBy    = :month
@@ -82,14 +83,21 @@ class Shimada::MonthController <  Shimada::Controller
   end
 
   def analyze
-    factory = Shimada::Factory.find(params[:id])
-    redirect_to :action => :index
+    @labels =   AllMonthLabels 
+      #factory = Shimada::Factory.find(params[:id])
+     @page = params[:page] || 1 
+    find_and
+   @action_buttoms =  @action_buttoms_analize
+    render  :file => 'application/index',:layout => 'application'
   end
 
 
   def results
     factory = Shimada::Factory.find(params[:id])
-    redirect_to :action => :index
+     @Show = true
+     @page = params[:page] || 1 
+    find_and
+    render  :file => 'application/index',:layout => 'application'
   end
 
   def index
@@ -114,14 +122,13 @@ class Shimada::MonthController <  Shimada::Controller
     show_sub
   end
  
-
-  def show_analize ;
+  def show_analyze ;
     @model = @Model.find(params[:id])
     @page = params[:id]
     @models = @model.powers
     @TYTLE_post = @models.first.date.strftime("(%Y年%m月)")
 
-    @TableEdit  =  [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
+    @TableEdit  =  [[:form,:analyze,"一覧に戻る"],[:form,:edit_on_table,"編集"],
                     [:popup,:graph_month,"月度グラフ",{ :win_name => "graph",:method => :powers_3} ],
                     [:popup,:graph_month,"月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
                     [:popup,:graph_month,"月度温度補正平均",{ :win_name => "graph",:method =>:revise_by_temp_ave } ],
