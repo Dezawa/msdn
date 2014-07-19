@@ -313,7 +313,7 @@ set x2tics -10,5
         weather = Weather.find_or_feach("maebashi", power.date)#.temperatureseratures[idx] 
           power.powers.zip(weather.temperatures)[@range].each{ |pw,tmp| 
             f.printf( "%.1f %.1f\n",tmp,pw ) if pw && tmp
-          }
+          } if weather
       }
     end
 
