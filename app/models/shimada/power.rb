@@ -17,7 +17,29 @@ class Shimada::Power < ActiveRecord::Base
   PolyFitX0   = 14.0       # 15時
   PolyLevel   = 4
 
-  PolyFits = { 
+  PolyFits = 
+{ 1 =>{  
+    :ave => [353.137 ,-9.849 ,-1.482 ,0.078 ,-0.001] ,
+    :max => [ 258.123 ,-24.955 ,-1.983 ,0.300 ,0.004] ,
+    :min => [448.151 ,5.258 ,-0.980 ,-0.145 ,-0.007]
+    },
+2 => {  
+    :ave => [514.742 ,-2.965 ,-0.579 ,-0.054 ,-0.019 ],
+    :max => [ 453.535 ,-9.242 ,-2.593 ,-0.044 ,-0.009 ],
+    :min => [575.949 ,3.311 ,1.435 ,-0.065 ,-0.028]
+    },
+3  =>{ 
+    :ave => [ 594.199 ,-0.698 ,0.747 ,-0.046 ,-0.029 ],
+    :max => [ 524.386 ,-0.655 ,0.250 ,-0.097 ,-0.033 ],
+    :min => [664.012 ,-0.742 ,1.243 ,0.005 ,-0.025]
+    },
+4 =>{ 
+    :ave => [ 684.008 ,-6.699 ,0.649 ,0.011 ,-0.036 ],
+    :max => [ 602.023 ,-10.394 ,0.132 ,-0.024 ,-0.035 ],
+    :min => [765.993 ,-3.003 ,1.166 ,0.047 ,-0.036]
+    }
+}
+    { 
     2 => 
     { :ave => [390.50, -4.0929, 0.800, -0.118, -0.0413],
       :max => [610.61, -1.3898, -0.44, -0.007, -0.0114],
@@ -246,13 +268,22 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     @a ||= polyfit(PolyFitHour.map{ |h| h-PolyFitX0},revise_by_temp[PolyFitHour],n)
   end
   def a0 ; (a[0] || 0.0);end
-  def a1 ; (a[1] || 0.0)*10;end
-  def a2 ; (a[2] || 0.0)*100;end
-  def a3 ; (a[3] || 0.0)*1000;end
-  def a4 ; (a[4] || 0.0)*10000;end
-  def a5 ; (a[5] || 0.0)*100000;end
-  def a6 ; (a[6] || 0.0)*1000000;end
+  def a1 ; (a[1] || 0.0);end
+  def a2 ; (a[2] || 0.0);end
+  def a3 ; (a[3] || 0.0);end
+  def a4 ; (a[4] || 0.0);end
+  def a5 ; (a[5] || 0.0);end
+  def a6 ; (a[6] || 0.0);end
 
+  def a_low(n=PolyLevel)
+    polyfit(PolyFitHour.map{ |h| h-PolyFitX0},aves[PolyFitHour],n)
+  end
+
+  def a_high(n=PolyLevel)
+    polyfit(PolyFitHour.map{ |h| h-PolyFitX0},powers[PolyFitHour],n)
+  end
+
+  (0..5).each{ |i| define_method("a_low#{i}"){ a_low[i]}; define_method("a_high#{i}"){ a_high[i]}}
 
   def na(n=PolyLevel)
     return @na if @na
