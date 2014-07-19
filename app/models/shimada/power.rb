@@ -61,6 +61,15 @@ conditions[0] ,
  *conditions[1] ] ) 
   end
 
+  def self.by_patern(patern)
+      line_shape = ( if   patern ; Paterns[patern]
+                     else Un_sorted
+                     end ).map{ |ls| ls.split("",2)}
+      #months = Shimada::Month.all
+      @power=power_all.
+        select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
+  end
+
   def self.reset_reevice_and_ave
     self.all.each{ |power|
       ( Revs +   Aves ).each{ |clm|  power[clm]=nil }
@@ -113,10 +122,12 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   # rev => 平均 、difference => SDEV、powers => +2σ、ave => -2σ
   def self.average_line(line)
     return @@average_line[line] if @@average_line[line]
+    return nil unless (1..4).include?(line)
+    patern = "稼働#{line}"
 
     average_line = Shimada::Power.find_or_create_by_date_and_line(nil,line)
     
-    powers = self.power_all([" and line = ?", line])
+    powers = self.by_patern(patern) # )power_all([" and line = ?", line])
     aves = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.average}
     sdev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.standard_devitation}
     high = (0..23).map{ |i| aves[i]+2*sdev[i] }

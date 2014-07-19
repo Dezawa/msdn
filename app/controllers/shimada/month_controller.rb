@@ -87,7 +87,16 @@ class Shimada::MonthController <  Shimada::Controller
       #factory = Shimada::Factory.find(params[:id])
      @page = params[:page] || 1 
     find_and
-   @action_buttoms =  @action_buttoms_analize
+
+    @TableEdit  =
+      [ :csv_up_buttom ,
+        [:form,:reset_reevice_and_ave,"再補正・再平均"],
+        [:form,:reculc_all,"再計算"],
+        [:form,:reculc_shapes,"再分類"],
+        [:form,:rm_gif,"グラフ再作成"]
+      ]
+    
+    @action_buttoms =  @action_buttoms_analize
     render  :file => 'application/index',:layout => 'application'
   end
 
@@ -128,16 +137,17 @@ class Shimada::MonthController <  Shimada::Controller
     @models = @model.powers
     @TYTLE_post = @models.first.date.strftime("(%Y年%m月)")
 
-    @TableEdit  =  [[:form,:analyze,"一覧に戻る"],[:form,:edit_on_table,"編集"],
-                    [:popup,:graph_month,"月度グラフ",{ :win_name => "graph",:method => :powers_3} ],
-                    [:popup,:graph_month,"月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
-                    [:popup,:graph_month,"月度温度補正平均",{ :win_name => "graph",:method =>:revise_by_temp_ave } ],
-                    [:popup,:graph_month_temp,"月度対温度",{ :win_name => "graph" } ],
-                    [:popup,:graph_month_lines_types,"月度稼働・型",{ :win_name => "graph" } ],
-                    #:popup,:graph_month_difference_ave,"月度差分平均",{ :win_name => "graph"} ],
-                    [:popup,:graph_month,"月度差分",{ :win_name => "graph",:method => :difference_3} ]
-                   ]
-
+    @TableEdit  =  
+      [[:form,:analyze,"一覧に戻る"],
+        [:popup,:graph_month,"月度グラフ",{ :win_name => "graph",:method => :powers_3} ],
+        [:popup,:graph_month,"月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
+        [:popup,:graph_month,"月度温度補正平均",{ :win_name => "graph",:method =>:revise_by_temp_ave } ],
+        [:popup,:graph_month_temp,"月度対温度",{ :win_name => "graph" } ],
+        [:popup,:graph_month_lines_types,"月度稼働・型",{ :win_name => "graph" } ],
+        #:popup,:graph_month_difference_ave,"月度差分平均",{ :win_name => "graph"} ],
+        [:popup,:graph_month,"月度差分",{ :win_name => "graph",:method => :difference_3} ]
+      ]
+      
     @action_buttoms = Month_action_buttoms
     @TableHeaderDouble = [10,[13,"係数"],[24,"時刻"]]
     @labels = PowerLabels
@@ -174,13 +184,13 @@ class Shimada::MonthController <  Shimada::Controller
 
   def reculc_all
     Shimada::Power.reculc_all
-    redirect_to :action => :index
+    redirect_to :action => :analyze
     #render  :file => 'application/index',:layout => 'application'
   end
 
   def reculc_shapes
     Shimada::Power.reculc_shapes
-    redirect_to :action => :index
+    redirect_to :action => :analyze
     #render  :file => 'application/index',:layout => 'application'
   end
 

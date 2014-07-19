@@ -286,8 +286,9 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
                      else Shimada::Power::Un_sorted
                      end ).map{ |ls| ls.split("",2)}
       months = Shimada::Month.all
-      @power=months.map{ |m| m.powers}.flatten.
-        select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
+      @power=Shimada::Power.by_patern(shapes)
+        #months.map{ |m| m.powers}.flatten.
+        #select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
       opt.merge!({ :by_ => :line_shape,:title => params[@Domain][:shape], :graph_file => @graph_file})
      Shimada::Power.gnuplot(@power,method,opt)
     end
