@@ -502,6 +502,7 @@ logger.debug("WEATHER id=#{id} date=#{date} ")
   def move_ave(num=5)
     @move_ave ||= []
     return @move_ave[num] if @move_ave[num]
+    return [] if powers.compact.size < 24
     n = num/2
     @move_ave[num] = (0..powers.size-1).
       map{ |h| ary = powers[[0,h-n].max..[h+n,powers.size-1].min]
@@ -520,7 +521,7 @@ logger.debug("WEATHER id=#{id} date=#{date} ")
   end
 
   def normalized(num=5)
-    return [] if powers.size == 0
+    return [] if powers.compact.size < 24
     ave = max_ave(num)
     #move_ave(num)
     #Hours.map{ |h| self[h]/ave}
