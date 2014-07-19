@@ -452,10 +452,10 @@ logger.debug("WEATHER id=#{id} date=#{date} ")
 
   def difference
     return @differences if @differences
-    return [] unless revise_by_temp && revise_by_temp.first
+    #return [] unless revise_by_temp && revise_by_temp.first
     if difference00
       @differences = ("00".."23").map{ |h| self["difference#{h}"] }
-    elsif date.nil?
+    elsif date.nil? || revise_by_temp.compact.size < 24
       @differences=[]
     else
       y0 = revise_by_temp.first
