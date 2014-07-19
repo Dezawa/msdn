@@ -300,7 +300,7 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     label  = params[@Domain][:label]
     shape  =  params[@Domain][:shape]
     shape  = nil if shape == "未分類"
-    graph_all_month_patern(:standerd,label,shape,{ :mode =>:revise_by_temp_3 })
+    graph_all_month_patern(:revise_by_temp_3,label,shape,{ :mode =>:revise_by_temp_3,:fitting => :standerd })
   end
   def graph_deform
     action = params[@Domain][:action]
