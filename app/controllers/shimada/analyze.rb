@@ -177,5 +177,19 @@ module Shimada::Analyze
     redirect_to :action => :index,:layout => "hospital_error_disp"
   end
 
-
+  def standerd
+    @labels = 
+      [ HtmlNum.new(:line,"稼働数")] +
+       ("a0".."a4").map{|n| HtmlNum.new(n.to_sym,n,:tform => "%.3f") }+
+       ("a_low0".."a_low4").map{|n| HtmlNum.new(n.to_sym,n,:tform => "%.3f") }+
+       ("a_high0".."a_high4").map{|n| HtmlNum.new(n.to_sym,n,:tform => "%.3f") }
+      
+    #@models = %w(稼働1 稼働2 稼働3 稼働4).map{ |patern|
+    @models = (1..4).map{ |patern|
+      Shimada::Power.average_line(patern)
+    }
+logger.debug("Shimada::Power:models #{@models[0].a_low.join(',')}")
+    render  :file => 'application/index',:layout => 'application'
+    
+  end
 end
