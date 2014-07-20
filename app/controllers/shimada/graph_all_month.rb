@@ -173,7 +173,7 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     graph_file = opt[:graph_file] ? opt[:graph_file].sub(/\+/,"p") : ""
     opt.merge!(:graph_file => "all_month#{graph_file}_#{method}" ) 
     @graph_file =  opt[:graph_file]
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{opt[:graph_file]}.gif") == true
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{opt[:graph_file]}.gif") == true
       months = Shimada::Month.all
       @power=months.map{ |m| m.powers}.flatten
       @power = select_by_( @power,opt[:find]) if  opt[:find] 
@@ -190,7 +190,7 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     opt = { :graph_file => @graph_file }
 
     @TYTLE = "標準電力消費 #{line}稼働"
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       @power = Shimada::Power.all(:conditions => ["line = ?",line])
       Shimada::Power.gnuplot(@power,:standerd,opt.merge(:title => @TYTLE ))
     end
@@ -231,7 +231,7 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
   end
   def graph_all_month_deform(method,title,deform_lbl)
     @graph_file =  "all_month_patern_" + deform_lbl
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       deform = Shimada::Power::Deforms[deform_lbl]
       @power,by_ = 
         case deform
@@ -252,7 +252,7 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
       Shimada::Month.all.each{ |month| graph_temp_(month)}
     else
     @graph_file =  "all_month_vs_temp_" + (line ? line : "")
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
       @power = Shimada::Power.power_all(conditions)
       @TYTLE = "温度-消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
@@ -271,7 +271,7 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     method = params[@Domain][:method].to_sym
     title = { :deviation_of_revice => "電力", :deviation_of_difference => "差分"}[method]
     @TYTLE = "最高温度-#{title}分散 全月度"
-    Shimada::Power.gnuplot(@power,method,:by_ => by_ , :title => @TYTLE,:vs_temp => true)
+    Shimada::Power.gnuplot(@power,method,:by_ => by_ , :title => @TYTLE,:vste_mp => true)
     render :action => :graph,:layout => "hospital_error_disp"
   end
 end

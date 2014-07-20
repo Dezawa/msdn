@@ -61,7 +61,7 @@ logger.debug("GRAPH_MONTH_SUB: opt = #{opt}")
     @graph_file =  opt[:graph_file]
     @TYTLE = title + month.month.strftime("(%Y年%m月)")
 
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{opt[:graph_file]}.gif") == true
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{opt[:graph_file]}.gif") == true
       #@power = opt[:find] ? send(opt[:find].first,month, opt[:find].last)  : month.powers
       @power = opt[:find] ? select_by_(month.powers,opt[:find])  : month.powers
       Shimada::Power.gnuplot(@power,method,opt.merge(:title => @TYTLE))
@@ -128,7 +128,7 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
 
   def graph_temp_(month,opt={ })
     @graph_file =  "month_temp#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}"
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       @power = month.powers
       @TYTLE = "温度-消費電力" + @power.first.date.strftime("(%Y年%m月)")
  
