@@ -250,7 +250,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def offset_3(method,last=23)
     return [] if ( values = send(method) ).size < TimeOffset
     if date 
-      values[TimeOffset..last] + (( pw = self.class.find_by_date(date.tomorrow)) ? values[0..TimeOffset] : [])
+      values[TimeOffset..last] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.send(method)[0..TimeOffset] : [])
     else
       values[TimeOffset..last] + values[0..TimeOffset]
     end
