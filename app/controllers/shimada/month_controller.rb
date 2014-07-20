@@ -68,6 +68,7 @@ class Shimada::MonthController <  Shimada::Controller
                                
                              ]
 
+        @FindOption = { :order => "month desc" }
 
     #@Delete = true
     @Domain= @Model.name.underscore
@@ -80,18 +81,14 @@ class Shimada::MonthController <  Shimada::Controller
   end
 
 
-  def results
-    factory = Shimada::Factory.find(params[:id])
+  def index
+    #factory = Shimada::Factory.find(params[:id])
      @Show = true
      @page = params[:page] || 1 
     find_and
     render  :file => 'application/index',:layout => 'application'
   end
 
-  def index
-        @FindOption = { :order => "month" }
-    super
-  end
 
   def show ;
     @model = @Model.find(params[:id])

@@ -200,7 +200,7 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
 
   def graph_all_month_patern(method,title,shapes,opt={ })
     @graph_file =  "all_month_patern_" + ( shapes || "unsorted")
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/#{@graph_file}.gif") == true
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       line_shape = ( if   shapes ; Shimada::Power::Paterns[shapes]
                      else Shimada::Power::Un_sorted
                      end ).map{ |ls| ls.split("",2)}

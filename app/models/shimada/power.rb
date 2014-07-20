@@ -97,6 +97,7 @@ conditions[0] ,
       ( Revs +   Aves ).each{ |clm|  power[clm]=nil }
       power.save
     }
+    reculc_all
   end
 
   def self.reculc_all
