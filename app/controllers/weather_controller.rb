@@ -16,7 +16,7 @@ class WeatherController < ApplicationController
     @Model= Weather
     @TYTLE = "気象 "
     #@labels=Labels
-    @TableEdit = nil
+    @TableEdit = [[:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}]]
     @Domain= @Model.name.underscore
     #@TableHeaderDouble = [3,[24,"時刻"]]
     @FindOption = { :order => "date"}
@@ -31,6 +31,18 @@ class WeatherController < ApplicationController
     @Delete = true
     @models = Weather.all(:select => :month,:select => "distinct month,location",
                           :order => "location,month")
+  end
+
+  def get_data
+    y,m,d = params[@Domain][:get_data].split(/[^\d]+/).map(&:to_i)
+    if d
+      start = last = Date.new(y,m,d)
+    else
+      start =  Date.new(y,m)
+      last = start.end_of_month
+    end
+    (start..last).each{ |day|  @Model.find_or_feach(:maebashi,day) }
+    redirect_to :action => :index
   end
 
   def temperatuer
