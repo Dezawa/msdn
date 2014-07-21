@@ -289,7 +289,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   def na(n=PolyLevel)
     return @na if @na
-    unless self.f4_na0 
+    unless self.f4_na0 && normalized_ave && normalized_ave.size > n
       self.f4_na0, self.f4_na1, self.f4_na2, self.f4_na3, self.f4_na4 = 
         polyfit(PolyFitHour.map{ |h| h-PolyFitX0},normalized_ave[PolyFitHour],n)
       save
