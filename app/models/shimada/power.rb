@@ -434,9 +434,11 @@ logger.debug("WEATHER id=#{id} date=#{date} ")
     return @weather if @weather
     return @weather = db_weather if db_weather
     return nil unless date
-    db_weather = Weather.find_or_feach("maebashi", self.date)
-    save
-   @weather = db_weather
+    if db_weather = Weather.find_or_feach("maebashi", self.date)
+      save
+      @weather = db_weather
+   
+    end
   end
 
   def temps 
