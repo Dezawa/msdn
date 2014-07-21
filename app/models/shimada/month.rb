@@ -110,7 +110,7 @@ class Shimada::Month < ActiveRecord::Base
       skip_untile_first_data_line(lines)
       
       month = self.find_or_create_by_month(days.first)
-      powers = days.map{ |day| Shimada::Power.create(:date => day) }
+      powers = days.map{ |day| Shimada::Power.find_or_create_by_date( day) }
       set_power(powers,lines)
       month.shimada_powers = powers
     end
@@ -140,10 +140,14 @@ class Shimada::Month < ActiveRecord::Base
 
     def set_power(powers,lines)
       Shimada::Power::Hours.each_with_index{ |hour,idx|
-        clms = lines.shift.split(",")
-        raise RuntimeError,"時刻が合わない" if idx+1 != clms.shift.to_i
+        clms = (line = lines.shift).split(",")
+        raise RuntimeError,"時刻が合わない: #{line}" if idx+1 != clms.shift.to_i
         powers.each{ |power| power[hour] = clms.shift.to_f }
       }
+         line=lines.shift until /袋数/ =~ line
+logger.debug("SET_POWER:#{line}")
+        clms = line.split(",")
+        powers.each{ |power| power[:hukurosu] = clms.shift.to_f ;power.save}
     end
 
 

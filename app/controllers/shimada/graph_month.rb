@@ -37,7 +37,7 @@ module  Shimada::GraphMonth
      HtmlNum.new(:f3x1,"f3x1",:size =>2,:tform => "%.1f"),
      HtmlNum.new(:f3x2,"f3x2",:size =>2,:tform => "%.1f"),
      HtmlNum.new(:f3x3,"f3x3",:size =>2,:tform => "%.1f"),
-     
+     HtmlNum.new(:hukurosu,"袋数",:size => 4 )
     ]+
       Shimada::Power::Hours.map{ |h| 
         HtmlNum.new( h.to_sym,h.sub(/hour0?/,""),:tform => "%.0f",:size => 3)

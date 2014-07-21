@@ -29,7 +29,8 @@ class Shimada::MonthController <  Shimada::Controller
       #HtmlCeckForSelect.new(:id,""),
       HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
       HtmlText.new(:shape_is,"形<br>状",:ro => true,:size =>2,:ro => true),
-      HtmlText.new(:deform,"変形",:ro => true,:size =>4)
+      HtmlText.new(:deform,"変形",:ro => true,:size =>4),
+     HtmlNum.new(:hukurosu,"袋数",:size => 4 )
       
     ] + 
       Shimada::Power::Hours.map{ |h| 
@@ -103,7 +104,7 @@ class Shimada::MonthController <  Shimada::Controller
 
     @action_buttoms = nil; #Month_action_buttoms
     @labels = DaylyLabels
-    @TableHeaderDouble = [6,[24,"時刻"]]
+    @TableHeaderDouble = [7,[24,"時刻"]]
     show_sub
   end
     def show_sub

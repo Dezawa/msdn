@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140715040758) do
+ActiveRecord::Schema.define(:version => 20140716070155) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -57,6 +57,40 @@ ActiveRecord::Schema.define(:version => 20140715040758) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
+
+  create_table "forecasts", :force => true do |t|
+    t.string   "location"
+    t.date     "date"
+    t.date     "month"
+    t.date     "announce_day"
+    t.time     "announce"
+    t.float    "temp03"
+    t.float    "temp06"
+    t.float    "temp09"
+    t.float    "temp12"
+    t.float    "temp15"
+    t.float    "temp18"
+    t.float    "temp21"
+    t.float    "temp24"
+    t.float    "humi03"
+    t.float    "humi06"
+    t.float    "humi09"
+    t.float    "humi12"
+    t.float    "humi15"
+    t.float    "humi18"
+    t.float    "humi21"
+    t.float    "humi24"
+    t.string   "weather03"
+    t.string   "weather06"
+    t.string   "weather09"
+    t.string   "weather12"
+    t.string   "weather15"
+    t.string   "weather18"
+    t.string   "weather21"
+    t.string   "weather24"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "holydays", :force => true do |t|
     t.integer "year"

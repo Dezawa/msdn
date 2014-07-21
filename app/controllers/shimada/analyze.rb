@@ -136,7 +136,7 @@ module Shimada::Analyze
       ]
       
     @action_buttoms = Month_action_buttoms
-    @TableHeaderDouble = [10,[13,"係数"],[24,"時刻"]]
+    @TableHeaderDouble = [10,[16,"係数"],1,[24,"時刻"]]
     @labels = PowerLabels
     show_sub
   end
