@@ -319,6 +319,7 @@ set x2tics  0,250
           f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 "}.join(" , ") +
             ", \\\n #{Shimada::Power::BugsFit[:y0]} + #{Shimada::Power::BugsFit[:slop]}*x
             "
+          f.puts "set terminal  jpeg  size #{@graph_size} \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n" 
       }
     end
 end
