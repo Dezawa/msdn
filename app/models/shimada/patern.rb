@@ -60,7 +60,7 @@ module Shimada::Patern
 
     if lines < 2  ; "S"
     elsif discriminant.abs < 0.000002       ;"00"
-    elsif na[4] > 0
+    elsif na && na[4] > 0
      # if f3x3 < 9 && pw_peaks[1]-pw_peaks[2] > 120  ; "d" 
      # elsif f3x1 >-12 && pw_peaks[1]-pw_peaks[0] > 120  ; "d" 
      # else
