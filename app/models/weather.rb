@@ -52,7 +52,7 @@ class Weather < ActiveRecord::Base
     Block= { :maebashi => [42,47624] }
 
     def hours_data_of(block,y,m,d)
-
+      block = block.to_sym
       url = URLPast%[Block[block].first,Block[block].last,y,m,d]
       fp = Tempfile.open("js.js")
       fp.write JS%url
@@ -61,7 +61,8 @@ class Weather < ActiveRecord::Base
       content = `#{PhantomJS} #{jspath}`     
 
       lines = content.split(/[\n\r]+/)  
-      ( line = lines.shift) until /tablefix2/ =~ line 
+      while ( line = lines.shift) && /tablefix2/ !~ line ;end
+      return nil unless line
       /(201\d年\d{1,2}月\d{1,2}日)/ =~ line
       date = $1
       temp = []
