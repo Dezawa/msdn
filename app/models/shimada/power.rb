@@ -69,7 +69,8 @@ class Shimada::Power < ActiveRecord::Base
   Lines = [(0..300),(300..430),(430..560),(560..680),(680..800),(800..1000)]
   Header = "時刻"
 
-  ReviceParms = { :threshold_temp => 10.0, :slope_lower => 3.0, :slope_higher => 9.0,:y0 => 600}
+  ReviceParms = { :threshold_temp => 10.0, :slope_lower => 3.0, :slope_higher => 9.0,
+    :y0 => 600.0 , :power_0line => 200.0}
 
   Differ = ("00".."23").map{ |h| "difference#{h}" }
   NA     = ("f4_na0".."f4_na4").to_a
@@ -430,7 +431,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def ny2       ; x2 ? nf3(nx2) : nil ;end
 
   def weather
-logger.debug("WEATHER id=#{id} date=#{date} ")
+    #logger.debug("WEATHER id=#{id} date=#{date} ")
     return @weather if @weather
     return @weather = db_weather if db_weather
     return nil unless date
@@ -456,6 +457,11 @@ logger.debug("WEATHER id=#{id} date=#{date} ")
     sigma  = revises.inject(0.0){ |s,e| s += (e-ave)*(e-ave)}
   end
 
+  # y = 9(x - 10) + 600 の傾きで補正する
+  # 10℃  600kWh
+  # 20    690kWhのときに傾き9、補正量90。Pw kWhだったら 90*(Pw-200)/(690-200) 
+  # 30    780                                     9(T-10) * (Pw-200)/(9*(T-10)+600-200)
+  #                                               9(T-10) * (Pw-200)/(9*(T-10)+400)
   def revise_by_temp
     return @revise_by_temp if @revise_by_temp
     unless self.rev01
@@ -464,9 +470,10 @@ logger.debug("WEATHER id=#{id} date=#{date} ")
         power = self[h]
         temp  = weather[h]
          if power && temp
-          temp > ReviceParms[:threshold_temp]  ? 
-           power -  ReviceParms[:slope_higher] * (temp - ReviceParms[:threshold_temp]) : 
-             power - ReviceParms[:slope_lower] * (temp - ReviceParms[:threshold_temp])
+           x0,y0,p0,sll,slh = [:threshold_temp,:y0,:power_0line, :slope_lower, :slope_higher ].
+             map{ |sym|Shimada::Power::ReviceParms[sym]}
+           slp = temp > ReviceParms[:threshold_temp]  ? slh : sll
+           power -  slp*(temp-x0)*(power-p0)/(slp*(temp-x0)+y0-p0)
          else power ? power : 0
          end
       }
