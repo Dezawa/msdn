@@ -58,6 +58,7 @@ class Shimada::Power < ActiveRecord::Base
 
   }
 
+  BugsFit = { :y0 => 440, :slop => 5.4}
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
@@ -481,6 +482,10 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
       save
     end
     @revise_by_temp = Revs.map{ |r| self[r]}
+  end
+
+  def revise_by_temp_sum
+    revise_by_temp.inject(0.0){ |s,e| s += e if e; s}
   end
 
   def diffdiff(range=(1..22))

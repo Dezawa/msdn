@@ -146,8 +146,9 @@ class Shimada::Month < ActiveRecord::Base
       }
          line=lines.shift until /袋数/ =~ line
 logger.debug("SET_POWER:#{line}")
-        clms = line.split(",")
-        powers.each{ |power| power[:hukurosu] = clms.shift.to_f ;power.save}
+      clms = line.split(",")
+      clms.shift
+      powers.each{ |power| power[:hukurosu] = clms.shift.to_f ;power.save}
     end
 
 

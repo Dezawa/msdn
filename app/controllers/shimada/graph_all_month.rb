@@ -265,6 +265,27 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
+  def graph_all_month_bugs
+    if params[@Domain] && params[@Domain][:each_month]
+      Shimada::Month.all.each{ |month| graph_bug_(month)}
+    else
+    @graph_file =  "all_month_vs_bugs_"
+      unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+        #conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
+        @power = Shimada::Power.power_all
+
+        method = params[@Domain][:method]
+logger.debug("GRAPH_ALL_MONTH_BUGS moethod=#{method}")
+        @TYTLE = "袋数-消費電力#{method == :revise_by_temp_sum ? '(補正後)' : ''} 全月度 "
+        
+        Shimada::Power.gnuplot(@power,method,:by_date => "%y/%m",:title => @TYTLE,:vs_bugs => true,
+                               :graph_file =>  @graph_file)# :with_Approximation => true,
+        #:range => (7..19))
+      end
+    end
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
   def graph_all_month_deviation_vs_temp
     @power=Shimada::Power.power_all
     by_ = params[@Domain][:by_]

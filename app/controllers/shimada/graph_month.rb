@@ -16,6 +16,8 @@ module  Shimada::GraphMonth
       HtmlLink.new(:id,"",:link => { :link_label => "差分差分" , :url => URL_GRAPH+"diffdiff_3"  ,:htmloption =>Popup}),
       #HtmlCeckForSelect.new(:id,""),
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
+     HtmlNum.new(:hukurosu,"袋数",:size => 4 ),
+     HtmlNum.new(:revise_by_temp_sum,"総電力",:size => 4 ,:tform => "%.0f"),
       HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
       HtmlNum.new(:deviation_of_difference,"差分の偏差",:ro => true,:size =>3,:tform => "%.1f"),
       HtmlNum.new(:deviation_of_revice,"電力偏差",:ro => true,:size =>3,:tform => "%.1f"),
@@ -24,7 +26,7 @@ module  Shimada::GraphMonth
       
     ] + 
     #(1..4).map{ |i| HtmlNum.new("na#{i}".to_sym,"na#{i}",:tform => "%.3f")}+
-    [HtmlNum.new("na#{4}".to_sym,"na#{4}",:tform => "%.3f"),
+    [#HtmlNum.new("na#{4}".to_sym,"na#{4}",:tform => "%.3f"),
      HtmlNum.new(:discriminant,"判別式",:size =>2,:tform => "%.6f"),
      HtmlNum.new(:pw_vary,"谷",:size =>2,:tform => "%.1f"),
      HtmlNum.new(:pw_peak1,"山1",:size =>2,:tform => "%.1f"),
@@ -37,7 +39,6 @@ module  Shimada::GraphMonth
      HtmlNum.new(:f3x1,"f3x1",:size =>2,:tform => "%.1f"),
      HtmlNum.new(:f3x2,"f3x2",:size =>2,:tform => "%.1f"),
      HtmlNum.new(:f3x3,"f3x3",:size =>2,:tform => "%.1f"),
-     HtmlNum.new(:hukurosu,"袋数",:size => 4 )
     ]+
       Shimada::Power::Hours.map{ |h| 
         HtmlNum.new( h.to_sym,h.sub(/hour0?/,""),:tform => "%.0f",:size => 3)
@@ -137,6 +138,27 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
                  ) 
       #@graph_file =  opt[:graph_file]
       Shimada::Power.gnuplot(@power,opt.delete(:method)||:powers,opt)
+    end
+  end
+
+  def graph_month_bugs(opt={ })
+    id = params[@Domain] ? params[@Domain][:id] : params[:id] 
+    month = @Model.find(id)
+    @method = :revise_by_temp_sum
+    graph_bugs_(month,opt)
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_bugs_(month,opt={ })
+    @graph_file =  "month_bugs#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}"
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+      @power = month.powers
+      @TYTLE = "袋数-消費電力#{@method == :revise_by_temp_sum ? '(補正後)' : ''}" + @power.first.date.strftime("(%Y年%m月)")
+      opt.merge!(:graph_file => @graph_file,
+                 :title => @TYTLE,:graph_size => "600,400",:vs_bugs => true#,:by_date => "%m/%d"
+                 ) 
+      #@graph_file =  opt[:graph_file]
+      Shimada::Power.gnuplot(@power,@method ||:powers_sum,opt)
     end
   end
 end

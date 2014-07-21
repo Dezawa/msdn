@@ -16,11 +16,15 @@ module Shimada::GnuplotDef
       :difference_ave => "差分平均",:revise_by_temp => "温度補正電力",:diffdiff => "二階差分"}
 
     def gnuplot(powers,method,opt={ })
+ logger.debug("GRAPH_BUGS_: :vs_temp #{ opt[:vs_temp]},:vs_bugs #{opt[:vs_bugs]}")
+
       if opt[:vs_temp]
         case method.to_s 
         when /^deviation/ ;Shimada::Gnuplot::TempDeff.new(powers,method,opt).plot
         else              ;Shimada::Gnuplot::Temp.new(powers,method,opt).plot
         end
+      elsif opt[:vs_bugs] ; logger.debug("GNUPLOT: moethod=#{method}")
+        Shimada::Gnuplot::Bugs.new(powers,method,opt).plot
       else
         case method.to_s
         when /^normalized/ ;  Shimada::Gnuplot::Nomalized.new(powers,method,opt).plot

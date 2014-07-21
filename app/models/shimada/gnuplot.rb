@@ -289,6 +289,40 @@ set grid #ytics
     end
   end
 
+  class Bugs <  Shimada::Gnuplot::Plot
+    Def = %Q!set terminal gif enhanced size %s enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+set out 'tmp/shimada/giffiles/%s.gif'
+
+set title "%s"
+set key outside  autotitle columnheader #samplen 1 width -1
+set yrange [0:18000]
+set xrange [0:1600]
+set xtics  0,250
+set x2tics  0,250
+!
+
+    def initialize(powers,method,opt)
+      super
+      @Def = Def
+      #@graph_size = opt[:graph_size] || "700,400"  
+    end
+
+    def output_path
+      output_plot_data{ |f,power| 
+        f.printf( "%.1f %.1f\n",power.hukurosu,power.send(@method)) if power.hukurosu && power.send(@method)
+      }
+    end
+
+    def output_def_file(path, group_by)
+      open(@def_file,"w"){ |f|
+          f.puts @Def%[@size,@graph_file,@opt[:title]||"袋数-消費電力 "]
+          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 "}.join(" , ") +
+            ", \\\n #{Shimada::Power::BugsFit[:y0]} + #{Shimada::Power::BugsFit[:slop]}*x
+            "
+      }
+    end
+end
+
   class Temp <  Shimada::Gnuplot::Plot
     Def = %Q!set terminal gif enhanced size %s enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/shimada/giffiles/%s.gif'
