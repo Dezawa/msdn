@@ -18,7 +18,7 @@ module Shimada::GraphAllMonth
              when /^devi/  ; "deviation_of_difference"
              when /^pow/  ; "powers_3"
              end
-#logger.debug("GRAPH_ALMIGHTY:args[deform]=>[#{args["deform"][0]},#{args["deform"][1]}]")
+    #logger.debug("GRAPH_ALMIGHTY:args[deform]=>[#{args["deform"][0]},#{args["deform"][1]}]")
     cnd_dform= 
       case deform = args.delete("deform")
       when nil   ;  nil
@@ -49,9 +49,9 @@ module Shimada::GraphAllMonth
     method_keys =  args.keys - ColumnNames 
 
     query = ["date is not null",cnd_dform,month_query,date_query,args_query].compact.join(" and ")
-logger.debug("GRAPH_ALMIGHTY: query = #{query}")
+    logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     @models = Shimada::Power.all( :order => "date", 
-                                   :conditions => [query,*args.values.map{ |a| a[1]}] )
+                                  :conditions => [query,*args.values.map{ |a| a[1]}] )
     if method_keys.size > 0
       @models = @models.select{ |pw|  method_keys.
         all?{ |method| comp,value = args[method] ; eval("pw.send(method.to_sym) #{comp} value.to_f") }
@@ -62,25 +62,25 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
       if    month_query ; "%y/%m"
       elsif date_query || args_query ; "%m/%d"
       else
-      by_date = "%y/%m"
+        by_date = "%y/%m"
       end
 
     if list
       patern.delete("method")
       winoption = {:win_name => "list", :graph_almighty => patern }
-    @TableEdit  =  
-    [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
-     [:popup,:graph_almighty,"補正後電力",winoption.merge({:method => :revise_by_temp_3}) ],
-     [:popup,:graph_almighty,"正規化"    ,winoption.merge({:method => :normalized      }) ],
-     [:popup,:graph_almighty,"差分"      ,winoption.merge({ :method => :difference_3   }) ],
-     [:popup,:graph_almighty,"差分平均"  ,winoption.merge({:method => :difference_ave  }) ]
-    ]
-    @action_buttoms = nil
-    show_sub
+      @TableEdit  =  
+        [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
+         [:popup,:graph_almighty,"補正後電力",winoption.merge({:method => :revise_by_temp_3}) ],
+         [:popup,:graph_almighty,"正規化"    ,winoption.merge({:method => :normalized      }) ],
+         [:popup,:graph_almighty,"差分"      ,winoption.merge({ :method => :difference_3   }) ],
+         [:popup,:graph_almighty,"差分平均"  ,winoption.merge({:method => :difference_ave  }) ]
+        ]
+      @action_buttoms = nil
+      show_sub
 
     else
-    Shimada::Power.gnuplot(@models,method.to_sym,:by_date => by_date,
-                           :title => patern )
+      Shimada::Power.gnuplot(@models,method.to_sym,:by_date => by_date,
+                             :title => patern )
       render :action => :graph,:layout => "hospital_error_disp"
     end
   end
@@ -92,12 +92,12 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     @TYTLE_post = "(#{patern})"
 
     @TableEdit  =  
-    [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
-     [:popup,:graph_patern,"補正後電力",{ :win_name => "graph",:patern => patern,:method => :revise_by_temp_3} ],
-     [:popup,:graph_patern,"正規化"    ,{ :win_name => "graph",:patern => patern,:method => :normalized} ],
-     [:popup,:graph_patern,"差分"      ,{ :win_name => "graph",:patern => patern,:method => :difference_3} ],
-     [:popup,:graph_patern,"差分平均"  ,{ :win_name => "graph",:patern => patern,:method => :difference_ave} ]
-    ]
+      [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
+       [:popup,:graph_patern,"補正後電力",{ :win_name => "graph",:patern => patern,:method => :revise_by_temp_3} ],
+       [:popup,:graph_patern,"正規化"    ,{ :win_name => "graph",:patern => patern,:method => :normalized} ],
+       [:popup,:graph_patern,"差分"      ,{ :win_name => "graph",:patern => patern,:method => :difference_3} ],
+       [:popup,:graph_patern,"差分平均"  ,{ :win_name => "graph",:patern => patern,:method => :difference_ave} ]
+      ]
     @action_buttoms = nil
     show_sub
   end
@@ -114,12 +114,12 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     line,shape = patern.split("",2)
     [line,shape,if /\d/ =~ line
                   Shimada::Power.all( :order => "date",
-                                     :conditions => ["line = ? and shape = n? ",line.to_i,shape]
-                                     )
+                                      :conditions => ["line = ? and shape = n? ",line.to_i,shape]
+                                      )
                 else Shimada::Power::Un_sorted
-                 Shimada::Power.all( :order => "date",
-                                     :conditions => ["shape = n? ",shape]
-                                     )
+                  Shimada::Power.all( :order => "date",
+                                      :conditions => ["shape = n? ",shape]
+                                      )
                 end
     ]
   end
@@ -142,12 +142,12 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     graph_all_month_line_shape(params[@Domain][:patern])
   end
 
-    Graph_the_day = [ [/^rev(ise)?/,"補正電力",:revise_by_temp_3],
-               [/^diffdiff/,"二階差分"         ,:difference_3],
-               [/^dif.*ave/,"差分平均",:difference_ave],
-               [/^dif/,"差分"         ,:difference_3],
-               [/./,"消費電力",:powers_3],
-             ]
+  Graph_the_day = [ [/^rev(ise)?/,"補正電力",:revise_by_temp_3],
+                    [/^diffdiff/,"二階差分"         ,:difference_3],
+                    [/^dif.*ave/,"差分平均",:difference_ave],
+                    [/^dif/,"差分"         ,:difference_3],
+                    [/./,"消費電力",:powers_3],
+                  ]
   def graph_the_day
     days,method = params[@Domain][:graph_the_day].split
     _,title,method = Graph_the_day[ method ? Graph_the_day.find_index{ |a| a.first =~ method} : -1]
@@ -206,10 +206,10 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
                      end ).map{ |ls| ls.split("",2)}
       months = Shimada::Month.all
       @power=Shimada::Power.by_patern(shapes)
-        #months.map{ |m| m.powers}.flatten.
-        #select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
+      #months.map{ |m| m.powers}.flatten.
+      #select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
       opt.merge!({ :by_ => :line_shape,:title => params[@Domain][:shape], :graph_file => @graph_file})
-     Shimada::Power.gnuplot(@power,method,opt)
+      Shimada::Power.gnuplot(@power,method,opt)
     end
     @TYTLE = title
     render :action => :graph,:layout => "hospital_error_disp"
@@ -241,7 +241,7 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
         end
       opt = { :title => deform_lbl,:graph_file => @graph_file}.merge(by_)
       Shimada::Power.gnuplot(@power,method,opt) 
-   end
+    end
     @TYTLE = title
     render :action => :graph,:layout => "hospital_error_disp"
   end
@@ -251,16 +251,16 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     if params[@Domain] && params[@Domain][:each_month]
       Shimada::Month.all.each{ |month| graph_temp_(month)}
     else
-    @graph_file =  "all_month_vs_temp_" + (line ? line : "")
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
-      conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
-      @power = Shimada::Power.power_all(conditions)
-      @TYTLE = "温度-消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
+      @graph_file =  "all_month_vs_temp_" + (line ? line : "")
+      unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+        conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
+        @power = Shimada::Power.power_all(conditions)
+        @TYTLE = "温度-消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
 
-      Shimada::Power.gnuplot(@power,:powers,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => true,
-                                     :graph_file =>  @graph_file, :with_Approximation => true,
-                                     :range => (7..19))
-    end
+        Shimada::Power.gnuplot(@power,:powers,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => true,
+                               :graph_file =>  @graph_file, :with_Approximation => true,
+                               :range => (7..19))
+      end
     end
     render :action => :graph,:layout => "hospital_error_disp"
   end
@@ -269,19 +269,34 @@ logger.debug("GRAPH_ALMIGHTY: query = #{query}")
     if params[@Domain] && params[@Domain][:each_month]
       Shimada::Month.all.each{ |month| graph_bug_(month)}
     else
-    @graph_file =  "all_month_vs_bugs_"
+      @graph_file =  "all_month_vs_bugs_"
       unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
         #conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
         @power = Shimada::Power.power_all
 
         method = params[@Domain][:method]
-logger.debug("GRAPH_ALL_MONTH_BUGS moethod=#{method}")
+        logger.debug("GRAPH_ALL_MONTH_BUGS moethod=#{method}")
         @TYTLE = "袋数-消費電力#{method == :revise_by_temp_sum ? '(補正後)' : ''} 全月度 "
         
         Shimada::Power.gnuplot(@power,method,:by_date => "%y/%m",:title => @TYTLE,:vs_bugs => true,
                                :graph_file =>  @graph_file)# :with_Approximation => true,
         #:range => (7..19))
       end
+    end
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_all_month_bugs_offset
+    @graph_file =  "all_month_vs_bugs_offset"
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+      #conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
+      @power = Shimada::Power.all(:conditions => "hukurosu > 0.0 ")
+      @TYTLE = "袋数-消費電力 オフセット 全月度 "
+      
+      Shimada::Power.gnuplot_histgram(@power,:offset_of_hukurosu_vs_pw,:title => @TYTLE,
+                                      :graph_file =>  @graph_file,
+                                      :min => -500,:max => -500+250*21,:steps => 21
+                                      )
     end
     render :action => :graph,:layout => "hospital_error_disp"
   end

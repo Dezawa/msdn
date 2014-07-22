@@ -488,6 +488,12 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     revise_by_temp.inject(0.0){ |s,e| s += e if e; s}
   end
 
+  # ΣPw = 4400 + 5.4 hukuro + offset
+  # offset = ΣPw - 4400 - 5.4 hukuro
+  def offset_of_hukurosu_vs_pw
+    revise_by_temp_sum - BugsFit[:y0] - hukurosu * BugsFit[:slop]
+  end
+
   def diffdiff(range=(1..22))
     logger.debug("DIFFDIFF: id=#{id} date=#{date} #{difference.join(',')}")
     @diffdiff ||= (1..difference.size).
