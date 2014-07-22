@@ -182,7 +182,41 @@ set grid #ytics
     end
   end # of Power
 
+ class Today < Power
+    Def =
+      %Q!set terminal gif enhanced size 600,350 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+set out 'tmp/shimada/giffiles/%s.gif'
+set title "%s"
+%s
+set yrange [200:1000]
+set xrange %s # [1:24]
+set xtics 3,3 #1,1
+set x2tics 3,3 # 2,2
+set grid #ytics
+!
+   def initialize(powers,method,opt)
+     super
+      @Def = Def
+   end
+ end
+
  class Tomorrow < Power
+   def initialize(powers,method,opt)
+     super
+      @Def = Def
+   end
+
+    Def =
+      %Q!set terminal gif enhanced size 600,350 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+set out 'tmp/shimada/giffiles/%s.gif'
+set title "%s"
+%s
+set yrange [200:1000]
+set xrange %s # [1:24]
+set xtics 3,3 #1,1
+set x2tics 3,3 # 2,2
+set grid #ytics
+!
     def output_path
       return [@std_data_file] #unless @powers
       output_plot_data{ |f,pw| 

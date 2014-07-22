@@ -58,7 +58,7 @@ module Shimada::GnuplotDef
   end
   def today_graph
     temperature = Forecast.temperature24(:maebashi,self.date)
-    Shimada::Gnuplot::Power.new([self],:powers,{:graph_file => "today" ,
+    Shimada::Gnuplot::Today.new([self],:powers,{:graph_file => "today" ,
                                 :fitting => :std_temp }).plot
   end
 end
