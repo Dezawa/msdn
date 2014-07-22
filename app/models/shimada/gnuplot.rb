@@ -397,5 +397,37 @@ set grid
       }
     end
   end
+
+  class Histgram < Shimada::Gnuplot::Plot
+    Def =
+      %Q!set terminal gif enhanced size 500,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+set out 'tmp/shimada/giffiles/%s.gif'
+set title "%s"
+unset key 
+set xrange [-1000:4000]
+plot '%s'   using 1:2 with boxes
+!
+
+    def initialize(powers,method,opt)
+      super
+      @Def = Def
+    end
+    def output_path
+      path =  [ RAILS_ROOT+"/tmp/shimada/shimada_histgram"]
+      open(path.first,"w"){ |f| 
+        f.print "オフセット i頻度\n"
+        (@opt[:min] .. @opt[:max]).step(@opt[:step]).
+        each_with_index{ |o,idx| f.printf( "%.1f %d\n",o,@powers[idx])}
+      }
+      path
+    end
+
+    def output_def_file(path, group_by)
+      open(@def_file,"w"){ |f|
+          f.puts @Def%[@graph_file,@opt[:title],path[0] ]
+          f.puts "set terminal  jpeg  size 600,200 \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n"         #end
+      }
+    end
+  end
 end
 

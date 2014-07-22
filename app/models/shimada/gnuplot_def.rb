@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 module Shimada::GnuplotDef
   include  Shimada::Gnuplot
+
   module ClassMethod
     # extend  Shimada::GnuplotDef::ClassMethod
 
@@ -34,6 +35,17 @@ module Shimada::GnuplotDef
         end
       end
    end
+
+    def gnuplot_histgram(powers,method,opt={ })
+      values = powers.map{ |pw| pw.send(method) }
+      min   = opt[:min]   ||= values.min
+      max   = opt[:max]   ||= values.max
+      steps = opt[:steps] ||= 10
+      step = opt[:step] = (max-min)/steps
+      histgram = [0]*steps
+      histgram = values.inject([0]*steps){ |s,e| s[e/step] += 1 ;s   }
+      Shimada::Gnuplot::Histgram.new(histgram,method,opt).plot
+    end
   end # of module
 
   def self.included(base) ;    base.extend(ClassMethod) ;end
