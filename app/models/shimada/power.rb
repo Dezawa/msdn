@@ -58,7 +58,7 @@ class Shimada::Power < ActiveRecord::Base
 
   }
 
-  BugsFit = { :y0 => 4400, :slop => 5.4,:offset => [1200,2400] }
+  BugsFit = { :y0 => 4400, :slop => 5.4,:offset => [1200,2400],:offset0 => [-10000,1200,2400,10000] }
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a
@@ -92,6 +92,12 @@ conditions[0] ,
       #months = Shimada::Month.all
       @power=power_all.
         select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
+  end
+
+  def self.by_offset(offset)
+    low,high = BugsFit[:offset0][offset.to_i,2]
+    Shimada::Power.all(:conditions => "hukurosu is not null").
+      select{ |pw| pw.offset_of_hukurosu_vs_pw > low and  pw.offset_of_hukurosu_vs_pw<= high}
   end
 
   def self.reset_reevice_and_ave

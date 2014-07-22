@@ -17,7 +17,7 @@ module Shimada::GnuplotDef
       :difference_ave => "差分平均",:revise_by_temp => "温度補正電力",:diffdiff => "二階差分"}
 
     def gnuplot(powers,method,opt={ })
- logger.debug("GRAPH_BUGS_: :vs_temp #{ opt[:vs_temp]},:vs_bugs #{opt[:vs_bugs]}")
+ logger.debug("GRAPH_BUGS_: :vs_temp #{ opt[:vs_temp]},:vs_bugs #{opt[:vs_bugs]} method #{method} powers.size =#{powers.size}")
 
       if opt[:vs_temp]
         case method.to_s 

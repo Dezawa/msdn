@@ -272,8 +272,7 @@ module Shimada::GraphAllMonth
       @graph_file =  "all_month_vs_bugs_"
       unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
         #conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
-        @power = Shimada::Power.power_all
-
+        @power =  Shimada::Power.all(:conditions => "hukurosu is not null")
         method = params[@Domain][:method]
         logger.debug("GRAPH_ALL_MONTH_BUGS moethod=#{method}")
         @TYTLE = "袋数-消費電力#{method == :revise_by_temp_sum ? '(補正後)' : ''} 全月度 "
@@ -282,6 +281,19 @@ module Shimada::GraphAllMonth
                                :graph_file =>  @graph_file)# :with_Approximation => true,
         #:range => (7..19))
       end
+    end
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_all_month_offset
+    offset = params[@Domain][:offset]
+    method = params[@Domain][:method]
+    @graph_file =  "all_month_by_offset_#{offset}"
+    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+      @power = Shimada::Power.by_offset(offset)
+      @TYTLE = "消費電力 オフセット #{%w(低 中 高)[offset.to_i]} "
+logger.debug("##### GRAPH_ALL_MONTH_OFFSET:method=#{method}")
+      Shimada::Power.gnuplot(@power,method,:title => @TYTLE,:graph_file => @graph_file,:by_ => :line_shape)
     end
     render :action => :graph,:layout => "hospital_error_disp"
   end
