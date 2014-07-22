@@ -58,7 +58,7 @@ class Shimada::Power < ActiveRecord::Base
 
   }
 
-  BugsFit = { :y0 => 4400, :slop => 5.4}
+  BugsFit = { :y0 => 4400, :slop => 5.4,:offset => [1200,2400] }
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   Aves = ("ave01".."ave24").to_a

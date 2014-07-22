@@ -317,8 +317,10 @@ set x2tics  0,250
       open(@def_file,"w"){ |f|
           f.puts @Def%[@size,@graph_file,@opt[:title]||"袋数-消費電力 "]
           f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 "}.join(" , ") +
-            ", \\\n #{Shimada::Power::BugsFit[:y0]} + #{Shimada::Power::BugsFit[:slop]}*x
-            "
+            ", \\\n #{Shimada::Power::BugsFit[:y0]} + #{Shimada::Power::BugsFit[:slop]}*x " +
+            Shimada::Power::BugsFit[:offset].map{|offset|
+          ",\\\n #{Shimada::Power::BugsFit[:y0]} + #{Shimada::Power::BugsFit[:slop]}*x + #{offset}"
+        }.join
           f.puts "set terminal  jpeg  size #{@graph_size} \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n" 
       }
     end
