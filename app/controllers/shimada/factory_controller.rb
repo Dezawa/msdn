@@ -70,7 +70,7 @@ class Shimada::FactoryController <  Shimada::Controller
       @power.update_attribute( "hour%02d"%(hr+1) , dmypw[hr])
     end
     #########################################
-    @interbal = 10
+    @interbal = 2
     render :action => :today,:layout => "refresh"
   end
 
