@@ -52,8 +52,11 @@ module Shimada::Analyze
        #}+
 
     AllMonthaction_buttoms2 = 
-    [ 2,
-      [[:input_and_action,"graph_almighty","line,shape,deform,month,method",{:size=>40 ,:popup => "graph_almighty",:scroll => true}]
+    [ 1,
+      [[:input_and_action,"graph_almighty","line,shape,deform,month,method",{:size=>40 ,:popup => "graph_almighty",:scroll => true}],
+       [:input_and_action,"graph_superman","title:検索条件：グルーピング:filename:method",{:size=>80 ,:popup => "graph_superman",:scroll => true}],
+       [:input_and_action,"graph_superman2","title:検索条件：グルーピング:filename",{:size=>80 ,:popup => "graph_superman",:scroll => true,:method => :by_temp}],
+
       ]
     ]
       
@@ -191,11 +194,119 @@ module Shimada::Analyze
        ("a_high0".."a_high4").map{|n| HtmlNum.new(n.to_sym,n,:tform => "%.3f") }
       
     #@models = %w(稼働1 稼働2 稼働3 稼働4).map{ |patern|
-    @models = (1..4).map{ |patern|
+    @models = [1,2,3,4].map{ |patern|
       Shimada::Power.average_line(patern)
     }
 logger.debug("Shimada::Power:models #{@models[0].a_low.join(',')}")
     render  :file => 'application/index',:layout => 'application'
     
+  end
+
+  def graph_superman
+    title,quely,by,graph_file,method = params[@Domain][:graph_superman].split(":")
+    method ||= :revise_by_temp_3 ; method = method.to_sym
+    opt = case by
+          when nil ; { }
+          when /date\s*,\s*(.*)/ ; { :by_date => $1 }
+          when /by\s*,\s*(.*)/   ; { :by_ => $1}  
+          end
+    @power = Shimada::Power.all(:conditions => quely)
+    Shimada::Power.gnuplot(@power,method,opt.merge(:title => title))    
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+  def graph_superman2
+    title,quely,by,graph_file,method = params[@Domain][:graph_superman2].split(":")
+    opt = case by
+          when nil ; { }
+          when /date\s*,\s*(.*)/ ; { :by_date => $1 }
+          when /by\s*,\s*(.*)/   ; { :by_ => $1}  
+          end
+    @power = Shimada::Power.all(:conditions => quely)
+    Shimada::Power.gnuplot(@power,method,opt.merge(:title => title,:vs_temp => true,:range => (7..19)))    
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+
+  def graph_almighty
+    patern = params[@Domain][:graph_almighty]
+    list = patern.sub!(/,?list/,"")
+    args = patern.split(",").map{ |arg| a=arg.split(/([<=>]+)/);[a.first,a[1..-1]]}
+    args = Hash[*args.flatten(1)] ;args.delete(nil) # =>"line=4,shpe=-0,month=2013/4
+    method = args.delete("method") || params[@Domain][:method] || "revise_by_temp_3"
+    method = case method
+             when /^dif.*dif/ ; "diffdiff_3"
+             when /^dif.*ave/ ; "difference_ave"
+             when /^dif/ ; "difference_3"
+             when /^norm/ ; "normalized"
+             when /^rev.*ave/  ; "revise_by_temp_ave"
+             when /^rev/  ; "revise_by_temp_3"
+             when /^devi/  ; "deviation_of_difference"
+             when /^pow/  ; "powers_3"
+             end
+    #logger.debug("GRAPH_ALMIGHTY:args[deform]=>[#{args["deform"][0]},#{args["deform"][1]}]")
+    cnd_dform= 
+      case deform = args.delete("deform")
+      when nil   ;  nil
+      when ["=","all"] ;  " deform is not null"
+      when ["=","null"];  " deform is  null"
+      else       ;  " (" + deform[1].split("").map{ |d| "deform like '%#{d}%'"}.join(" or ")  +")"
+      end
+
+    month_query = 
+      if month=args.delete("month")
+        the_month = Time.local(*month[1].split(/[-\/]/)).beginning_of_month
+        if month[0] == "=" 
+          args["month_id"] = ["=",Shimada::Month.find_by_month(the_month).id]
+          "month_id = #{Shimada::Month.find_by_month(the_month).id}"
+        else
+          month_id = Shimada::Month.all(:conditions => [ "month #{month[0]} ? ",the_month ] ).map(&:id)
+          "month_id in (#{month_id.join(',')})"
+        end
+      end
+    
+    date_query =
+      if date = args.delete("date") ;  "date #{date[0]} '#{date[1]}'" ;end
+    
+    args_query = 
+      if (args.keys & ColumnNames).size > 0 
+        args.keys.map{ |clm| " #{clm} #{args[clm][0]} ? " if ColumnNames.include?(clm)}.compact.join("and")
+      end
+    method_keys =  args.keys - ColumnNames 
+
+    query = ["date is not null",cnd_dform,month_query,date_query,args_query].compact.join(" and ")
+    logger.debug("GRAPH_ALMIGHTY: query = #{query}")
+    @models = Shimada::Power.all( :order => "date", 
+                                  :conditions => [query,*args.values.map{ |a| a[1]}] )
+    if method_keys.size > 0
+      @models = @models.select{ |pw|  method_keys.
+        all?{ |method| comp,value = args[method] ; eval("pw.send(method.to_sym) #{comp} value.to_f") }
+      }
+    end
+
+    by_date = 
+      if    month_query ; "%y/%m"
+      elsif date_query || args_query ; "%m/%d"
+      else
+        by_date = "%y/%m"
+      end
+
+    if list
+      patern.delete("method")
+      winoption = {:win_name => "list", :graph_almighty => patern }
+      @TableEdit  =  
+        [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
+         [:popup,:graph_almighty,"補正後電力",winoption.merge({:method => :revise_by_temp_3}) ],
+         [:popup,:graph_almighty,"正規化"    ,winoption.merge({:method => :normalized      }) ],
+         [:popup,:graph_almighty,"差分"      ,winoption.merge({ :method => :difference_3   }) ],
+         [:popup,:graph_almighty,"差分平均"  ,winoption.merge({:method => :difference_ave  }) ]
+        ]
+      @action_buttoms = nil
+      show_sub
+
+    else
+      Shimada::Power.gnuplot(@models,method.to_sym,:by_date => by_date,
+                             :title => patern )
+      render :action => :graph,:layout => "hospital_error_disp"
+    end
   end
 end
