@@ -197,9 +197,20 @@ module Shimada::Analyze
     @models = [1,2,3,4].map{ |patern|
       Shimada::Power.average_line(patern)
     }
-logger.debug("Shimada::Power:models #{@models[0].a_low.join(',')}")
+    @AfterIndexHtml = to_html(@models)
     render  :file => 'application/index',:layout => 'application'
     
+  end
+  A = [:a0,:a1,:a2,:a3,:a4]
+  AL = [:a_low0,:a_low1,:a_low2,:a_low3,:a_low4]
+  AH = [:a_high0,:a_high1,:a_high2,:a_high3,:a_high4]
+  def to_html(models)
+    models.map{ |pw|
+      "#{pw.line} => { <br>" +
+      "  :ave => [ " +  A.map{ |s| pw.send(s) ? "%.3f"%pw.send(s) : "0"}.join(" ,") + "],<br>"+
+      "  :max => [ " + AH.map{ |s| pw.send(s) ? "%.3f"%pw.send(s) : "0"}.join(" ,") + "],<br>"+
+      "  :min => [ " + AL.map{ |s| pw.send(s) ? "%.3f"%pw.send(s) : "0"}.join(" ,") + "]<br>"
+    }.join("},<br>")
   end
 
   def graph_superman

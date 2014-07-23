@@ -165,7 +165,7 @@ set grid #ytics
      end
      open(@std_data_file,"w"){ |f|
         f.print "時刻 平均 上限 下限\n"
-        (0..23).
+        (0..21).
        each{ |h| f.printf( "%d %.3f %.3f %.3f\n", @time_ofset+h,ave[h],max[h],min[h]) }
       }
     end   
@@ -173,7 +173,7 @@ set grid #ytics
       pw = Shimada::Power.average_line(line)
       open(@std_data_file,"w"){ |f|
         f.print "時刻 平均 上限 下限\n"
-        (0..24).
+        (0..20).
         each{ |h| f.printf( "%d %.3f %.3f %.3f\n",
                             @time_ofset+h,pw.revise_by_temp_3[h],pw.powers_3[h],pw.aves_3[h]
                             )
@@ -197,6 +197,7 @@ set grid #ytics
    def initialize(powers,method,opt)
      super
       @Def = Def
+      @xrange =  "[3:24]"
    end
  end
 
@@ -204,6 +205,7 @@ set grid #ytics
    def initialize(powers,method,opt)
      super
       @Def = Def
+      @xrange =  "[3:24]"
    end
 
     Def =
@@ -223,7 +225,7 @@ set grid #ytics
         f.print "時刻 中央 上限 下限\n"
         (0..23).
         each{ |h| f.printf( "%d %.3f %.3f %.3f\n",
-                            @time_ofset+h,pw.revise_by_temp[h],pw.powers[h],pw.aves[h]
+                            h+@time_ofset,pw.revise_by_temp[h],pw.powers[h],pw.aves[h]
                             )
         }
       }

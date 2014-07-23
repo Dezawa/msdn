@@ -23,7 +23,7 @@ module Shimada::GraphDay
     method,id = params[:method].split("/")
     
     opt = case method
-          when /^revise|^normal/ ; { :fitting => true }
+          when /^revise|^normal/ ; { :fitting => :std_temp }
           else                  ; { }
           end
     opt[:fitting] = params[:fitting].to_sym if params[:fitting]
