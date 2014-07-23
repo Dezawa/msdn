@@ -159,15 +159,17 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     average_line = Shimada::Power.find_or_create_by_date_and_line(nil,line)
     
     powers = self.by_patern(patern) # )power_all([" and line = ?", line])
-    aves = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.average}
-    sdev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.standard_devitation}
-    high = (0..23).map{ |i| aves[i]+2*sdev[i] }
-    lows = (0..23).map{ |i| aves[i]-2*sdev[i] }
+    if  powers.size>2
+      aves = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.average}
+      sdev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.standard_devitation}
+      high = (0..23).map{ |i| aves[i]+2*sdev[i] }
+      lows = (0..23).map{ |i| aves[i]-2*sdev[i] }
 
-    average_line.update_attributes( Hash[*Revs.zip(aves).flatten].
-                                    merge(Hash[*Differences.zip(sdev).flatten]).
-                                    merge(Hash[*Hours.zip(high).flatten]).
-                                    merge(Hash[*Aves.zip(lows).flatten]))
+      average_line.update_attributes( Hash[*Revs.zip(aves).flatten].
+                                      merge(Hash[*Differences.zip(sdev).flatten]).
+                                      merge(Hash[*Hours.zip(high).flatten]).
+                                      merge(Hash[*Aves.zip(lows).flatten]))
+    end
     #ave_power.difference
     @@average_line[line] = average_line
   end
@@ -274,7 +276,12 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   # Array a of \sum_{i=0}^{次元数}(a_i x^i)
   # 
   def a(n=PolyLevel)
-    @a ||= polyfit(PolyFitHour.map{ |h| h-PolyFitX0},revise_by_temp[PolyFitHour],n)
+     return @a if @a
+    if revise_by_temp.compact.size > n
+      polyfit(PolyFitHour.map{ |h| h-PolyFitX0},revise_by_temp[PolyFitHour],n)
+    else
+      []
+    end
   end
   def a0 ; (a[0] || 0.0);end
   def a1 ; (a[1] || 0.0);end
@@ -285,10 +292,12 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def a6 ; (a[6] || 0.0);end
 
   def a_low(n=PolyLevel)
+    return [] unless aves.compact.size > n
     polyfit(PolyFitHour.map{ |h| h-PolyFitX0},aves[PolyFitHour],n)
   end
 
   def a_high(n=PolyLevel)
+    return [] unless powers.compact.size > n
     polyfit(PolyFitHour.map{ |h| h-PolyFitX0},powers[PolyFitHour],n)
   end
 
