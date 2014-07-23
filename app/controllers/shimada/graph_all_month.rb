@@ -113,12 +113,13 @@ module Shimada::GraphAllMonth
   def get_power_by_line_and_shape(patern)
     line,shape = patern.split("",2)
     [line,shape,if /\d/ =~ line
-                  Shimada::Power.all( :order => "date",
-                                      :conditions => ["line = ? and shape = n? ",line.to_i,shape]
-                                      )
+                  Shimada::Power.
+                    all( :order => "date",
+                         :conditions => ["line = ? and shape = n? and date < '2014-7-1'",line.to_i,shape]
+                         )
                 else Shimada::Power::Un_sorted
                   Shimada::Power.all( :order => "date",
-                                      :conditions => ["shape = n? ",shape]
+                                      :conditions => ["shape = n?  and date < '2014-7-1'",shape]
                                       )
                 end
     ]
@@ -235,9 +236,9 @@ module Shimada::GraphAllMonth
       deform = Shimada::Power::Deforms[deform_lbl]
       @power,by_ = 
         case deform
-        when "all" ; [ Shimada::Power.all(:conditions => "deform is not null"),{ :by_ => :deform}]
-        when "null"; [ Shimada::Power.all(:conditions => "deform is null and date is not null"),{ :by_date => "%y/%m"}]
-        else       ; [ Shimada::Power.all(:conditions => "deform like '%#{deform}%'"),{:by_date => "%y/%m/%d" }]
+        when "all" ; [ Shimada::Power.all(:conditions => "deform is not null and date < '2014-7-1'"),{ :by_ => :deform}]
+        when "null"; [ Shimada::Power.all(:conditions => "deform is null and date is not null and date < '2014-7-1'"),{ :by_date => "%y/%m"}]
+        else       ; [ Shimada::Power.all(:conditions => "deform like '%#{deform}%' and date < '2014-7-1'"),{:by_date => "%y/%m/%d" }]
         end
       opt = { :title => deform_lbl,:graph_file => @graph_file}.merge(by_)
       Shimada::Power.gnuplot(@power,method,opt) 
@@ -302,7 +303,7 @@ logger.debug("##### GRAPH_ALL_MONTH_OFFSET:method=#{method}")
     @graph_file =  "all_month_vs_bugs_offset"
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       #conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
-      @power = Shimada::Power.all(:conditions => "hukurosu > 0.0 ")
+      @power = Shimada::Power.all(:conditions => "hukurosu > 0.0  and date < '2014-7-1'")
       @TYTLE = "袋数-消費電力 オフセット 全月度 "
       
       Shimada::Power.gnuplot_histgram(@power,:offset_of_hukurosu_vs_pw,:title => @TYTLE,
