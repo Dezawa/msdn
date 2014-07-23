@@ -80,7 +80,7 @@ class Shimada::Power < ActiveRecord::Base
   CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["line"]
 
   def self.power_all(conditions = ["", [] ])
-    self.all(:conditions => ["month_id is not null" +
+    self.all(:conditions => ["month_id is not null and date < '2014-7-1'" +
 conditions[0] ,
  *conditions[1] ] ) 
   end
@@ -96,7 +96,7 @@ conditions[0] ,
 
   def self.by_offset(offset)
     low,high = BugsFit[:offset0][offset.to_i,2]
-    Shimada::Power.all(:conditions => "hukurosu is not null").
+    Shimada::Power.all(:conditions => "hukurosu is not null and date < '2014-7-1'").
       select{ |pw| pw.offset_of_hukurosu_vs_pw > low and  pw.offset_of_hukurosu_vs_pw<= high}
   end
 
