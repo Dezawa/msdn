@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 module Shimada::GraphAllMonth
   # メイン画面での各月のリンクボタン
-  ColumnNames = Shimada::Power.column_names
 
 
   def index_all_month_

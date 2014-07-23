@@ -5,6 +5,8 @@ module Shimada::Analyze
   include Shimada::GraphMonth
   include Shimada::GraphAllMonth
 
+  ColumnNames = Shimada::Power.column_names
+
     AllMonthaction_buttoms = 
       [7 ,
        [
@@ -277,20 +279,30 @@ module Shimada::Analyze
     
     date_query =
       if date = args.delete("date") ;  "date #{date[0]} '#{date[1]}'" ;end
-    
+    date_query = "date < '2014-7-1'" unless date_query || month_query
     args_query = 
       if (args.keys & ColumnNames).size > 0 
-        args.keys.map{ |clm| " #{clm} #{args[clm][0]} ? " if ColumnNames.include?(clm)}.compact.join("and")
+        values = []
+        ColumnNames.map{ |clm|
+        if arg = args.delete(clm)
+          values << arg[1]
+          " #{clm} #{arg[0]} ? " 
+        end
+      }.compact.join("and")
+        #args.keys.map{ |clm| " #{clm} #{args[clm][0]} ? " if ColumnNames.include?(clm)}.compact.join("and")
       end
     method_keys =  args.keys - ColumnNames 
 
     query = ["date is not null",cnd_dform,month_query,date_query,args_query].compact.join(" and ")
-    logger.debug("GRAPH_ALMIGHTY: query = #{query}")
+    logger.debug("GRAPH_ALMIGHTY: query = #{query},args.values=#{values.join(',')}")
     @models = Shimada::Power.all( :order => "date", 
-                                  :conditions => [query,*args.values.map{ |a| a[1]}] )
-    if method_keys.size > 0
-      @models = @models.select{ |pw|  method_keys.
-        all?{ |method| comp,value = args[method] ; eval("pw.send(method.to_sym) #{comp} value.to_f") }
+                                  :conditions => [query,*values] )
+    if args.size > 0
+      @models = @models.select{ |pw|  
+        args.keys.all?{ |m| 
+          comp,value = args[m] ; 
+          eval("pw.send(m.to_sym) #{comp} value.to_f") 
+        }
       }
     end
 
@@ -311,6 +323,7 @@ module Shimada::Analyze
          [:popup,:graph_almighty,"差分"      ,winoption.merge({ :method => :difference_3   }) ],
          [:popup,:graph_almighty,"差分平均"  ,winoption.merge({:method => :difference_ave  }) ]
         ]
+      @labels = Shimada::MonthController::DaylyLabels
       @action_buttoms = nil
       show_sub
 

@@ -23,7 +23,7 @@ class Shimada::MonthController <  Shimada::Controller
       ]
   DaylyLabels =
     [
-      HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
+      HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%y/%m/%d"),
      HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => URL_GRAPH1+"powers_3"   , :htmloption => Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => URL_GRAPH0+"revise_by_temp_3",:htmloption => Popup }),
       #HtmlCeckForSelect.new(:id,""),
