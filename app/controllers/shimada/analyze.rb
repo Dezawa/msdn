@@ -243,7 +243,8 @@ module Shimada::Analyze
   def graph_almighty
     patern = params[@Domain][:graph_almighty]
     list = patern.sub!(/,?list/,"")
-    args = patern.split(",").map{ |arg| a=arg.split(/([<=>]+)/);[a.first,a[1..-1]]}
+    args = patern.split(/\s*,\s*|\s*and\s*|\s*&&\s*/).map{ |arg| a=arg.split(/\s*([<=>]+)\s*/);[a.first,a[1..-1]]}
+logger.debug("GRAPH_ALMIGHTY:args=#{args.flatten.join(',')}")
     args = Hash[*args.flatten(1)] ;args.delete(nil) # =>"line=4,shpe=-0,month=2013/4
     method = args.delete("method") || params[@Domain][:method] || "revise_by_temp_3"
     method = case method
@@ -294,7 +295,7 @@ module Shimada::Analyze
     method_keys =  args.keys - ColumnNames 
 
     query = ["date is not null",cnd_dform,month_query,date_query,args_query].compact.join(" and ")
-    logger.debug("GRAPH_ALMIGHTY: query = #{query},args.values=#{values.join(',')}")
+    #logger.debug("GRAPH_ALMIGHTY: query = #{query},args.values=#{values.join(',')}")
     @models = Shimada::Power.all( :order => "date", 
                                   :conditions => [query,*values] )
     if args.size > 0
