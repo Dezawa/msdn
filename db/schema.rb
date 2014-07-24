@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140724150603) do
+ActiveRecord::Schema.define(:version => 20140724215940) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -90,6 +90,14 @@ ActiveRecord::Schema.define(:version => 20140724150603) do
     t.string   "weather24"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.float    "vaper03"
+    t.float    "vaper06"
+    t.float    "vaper09"
+    t.float    "vaper12"
+    t.float    "vaper15"
+    t.float    "vaper18"
+    t.float    "vaper21"
+    t.float    "vaper24"
   end
 
   create_table "holydays", :force => true do |t|

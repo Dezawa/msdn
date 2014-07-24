@@ -28,7 +28,7 @@ class Forecast < ActiveRecord::Base
   Temp     = %w(temp03 temp06 temp09 temp12 temp15 temp18 temp21 temp24) 
   Weather     = %w(weather03 weather06 weather09 weather12 weather15 weather18 weather21 weather24)
   Humi     = %w(humi03 humi06 humi09 humi12 humi15 humi18 humi21 humi24)
-
+  Vaper    = %w(vaper03 vaper06 vaper09 vaper12 vaper15 vaper18 vaper21 vaper24)
   class << self
     def fetch(location,day)
       day = day.to_date
@@ -71,6 +71,7 @@ class Forecast < ActiveRecord::Base
       day = day.to_date
       announce_day = announce_day.to_date
       forecast = find_by_location_and_month_and_date_and_announce_day(location.to_s,day.beginning_of_month,day,announce_day)
+      forecast.vaper if forecast && !forecast.vaper03
       return forecast if forecast
       return nil      if announce_day != Time.now.to_date # 本日のアナウンスしか採れない
        fetch(location,day)
@@ -115,7 +116,7 @@ class Forecast < ActiveRecord::Base
        [weather[8,8],temperature[8,8],humidity[8,8]]
       ]
     end
-
+  
   def temperature24(location,date)
     date=date.to_date
     fore = self.find_or_fetch(location,date) || self.find_or_fetch(location,date,date-1)
@@ -132,10 +133,39 @@ class Forecast < ActiveRecord::Base
     ret
   end
 
+
   end
 
   def temperature ;    Temp.map{ |sym| self[sym]} ;  end
 
   def humidity ;    Humi.map{ |sym| self[sym]} ;  end
 
+  def vaper    
+    unless self[:vaper03]
+    (0..Vaper.size-1).each{ |idx| self[Vaper[idx]] = vaper_presser(self[Temp[idx]],self[Humi[idx]]) } 
+    save
+    end
+    Vaper.map{ |sym| self[sym]}  
+  end
+
+  def vaper_presser(temp,humi) ;    saturate_p(temp)*humi*0.01 ;  end
+    # 飽和水蒸気圧（hPa)
+  # Wagner（ワグナー）の式　･･･　より近似度が高い
+  #
+  #　e(t) = Pc・exp[ (A・x + B・x^1.5 + C・x^3 + D・x^6) / (1 - x) ]
+  #　ここで、
+  Pc = 221200   #[hPa]：　臨界圧
+  Tc = 647.3    # [K]：　臨界温度
+  InvTc = 1/Tc
+  #x = 1 - (t + 273.15) / Tc
+  A = -7.76451
+  B = 1.45838
+  C = -2.7758
+  D = -1.23303
+  
+  def saturate_p(temp) #hPa  ℃
+    x = xx(temp)
+    Pc*Math.exp((A*x + B*x**1.5 + C*x**3 + D*x**6) / (1 - x))
+  end
+  def xx(temp) ; 1 - (temp + 273.15) * InvTc ; end
 end
