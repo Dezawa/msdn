@@ -211,7 +211,7 @@ module Shimada::GraphAllMonth
       @power = Shimada::Power.by_offset(offset)
       @TYTLE = "消費電力 オフセット #{%w(低 中 高)[offset.to_i]} "
 logger.debug("##### GRAPH_ALL_MONTH_OFFSET:method=#{method}")
-      Shimada::Power.gnuplot(@power,method,:title => @TYTLE,:graph_file => @graph_file,:by_ => :line_shape)
+      Shimada::Power.gnuplot(@power,method,:title => @TYTLE,:graph_file => @graph_file,:by_date => "%y/%m")#:line_shape)
     end
     render :action => :graph,:layout => "hospital_error_disp"
   end

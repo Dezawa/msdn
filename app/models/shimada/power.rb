@@ -19,7 +19,28 @@ class Shimada::Power < ActiveRecord::Base
 
   PolyFits = 
     {
-#######  offset_of_hukurosu_vs_pw == 0 による##############
+#1 => {
+#:ave => [ 0.000 ,0.000 ,0.000 ,0.000 ,0.000],
+#:max => [ 0 ,0 ,0 ,0 ,0],
+#:min => [ 0 ,0 ,0 ,0 ,0]
+#},
+#2 => {
+#:ave => [ 501.557 ,-7.063 ,-1.178 ,0.006 ,-0.012],
+#:max => [ 563.790 ,-5.930 ,1.116 ,0.025 ,-0.031],
+#:min => [ 439.324 ,-8.196 ,-3.472 ,-0.014 ,0.008]
+#},
+#3 => {
+#:ave => [ 546.889 ,-0.556 ,0.362 ,-0.048 ,-0.026],
+#:max => [ 592.745 ,5.929 ,1.113 ,-0.051 ,-0.025],
+#:min => [ 501.034 ,-7.041 ,-0.389 ,-0.045 ,-0.028]
+#},
+#4 => {
+#
+#:ave => [ 688.133 ,-6.394 ,0.639 ,-0.003 ,-0.038],
+#:max => [ 772.303 ,-4.096 ,1.529 ,0.046 ,-0.043],
+#:min => [ 603.962 ,-8.693 ,-0.251 ,-0.052 ,-0.032]
+#    }
+########  offset_of_hukurosu_vs_pw == 0 による##############
 1 => {
 :ave => [ 0.000 ,0.000 ,0.000 ,0.000 ,0.000],
 :max => [ 0 ,0 ,0 ,0 ,0],
@@ -40,7 +61,7 @@ class Shimada::Power < ActiveRecord::Base
 :max => [ 772.303 ,-4.096 ,1.529 ,0.046 ,-0.043],
 :min => [ 603.962 ,-8.693 ,-0.251 ,-0.052 ,-0.032]
     }
-######## 2014の物による########
+######### 2014の物による########
 #1 => {
 #:ave => [ 0.000 ,0.000 ,0.000 ,0.000 ,0.000],
 #:max => [ 0 ,0 ,0 ,0 ,0],
@@ -185,7 +206,9 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
     average_line = Shimada::Power.find_or_create_by_date_and_line(nil,line)
     
-    powers = self.by_patern(patern).select{ |pw| pw.offset_of_hukurosu_vs_pw == 0 } #pw.date > Date.new(2013,9)} # )power_all([" and line = ?", line])
+    powers = self.by_patern(patern).
+      select{ |pw| pw.offset_of_hukurosu_vs_pw < 1200 && pw.line > 2 && pw.max_revs >= 605} 
+         #pw.date > Date.new(2013,9)} # )power_all([" and line = ?", line])
     if  powers.size>2
       aves = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.average}
       sdev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.standard_devitation}
@@ -629,6 +652,14 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   def max_powers(num=3)
     Hours.map{ |h| self[h]}.sort.last(num)
+  end
+
+  def min_revs
+    Revs.map{ |h| self[h]}.sort.first
+  end
+
+  def max_revs
+   Revs.map{ |h| self[h]}.sort.last
   end
 
   def max_ave(num=3)
