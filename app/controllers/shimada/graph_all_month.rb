@@ -46,6 +46,7 @@ module Shimada::GraphAllMonth
 
   TITLE_ALLMONTH = { 
     :powers_3           => [ "消費電力推移 全月度",{ :by_date  => "%y/%m"} ],
+    :revise_by_vaper_3   => [ "蒸気圧補正消費電力推移 全月度",{ :by_date  => "%y/%m"} ],
     :revise_by_temp_3   => [ "補正消費電力推移 全月度",{ :by_date  => "%y/%m"} ],
     :revise_by_temp_ave => [ "補正消費電力平均化推移 全月度",{ :by_date  => "%y/%m"} ],
     :normalized         => [ "正規化消費電力推移 全月度",{ :by_ => :shape} ],
@@ -161,6 +162,25 @@ module Shimada::GraphAllMonth
       Shimada::Power.gnuplot(@power,method,opt) 
     end
     @TYTLE = title
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_all_month_vaper
+    line =  (params[@Domain] && params[@Domain][:line]) ? params[@Domain][:line] : nil 
+    if params[@Domain] && params[@Domain][:each_month]
+      Shimada::Month.all.each{ |month| graph_temp_(month)}
+    else
+      @graph_file =  "all_month_vs_vaper" + (line ? line : "")
+      unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+        conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
+        @power = Shimada::Power.power_all(conditions)
+        @TYTLE = "蒸気量-消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
+
+        Shimada::Power.gnuplot(@power,:revise_by_temp,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => :vaper,
+                               :graph_file =>  @graph_file, :with_Approximation => true,
+                               :range => (7..19))
+      end
+    end
     render :action => :graph,:layout => "hospital_error_disp"
   end
 

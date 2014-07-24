@@ -367,9 +367,9 @@ end
 set out 'tmp/shimada/giffiles/%s.gif'
 
 set title "%s" #"温度-消費電力 " 
-set key outside  autotitle columnheader samplen 1 width -5
+set key outside  autotitle columnheader samplen 1 width -4
 set yrange [0:1000]
-set xrange [-10:40]
+set xrange %s  #[-10:40]
 set xtics -10,5
 set x2tics -10,5
 !
@@ -382,23 +382,34 @@ set x2tics -10,5
     end
 
     def output_path
+      sym = case @opt[:vs_temp]
+            when :vaper ;:vapers
+            else        ; :temperatures
+            end
       output_plot_data{ |f,power| 
         weather = Weather.find_or_feach("maebashi", power.date)#.temperatureseratures[idx] 
-          power.powers.zip(weather.temperatures)[@range].each{ |pw,tmp| 
+          power.powers.zip(weather.send(sym))[@range].each{ |pw,tmp| 
             f.printf( "%.1f %.1f\n",tmp,pw ) if pw && tmp
           } if weather
       }
     end
 
     def output_def_file(path, group_by)
+      size = @opt[:vs_temp] == :vaper ? "[0:35]" : "[-10:40]"
       x0,y0,sll,slh = [:threshold_temp,:y0, :slope_lower, :slope_higher ].
         map{ |sym|Shimada::Power::ReviceParms[sym]}
-      open(@def_file,"w"){ |f|
-          f.puts @Def%[@graph_size,@graph_file,@opt[:title]||"温度-消費電力 "]
-          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") +
+      lines = case @opt[:vs_temp]
+                when :vaper
+                x0,slh = 20,20
+            ",  (x>#{x0}) ? #{y0}+#{slh}*(x-#{x0}) : #{y0}+#{sll}+3*(x-#{x0}) title '蒸気補償' lt -1 lw 1.5\n"
+        else
             ",  (x>#{x0}) ? #{y0}+#{slh}*(x-#{x0}) : #{y0}+#{sll}+3*(x-#{x0}) title '温度補償' lt -1 lw 1.5, \\
- 0.440*(x-5)**1.8+750 title 'TopLine' lc rgbcolor '#FF0000' lw 1.5"
-          f.puts "set terminal  jpeg  size #{@graph_size} \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n" 
+ 0.440*(x-5)**1.8+750 title 'TopLine' lc rgbcolor '#FF0000' lw 1.5\n"
+        end
+      open(@def_file,"w"){ |f|
+          f.puts @Def%[@graph_size,@graph_file,@opt[:title]||"温度-消費電力 ",size]
+          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") + lines +
+           "set terminal  jpeg  size #{@graph_size} \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n" 
       }
     end
   end

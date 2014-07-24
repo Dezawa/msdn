@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140716070155) do
+ActiveRecord::Schema.define(:version => 20140724150603) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -366,6 +366,31 @@ ActiveRecord::Schema.define(:version => 20140716070155) do
     t.float   "f2_x2"
     t.integer "line"
     t.string  "deform"
+    t.float   "hukurosu"
+    t.float   "by_vaper01"
+    t.float   "by_vaper02"
+    t.float   "by_vaper03"
+    t.float   "by_vaper04"
+    t.float   "by_vaper05"
+    t.float   "by_vaper06"
+    t.float   "by_vaper07"
+    t.float   "by_vaper08"
+    t.float   "by_vaper09"
+    t.float   "by_vaper10"
+    t.float   "by_vaper11"
+    t.float   "by_vaper12"
+    t.float   "by_vaper13"
+    t.float   "by_vaper14"
+    t.float   "by_vaper15"
+    t.float   "by_vaper16"
+    t.float   "by_vaper17"
+    t.float   "by_vaper18"
+    t.float   "by_vaper19"
+    t.float   "by_vaper20"
+    t.float   "by_vaper21"
+    t.float   "by_vaper22"
+    t.float   "by_vaper23"
+    t.float   "by_vaper24"
   end
 
   create_table "top_pages", :force => true do |t|

@@ -108,6 +108,8 @@ class Shimada::Power < ActiveRecord::Base
   BugsFit = { :y0 => 4400, :slop => 5.4,:offset => [1200,2400],:offset0 => [-10000,1200,2400,10000] }
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
+  ByVapers = ("by_vaper01".."by_vaper24").to_a
+  Vapers = ("vaper01".."vaper24").to_a
   Aves = ("ave01".."ave24").to_a
   DayOffset = [(3..23),(0..3)]
   TimeOffset = 2
@@ -118,6 +120,9 @@ class Shimada::Power < ActiveRecord::Base
   Header = "時刻"
 
   ReviceParms = { :threshold_temp => 10.0, :slope_lower => 3.0, :slope_higher => 9.0,
+    :y0 => 660.0 , :power_0line => 200.0}
+
+  VaperParms = { :threshold_vaper => 20.0, :slope_lower => 3.0, :slope_higher => 20.0,
     :y0 => 660.0 , :power_0line => 200.0}
 
   Differ = ("00".."23").map{ |h| "difference#{h}" }
@@ -149,7 +154,7 @@ conditions[0] ,
 
   def self.reset_reevice_and_ave
     self.all.each{ |power|
-      ( Revs +   Aves ).each{ |clm|  power[clm]=nil }
+      ( Revs +   Aves + Vapers).each{ |clm|  power[clm]=nil }
       power.save
     }
     reculc_all
@@ -318,6 +323,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   def powers_3 ;    offset_3(:powers) ;  end
   def revise_by_temp_3 ; offset_3(:revise_by_temp) ;  end
+  def revise_by_vaper_3 ; offset_3(:revise_by_vaper) ;  end
   def difference_3 ; offset_3(:difference,22) ;  end
   def diffdiff_3 ; offset_3(:diffdiff,21) ;  end
   def aves_3     ; offset_3(:aves);end
@@ -547,6 +553,30 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
       save
     end
     @revise_by_temp = Revs.map{ |r| self[r]}
+  end
+
+  def revise_by_vaper
+    return @revise_by_vaper if @revise_by_vaper
+    unless self.by_vaper01
+      return [] unless weather
+
+      x0,y0,p0,sll,slh = [:threshold_vaper,:y0,:power_0line, :slope_lower, :slope_higher ].
+        map{ |sym| VaperParms[sym]}
+
+      vapers0 = (0..23).map{ |h|
+        revise = revise_by_temp[h]
+        vaper  = weather[Vapers[h]]
+        logger.debug("Vapers #{vaper},#{Vapers[h]}")
+         if revise && vaper
+           slp = vaper > VaperParms[:threshold_vaper]  ? slh : sll
+           revise -  slp*(vaper-x0)*(revise-p0)/(slp*(vaper-x0)+y0-p0)
+         else revise ? revise : 0
+         end
+      }
+      ByVapers.each{ |r|  self[r] = vapers0.shift}
+      save
+    end
+    @revise_by_vaper = ByVapers.map{ |r| self[r]}
   end
 
   def revise_by_temp_sum
