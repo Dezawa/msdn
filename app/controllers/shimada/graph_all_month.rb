@@ -118,7 +118,7 @@ module Shimada::GraphAllMonth
   end
 
   def graph_all_month_patern(method,title,shapes,opt={ })
-    @graph_file =  "all_month_patern_" + ( shapes || "unsorted")
+    @graph_file ||=  "all_month_patern_" + ( shapes || "unsorted")
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       line_shape = ( if   shapes ; Shimada::Power::Paterns[shapes]
                      else Shimada::Power::Un_sorted
@@ -127,7 +127,7 @@ module Shimada::GraphAllMonth
       @power=Shimada::Power.by_patern(shapes)
       #months.map{ |m| m.powers}.flatten.
       #select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
-      opt.merge!({ :by_ => :line_shape,:title => params[@Domain][:shape], :graph_file => @graph_file})
+      opt.merge!({ :by_ => :line_shape,:title => (title ? title : params[@Domain][:shape]), :graph_file => @graph_file})
       Shimada::Power.gnuplot(@power,method,opt)
     end
     @TYTLE = title
@@ -138,7 +138,9 @@ module Shimada::GraphAllMonth
     label  = params[@Domain][:label]
     shape  =  params[@Domain][:shape]
     shape  = nil if shape == "未分類"
-    graph_all_month_patern(:revise_by_temp_3,label,shape,{ :mode =>:revise_by_temp_3,:fitting => :standerd })
+    title = label + (action == "revise_by_vaper_3" ? "蒸気補正" : "")
+    @graph_file =  "all_month_patern_#{action}" + ( shape || "unsorted")
+    graph_all_month_patern(action,title,shape,{ :title => title,:mode =>action ,:fitting => :standerd })
   end
   def graph_deform
     action = params[@Domain][:action]

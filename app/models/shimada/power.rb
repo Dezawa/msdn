@@ -19,6 +19,26 @@ class Shimada::Power < ActiveRecord::Base
 
   PolyFits = 
     {
+1 => {
+:ave => [ 0.000 ,0.000 ,0.000 ,0.000 ,0.000],
+:max => [ 0 ,0 ,0 ,0 ,0],
+:min => [ 0 ,0 ,0 ,0 ,0]
+},
+2 => {
+:ave => [ 492.648 ,-5.180 ,-0.645 ,0.064 ,-0.007],
+:max => [ 560.767 ,-3.042 ,0.951 ,0.062 ,-0.015],
+:min => [ 424.529 ,-7.318 ,-2.240 ,0.067 ,0.002]
+},
+3 => {
+:ave => [ 571.127 ,-0.858 ,0.517 ,-0.036 ,-0.025],
+:max => [ 634.462 ,0.710 ,0.794 ,-0.008 ,-0.019],
+:min => [ 507.792 ,-2.425 ,0.240 ,-0.064 ,-0.032]
+},
+4 => {
+:ave => [ 628.317 ,-2.178 ,0.791 ,-0.035 ,-0.032],
+:max => [ 698.077 ,-0.596 ,1.123 ,0.014 ,-0.027],
+:min => [ 558.557 ,-3.760 ,0.459 ,-0.085 ,-0.037]
+    }
 #1 => {
 #:ave => [ 0.000 ,0.000 ,0.000 ,0.000 ,0.000],
 #:max => [ 0 ,0 ,0 ,0 ,0],
@@ -40,28 +60,28 @@ class Shimada::Power < ActiveRecord::Base
 #:max => [ 772.303 ,-4.096 ,1.529 ,0.046 ,-0.043],
 #:min => [ 603.962 ,-8.693 ,-0.251 ,-0.052 ,-0.032]
 #    }
-########  offset_of_hukurosu_vs_pw == 0 による##############
-1 => {
-:ave => [ 0.000 ,0.000 ,0.000 ,0.000 ,0.000],
-:max => [ 0 ,0 ,0 ,0 ,0],
-:min => [ 0 ,0 ,0 ,0 ,0]
-},
-2 => {
-:ave => [ 501.557 ,-7.063 ,-1.178 ,0.006 ,-0.012],
-:max => [ 563.790 ,-5.930 ,1.116 ,0.025 ,-0.031],
-:min => [ 439.324 ,-8.196 ,-3.472 ,-0.014 ,0.008]
-},
-3 => {
-:ave => [ 587.788 ,-1.792 ,0.651 ,-0.034 ,-0.030],
-:max => [ 645.434 ,0.038 ,1.470 ,0.014 ,-0.028],
-:min => [ 530.141 ,-3.623 ,-0.168 ,-0.082 ,-0.032]
-},
-4 => {
-:ave => [ 688.133 ,-6.394 ,0.639 ,-0.003 ,-0.038],
-:max => [ 772.303 ,-4.096 ,1.529 ,0.046 ,-0.043],
-:min => [ 603.962 ,-8.693 ,-0.251 ,-0.052 ,-0.032]
-    }
-######### 2014の物による########
+#########  offset_of_hukurosu_vs_pw == 0 による##############
+#1 => {
+#:ave => [ 0.000 ,0.000 ,0.000 ,0.000 ,0.000],
+#:max => [ 0 ,0 ,0 ,0 ,0],
+#:min => [ 0 ,0 ,0 ,0 ,0]
+#},
+#2 => {
+#:ave => [ 501.557 ,-7.063 ,-1.178 ,0.006 ,-0.012],
+#:max => [ 563.790 ,-5.930 ,1.116 ,0.025 ,-0.031],
+#:min => [ 439.324 ,-8.196 ,-3.472 ,-0.014 ,0.008]
+#},
+#3 => {
+#:ave => [ 587.788 ,-1.792 ,0.651 ,-0.034 ,-0.030],
+#:max => [ 645.434 ,0.038 ,1.470 ,0.014 ,-0.028],
+#:min => [ 530.141 ,-3.623 ,-0.168 ,-0.082 ,-0.032]
+#},
+#4 => {
+#:ave => [ 688.133 ,-6.394 ,0.639 ,-0.003 ,-0.038],
+#:max => [ 772.303 ,-4.096 ,1.529 ,0.046 ,-0.043],
+#:min => [ 603.962 ,-8.693 ,-0.251 ,-0.052 ,-0.032]
+#    }
+########## 2014の物による########
 #1 => {
 #:ave => [ 0.000 ,0.000 ,0.000 ,0.000 ,0.000],
 #:max => [ 0 ,0 ,0 ,0 ,0],
@@ -117,12 +137,13 @@ class Shimada::Power < ActiveRecord::Base
 
   Differences = ("difference00".."difference23").to_a
   Lines = [(0..280),(280..410),(410..540),(540..660),(660..800),(800..1000)]
+  LinesVaper = [(0..280),(280..410),(410..540),(540..660),(660..800),(800..1000)]
   Header = "時刻"
 
   ReviceParms = { :threshold_temp => 10.0, :slope_lower => 3.0, :slope_higher => 9.0,
     :y0 => 660.0 , :power_0line => 200.0}
 
-  VaperParms = { :threshold_vaper => 20.0, :slope_lower => 3.0, :slope_higher => 20.0,
+  VaperParms = { :threshold_vaper => 20.0, :slope_lower => 0.0, :slope_higher => 20.0,
     :y0 => 660.0 , :power_0line => 200.0}
 
   Differ = ("00".."23").map{ |h| "difference#{h}" }
@@ -212,23 +233,58 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     average_line = Shimada::Power.find_or_create_by_date_and_line(nil,line)
     
     powers = self.by_patern(patern).
-      select{ |pw| pw.offset_of_hukurosu_vs_pw < 1200 && pw.line > 2 && pw.max_revs >= 605} 
-         #pw.date > Date.new(2013,9)} # )power_all([" and line = ?", line])
+      select{ |pw| 
+      #pw.offset_of_hukurosu_vs_pw < 1200 && pw.line > 2 && pw.max_revs >= 605} 
+         #pw.date > Date.new(2013,9)} # )
+      power_all([" and line = ?", line])
+    }
     if  powers.size>2
-      aves = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.average}
-      sdev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.standard_devitation}
+      aves     = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_vaper[i]}.compact.average}
+      aves_rev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.average}
+      sdev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_vaper[i]}.compact.standard_devitation}
       high = (0..23).map{ |i| aves[i]+2*sdev[i] }
       lows = (0..23).map{ |i| aves[i]-2*sdev[i] }
-
-      average_line.update_attributes( Hash[*Revs.zip(aves).flatten].
+      average_line.update_attributes( Hash[*Revs.zip(aves_rev).flatten].
+                                      merge(Hash[*ByVapers.zip(aves).flatten]).
                                       merge(Hash[*Differences.zip(sdev).flatten]).
                                       merge(Hash[*Hours.zip(high).flatten]).
-                                      merge(Hash[*Aves.zip(lows).flatten]))
+                                      merge(Hash[*Aves.zip(lows).flatten])
+                                      )
     end
     #ave_power.difference
     @@average_line[line] = average_line
   end
 
+  # rev => 平均 、difference => SDEV、powers => +2σ、ave => -2σ
+  def self.average_line_temp(line)
+    return @@average_line[line] if @@average_line[line]
+    return nil unless (1..4).include?(line)
+    patern = "稼働#{line}"
+
+    average_line = Shimada::Power.find_or_create_by_date_and_line(nil,line)
+    
+    powers = self.by_patern(patern).
+      select{ |pw| 
+      #pw.offset_of_hukurosu_vs_pw < 1200 && pw.line > 2 && pw.max_revs >= 605} 
+         #pw.date > Date.new(2013,9)} # )
+      power_all([" and line = ?", line])
+    }
+    if  powers.size>2
+      aves = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.average}
+      sdev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.standard_devitation}
+      high = (0..23).map{ |i| aves[i]+2*sdev[i] }
+      lows = (0..23).map{ |i| aves[i]-2*sdev[i] }
+      average_line.revise_by_vaper
+      average_line.save
+      average_line.update_attributes( Hash[*Revs.zip(aves).flatten].
+                                      merge(Hash[*Differences.zip(sdev).flatten]).
+                                      merge(Hash[*Hours.zip(high).flatten]).
+                                      merge(Hash[*Aves.zip(lows).flatten])
+                                      )
+    end
+    #ave_power.difference
+    @@average_line[line] = average_line
+  end
 
   def copy_revise
     std = self.class.average_line(self.line)
@@ -261,11 +317,19 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   end
 
 
-  def lines
+  def lines_rev
     return @lines if @lines
     return 0 if revise_by_temp.size == 0
     unless line
       update_attribute(:line , Lines.index{ |l| l.include?(revise_by_temp_ave[7..-1].max) })
+    end
+    @lines = line
+  end
+  def lines
+    return @lines if @lines
+    return 0 if revise_by_vaper.size == 0
+    unless line
+      update_attribute(:line , Lines.index{ |l| l.include?(revise_by_vaper_ave[7..-1].max) })
     end
     @lines = line
   end
@@ -331,10 +395,18 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   # Array a of \sum_{i=0}^{次元数}(a_i x^i)
   # 
-  def a(n=PolyLevel)
+  def a_rev(n=PolyLevel)
      return @a if @a
     if revise_by_temp.compact.size > n
       polyfit(PolyFitHour.map{ |h| h-PolyFitX0},revise_by_temp[PolyFitHour],n)
+    else
+      []
+    end
+  end
+  def a(n=PolyLevel)
+     return @a if @a
+    if revise_by_temp.compact.size > n
+      polyfit(PolyFitHour.map{ |h| h-PolyFitX0},revise_by_vaper[PolyFitHour],n)
     else
       []
     end
@@ -639,6 +711,21 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
       n = num/2
 
       aves = (0..powers.size-1).map{ |h| ary = revise_by_temp[[0,h-n].max..[h+n,revise_by_temp.size-1].min]
+        ary.inject(0){ |s,e| s+(e ? e : 0 ) }/ary.size
+      }
+      Aves.each{ |r|  self[r] = aves.shift}
+      save
+    end
+    @revise_by_temp_ave = Aves.map{ |r| self[r]}
+  end
+
+  def revise_by_vaper_ave(num=3)
+    return [] if revise_by_vaper.size ==0 
+    return @revise_by_temp_ave if @revise_by_temp_ave
+    unless self.ave01
+      n = num/2
+
+      aves = (0..powers.size-1).map{ |h| ary = revise_by_vaper[[0,h-n].max..[h+n,revise_by_vaper.size-1].min]
         ary.inject(0){ |s,e| s+(e ? e : 0 ) }/ary.size
       }
       Aves.each{ |r|  self[r] = aves.shift}

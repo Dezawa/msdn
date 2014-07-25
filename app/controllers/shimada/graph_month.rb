@@ -87,6 +87,7 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
   TITLES = {  
     :powers_3 => "消費電力推移" ,
     :revise_by_temp_3 => "補正消費電力推移" ,
+    :revise_by_vaper_3 => "蒸気補正消費電力推移" ,
     :revise_by_temp_ave => "補正平均消費電力推移" ,
     :normalized => "正規化消費電力推移" ,
     :move_ave => "平均消費電力推移" ,

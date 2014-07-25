@@ -144,7 +144,7 @@ set grid #ytics
     end
 
     def inv_revice(pw,temp,vaper) 
-      #pw =   inv_vaper(pw,vaper) 
+      pw =   inv_vaper(pw,vaper) 
       inv_temp(pw,temp)
     end
     def inv_temp(pw,temp)

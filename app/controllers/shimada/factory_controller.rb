@@ -60,9 +60,10 @@ class Shimada::FactoryController <  Shimada::Controller
     @power.month = month;@power.save
     @power.update_attribute(:line,3)  unless @power.line
     @power.today_graph
-    forecast = Forecast.find_or_fetch(:maebashi,@today)
+    @forecast = forecast = Forecast.find_or_fetch(:maebashi,@today)
     @temp = forecast.temperature
     @humi = forecast.humidity
+    @vaper = forecast.vaper
 
     ############  Demo用 ####################
     if hr = @power.powers.index(nil)
@@ -97,7 +98,7 @@ class Shimada::FactoryController <  Shimada::Controller
     @power = Shimada::Power.new(:date => @tomorrow,:line => line)
     @date = @tomorrow
     @power.tomorrow_graph(line)
-    forecast = Forecast.find_or_fetch(:maebashi,@tomorrow,@today)
+    @forecast =  forecast = Forecast.find_or_fetch(:maebashi,@tomorrow,@today)
     @temp = forecast.temperature
     @humi = forecast.humidity
     render :action => :tomorrow

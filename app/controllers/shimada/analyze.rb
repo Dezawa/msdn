@@ -45,7 +45,14 @@ module Shimada::Analyze
       [10,   Shimada::Power::PaternsKey.map{ |lbl| 
          [:popup,:graph_all_month_lines,lbl,
           {:win_name => "graph_patarn_all_month",:action=> :revise_by_temp_3,
-            :label => lbl,:shape => lbl, :fitting => :std_temp}]
+            :label => lbl,:shape => lbl, :fitting => :standerd}]
+       } 
+      ]
+    AllMonthaction_buttomsPaternsByVaper = 
+      [10,   Shimada::Power::PaternsKey.map{ |lbl| 
+         [:popup,:graph_all_month_lines,lbl+"蒸気補正",
+          {:win_name => "graph_patarn_all_month",:action=> :revise_by_vaper_3,
+            :label => lbl,:shape => lbl, :fitting => :standerd}]
        } 
       ]
        #%w( #3-- 3-+ 3-0 3F 3O 30+ 4-- 4-0 400 4F 4H 3他 4他 0S 1S 200  2O
@@ -89,7 +96,7 @@ module Shimada::Analyze
      HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}powers_3", :link_label => "グラフ"}.merge(POPUP)),
      HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}normalized",:link_label => "正規化"}.merge(POPUP)),
      HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}revise_by_temp_3", :link_label => "温度補正"}.merge(POPUP)),
-     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}revise_by_temp_ave",:link_label => "温度補正平均"}.merge(POPUP)),
+     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}revise_by_vaper_3",:link_label => "蒸気補正"}.merge(POPUP)),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_temp", :link_label => "対温度"}.merge(POPUP)), HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_bugs", :link_label => "対袋数"}.merge(POPUP)),
      #HtmlLink.new(:id,"",:link => { :link_label => "稼働数"   , :url => "#{SGRPH}_line_all"   }.merge(POPUP)),
      #HtmlLink.new(:id,"",:link => { :link_label => "稼働変化別",:url => "#{SGRPH}_month_lines_types" }.merge(POPUP)), 
@@ -107,6 +114,7 @@ module Shimada::Analyze
     @action_buttoms_analize =[# Action_buttoms,
                                AllMonthaction_buttoms,         # 全月度グラフ ....
                                AllMonthaction_buttomsPaterns,  # パターン分析結果
+                               AllMonthaction_buttomsPaternsByVaper,  # パターン分析結果
                                AllMonthaction_buttomsDeform,   # 異常パターン
                                AllMonthaction_buttoms3,        # 数、型指定しての、グラフなど
                                AllMonthaction_buttoms2         # 
@@ -214,7 +222,7 @@ module Shimada::Analyze
       "  :ave => [ " +  A.map{ |s| pw.send(s) ? "%.3f"%pw.send(s) : "0"}.join(" ,") + "],<br>"+
       "  :max => [ " + AH.map{ |s| pw.send(s) ? "%.3f"%pw.send(s) : "0"}.join(" ,") + "],<br>"+
       "  :min => [ " + AL.map{ |s| pw.send(s) ? "%.3f"%pw.send(s) : "0"}.join(" ,") + "]<br>"
-    }.join("},<br>")
+    }.join("},<br>")+"}"
   end
 
   def graph_superman
