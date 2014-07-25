@@ -120,7 +120,16 @@ class Forecast < ActiveRecord::Base
   def temperature24(location,date)
     date=date.to_date
     fore = self.find_or_fetch(location,date) || self.find_or_fetch(location,date,date-1)
-    ret = fore.temperature.map{ |t| [0,0,t]}.flatten
+    expand(fore.temperature)
+  end
+  def vaper24(location,date)
+    date=date.to_date
+    fore = self.find_or_fetch(location,date) || self.find_or_fetch(location,date,date-1)
+    expand(fore.vaper)
+  end
+
+  def expand(ary)
+    ret = ary.map{ |t| [0,0,t]}.flatten
     # 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4
     # 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t
     (2..20).step(3).each{ |h| 
