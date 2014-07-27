@@ -594,6 +594,14 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     @temps
   end
 
+  def vapers 
+    return @vapers if @vapers
+    return nil unless weather
+    @vapers = Vapers.map{ |h| weather[h]}
+    save
+    @vapers
+  end
+
   def variance_revise(from = 8,to = 18)
     revises = revise_by_temp_ave[from..to].compact
     return nil if revises.size > 0

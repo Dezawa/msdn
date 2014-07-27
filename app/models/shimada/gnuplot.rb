@@ -164,7 +164,7 @@ set grid #ytics
    def output_std_temp_file(power)
      polyfits = Shimada::Power::PolyFits[ power.line]
      temp =  power.temps || Forecast.temperature24(:maebashi,power.date)
-     vaper = Forecast.vaper24(:maebashi,power.date)
+     vaper = power.vapers || Forecast.vaper24(:maebashi,power.date)
      ave = (0..23).map{ |h| inv_revice(f4(h,polyfits[:ave]),temp[h],vaper[h])}
      min = (0..23).map{ |h| inv_revice(f4(h,polyfits[:min]),temp[h],vaper[h])}
      max = (0..23).map{ |h| inv_revice(f4(h,polyfits[:max]),temp[h],vaper[h])}
