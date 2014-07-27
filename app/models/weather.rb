@@ -85,7 +85,9 @@ class Weather < ActiveRecord::Base
   def temperatures ;   Temperature.map{ |t| self[t]} ; end
   def vapers      ;   Vaper.map{ |t| self[t]} ; end
   def max_temp ; temperatures.max ; end
-
+  ("01".."24").each_with_index{ |h,idx| define_method("tempvaper#{h}".to_sym){
+      "%2.1f<br>%2.1f"%[Temperature[idx],Vaper[idx]].map{ |t| self[t]}
+    }}
 end
 __END__
 s = Time.local(2013,1,1).beginning_of_day

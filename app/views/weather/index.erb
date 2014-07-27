@@ -18,9 +18,7 @@
         next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
   <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
 
-    <td><%= link_to '気温', :controller => :weather, :action => :temperatuer,
-      :month => obj.month ,:location => obj.location%></td>
-    <td><%= link_to '蒸気圧', :controller => :weather, :action => :vaper,
+    <td><%= link_to '気温・蒸気圧', :controller => :weather, :action => :temperatuer,
       :month => obj.month ,:location => obj.location%></td>
     <td><%= link_to '湿度', :controller => :weather, :action => :humidity,
       :month => obj.month ,:location => obj.location%></td>

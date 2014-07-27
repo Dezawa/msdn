@@ -77,7 +77,10 @@ class HtmlCell
 
   def disp(object,htmlopt="")
     #txt=object.send(symbol); txt.blank? || !txt ? "　" : object.send(symbol)
-    object.send(symbol).blank?  ? "　" : object.send(symbol)
+    case symbol
+    when Symbol;    object.send(symbol).blank?  ? "　" : object.send(symbol)
+    when String;    symbol
+    end
   end
   def checked( obj,symbol,choice)
     {:checked => ( obj.send(symbol) == choice[-1] )}
