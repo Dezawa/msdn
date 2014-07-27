@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140724215940) do
+ActiveRecord::Schema.define(:version => 20140727011814) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -63,7 +63,7 @@ ActiveRecord::Schema.define(:version => 20140724215940) do
     t.date     "date"
     t.date     "month"
     t.date     "announce_day"
-    t.time     "announce"
+    t.datetime "announce"
     t.float    "temp03"
     t.float    "temp06"
     t.float    "temp09"

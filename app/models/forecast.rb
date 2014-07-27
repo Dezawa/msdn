@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+require 'pp'
 class Forecast < ActiveRecord::Base
 
 
@@ -32,24 +33,34 @@ class Forecast < ActiveRecord::Base
   class << self
     def fetch(location,day)
       day = day.to_date
-      today = Time.now.to_date 
+      today = Time.now
+#      h = today.hour
+      day_hour = today.beginning_of_hour
+      today = today.to_date
+
       return nil unless  day == today || day == today + 1
 
       announce,today,tomorrow,todays,tomorrows = forecast(location)
-
-      today_forecast = self.find_or_create_by_location_and_date_and_announce_day(location.to_s,today,today )
+pp announce
+      today_forecast = self.find_or_create_by_location_and_date_and_announce(location.to_s,today,day_hour )
       weather_temperature_humidity = to_hash(todays)
       #weather,temperature,humidity = todays
       #w = Hash[*Weather.zip(weather).flatten]
       #t = Hash[*Temp.zip(temperature).flatten]
       #h = Hash[*Humi.zip(humidity).flatten]
       args = { :announce => announce,:month => day.beginning_of_month }.merge(weather_temperature_humidity)
+pp args[:announce]
       today_forecast.update_attributes( args )
+      today_forecast.announce = announce
+      today_forecast.save
+pp args[:announce]
 
-      tomorrow_forecast = self.find_or_create_by_location_and_date_and_announce_day(location.to_s,tomorrow,today )
+      tomorrow_forecast = self.find_or_create_by_location_and_date_and_announce(location.to_s,tomorrow,day_hour )
       weather_temperature_humidity = to_hash(tomorrows)
       args = { :announce => announce,:month => day.beginning_of_month }.merge(weather_temperature_humidity)
       tomorrow_forecast.update_attributes( args )
+      today_forecast.announce = announce
+      today_forecast.save
 
       return case day
              when today ; today_forecast 
@@ -64,19 +75,41 @@ class Forecast < ActiveRecord::Base
       w.merge(t).merge(h)
     end
 
-    def find_or_fetch(location,day,announce_day=nil)
+    def find_or_fetch(location,day,announce_day = nil)
       day = Time.parse(day).to_date if day === String
       announce_day = Time.parse(announce_day).to_date if announce_day === String
-      announce_day ||= day
+      announce ||= day
       day = day.to_date
-      announce_day = announce_day.to_date
-      forecast = find_by_location_and_month_and_date_and_announce_day(location.to_s,day.beginning_of_month,day,announce_day)
+      announce = Time.now.beginning_of_hour
+      forecast = find_by_location_and_month_and_date_and_announce(location.to_s,
+                                                                  day.beginning_of_month,
+                                                                  day,
+                                                                  announce)
       forecast.vaper if forecast && !forecast.vaper03
       return forecast if forecast
-      return nil      if announce_day != Time.now.to_date # 本日のアナウンスしか採れない
+#      return nil      if announce_day != Time.now.to_date # 本日のアナウンスしか採れない
        fetch(location,day)
     end
 
+
+    def forecast(zp)
+     lines=forecast_html(zp) #File.read("maebashi_forecast").split("\n")
+  #    lines=File.read("maebashi_forecast").split("\n")
+      date = announce_datetime(lines)
+      today = today_is(lines)
+      tomorrow =tomorrow_is(lines)
+      hour_lines(lines)
+      weather = rain_rank(lines)
+      temperature = temperaures(lines)
+      while / class="humidity/ =~  (line = lines.shift) ;      end
+      humidity = humidities(lines) 
+
+      [date,today,tomorrow,
+       [weather[0,8],temperature[0,8],humidity[0,8]],
+       [weather[8,8],temperature[8,8],humidity[8,8]]
+      ]
+    end
+  
     def forecast_html(zp)
       zp = zp.to_sym
       url = URLForecast%ZP[zp]
@@ -84,42 +117,53 @@ class Forecast < ActiveRecord::Base
       content = `#{PhantomJS} js.js`.split("<")
     end
 
-    def forecast(zp)
-     lines=forecast_html(zp) #File.read("maebashi_forecast").split("\n")
-  #    lines=File.read("maebashi_forecast").split("\n")
+    def announce_datetime(lines)      
       while /id="pinpoint_weather_name"/ !~ lines.shift ;      end
       while /id="point_announce_datetime"/ !~ (line = lines.shift) ;      end
-      date = Time.parse( line.sub(/^.*>/,"").gsub(/[年月日]/,"-"))
+      Time.parse( line.sub(/^.*>/,"").gsub(/[年月日]/,"-"))
+    end
+
+    def today_is(lines)
       while /今日/ !~ (line = lines.shift) ;      end
-      today = Time.parse(line.sub(/^[^\d]/,"").gsub(/[^\d ]/,"")).to_date
+      Time.parse(line.sub(/^[^\d]/,"").gsub(/[^\d ]/,"")).to_date
+    end
+
+    def tomorrow_is(lines)
       while /明日/ !~ (line = lines.shift) ;      end
-      tomorrow =Time.parse(line.sub(/^[^\d]/,"").gsub(/[^\d ]/,"")).to_date
+      Time.parse(line.sub(/^[^\d]/,"").gsub(/[^\d ]/,"")).to_date
+    end
+
+    def hour_lines(lines)
       while /class="hour/ !~ (line = lines.shift) ;      end
+    end
+
+    def rain_rank(lines)
       while /雨のランクは5段階で表示されます/ !~ (line = lines.shift) ;      end
-      weather = (0..15).map{ |i|
+      (0..15).map{ |i|
         while /^img/ !~ (line = lines.shift) ;      end
         lines.shift.sub(/^.*>/,"")
       }
+    end
+
+    def temperaures(lines)
       while /class="temperature"/ =~  (line = lines.shift) ;      end
       temperature = (0..15).map{ |k|
         while /^td>/ !~ (line = lines.shift) ;      end
         lines.shift.sub(/^.*>/,"").to_f
       }
+    end
 
+    def humidities(lines) 
       while / class="humidity/ =~  (line = lines.shift) ;      end
-      humidity = (0..15).map{ |k|
+      (0..15).map{ |k|
         while /^td>/ !~ (line = lines.shift) ;      end
         lines.shift.sub(/^.*>/,"").to_f
       }
-      [date,today,tomorrow,
-       [weather[0,8],temperature[0,8],humidity[0,8]],
-       [weather[8,8],temperature[8,8],humidity[8,8]]
-      ]
     end
-  
+
   def temperature24(location,date)
     date=date.to_date
-    fore = self.find_or_fetch(location,date) || self.find_or_fetch(location,date,date-1)
+    fore = self.find_or_fetch(location,date)# || self.find_or_fetch(location,date,date-1)
     expand(fore.temperature)
   end
   def vaper24(location,date)
@@ -177,4 +221,10 @@ class Forecast < ActiveRecord::Base
     Pc*Math.exp((A*x + B*x**1.5 + C*x**3 + D*x**6) / (1 - x))
   end
   def xx(temp) ; 1 - (temp + 273.15) * InvTc ; end
+end
+
+class Time
+  def beginning_of_hour
+    beginning_of_day+self.hour.hour
+  end
 end
