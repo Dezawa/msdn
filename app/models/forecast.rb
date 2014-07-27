@@ -42,22 +42,22 @@ class Forecast < ActiveRecord::Base
 
       announce,today,tomorrow,todays,tomorrows = forecast(location)
 pp announce
-      today_forecast = self.find_or_create_by_location_and_date_and_announce(location.to_s,today,day_hour )
+      today_forecast = self.find_or_create_by_location_and_date_and_announce(location.to_s,today,announce )
       weather_temperature_humidity = to_hash(todays)
       #weather,temperature,humidity = todays
       #w = Hash[*Weather.zip(weather).flatten]
       #t = Hash[*Temp.zip(temperature).flatten]
       #h = Hash[*Humi.zip(humidity).flatten]
-      args = { :announce => announce,:month => day.beginning_of_month }.merge(weather_temperature_humidity)
+      args = { :announce_day => announce.to_date,:month => day.beginning_of_month }.merge(weather_temperature_humidity)
 pp args[:announce]
       today_forecast.update_attributes( args )
       today_forecast.announce = announce
       today_forecast.save
 pp args[:announce]
 
-      tomorrow_forecast = self.find_or_create_by_location_and_date_and_announce(location.to_s,tomorrow,day_hour )
+      tomorrow_forecast = self.find_or_create_by_location_and_date_and_announce(location.to_s,tomorrow,announce )
       weather_temperature_humidity = to_hash(tomorrows)
-      args = { :announce => announce,:month => day.beginning_of_month }.merge(weather_temperature_humidity)
+      args = { :announce_day => announce.to_date,:month => day.beginning_of_month }.merge(weather_temperature_humidity)
       tomorrow_forecast.update_attributes( args )
       today_forecast.announce = announce
       today_forecast.save
