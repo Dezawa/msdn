@@ -10,7 +10,7 @@ class ForecastController < ApplicationController
             HtmlText.new(:location     ,"場所",    :ro => true , :size => 7),
 #            HtmlDate.new(:month        ,"年月",  :tform => "%Y/%m", :ro => true, :size => 7 ),
             HtmlDate.new(:date         ,"年月日",  :tform => "%Y/%m/%d", :ro => true, :size => 7 ),
-            HtmlDate.new(:date         ,"予報日",  :tform => "%m/%d", :ro => true, :size => 7 )
+            HtmlDate.new(:announce ,"発表日",  :tform => "%m/%d %H", :ro => true, :size => 7 )
             ] +
     Temp.map{ |clm|  HtmlNum.new(clm.to_sym,clm.sub(/temp/,""),:tform => "%.1f") } +
     Humi.map{ |clm|  HtmlNum.new(clm.to_sym,clm.sub(/humi/,""),:tform => "%.1f") } +
