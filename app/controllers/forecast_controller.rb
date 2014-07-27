@@ -17,7 +17,7 @@ class ForecastController < ApplicationController
     Weather.map{ |clm|  HtmlText.new(clm.to_sym,clm.sub(/weather/,"")) } +
     Vaper.map{ |clm|  HtmlNum.new(clm.to_sym,clm.sub(/vaper/,""),:tform => "%.1f") } 
   
- def set_instanse_variable
+  def set_instanse_variable
     @Model= Forecast
     @TYTLE = "予報 "
     @labels=Labels
@@ -27,4 +27,9 @@ class ForecastController < ApplicationController
     @FindOption = { :order => "date"}
   end
 
+  def now
+    location = params[:location] || :maebashi
+    fore = Forecast.find_or_fetch(location)
+    render :text => fore.to_s
+  end
 end

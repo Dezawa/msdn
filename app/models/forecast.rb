@@ -75,8 +75,9 @@ pp args[:announce]
       w.merge(t).merge(h)
     end
 
-    def find_or_fetch(location,day,announce_day = nil)
+    def find_or_fetch(location,day=nil,announce_day = nil)
       day = Time.parse(day).to_date if day === String
+      day ||= Time.now.to_date
       announce_day = Time.parse(announce_day).to_date if announce_day === String
       announce ||= day
       day = day.to_date
@@ -199,6 +200,10 @@ pp args[:announce]
     save
     end
     Vaper.map{ |sym| self[sym]}  
+  end
+
+  def to_s
+    "#{date} #{announce}: temp:#{temperature.join(',')}  Humi:#{humidity.join(',')}  Vaper:#{ vaper.join(',')}"
   end
 
   def vaper_presser(temp,humi) ;    saturate_p(temp)*humi*0.01 ;  end
