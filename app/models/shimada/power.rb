@@ -17,8 +17,10 @@ class Shimada::Power < ActiveRecord::Base
   PolyFitX0   = 14.0       # 15時
   PolyLevel   = 4
 
+
   PolyFits = 
-    {
+{ 
+#########   by_month
 1 => {
 :ave => [ 0.000 ,0.000 ,0.000 ,0.000 ,0.000],
 :max => [ 0 ,0 ,0 ,0 ,0],
@@ -30,15 +32,35 @@ class Shimada::Power < ActiveRecord::Base
 :min => [ 424.529 ,-7.318 ,-2.240 ,0.067 ,0.002]
 },
 3 => {
-:ave => [ 571.127 ,-0.858 ,0.517 ,-0.036 ,-0.025],
-:max => [ 634.462 ,0.710 ,0.794 ,-0.008 ,-0.019],
-:min => [ 507.792 ,-2.425 ,0.240 ,-0.064 ,-0.032]
+:ave => [ 557.277 ,-0.840 ,0.491 ,-0.035 ,-0.024],
+:max => [ 614.972 ,0.621 ,0.604 ,-0.005 ,-0.016],
+:min => [ 499.581 ,-2.300 ,0.379 ,-0.064 ,-0.033]
 },
 4 => {
-:ave => [ 628.317 ,-2.178 ,0.791 ,-0.035 ,-0.032],
-:max => [ 698.077 ,-0.596 ,1.123 ,0.014 ,-0.027],
-:min => [ 558.557 ,-3.760 ,0.459 ,-0.085 ,-0.037]
-    }
+:ave => [ 582.346 ,-1.939 ,0.704 ,-0.032 ,-0.029],
+:max => [ 644.990 ,-0.476 ,0.934 ,0.012 ,-0.024],
+:min => [ 519.703 ,-3.403 ,0.475 ,-0.076 ,-0.034]
+} 
+#1 => {
+#:ave => [ 0.000 ,0.000 ,0.000 ,0.000 ,0.000],
+#:max => [ 0 ,0 ,0 ,0 ,0],
+#:min => [ 0 ,0 ,0 ,0 ,0]
+#},
+#2 => {
+#:ave => [ 492.648 ,-5.180 ,-0.645 ,0.064 ,-0.007],
+#:max => [ 560.767 ,-3.042 ,0.951 ,0.062 ,-0.015],
+#:min => [ 424.529 ,-7.318 ,-2.240 ,0.067 ,0.002]
+#},
+#3 => {
+#:ave => [ 571.127 ,-0.858 ,0.517 ,-0.036 ,-0.025],
+#:max => [ 634.462 ,0.710 ,0.794 ,-0.008 ,-0.019],
+#:min => [ 507.792 ,-2.425 ,0.240 ,-0.064 ,-0.032]
+#},
+#4 => {
+#:ave => [ 628.317 ,-2.178 ,0.791 ,-0.035 ,-0.032],
+#:max => [ 698.077 ,-0.596 ,1.123 ,0.014 ,-0.027],
+#:min => [ 558.557 ,-3.760 ,0.459 ,-0.085 ,-0.037]
+#    }
 #1 => {
 #:ave => [ 0.000 ,0.000 ,0.000 ,0.000 ,0.000],
 #:max => [ 0 ,0 ,0 ,0 ,0],
@@ -125,6 +147,7 @@ class Shimada::Power < ActiveRecord::Base
 #    }
 #
   }
+  MonthOffset = [570,50,45,30,0,0,0,0,0,0,40,40,45]
   BugsFit = { :y0 => 4400, :slop => 5.4,:offset => [1200,2400],:offset0 => [-10000,1200,2400,10000] }
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
@@ -239,9 +262,9 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
       power_all([" and line = ?", line])
     }
     if  powers.size>2
-      aves     = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_vaper[i]}.compact.average}
-      aves_rev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.average}
-      sdev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_vaper[i]}.compact.standard_devitation}
+      aves     = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_month[i]}.compact.average}
+      aves_rev = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_month[i]}.compact.average}
+      sdev     = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_month[i]}.compact.standard_devitation}
       high = (0..23).map{ |i| aves[i]+2*sdev[i] }
       lows = (0..23).map{ |i| aves[i]-2*sdev[i] }
       average_line.update_attributes( Hash[*Revs.zip(aves_rev).flatten].
@@ -388,6 +411,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def powers_3 ;    offset_3(:powers) ;  end
   def revise_by_temp_3 ; offset_3(:revise_by_temp) ;  end
   def revise_by_vaper_3 ; offset_3(:revise_by_vaper) ;  end
+  def revise_by_month_3 ; offset_3(:revise_by_month) ;  end
   def difference_3 ; offset_3(:difference,22) ;  end
   def diffdiff_3 ; offset_3(:diffdiff,21) ;  end
   def aves_3     ; offset_3(:aves);end
@@ -635,6 +659,12 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     @revise_by_temp = Revs.map{ |r| self[r]}
   end
 
+  def revise_by_month
+    return unless self.date
+    base = MonthOffset[0]+ MonthOffset[self.date.month]-200
+    revise_by_vaper.map{ |rev| rev  - (rev-200)/base * MonthOffset[self.date.month]}
+  end
+
   def revise_by_vaper
     return @revise_by_vaper if @revise_by_vaper
     unless self.by_vaper01
@@ -800,38 +830,26 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     revise_by_temp.zip(revise_by_temp_ave)[range].map{ |d,a| d-a }.standard_devitation
   end
 
+  def self.maybe3lines
+    Shimada::Power.all(
+  :conditions => "month_id = 69 and date not in ('2013-01-1','2013-01-5','2013-01-19','2013-01-24') or 
+month_id = 70 and date not in ('2013-02-6','2013-02-9') or 
+month_id = 71 and date not in ('2013-03-6','2013-03-10','2013-03-16','2013-03-19','2013-03-20','2013-03-21') or 
+month_id = 72 and date not in ('2013-04-4','2013-04-8','2013-04-13','2013-04-17','2013-04-20','2013-04-27','2013-04-30') or 
+month_id = 73 and date not in ('2013-05-2','2013-05-9','2013-05-11','2013-05-19','2013-05-20','2013-05-23','2013-05-25','2013-05-30') or 
+month_id = 74 and date not in ('2013-06-1','2013-06-3','2013-06-8','2013-06-10','2013-06-12','2013-06-13','2013-06-20','2013-06-21','2013-06-24','2013-06-30') or 
+month_id = 77 and date not in ('2013-09-7','2013-09-11','2013-09-16','2013-09-21','2013-09-22','2013-09-24','2013-09-28') or 
+month_id = 78 and date not in ('2013-10-1','2013-10-7','2013-10-12','2013-10-26','2013-10-27') or 
+month_id = 79 and date not in ('2013-11-6','2013-11-9','2013-11-10','2013-11-16') or 
+month_id = 81 and date not in ('2014-01-1','2014-01-8','2014-01-15','2014-01-16','2014-01-17','2014-01-18','2014-01-21','2014-01-27') or 
+month_id = 82 and date not in ('2014-02-1','2014-02-5','2014-02-6','2014-02-15','2014-02-16','2014-02-7','2014-02-10','2014-02-12','2014-02-13','2014-02-14','2014-02-17','2014-02-18','2014-02-19','2014-02-20','2014-02-21','2014-02-22','2014-02-23','2014-02-24','2014-02-25','2014-02-26','2014-02-27') or 
+month_id = 83 and date not in ('2014-03-8','2014-03-18','2014-03-25','2014-03-30','2014-03-4','2014-03-5','2014-03-13','2014-03-14','2014-03-16','2014-03-20','2014-03-2') or 
+month_id = 84 and date not in ('2014-04-1','2014-04-5','2014-04-12','2014-04-14','2014-04-19','2014-04-26') or 
+month_id = 85 and date not in ('2014-05-2','2014-05-7','2014-05-10','2014-05-16','2014-05-19','2014-05-24','2014-05-30') or 
+month_id = 86 and date not in ('2014-06-22','2014-06-25','2014-06-2','2014-06-3','2014-06-4','2014-06-17')"
+)
+  end 
 
 # 629.36, [624.6, 629.6, 630.6, 630.8, 631.2]
 end
 
-__END__
->> ave3.a
-=> [585.344448512587, -2.8946985333208, 0.543465592966868, -0.0273597742127158, -0.0271368587272631]
->> ave4.a
-=> [671.311419302734, -11.046155811208, 0.424149932237185, 0.0538818174000054, -0.0320642544879384]
->> ave2.a
-=> [390.506310135954, -4.09290092097442, 0.800845654009422, -0.118680606373331, -0.0413615377084879]
->> 
-
->> ave3.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave3.revise_by_temp[PolyFitHour],n)
-=> [585.344448512587, -2.8946985333208, 0.543465592966868, -0.0273597742127158, -0.0271368587272631]
->> ave3.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave3.powers[PolyFitHour],n)
-=> [681.880767263428, -2.16091644385028, 1.00939574410472, 0.0151249061825689, -0.0245542670105259]
->> ave3.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave3.aves[PolyFitHour],n)
-=> [488.807671961234, -3.62848992635336, 0.0775723702054876, -0.0698439229758882, -0.0297197879828015]
->> 
-
->> ave.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave.revise_by_temp[PolyFitHour],n)
-=> [671.311419302734, -11.046155811208, 0.424149932237185, 0.0538818174000054, -0.0320642544879384]
->> ave.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave.powers[PolyFitHour],n)
-=> [775.743610849375, -1.00351300544133, 0.763666749521605, -0.0184740946617896, -0.033552131134333]
->> ave.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave.aves[PolyFitHour],n)
-=> [566.879582177953, -21.0886685977422, 0.0846391388986092, 0.126236193201364, -0.0305765463560064]
-
->> ave.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave.revise_by_temp[PolyFitHour],n)
-=> [390.506310135954, -4.09290092097442, 0.800845654009422, -0.118680606373331, -0.0413615377084879]
->> ave.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave.powers[PolyFitHour],n)
-=> [610.610527123437, -1.38989022969643, -0.44405480799054, -0.007231545329454, -0.0114488937191251]
->> ave.polyfit(PolyFitHour.map{ |h| h-PolyFitX0},ave.aves[PolyFitHour],n)
-=> [500.55827931081, -2.74142026691058, 0.178407164847272, -0.0629558940801201, -0.0264053476445685]
->> 
