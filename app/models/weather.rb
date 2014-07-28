@@ -100,3 +100,6 @@ while date <= e
   p date
 end
 
+wthr=Weather.all(:conditions => "date >= '2013-1-1' and date <= '2014-6-26'");wthr.size
+tv = wthr.map{ |w| w.temperatures.zip(w.vapers)[7..19].map{ |t,v| "#{t} #{v}"} };tv.size
+open("temp_vaper","w"){ |f| f.puts tv}
