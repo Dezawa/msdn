@@ -29,7 +29,7 @@ class ForecastController < ApplicationController
 
   def now
     location = params[:location] || :maebashi
-    fore = Forecast.find_or_fetch(location)
+    fore = Forecast.fetch(location,Time.now.to_date)
     render :text => fore.to_s
   end
 end
