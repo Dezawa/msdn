@@ -41,7 +41,6 @@ class Forecast < ActiveRecord::Base
       return nil unless  day == today || day == today + 1
 
       announce,today,tomorrow,todays,tomorrows = forecast(location)
-pp announce
       today_forecast = self.find_or_create_by_location_and_date_and_announce(location.to_s,today,announce )
       weather_temperature_humidity = to_hash(todays)
       #weather,temperature,humidity = todays
@@ -49,18 +48,16 @@ pp announce
       #t = Hash[*Temp.zip(temperature).flatten]
       #h = Hash[*Humi.zip(humidity).flatten]
       args = { :announce_day => announce.to_date,:month => day.beginning_of_month }.merge(weather_temperature_humidity)
-pp args[:announce]
       today_forecast.update_attributes( args )
-      today_forecast.announce = announce
+      today_forecast.vaper
       today_forecast.save
-pp args[:announce]
 
       tomorrow_forecast = self.find_or_create_by_location_and_date_and_announce(location.to_s,tomorrow,announce )
       weather_temperature_humidity = to_hash(tomorrows)
       args = { :announce_day => announce.to_date,:month => day.beginning_of_month }.merge(weather_temperature_humidity)
       tomorrow_forecast.update_attributes( args )
-      today_forecast.announce = announce
-      today_forecast.save
+      tomorrow_forecast.vaper
+      tomorrow_forecast.save
 
       return case day
              when today ; today_forecast 
@@ -82,10 +79,9 @@ pp args[:announce]
       announce ||= day
       day = day.to_date
       announce = Time.now.beginning_of_hour
-      forecast = find_by_location_and_month_and_date_and_announce(location.to_s,
+      forecast = find_by_location_and_month_and_date(location.to_s,
                                                                   day.beginning_of_month,
-                                                                  day,
-                                                                  announce)
+                                                                  day)
       forecast.vaper if forecast && !forecast.vaper03
       return forecast if forecast
 #      return nil      if announce_day != Time.now.to_date # 本日のアナウンスしか採れない
@@ -118,10 +114,23 @@ pp args[:announce]
       content = `#{PhantomJS} js.js`.split("<")
     end
 
+    def announce_datetime_excite(lines)      
+      while /<div class="spot_ref_time">/ !~ (line = lines.shift) ;      end
+#puts line
+      match=/(\d+)月(\d+)日[^\d]*(\d+)時(\d+)分/.match(line)
+      Time.local(Time.now.year,*match[1,4])
+    end
+
+    def today_is_excite(lines)
+      while /今日の天気/ !~ (line = lines.shift) ;      end
+      match=/(\d+)月(\d+)日/.match(line)
+      Date.new(Time.now.year,*match[1,2].map(&:to_i))
+    end
+
     def announce_datetime(lines)      
       while /id="pinpoint_weather_name"/ !~ lines.shift ;      end
       while /id="point_announce_datetime"/ !~ (line = lines.shift) ;      end
-      Time.parse( line.sub(/^.*>/,"").gsub(/[年月日]/,"-"))
+      Time.parse( line.sub(/^.*?>/,"").gsub(/[年月日時分]/,"-"))
     end
 
     def today_is(lines)
