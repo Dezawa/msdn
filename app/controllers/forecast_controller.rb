@@ -12,10 +12,10 @@ class ForecastController < ApplicationController
             HtmlDate.new(:date         ,"年月日",  :tform => "%Y/%m/%d", :ro => true, :size => 7 ),
             HtmlDate.new(:announce ,"発表日",  :tform => "%m/%d %H", :ro => true, :size => 7 )
             ] +
-    Temp.map{ |clm|  HtmlNum.new(clm.to_sym,clm.sub(/temp/,""),:tform => "%.1f") } +
-    Humi.map{ |clm|  HtmlNum.new(clm.to_sym,clm.sub(/humi/,""),:tform => "%.1f") } +
-    Weather.map{ |clm|  HtmlText.new(clm.to_sym,clm.sub(/weather/,"")) } +
-    Vaper.map{ |clm|  HtmlNum.new(clm.to_sym,clm.sub(/vaper/,""),:tform => "%.1f") } 
+    Temp.map{  |clm|   HtmlNum.new(clm.to_sym,clm.sub(/temp/,""),:tform => "%.1f") } +
+    Vaper.map{ |clm|   HtmlNum.new(clm.to_sym,clm.sub(/vaper/,""),:tform => "%.1f") } +
+    Humi.map{  |clm|   HtmlNum.new(clm.to_sym,clm.sub(/humi/,""),:tform => "%.1f") } +
+    Weather.map{ |clm| HtmlText.new(clm.to_sym,clm.sub(/weather/,"")) } 
   
   def set_instanse_variable
     @Model= Forecast
@@ -23,7 +23,7 @@ class ForecastController < ApplicationController
     @labels=Labels
     #@TableEdit = [[:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}]]
     @Domain= @Model.name.underscore
-    @TableHeaderDouble = [3,[8,"気温"],[8,"湿度"],[8,"天気"],[8,"蒸気圧"]]
+    @TableHeaderDouble = [3,[8,"気温"],[8,"蒸気圧"],[8,"湿度"],[8,"天気"]]
     @FindOption = { :order => "date"}
   end
 
