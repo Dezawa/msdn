@@ -15,6 +15,7 @@ module Shimada::GraphAllMonth
        [:popup,:graph_patern,"差分"      ,{ :win_name => "graph",:patern => patern,:method => :difference_3} ],
        [:popup,:graph_patern,"差分平均"  ,{ :win_name => "graph",:patern => patern,:method => :difference_ave} ]
       ]
+    @labels = Shimada::MonthController::DaylyLabels
     @action_buttoms = nil
     show_sub
   end
