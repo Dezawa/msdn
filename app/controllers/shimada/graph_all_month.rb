@@ -46,7 +46,8 @@ module Shimada::GraphAllMonth
 
   TITLE_ALLMONTH = { 
     :powers_3           => [ "消費電力推移 全月度",{ :by_date  => "%y/%m"} ],
-    :revise_by_vaper_3   => [ "蒸気圧補正消費電力推移 全月度",{ :by_date  => "%y/%m"} ],
+    :revise_by_vaper_3  => [ "蒸気圧補正消費電力推移 全月度",{ :by_date  => "%y/%m"} ],
+    :revise_by_month_3  => [ "月間差補正消費電力推移 全月度" ,{ :by_date  => "%y/%m"} ],
     :revise_by_temp_3   => [ "補正消費電力推移 全月度",{ :by_date  => "%y/%m"} ],
     :revise_by_temp_ave => [ "補正消費電力平均化推移 全月度",{ :by_date  => "%y/%m"} ],
     :normalized         => [ "正規化消費電力推移 全月度",{ :by_ => :shape} ],
@@ -55,7 +56,9 @@ module Shimada::GraphAllMonth
   }
   def graph_all_month #
     method = params[@Domain][:method].to_sym
-    graph_all_month_sub(method,*TITLE_ALLMONTH[method])
+    title,opt = TITLE_ALLMONTH[method]
+    opt.merge!(:graph_file => "selected")
+    graph_all_month_sub(method,title,opt)
   end 
   def graph_all_month_pat
     graph_all_month_line_shape(params[@Domain][:patern])
@@ -94,8 +97,12 @@ module Shimada::GraphAllMonth
     @graph_file =  opt[:graph_file]
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{opt[:graph_file]}.gif") == true
       #months = Shimada::Month.all
-      @power=Shimada::Power.power_all 
-      @power = select_by_( @power,opt[:find]) if  opt[:find] 
+      if params[@Domain][:powers]
+        @power=Shimada::Power.send(params[@Domain][:powers].to_sym)
+      else
+        @power=Shimada::Power.power_all 
+        @power = select_by_( @power,opt[:find]) if  opt[:find] 
+      end
       Shimada::Power.gnuplot(@power,method,opt.merge(:title => title))
     end
 

@@ -14,6 +14,11 @@ module Shimada::Analyze
         #[:popup,:graph_all_month_lines_types,"全月度稼働変化別",{ :win_name => "graph"} ],
         [:popup,:graph_all_month,"全月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
         [:popup,:graph_all_month,"全月度蒸気量補正",{ :win_name => "graph",:method => :revise_by_vaper_3} ],
+        [:popup,:graph_all_month,"全月度 月補正",{ :win_name => "graph",:method => :revise_by_month_3} ],
+        [:popup,:graph_all_month,"選抜グラフ",{ :win_name => "graph",:method => :powers_3,:powers => :maybe3lines} ],
+        #[:popup,:graph_all_month_lines_types,"全月度稼働変化別",{ :win_name => "graph"} ],
+        [:popup,:graph_all_month,"選抜温度補正",{ :win_name => "graph",:method => :revise_by_temp_3,:powers => :maybe3lines} ],
+        [:popup,:graph_all_month,"選抜蒸気量補正",{ :win_name => "graph",:method => :revise_by_vaper_3,:powers => :maybe3lines} ],
         [:popup,:graph_all_month,"全月度温度補正平均化",{ :win_name => "graph",:method => :revise_by_temp_ave} ],
         [:popup,:graph_all_month,"全月度正規化",{ :win_name => "graph",:method => :normalized}  ] ,
         [:popup,:graph_all_month_vaper,"全月度対蒸気量",{ :win_name => "graph"} ],
@@ -52,6 +57,13 @@ module Shimada::Analyze
       [10,   Shimada::Power::PaternsKey.map{ |lbl| 
          [:popup,:graph_all_month_lines,lbl+"蒸気補正",
           {:win_name => "graph_patarn_all_month",:action=> :revise_by_vaper_3,
+            :label => lbl,:shape => lbl, :fitting => :standerd}]
+       } 
+      ]
+    AllMonthaction_buttomsPaternsByMonth = 
+      [10,   Shimada::Power::PaternsKey.map{ |lbl| 
+         [:popup,:graph_all_month_lines,lbl+"月間差補正",
+          {:win_name => "graph_patarn_all_month",:action=> :revise_by_month_3,
             :label => lbl,:shape => lbl, :fitting => :standerd}]
        } 
       ]
@@ -115,6 +127,7 @@ module Shimada::Analyze
                                AllMonthaction_buttoms,         # 全月度グラフ ....
                                AllMonthaction_buttomsPaterns,  # パターン分析結果
                                AllMonthaction_buttomsPaternsByVaper,  # パターン分析結果
+                               AllMonthaction_buttomsPaternsByMonth,  # パターン分析結果
                                AllMonthaction_buttomsDeform,   # 異常パターン
                                AllMonthaction_buttoms3,        # 数、型指定しての、グラフなど
                                AllMonthaction_buttoms2         # 

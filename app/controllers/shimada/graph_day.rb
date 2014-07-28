@@ -12,6 +12,7 @@ module Shimada::GraphDay
     { 
     :powers_3 => "消費電力推移 " ,
     :revise_by_temp_3 => "温度補正後 消費電力推移 " ,
+    :revise_by_vaper_3 => "蒸気圧補正後 消費電力推移 " ,
     :revise_by_temp_ave => "補正後平均 消費電力推移 " ,
     :normalized => "正規化消費電力推移 " ,
     :difference_3 => "差分 " ,

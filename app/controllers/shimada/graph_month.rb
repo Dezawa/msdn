@@ -8,6 +8,7 @@ module  Shimada::GraphMonth
   PowerLabels =
     [ HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => URL_GRAPH+"powers_3"   , :htmloption => Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => URL_GRAPH+"revise_by_temp_3",:htmloption => Popup }),
+      HtmlLink.new(:id,"",:link => { :link_label => "蒸気補正"  ,:url => URL_GRAPH+"revise_by_vaper_3",:htmloption => Popup }),
       HtmlLink.new(:id,"",:link => { :link_label => "補正後平均",:url => URL_GRAPH+"revise_by_temp_ave",:htmloption => Popup}),
       #HtmlLink.new(:id,"",:link => { :link_label => "対温度"   , :url => URL_GRAPH+"temp"    , htmloption =>Popup}),
       HtmlLink.new(:id,"",:link => { :link_label => "正規化"   , :url => URL_GRAPH+"normalized"   , :htmloption =>Popup}),
@@ -58,7 +59,8 @@ logger.debug("GRAPH_MONTH_SUB: opt = #{opt}")
     id =  ( params[@Domain] ? params[@Domain][:id] : params[:id] ) || opt.delete(:id)
     month =  @Model.find(id)
     
-    opt.merge!(:graph_file => "month_#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{method}" ) 
+    opt.merge!(:graph_file => "month_#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{method}" ,
+               :by_date => "%d") 
     @graph_file =  opt[:graph_file]
     @TYTLE = title + month.month.strftime("(%Y年%m月)")
 
@@ -88,6 +90,7 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
     :powers_3 => "消費電力推移" ,
     :revise_by_temp_3 => "補正消費電力推移" ,
     :revise_by_vaper_3 => "蒸気補正消費電力推移" ,
+    :revise_by_month_3 => "月間差補正消費電力推移" ,
     :revise_by_temp_ave => "補正平均消費電力推移" ,
     :normalized => "正規化消費電力推移" ,
     :move_ave => "平均消費電力推移" ,
