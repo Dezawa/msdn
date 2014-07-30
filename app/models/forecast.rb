@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 require 'pp'
 class Forecast < ActiveRecord::Base
+ extend Shimada::ForecastReal
 
-
-    PhantomJS = "/usr/local/bin/phantomjs"
-    JS ="
+  PhantomJS = "/usr/local/bin/phantomjs"
+  JS ="
 (function () {
   'use strict';
   var page = require('webpage').create();
@@ -27,7 +27,7 @@ class Forecast < ActiveRecord::Base
   DateArg  = %w(date month announce_day)
   TimeArg  = %w(announce)
   Temp     = %w(temp03 temp06 temp09 temp12 temp15 temp18 temp21 temp24) 
-  Weather     = %w(weather03 weather06 weather09 weather12 weather15 weather18 weather21 weather24)
+  Weathers     = %w(weather03 weather06 weather09 weather12 weather15 weather18 weather21 weather24)
   Humi     = %w(humi03 humi06 humi09 humi12 humi15 humi18 humi21 humi24)
   Vaper    = %w(vaper03 vaper06 vaper09 vaper12 vaper15 vaper18 vaper21 vaper24)
   class << self
@@ -44,7 +44,7 @@ class Forecast < ActiveRecord::Base
       today_forecast = self.find_or_create_by_location_and_date_and_announce(location.to_s,today,announce )
       weather_temperature_humidity = to_hash(todays)
       #weather,temperature,humidity = todays
-      #w = Hash[*Weather.zip(weather).flatten]
+      #w = Hash[*Weathers.zip(weather).flatten]
       #t = Hash[*Temp.zip(temperature).flatten]
       #h = Hash[*Humi.zip(humidity).flatten]
       args = { :announce_day => announce.to_date,:month => day.beginning_of_month }.merge(weather_temperature_humidity)
@@ -66,7 +66,7 @@ class Forecast < ActiveRecord::Base
     end
     def to_hash(weathers)
       weather,temperature,humidity = weathers
-      w = Hash[*Weather.zip(weather).flatten]
+      w = Hash[*Weathers.zip(weather).flatten]
       t = Hash[*Temp.zip(temperature).flatten]
       h = Hash[*Humi.zip(humidity).flatten]
       w.merge(t).merge(h)
@@ -196,8 +196,65 @@ class Forecast < ActiveRecord::Base
     ret
   end
 
+  def differrence_via_real
+    dates = Forecast.all.map(&:date).uniq
+    weathers = dates.map{ |date|
+      today    = Forecast.find_by_date_and_announce_day(date,date)
+      tomorrow = Forecast.find_by_date_and_announce_day(date,date-1)
+      real     = Weather.find_or_feach(:maebashi,date)
+      [today,tomorrow,real]
+    }
 
+    differ = []
+    weathers.map{ |k,a,r|
+      next unless r
+      [3,6,9,12,15,18,21,24].each_with_index{ |h,idx|
+        diff = []
+        diff << ( r.date.to_time + h.hour)
+        diff << (r ? r.temperatures[h-1] : nil )
+        diff << (k ? (k.temperature[idx]-r.temperatures[h-1])  : nil)
+        diff << (a ? (a.temperature[idx]-r.temperatures[h-1])  : nil)
+
+        diff << (r ? r.vapers[h-1] :  nil)
+        diff << (k ? (k.vaper[idx]-r.vapers[h-1])  : nil )
+        diff << (a ? (a.vaper[idx]-r.vapers[h-1])  : nil)
+        differ << diff
+      }
+    }
+    differ
   end
+
+  def differrence_via_real_graph
+    differ = differrence_via_real
+    deffile = RAILS_ROOT+"/tmp/shimada/forecast-real.def"
+    open(RAILS_ROOT+"/tmp/shimada/forecast-real","w"){ |f|
+      f.puts "No 日時 気温 当日予報誤差 前日予報誤差 蒸気圧 当日予報誤差 前日予報誤差" 
+      i=0.0
+      differ.each{ |h,t,dt0,dt1,v,dv0,dv1|
+          f.print  i 
+          i += 1/8.0
+
+        f.print h.hour == 3 ?  h.strftime(" \"%Y-%m-%d %H:00\"") : " \"\""
+        f.print t   ? " %.1f "%t    : " -- "
+        f.print dt0 ? " %.1f "%dt0  : " -- "
+        f.print dt1 ? " %.1f "%dt1  : " -- "
+        f.print v   ? " %.1f "%v    : " -- "
+        f.print dv0 ? " %.1f "%dv0  : " -- "
+        f.print dv1 ? " %.1f "%dv1  : " -- "
+        f.puts
+      }
+    }
+
+    open(deffile,"w"){ |f|
+      f.puts Def%[RAILS_ROOT,differ.first.first.strftime("%Y/%m/%d"),
+                  differ.last.first.strftime("%Y/%m/%d"),differ.size/8,
+                  RAILS_ROOT,RAILS_ROOT
+                 ]
+    }
+    `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{deffile})`
+  end
+
+  end # of class method
 
   def temperature ;    Temp.map{ |sym| self[sym]} ;  end
 
@@ -242,3 +299,75 @@ class Time
     beginning_of_day+self.hour.hour
   end
 end
+
+__END__
+
+dates = Forecast.all.map(&:date).uniq
+weathers = dates.map{ |date|
+  today    = Forecast.find_by_date_and_announce_day(date,date)
+  tomorrow = Forecast.find_by_date_and_announce_day(date,date-1)
+  real     = Weather.find_by_date(date)
+  [today,tomorrow,real]
+};1
+i=1
+open("forecast-realT","w"){ |f|
+f.puts "日時 気温 本日予報 前日予報" 
+  weathers.each{ |k,a,r|
+    [3,6,9,12,15,18,21,24].each_with_index{ |h,idx|
+      f.print k.date.day+h/24.0
+      f.print h
+      f.print r ? " %.1f "%r.temperatures[h-1] : " -- "
+      f.print k ? " %.1f "%k.temperature[idx]  : " -- "
+      f.print a ? " %.1f "%a.temperature[idx]  : " -- "
+     f.puts
+    }
+  }
+}
+open("forecast-realV","w"){ |f|
+f.puts "日時 蒸気圧 本日予報 前日予報"
+  weathers.each{ |k,a,r|
+    [3,6,9,12,15,18,21,24].each_with_index{ |h,idx|
+      f.print k.date.day+h/24.0
+      f.print h
+      f.print r ? " %.1f "%r.vapers[h-1] : " -- "
+      f.print k ? " %.1f "%k.vaper[idx]  : " -- "
+      f.print a ? " %.1f "%a.vaper[idx]  : " -- "
+         f.puts
+    }
+  }
+}
+open("forecast-real","w"){ |f|
+f.puts "日時 気温 本日予報 前日予報" 
+  weathers.each{ |k,a,r|
+    [3,6,9,12,15,18,21,24].each_with_index{ |h,idx|
+      f.print k.date.day+h/24.0
+      f.print h
+      f.print r ? " %.1f "%r.temperatures[h-1] : " -- "
+      f.print k ? " %.1f "%(k.temperature[idx]-r.temperatures[h-1])  : " -- "
+      f.print a ? " %.1f "%(a.temperature[idx]-r.temperatures[h-1])  : " -- "
+
+      f.print r ? " %.1f "%r.vapers[h-1] : " -- "
+      f.print k ? " %.1f "%(k.vaper[idx]-r.vapers[h-1])  : " -- "
+      f.print a ? " %.1f "%(a.vaper[idx]-r.vapers[h-1])  : " -- "
+      f.puts
+    }
+  }
+}
+
+open("forecast-real","w"){ |f|
+f.puts "日時 本日予報気温 本日予報蒸気 前日予報気温  前日予報蒸気 実測気温 実測蒸気"
+  weathers.each{ |k,a,r|
+    [3,6,9,12,15,18,21,24].each_with_index{ |h,idx|
+      f.print k.date.day+h/24.0
+      f.print h
+      f.print k ? " %.1f %1.f"%[k.temperature[idx]  ,k.vaper[idx]]  : " -- --"
+      f.print a ? " %.1f %1.f"%[a.temperature[idx]  ,a.vaper[idx]]  : " -- --"
+      f.print r ? " %.1f %1.f "%[r.temperatures[h-1] ,r.vapers[h-1]] : " -- -- "
+      f.puts i
+      i += 1
+    }
+  }
+}
+
+;1
+weathers.first
