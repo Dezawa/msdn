@@ -2,7 +2,7 @@
 class ForecastController < ApplicationController
   before_filter :set_instanse_variable
   Temp     = %w(temp03 temp06 temp09 temp12 temp15 temp18 temp21 temp24) 
-  Weather     = %w(weather03 weather06 weather09 weather12 weather15 weather18 weather21 weather24)
+  Weather  = %w(weather03 weather06 weather09 weather12 weather15 weather18 weather21 weather24)
   Humi     = %w(humi03 humi06 humi09 humi12 humi15 humi18 humi21 humi24)
   Vaper    = %w(vaper03 vaper06 vaper09 vaper12 vaper15 vaper18 vaper21 vaper24)
 
@@ -21,10 +21,19 @@ class ForecastController < ApplicationController
     @Model= Forecast
     @TYTLE = "予報 "
     @labels=Labels
-    #@TableEdit = [[:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}]]
+    @TableEdit = #[[:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}]]
+    [ [:input_and_action,:error_graph,"予報誤差:ロケーションを入力",{ }]
+    ]
     @Domain= @Model.name.underscore
     @TableHeaderDouble = [3,[8,"気温"],[8,"蒸気圧"],[8,"湿度"],[8,"天気"]]
     @FindOption = { :order => "date"}
+  end
+
+  def error_graph
+    location = params[@Domain][:error_graph] || :maebashi
+    @Model.differrence_via_real_graph location 
+    @graph_file  = "forecast-real"
+    render :layout => "hospital_error_disp"
   end
 
   def now

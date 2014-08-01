@@ -3,6 +3,9 @@ require 'pp'
 class Forecast < ActiveRecord::Base
  extend Shimada::ForecastReal
 
+    ZP   = { :maebashi => %w(3/13/4210/10201 前橋), 
+             :minamiashigara => %w(3/17/4620/14217 南足柄) }
+
   PhantomJS = "/usr/local/bin/phantomjs"
   JS ="
 (function () {
@@ -19,7 +22,6 @@ class Forecast < ActiveRecord::Base
   });
 }());
 "
-    ZP   = { :maebashi => "3/13/4210/10201", :minamiashigara => "3/17/4620/14217" }
     URLForecast =  "http://www.tenki.jp/forecast/%s.html"
 
 
@@ -109,7 +111,7 @@ class Forecast < ActiveRecord::Base
   
     def forecast_html(zp)
       zp = zp.to_sym
-      url = URLForecast%ZP[zp]
+      url = URLForecast%ZP[zp].first
       open("js.js","w"){ |fp| fp.write JS%url}
       content = `#{PhantomJS} js.js`.split("<")
     end
@@ -196,8 +198,9 @@ class Forecast < ActiveRecord::Base
     ret
   end
 
-  def differrence_via_real
-    dates = Forecast.all.map(&:date).uniq
+  def differrence_via_real(location = :maebashi )
+    dates = Forecast.all(:conditions => ["location = ?",location]).
+    map(&:date).uniq
     weathers = dates.map{ |date|
       today    = Forecast.find_by_date_and_announce_day(date,date)
       tomorrow = Forecast.find_by_date_and_announce_day(date,date-1)
@@ -224,8 +227,8 @@ class Forecast < ActiveRecord::Base
     differ
   end
 
-  def differrence_via_real_graph
-    differ = differrence_via_real
+  def differrence_via_real_graph(location = :maebashi)
+    differ = differrence_via_real(location)
     deffile = RAILS_ROOT+"/tmp/shimada/forecast-real.def"
     open(RAILS_ROOT+"/tmp/shimada/forecast-real","w"){ |f|
       f.puts "No 日時 気温 当日予報誤差 前日予報誤差 蒸気圧 当日予報誤差 前日予報誤差" 
@@ -246,11 +249,12 @@ class Forecast < ActiveRecord::Base
     }
 
     open(deffile,"w"){ |f|
-      f.puts Def%[RAILS_ROOT,differ.first.first.strftime("%Y/%m/%d"),
+      f.puts Def%[RAILS_ROOT,ZP[location.to_sym][1],differ.first.first.strftime("%Y/%m/%d"),
                   differ.last.first.strftime("%Y/%m/%d"),differ.size/8,
                   RAILS_ROOT,RAILS_ROOT
                  ]
     }
+    @graph_file = "forecast-real.gif"
     `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{deffile})`
   end
 
