@@ -25,6 +25,7 @@ module Shimada::Analyze
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
         [:popup,:graph_all_month_temp,"全月度月別対温度",{ :win_name => "graph",:each_month => true} ],
         [:popup,:graph_all_month_bugs,"全月度対袋数",{ :win_name => "graph",:method => :revise_by_temp_sum} ],
+        [:popup,:graph_all_month_bugs,"全月度対袋数:季節変動",{ :win_name => "graph",:method => :revise_by_month_sum} ],
         [:popup,:graph_all_month_offset,"温度補正 offset低",{ :win_name => "graph",:offset => 0,:method => :revise_by_temp } ],
         [:popup,:graph_all_month_offset,"温度補正 offset中",{ :win_name => "graph",:offset => 1,:method => :revise_by_temp } ],
         [:popup,:graph_all_month_offset,"温度補正 offset高",{ :win_name => "graph",:offset => 2,:method => :revise_by_temp } ],

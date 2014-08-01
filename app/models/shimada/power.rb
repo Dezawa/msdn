@@ -693,6 +693,10 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     revise_by_temp.inject(0.0){ |s,e| s += e if e; s}
   end
 
+  def revise_by_month_sum
+    revise_by_month.inject(0.0){ |s,e| s += e if e; s}
+  end
+
   # ΣPw = 4400 + 5.4 hukuro + offset
   # offset = ΣPw - 4400 - 5.4 hukuro
   def offset_of_hukurosu_vs_pw

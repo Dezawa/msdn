@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 module Shimada::GraphAllMonth
+  def label_extension_by(method)
+    case method
+    when /by_temp/ ; ["温度補正","temp"]
+    when /by_month/; ["季節変動補正","month"]
+    end
+  end
+
   # メイン画面での各月のリンクボタン
-
-
   def index_all_month_
     line,shape, @models = get_power_by_line_and_shape(params[@Domain][:index_all_month_])
     patern = [line,shape]
@@ -217,13 +222,14 @@ module Shimada::GraphAllMonth
     if params[@Domain] && params[@Domain][:each_month]
       Shimada::Month.all.each{ |month| graph_bug_(month)}
     else
-      @graph_file =  "all_month_vs_bugs_"
+        method = params[@Domain][:method]
+        label,ext = label_extension_by(method)
+      @graph_file =  "all_month_vs_bugs_#{ext}"
       unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
         #conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
         @power =  Shimada::Power.all(:conditions => "hukurosu is not null")
-        method = params[@Domain][:method]
         logger.debug("GRAPH_ALL_MONTH_BUGS moethod=#{method}")
-        @TYTLE = "袋数-消費電力#{method == :revise_by_temp_sum ? '(補正後)' : ''} 全月度 "
+        @TYTLE = "袋数-消費電力(#{label}) "
         
         Shimada::Power.gnuplot(@power,method,:by_date => "%y/%m",:title => @TYTLE,:vs_bugs => true,
                                :graph_file =>  @graph_file)# :with_Approximation => true,
