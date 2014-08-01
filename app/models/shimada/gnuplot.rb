@@ -357,16 +357,21 @@ set x2tics  0,250
     def output_path
       output_plot_data{ |f,power| 
         f.printf( "%.1f %.1f\n",power.hukurosu,power.send(@method)) if power.hukurosu && power.send(@method)
+        f.print "#{ @method} #{Shimada::Power::BugsFit[@method]}\n"
       }
     end
 
     def output_def_file(path, group_by)
+      bugs_fit =  Shimada::Power::BugsFit[@method.to_sym]
       open(@def_file,"w"){ |f|
+        f.puts  "# #{ @method} #{Shimada::Power::BugsFit[@method.to_sym]}\n"
           f.puts @Def%[@size,@graph_file,@opt[:title]||"袋数-消費電力 "]
           f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 "}.join(" , ") +
-            ", \\\n #{Shimada::Power::BugsFit[:y0]} + #{Shimada::Power::BugsFit[:slop]}*x " +
-            Shimada::Power::BugsFit[:offset].map{|offset|
-          ",\\\n #{Shimada::Power::BugsFit[:y0]} + #{Shimada::Power::BugsFit[:slop]}*x + #{offset}"
+        [0,1,2].map{ |offset|
+          ", \\\n #{bugs_fit[:y0][offset]+bugs_fit[:offset][offset]} + #{bugs_fit[:slop][offset]}*x "
+           # ", \\\n #{bugs_fit[:y0]} + #{bugs_fit[:slop]}*x " +
+           # bugs_fit[:offset].map{|offset|
+          #",\\\n #{bugs_fit[:y0]} + #{bugs_fit[:slop]}*x + #{offset}"
         }.join
           f.puts "set terminal  jpeg  size #{@graph_size} \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n" 
       }

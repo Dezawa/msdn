@@ -148,7 +148,14 @@ class Shimada::Power < ActiveRecord::Base
 #
   }
   MonthOffset = [570,50,45,30,0,0,0,0,0,0,40,40,45]
-  BugsFit = { :y0 => 4400, :slop => 5.4,:offset => [1200,2400],:offset0 => [-10000,1200,2400,10000] }
+  BugsFit = { 
+    :revise_by_temp_sum =>
+    { :y0 => [4400,4400,4400], :slop => [5.4,5.4,5.4],:offset => [0,1200,2400],
+      :offset0 => [-10000,1200,2400,10000] },
+    :revise_by_month_sum => 
+    { :y0 => [4400,4400,4400], :slop => [4.4,5.7,7.0],:offset => [0,0,0],
+      :offset0 => [0,5.7,7.0,10.0] }
+  }
   Hours = ("hour01".."hour24").to_a
   Revs = ("rev01".."rev24").to_a
   ByVapers = ("by_vaper01".."by_vaper24").to_a
@@ -190,8 +197,8 @@ conditions[0] ,
         select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
   end
 
-  def self.by_offset(offset)
-    low,high = BugsFit[:offset0][offset.to_i,2]
+  def self.by_offset(offset,by = :by_vaper)
+    low,high = BugsFit[by][:offset0][offset.to_i,2]
     Shimada::Power.all(:conditions => "hukurosu is not null and date < '2014-7-1'").
       select{ |pw| pw.offset_of_hukurosu_vs_pw > low and  pw.offset_of_hukurosu_vs_pw<= high}
   end
