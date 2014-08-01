@@ -362,7 +362,7 @@ set x2tics  0,250
     end
 
     def output_def_file(path, group_by)
-      bugs_fit =  Shimada::Power::BugsFit[@method.to_sym]
+      bugs_fit =  Shimada::Power.bugs_fit(@method)
       open(@def_file,"w"){ |f|
         f.puts  "# #{ @method} #{Shimada::Power::BugsFit[@method.to_sym]}\n"
           f.puts @Def%[@size,@graph_file,@opt[:title]||"袋数-消費電力 "]

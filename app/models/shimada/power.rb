@@ -149,11 +149,12 @@ class Shimada::Power < ActiveRecord::Base
   }
   MonthOffset = [570,50,45,30,0,0,0,0,0,0,40,40,45]
   BugsFit = { 
-    :revise_by_temp_sum =>
+    "revise_by_temp" =>
     { :y0 => [4400,4400,4400], :slop => [5.4,5.4,5.4],:offset => [0,1200,2400],
       :offset0 => [-10000,1200,2400,10000] },
-    :revise_by_month_sum => 
-    { :y0 => [4400,4400,4400], :slop => [4.4,5.7,7.0],:offset => [0,0,0],
+    "revise_by_month" => 
+    # 実際のライン数 + 1 を定義しておく
+    { :y0 => [4400,4400,4400,4400], :slop => [4.4,5.7,7.0,10.0],:offset => [0,0,0,0],
       :offset0 => [0,5.7,7.0,10.0] }
   }
   Hours = ("hour01".."hour24").to_a
@@ -183,9 +184,7 @@ class Shimada::Power < ActiveRecord::Base
   CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["line"]
 
   def self.power_all(conditions = ["", [] ])
-    self.all(:conditions => ["month_id is not null and date < '2014-7-1'" +
-conditions[0] ,
- *conditions[1] ] ) 
+    self.all(:conditions => ["month_id is not null and date < '2014-7-1'" +conditions[0] , *conditions[1] ] ) 
   end
 
   def self.by_patern(patern)
@@ -196,11 +195,26 @@ conditions[0] ,
       @power=power_all.
         select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
   end
+  def self.bugs_fit(method)
+    Shimada::Power::BugsFit[
+                            case method.to_s
+                            when /revise_by_temp/ ; "revise_by_temp"
+                            when /revise_by_month/: "revise_by_month"
+                            end
+                           ]
+  end
 
   def self.by_offset(offset,by = :by_vaper)
-    low,high = BugsFit[by][:offset0][offset.to_i,2]
-    Shimada::Power.all(:conditions => "hukurosu is not null and date < '2014-7-1'").
-      select{ |pw| pw.offset_of_hukurosu_vs_pw > low and  pw.offset_of_hukurosu_vs_pw<= high}
+    offset = offset.to_i
+    case by.to_s
+    when /_by_temp/    
+      low,high = bugs_fit(by)[:offset0][offset.to_i,2]
+      Shimada::Power.all(:conditions => "hukurosu is not null and date < '2014-7-1'").
+        select{ |pw| pw.offset_of_hukurosu_vs_pw(by) > low and  pw.offset_of_hukurosu_vs_pw(by)<= high}
+    when /_by_month/
+      Shimada::Power.all(:conditions => "hukurosu is not null and date < '2014-7-1'").
+        select{ |pw| pw.offset_from_hukurosu_vs_pw(by) == offset }
+    end
   end
 
   def self.reset_reevice_and_ave
@@ -706,9 +720,19 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   # ΣPw = 4400 + 5.4 hukuro + offset
   # offset = ΣPw - 4400 - 5.4 hukuro
-  def offset_of_hukurosu_vs_pw
+  def offset_of_hukurosu_vs_pw(method)
     return 100 unless hukurosu
-    revise_by_temp_sum - BugsFit[:y0] - hukurosu * BugsFit[:slop]
+    bugs_fit = self.class.bugs_fit(method)
+    revise_by_temp_sum - bugs_fit[:y0][0] - hukurosu * bugs_fit[:slop][0]
+  end
+
+  def offset_from_hukurosu_vs_pw(method)
+    return 100 unless hukurosu
+    bugs_fit = self.class.bugs_fit(method)
+    method = "#{method.to_s.sub(/_sum/,"")}_sum".to_sym
+    threshold = (1..bugs_fit[:y0].size-1).
+      find_index{ |idx| send(method) < ( bugs_fit[:y0][idx] + hukurosu * bugs_fit[:slop][idx])
+    }
   end
 
   def diffdiff(range=(1..22))

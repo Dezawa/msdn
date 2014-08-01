@@ -241,12 +241,12 @@ module Shimada::GraphAllMonth
 
   def graph_all_month_offset
     offset = params[@Domain][:offset]
-    method = params[@Domain][:method]
-    @graph_file =  "all_month_by_offset_#{offset}"
+    method = params[@Domain][:method].to_sym
+    @graph_file =  "all_month_by_offset_#{offset}#{method}"
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
-      @power = Shimada::Power.by_offset(offset)
+      @power = Shimada::Power.by_offset(offset,method)
       @TYTLE = "消費電力 オフセット #{%w(低 中 高)[offset.to_i]} "
-logger.debug("##### GRAPH_ALL_MONTH_OFFSET:method=#{method}")
+logger.debug("##### GRAPH_ALL_MONTH_OFFSET:method=#{method},offset=#{offset},@power.eize=#{@power.size}")
       Shimada::Power.gnuplot(@power,method,:title => @TYTLE,:graph_file => @graph_file,:by_date => "%y/%m")#:line_shape)
     end
     render :action => :graph,:layout => "hospital_error_disp"
