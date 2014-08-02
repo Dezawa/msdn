@@ -116,7 +116,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_instanse_variable
-    @weathr_location = session[:weather_location] || "maebashi"
+    @weather_location = session[:weather_location] || "maebashi"
   end
   ##########################
   def new
