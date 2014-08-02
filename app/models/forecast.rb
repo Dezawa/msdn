@@ -250,7 +250,7 @@ class Forecast < ActiveRecord::Base
 
     open(deffile,"w"){ |f|
       f.puts Def%[RAILS_ROOT,ZP[location.to_sym][1],differ.first.first.strftime("%Y/%m/%d"),
-                  differ.last.first.strftime("%Y/%m/%d"),differ.size/8,
+                  differ.last.first.strftime("%Y/%m/%d"),differ.size/8-0.125,
                   RAILS_ROOT,RAILS_ROOT
                  ]
     }

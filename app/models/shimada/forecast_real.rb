@@ -9,7 +9,7 @@ set title '%s地方 %s～%s の気温・水蒸気量と予報の誤差'
 set key outside autotitle columnheader samplen 2 width -10
 
 #unset key
-set x2range [0:%d]
+set x2range [0:%f]
 #set xtics 1,1 
 set x2tics 1
 set xtics  rotate by -90
