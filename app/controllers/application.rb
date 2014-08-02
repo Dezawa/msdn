@@ -114,6 +114,10 @@ class ApplicationController < ActionController::Base
   def require_configure(url="/404.html") 
     redirect_to url unless  @configure
   end
+
+  def set_instanse_variable
+    @weathr_location = session[:weather_location] || "maebashi"
+  end
   ##########################
   def new
     @model = @Model.new(@New)

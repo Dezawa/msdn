@@ -7,6 +7,8 @@ class Shimada::Controller <  ApplicationController
   #before_filter(:except => :error) {|ctrl|  ctrl.require_allowed "/book_keeping/error" }
  
   def set_instanse_variable
+    super
+    @factory = session[:shimada_factory] || "GMC"
   end
 
 end
