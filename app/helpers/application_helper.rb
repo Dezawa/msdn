@@ -198,7 +198,11 @@ end
     when :csv_up_buttom     ;csv_up_buttom
     when :input_and_action  ;
       logger.debug(":INPUT_AND_ACTION: opt.nil?#{opt.nil?} opt=#{opt}")
-input_and_action(action,label,opt)
+      input_and_action(action,label,opt)
+    when :select_and_action  ;
+      logger.debug(":INPUT_AND_ACTION: opt.nil?#{opt.nil?} opt=#{opt}")
+      select_and_action(action,label,opt)
+
     else function.to_s
     end
   end
@@ -242,7 +246,52 @@ input_and_action(action,label,opt)
       (opt.class==Symbol ? send(opt) : "") +
       submit_tag(label)+from_notclose
   end
+
+  def and_action(input,action,label,opt={ })
+
+    scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
+    hidden = opt.delete(:hidden)
+    hidden_value = opt.delete(:hidden_value)
+    if win_name = opt[:popup]
+      if @model
+      fmt =
+ "<div><form action='/%s/%s'>
+  <input name='authenticity_token' type='hidden' value='%s' />
+  <input id='%s_id' name='%s[id]' type='hidden' value='%d' />
+  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' 'width=500,height=400%s'); target='%s'\">
+" + input +  "</form></div>"
+      fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,win_name,scroll,win_name]
+      else
+      fmt =
+ "<div><form action='/%s/%s'>
+  <input name='authenticity_token' type='hidden' value='%s' />
+  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400%s'); target='%s'\">
+" + input +  "</form></div>"
+      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,scroll,win_name]
+      end
+    else
+      "<div>"+form_tag(:action => action) + 
+        "<input type='hidden' name='page' value='#{@page}'>"+
+        (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
+         else;"";end
+         )+
+        submit_tag(label)+
+        input +  "</form></div>"
+    end
+  end
+
   def input_and_action(action,label,opt={ })
+    input =  text_field( @Domain,action,opt )
+    and_action(input,action,label,opt)
+  end
+
+  def select_and_action(action,label,opt={ })
+    correction = opt.delete(:correction)
+    input =   select(@model||@Model.first,action, correction, opt)
+    and_action(input,action,label,opt)+"WW"
+  end
+
+  def input_and_action_old(action,label,opt={ })
     scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
     hidden = opt.delete(:hidden)
     hidden_value = opt.delete(:hidden_value)
