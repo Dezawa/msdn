@@ -288,7 +288,7 @@ end
   def select_and_action(action,label,opt={ })
     correction = opt.delete(:correction)
     input =   select(@model||@Model.first,action, correction, opt)
-    and_action(input,action,label,opt)+"WW"
+    and_action(input,action,label,opt)
   end
 
   def input_and_action_old(action,label,opt={ })
