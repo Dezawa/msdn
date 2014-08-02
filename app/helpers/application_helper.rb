@@ -287,7 +287,8 @@ end
 
   def select_and_action(action,label,opt={ })
     correction = opt.delete(:correction)
-    input =   select(@model||@Model.first,action, correction, opt)
+    input =   select(@Domain,action, correction, opt)
+    #input =   select(action, correction, opt)
     and_action(input,action,label,opt)
   end
 

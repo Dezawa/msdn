@@ -198,7 +198,7 @@ class Forecast < ActiveRecord::Base
     ret
   end
 
-  def differrence_via_real(location = :maebashi )
+  def differrence_via_real(location = "maebashi" )
     dates = Forecast.all(:conditions => ["location = ?",location]).
     map(&:date).uniq
     weathers = dates.map{ |date|
@@ -247,9 +247,10 @@ class Forecast < ActiveRecord::Base
         f.puts
       }
     }
-
+logger.debug("DIFFERRENCE_VIA_REAL_GRAPH: location=#{location} zp =#{ZP[location.to_s]}")
     open(deffile,"w"){ |f|
-      f.puts Def%[RAILS_ROOT,ZP[location.to_sym][1],differ.first.first.strftime("%Y/%m/%d"),
+      f.puts Def%[RAILS_ROOT,
+                  ZP[location.to_s][1],differ.first.first.strftime("%Y/%m/%d"),
                   differ.last.first.strftime("%Y/%m/%d"),differ.size/8-0.125,
                   RAILS_ROOT,RAILS_ROOT
                  ]
