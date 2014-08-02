@@ -3,8 +3,8 @@ require 'pp'
 class Forecast < ActiveRecord::Base
  extend Shimada::ForecastReal
 
-    ZP   = { :maebashi => %w(3/13/4210/10201 前橋), 
-             :minamiashigara => %w(3/17/4620/14217 南足柄) }
+    ZP   = { "maebashi" => %w(3/13/4210/10201 前橋), 
+             "minamiashigara" => %w(3/17/4620/14217 南足柄) }
 
   PhantomJS = "/usr/local/bin/phantomjs"
   JS ="
@@ -110,7 +110,7 @@ class Forecast < ActiveRecord::Base
     end
   
     def forecast_html(zp)
-      zp = zp.to_sym
+      zp = zp.to_s
       url = URLForecast%ZP[zp].first
       open("js.js","w"){ |fp| fp.write JS%url}
       content = `#{PhantomJS} js.js`.split("<")
