@@ -19,7 +19,8 @@ class WeatherController < ApplicationController
     @Model= Weather
     @TYTLE = "気象 "
     #@labels=Labels
-    correction = Forecast::ZP.map{ |location,value| [value[1],location]}
+    correction = WeatherLocation.all.map{|wl| [wl.name,wl.location]}
+    #Forecast::ZP.map{ |location,value| [value[1],location]}
     @TableEdit = [[:select_and_action,:change_location,"地域変更",
        {:correction => correction ,:selected => @weather_location }],
     [:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}]]

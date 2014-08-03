@@ -22,7 +22,8 @@ class ForecastController < ApplicationController
     @Model= Forecast
     @TYTLE = "予報 "
     @labels=Labels
-    correction = Forecast::ZP.map{ |location,value| [value[1],location]}
+    correction = WeatherLocation.all.map{|wl| [wl.name,wl.location]}
+    #Forecast::ZP.map{ |location,value| [value[1],location]}
     @TableEdit = #[[:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}]]
     [ [:select_and_action,:change_location,"地域変更",
        {:correction => correction ,:selected => @weather_location }],
@@ -57,4 +58,11 @@ class ForecastController < ApplicationController
     fore = Forecast.fetch(location,Time.now.to_date)
     render :text => fore.to_s
   end
+
+  def get_all_location
+    locations = WeatherLocation.all.map(&:location)
+    locations.each{ |location| Forecast.fetch(location,Time.now.to_date)}
+    render :text => locations.join(",")
+  end
+
 end
