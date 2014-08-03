@@ -51,6 +51,7 @@ class Shimada::MonthController <  Shimada::Controller
       }
   def set_instanse_variable
     super
+    @factory_id = params[:id]
     @Model= Shimada::Month
     @TYTLE = "シマダヤ:月度データ"
     @labels = Labels_for_month_results
@@ -69,7 +70,7 @@ class Shimada::MonthController <  Shimada::Controller
                                
                              ]
 
-        @FindOption = { :order => "month desc" }
+        @FindOption = { :conditions => ["shimada_factory_id = ?",@factory_id],:order => "month desc" }
 
     #@Delete = true
     @Domain= @Model.name.underscore

@@ -184,16 +184,16 @@ class Shimada::Power < ActiveRecord::Base
   F2_SOLVE = %w(f2_x1 f2_x2)
   CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["line"]
 
-  def self.power_all(conditions = ["", [] ])
-    self.all(:conditions => ["month_id is not null and date < '2014-7-1'" +conditions[0] , *conditions[1] ] ) 
+  def self.power_all(factory_id,conditions = ["", [] ])
+    self.all(:conditions => ["month_id is not null and date < '2014-7-1' and shimada_factory_id = #{factory_id} " +conditions[0] , *conditions[1] ] ) 
   end
 
-  def self.by_patern(patern)
+  def self.by_patern(factory_id,patern)
       line_shape = ( if   patern ; Paterns[patern]
                      else Un_sorted
                      end ).map{ |ls| ls.split("",2)}
       #months = Shimada::Month.all
-      @power=power_all.
+      @power=power_all(factory_id).
         select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
   end
   def self.bugs_fit(method)
@@ -254,9 +254,9 @@ class Shimada::Power < ActiveRecord::Base
     @@average_diff = ave_power
   end
 
-  def self.create_average_diff
+  def self.create_average_diff(factory_id)
     ave_power = Shimada::Power.find_or_create_by_date_and_line(nil,nil)
-    all_powers = Shimada::Power.power_all
+    all_powers = Shimada::Power.power_all(factory_id)
     diffs = all_powers.inject([0]*24){ |s,v|
 logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
       v.difference.each_with_index{ |diff,idx| s[idx]+=( diff || 0 )} if v.difference
@@ -270,18 +270,18 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   @@average_line = { }
   # rev => 平均 、difference => SDEV、powers => +2σ、ave => -2σ
-  def self.average_line(line)
+  def self.average_line(factory_id,line)
     return @@average_line[line] if @@average_line[line]
     return nil unless (1..4).include?(line)
     patern = "稼働#{line}"
 
     average_line = Shimada::Power.find_or_create_by_date_and_line(nil,line)
     
-    powers = self.by_patern(patern).
+    powers = self.by_patern(factory_id,patern).
       select{ |pw| 
       #pw.offset_of_hukurosu_vs_pw < 1200 && pw.line > 2 && pw.max_revs >= 605} 
          #pw.date > Date.new(2013,9)} # )
-      power_all([" and line = ?", line])
+      power_all(factory_id,[" and line = ?", line])
     }
     if  powers.size>2
       aves     = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_month[i]}.compact.average}
@@ -301,18 +301,18 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   end
 
   # rev => 平均 、difference => SDEV、powers => +2σ、ave => -2σ
-  def self.average_line_temp(line)
+  def self.average_line_temp(factory_id,line)
     return @@average_line[line] if @@average_line[line]
     return nil unless (1..4).include?(line)
     patern = "稼働#{line}"
 
     average_line = Shimada::Power.find_or_create_by_date_and_line(nil,line)
     
-    powers = self.by_patern(patern).
+    powers = self.by_patern(factory_id,patern).
       select{ |pw| 
       #pw.offset_of_hukurosu_vs_pw < 1200 && pw.line > 2 && pw.max_revs >= 605} 
          #pw.date > Date.new(2013,9)} # )
-      power_all([" and line = ?", line])
+      power_all(factory_id,[" and line = ?", line])
     }
     if  powers.size>2
       aves = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_temp[i]}.compact.average}

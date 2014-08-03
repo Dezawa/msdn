@@ -15,6 +15,7 @@ class Shimada::FactoryController <  Shimada::Controller
     ]
   def set_instanse_variable
     super
+    @factory_id = params[:factory_id]
     @Model= Shimada::Factory
     @Domain= @Model.name.underscore
     @TYTLE = "シマダヤ工場電力管理"
@@ -55,7 +56,7 @@ class Shimada::FactoryController <  Shimada::Controller
     month = Shimada::Month.find_or_create_by_month(@today.beginning_of_month)
     @power.month = month;@power.save
     @power.update_attribute(:line,3)  unless @power.line
-    @power.today_graph
+    @power.today_graph @factory_id
     @forecast = forecast = Forecast.find_or_fetch(:maebashi,@today)
     @temp = forecast.temperature
     @humi = forecast.humidity
@@ -79,7 +80,7 @@ class Shimada::FactoryController <  Shimada::Controller
 
   def update_tomorrow
     line = params[:power][:line]
-    tomorrow_graph(line)
+    tomorrow_graph(@factory_id,line)
   end
 
   def tomorrow
@@ -93,7 +94,7 @@ class Shimada::FactoryController <  Shimada::Controller
     @tomorrow = @today.tomorrow.to_date
     @power = Shimada::Power.new(:date => @tomorrow,:line => line)
     @date = @tomorrow
-    @power.tomorrow_graph(line)
+    @power.tomorrow_graph(@factory_id,line)
     @forecast =  forecast = Forecast.find_or_fetch(:maebashi,@tomorrow,@today)
     @temp = forecast.temperature
     @humi = forecast.humidity
