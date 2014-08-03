@@ -1,6 +1,6 @@
 class CreateWeatherLocations < ActiveRecord::Migration
-  String_clm= %w(name location forecast_code excite_zip)
-  Integer_clm= %w(weather_prec weather_block)
+  String_clm= %w(name location weather_block forecast_code excite_zip)
+  Integer_clm= %w(weather_prec)
   def self.up
     create_table :weather_locations do |t|
       String_clm.each{ |s| t.string s }
