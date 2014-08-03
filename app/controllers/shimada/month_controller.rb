@@ -51,7 +51,7 @@ class Shimada::MonthController <  Shimada::Controller
       }
   def set_instanse_variable
     super
-    @factory_id = params[:id]
+    @factory_id  = session[:shimada_factory] = params[:id] if  params[:id]
     @Model= Shimada::Month
     @TYTLE = "シマダヤ:月度データ"
     @labels = Labels_for_month_results

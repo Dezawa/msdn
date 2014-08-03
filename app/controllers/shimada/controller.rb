@@ -8,7 +8,7 @@ class Shimada::Controller <  ApplicationController
  
   def set_instanse_variable
     super
-    @factory = session[:shimada_factory] || "GMC"
+    @factory_id = session[:shimada_factory] || Shimada::Factory.find_by_name("GMC")
   end
 
 end
