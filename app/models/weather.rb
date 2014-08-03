@@ -52,11 +52,11 @@ class Weather < ActiveRecord::Base
 }());
 "
 
-    URLPast   = "http://www.data.jma.go.jp/obd/stats/etrn/view/hourly_s1.php?prec_no=%d&block_no=%d&year=%d&month=%02d&day=%d&view="
+    URLPast   = "http://www.data.jma.go.jp/obd/stats/etrn/view/hourly_s1.php?prec_no=%d&block_no=%s&year=%d&month=%02d&day=%d&view="
 
     def hours_data_of(block,y,m,d)
-      block = block.to_s
-      url = URLPast%[Block[block].first,Block[block].last,y,m,d]
+      location = WeatherLocation.find_by_location(block)
+      url = URLPast%[location.weather_prec,location.weather_block,y,m,d]
 logger.debug("HOURS_DATA_OF: url =#{url}")
       fp = Tempfile.open("js.js")
       fp.write JS%url
