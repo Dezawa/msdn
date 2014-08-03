@@ -102,7 +102,7 @@ class Shimada::FactoryController <  Shimada::Controller
   end
 
   def show_gif
-    graph_file = params[:graph_file].blank? ? "tomorrow" : params[:graph_file]
+    graph_file = (params[:graph_file].blank? ? "tomorrow" : params[:graph_file])+"_#{@factory_id}"
     send_file RAILS_ROOT+"/tmp/shimada/giffiles/#{graph_file}.gif", :type => 'image/gif', :disposition => 'inline'
   end
 

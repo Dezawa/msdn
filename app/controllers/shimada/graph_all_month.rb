@@ -29,7 +29,7 @@ module Shimada::GraphAllMonth
     line,shape, @power = get_power_by_line_and_shape(params[@Domain][:patern])
     method =  params[@Domain][:method]
 
-    Shimada::Power.gnuplot(@power,method.to_sym,:by_date => "%m/%d" )
+    Shimada::Power.gnuplot(@factory_id,@power,method.to_sym,:by_date => "%m/%d" )
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
@@ -81,7 +81,7 @@ module Shimada::GraphAllMonth
     _,title,method = Graph_the_day[ method ? Graph_the_day.find_index{ |a| a.first =~ method} : -1]
 
     @power = Shimada::Power.all(:conditions => ["date in (?)",days.split(",")])
-    Shimada::Power.gnuplot(@power,method,:by_date=>"%y/%m/%d",:yitle =>title )
+    Shimada::Power.gnuplot(@factory_id,@power,method,:by_date=>"%y/%m/%d",:yitle =>title )
     render :action => :graph,:layout => "hospital_error_disp"
   end
   def graph_all_month_
@@ -95,21 +95,21 @@ module Shimada::GraphAllMonth
     logger.debug("\n** GRAPH_ALL_MONTH_LINE_SHAPE: line=#{lines} shape=#{shape} **")
     graph_all_month_sub(:revise_by_temp_3,"#{lines}line #{shape}",
                         :find => find,:by_date => "%y/%m",
-                        :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")) 
+                        :graph_file => "_#{lines}#{shape}_#{@factory_id}".sub(/\+/,"p")) 
   end
   def graph_all_month_sub(method,title,opt={ })
     graph_file = opt[:graph_file] ? opt[:graph_file].sub(/\+/,"p") : ""
-    opt.merge!(:graph_file => "all_month#{graph_file}_#{method}" ) 
+    opt.merge!(:graph_file => "all_month#{graph_file}_#{method}_#{@factory_id}" ) 
     @graph_file =  opt[:graph_file]
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{opt[:graph_file]}.gif") == true
       #months = Shimada::Month.all
       if params[@Domain][:powers]
         @power=Shimada::Power.send(params[@Domain][:powers].to_sym)
       else
-        @power=Shimada::Power.power_all 
+        @power=Shimada::Power.power_all(@factory_id)
         @power = select_by_( @power,opt[:find]) if  opt[:find] 
       end
-      Shimada::Power.gnuplot(@power,method,opt.merge(:title => title))
+      Shimada::Power.gnuplot(@factory_id,@power,method,opt.merge(:title => title))
     end
 
     @TYTLE = title
@@ -118,30 +118,30 @@ module Shimada::GraphAllMonth
 
   def graph_standerd
     line = params[@Domain][:lines].to_i
-    @graph_file = "standerd_#{line}"
+    @graph_file = "standerd_#{line}_#{@factory_id}"
     opt = { :graph_file => @graph_file }
 
     @TYTLE = "標準電力消費 #{line}稼働"
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       @power = Shimada::Power.all(:conditions => ["line = ?",line])
-      Shimada::Power.gnuplot(@power,:standerd,opt.merge(:title => @TYTLE ))
+      Shimada::Power.gnuplot(@factory_id,@power,:standerd,opt.merge(:title => @TYTLE ))
     end
 
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
   def graph_all_month_patern(method,title,shapes,opt={ })
-    @graph_file ||=  "all_month_patern_" + ( shapes || "unsorted")
+    @graph_file ||=  "all_month_patern_" + ( shapes || "unsorted")+"_#{@factory_id}"
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       line_shape = ( if   shapes ; Shimada::Power::Paterns[shapes]
                      else Shimada::Power::Un_sorted
                      end ).map{ |ls| ls.split("",2)}
       months = Shimada::Month.all
-      @power=Shimada::Power.by_patern(shapes)
+      @power=Shimada::Power.by_patern(@factory_id,shapes)
       #months.map{ |m| m.powers}.flatten.
       #select{ |power| line_shape.any?{ |line,shape| power.lines == line.to_i && power.shape_is == shape }}
       opt.merge!({ :by_ => :line_shape,:title => (title ? title : params[@Domain][:shape]), :graph_file => @graph_file})
-      Shimada::Power.gnuplot(@power,method,opt)
+      Shimada::Power.gnuplot(@factory_id,@power,method,opt)
     end
     @TYTLE = title
     render :action => :graph,:layout => "hospital_error_disp"
@@ -152,7 +152,7 @@ module Shimada::GraphAllMonth
     shape  =  params[@Domain][:shape]
     shape  = nil if shape == "未分類"
     title = label + (action == "revise_by_vaper_3" ? "蒸気補正" : "")
-    @graph_file =  "all_month_patern_#{action}" + ( shape || "unsorted")
+    @graph_file =  "all_month_patern_#{action}" + ( shape || "unsorted")+"_#{@factory_id}"
     graph_all_month_patern(action,title,shape,{ :title => title,:mode =>action ,:fitting => :standerd })
   end
   def graph_deform
@@ -164,17 +164,23 @@ module Shimada::GraphAllMonth
 
   end
   def graph_all_month_deform(method,title,deform_lbl)
-    @graph_file =  "all_month_patern_" + deform_lbl
+    @graph_file =  "all_month_patern_" + deform_lbl +"_#{@factory_id}"
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       deform = Shimada::Power::Deforms[deform_lbl]
+      conditions = 
+        case deform
+        when "all" ;  "deform is not null and date < '2014-7-1' and shimada_factory_id = #{@factory_id}"
+        when "null";  "deform is null and date is not null and date < '2014-7-1' and shimada_factory_id = #{@factory_id}"
+        else       ; "deform like '%#{deform}%' and date < '2014-7-1' and shimada_factory_id = #{@factory_id}"
+        end
       @power,by_ = 
         case deform
-        when "all" ; [ Shimada::Power.all(:conditions => "deform is not null and date < '2014-7-1'"),{ :by_ => :deform}]
-        when "null"; [ Shimada::Power.all(:conditions => "deform is null and date is not null and date < '2014-7-1'"),{ :by_date => "%y/%m"}]
-        else       ; [ Shimada::Power.all(:conditions => "deform like '%#{deform}%' and date < '2014-7-1'"),{:by_date => "%y/%m/%d" }]
+        when "all" ; [ Shimada::Power.all(:conditions => conditions),{ :by_ => :deform}]
+        when "null"; [ Shimada::Power.all(:conditions => conditions),{ :by_date => "%y/%m"}]
+        else       ; [ Shimada::Power.all(:conditions => conditions),{ :by_date => "%y/%m/%d" }]
         end
       opt = { :title => deform_lbl,:graph_file => @graph_file}.merge(by_)
-      Shimada::Power.gnuplot(@power,method,opt) 
+      Shimada::Power.gnuplot(@factory_id,@power,method,opt) 
     end
     @TYTLE = title
     render :action => :graph,:layout => "hospital_error_disp"
@@ -185,13 +191,13 @@ module Shimada::GraphAllMonth
     if params[@Domain] && params[@Domain][:each_month]
       Shimada::Month.all.each{ |month| graph_temp_(month)}
     else
-      @graph_file =  "all_month_vs_vaper" + (line ? line : "")
+      @graph_file =  "all_month_vs_vaper" + (line ? line : "")+"_#{@factory_id}"
       unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
         conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
-        @power = Shimada::Power.power_all(conditions)
+        @power = Shimada::Power.power_all(@factory_id,conditions)
         @TYTLE = "蒸気量-消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
 
-        Shimada::Power.gnuplot(@power,:revise_by_temp,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => :vaper,
+        Shimada::Power.gnuplot(@factory_id,@power,:revise_by_temp,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => :vaper,
                                :graph_file =>  @graph_file, :with_Approximation => true,
                                :range => (7..19))
       end
@@ -204,13 +210,13 @@ module Shimada::GraphAllMonth
     if params[@Domain] && params[@Domain][:each_month]
       Shimada::Month.all.each{ |month| graph_temp_(month)}
     else
-      @graph_file =  "all_month_vs_temp_" + (line ? line : "")
+      @graph_file =  "all_month_vs_temp" + (line ? "_"+line : "")+"_#{@factory_id}"
       unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
         conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
-        @power = Shimada::Power.power_all(conditions)
+        @power = Shimada::Power.power_all(@factory_id,conditions)
         @TYTLE = "温度-消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
 
-        Shimada::Power.gnuplot(@power,:powers,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => true,
+        Shimada::Power.gnuplot(@factory_id,@power,:powers,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => true,
                                :graph_file =>  @graph_file, :with_Approximation => true,
                                :range => (7..19))
       end
@@ -224,14 +230,14 @@ module Shimada::GraphAllMonth
     else
         method = params[@Domain][:method]
         label,ext = label_extension_by(method)
-      @graph_file =  "all_month_vs_bugs_#{ext}"
+      @graph_file =  "all_month_vs_bugs_#{ext}"+"_#{@factory_id}"
       unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
         #conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
         @power =  Shimada::Power.all(:conditions => "hukurosu is not null")
         logger.debug("GRAPH_ALL_MONTH_BUGS moethod=#{method}")
         @TYTLE = "袋数-消費電力(#{label}) "
         
-        Shimada::Power.gnuplot(@power,method,:by_date => "%y/%m",:title => @TYTLE,:vs_bugs => true,
+        Shimada::Power.gnuplot(@factory_id,@power,method,:by_date => "%y/%m",:title => @TYTLE,:vs_bugs => true,
                                :graph_file =>  @graph_file)# :with_Approximation => true,
         #:range => (7..19))
       end
@@ -242,24 +248,24 @@ module Shimada::GraphAllMonth
   def graph_all_month_offset
     offset = params[@Domain][:offset]
     method = params[@Domain][:method].to_sym
-    @graph_file =  "all_month_by_offset_#{offset}#{method}"
+    @graph_file =  "all_month_by_offset_#{offset}#{method}"+"_#{@factory_id}"
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       @power = Shimada::Power.by_offset(offset,method)
       @TYTLE = "消費電力 オフセット #{%w(低 中 高)[offset.to_i]} "
 logger.debug("##### GRAPH_ALL_MONTH_OFFSET:method=#{method},offset=#{offset},@power.eize=#{@power.size}")
-      Shimada::Power.gnuplot(@power,method,:title => @TYTLE,:graph_file => @graph_file,:by_date => "%y/%m")#:line_shape)
+      Shimada::Power.gnuplot(@factory_id,@power,method,:title => @TYTLE,:graph_file => @graph_file,:by_date => "%y/%m")#:line_shape)
     end
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
   def graph_all_month_bugs_offset
-    @graph_file =  "all_month_vs_bugs_offset"
+    @graph_file =  "all_month_vs_bugs_offset"+"_#{@factory_id}"
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       #conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
       @power = Shimada::Power.all(:conditions => "hukurosu > 0.0  and date < '2014-7-1'")
       @TYTLE = "袋数-消費電力 オフセット 全月度 "
       
-      Shimada::Power.gnuplot_histgram(@power,:offset_of_hukurosu_vs_pw,:title => @TYTLE,
+      Shimada::Power.gnuplot_histgram(@factory_id,@power,:offset_of_hukurosu_vs_pw,:title => @TYTLE,
                                       :graph_file =>  @graph_file,
                                       :min => -500,:max => -500+250*21,:steps => 21
                                       )
@@ -268,12 +274,12 @@ logger.debug("##### GRAPH_ALL_MONTH_OFFSET:method=#{method},offset=#{offset},@po
   end
 
   def graph_all_month_deviation_vs_temp
-    @power=Shimada::Power.power_all
+    @power=Shimada::Power.power_all(@factory_id)
     by_ = params[@Domain][:by_]
     method = params[@Domain][:method].to_sym
     title = { :deviation_of_revice => "電力", :deviation_of_difference => "差分"}[method]
     @TYTLE = "最高温度-#{title}分散 全月度"
-    Shimada::Power.gnuplot(@power,method,:by_ => by_ , :title => @TYTLE,:vste_mp => true)
+    Shimada::Power.gnuplot(@factory_id,@power,method,:by_ => by_ , :title => @TYTLE,:vste_mp => true)
     render :action => :graph,:layout => "hospital_error_disp"
   end
 end

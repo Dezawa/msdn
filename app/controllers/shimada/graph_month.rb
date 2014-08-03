@@ -59,7 +59,7 @@ logger.debug("GRAPH_MONTH_SUB: opt = #{opt}")
     id =  ( params[@Domain] ? params[@Domain][:id] : params[:id] ) || opt.delete(:id)
     month =  @Model.find(id)
     
-    opt.merge!(:graph_file => "month_#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{method}" ,
+    opt.merge!(:graph_file => "month_#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{method}_#{@factory_id}" ,
                :by_date => "%d") 
     @graph_file =  opt[:graph_file]
     @TYTLE = title + month.month.strftime("(%Y年%m月)")
@@ -67,7 +67,7 @@ logger.debug("GRAPH_MONTH_SUB: opt = #{opt}")
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{opt[:graph_file]}.gif") == true
       #@power = opt[:find] ? send(opt[:find].first,month, opt[:find].last)  : month.powers
       @power = opt[:find] ? select_by_(month.powers,opt[:find])  : month.powers
-      Shimada::Power.gnuplot(@power,method,opt.merge(:title => @TYTLE))
+      Shimada::Power.gnuplot(@factory_id,@power,method,opt.merge(:title => @TYTLE))
    end
     render :action => :graph,:layout => "hospital_error_disp"
   end
@@ -81,7 +81,7 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
     lines,shape = lines.split("",2) unless shape
     graph_month_sub(:revise_by_temp_3,"#{lines}line #{shape}",:by_date => "%d",
                     :find => {:lines => lines.to_i,:shape_is => shape},
-                    :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")) 
+                    :graph_file => "_#{lines}#{shape}".sub(/\+/,"p")+"_#{@factory_id}") 
   end
 
   def graph_line ;   graph_line_shape( params[@Domain][:shape] ) ;  end
@@ -132,16 +132,16 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
   end
 
   def graph_temp_(month,opt={ })
-    @graph_file =  "month_temp#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}"
+    @graph_file =  "month_temp#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{@factory_id}"
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       @power = month.powers
       @TYTLE = "温度-消費電力" + @power.first.date.strftime("(%Y年%m月)")
  
-      opt.merge!(:graph_file => "month_temp#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}" ,
+      opt.merge!(:graph_file => @graph_file,
                  :title => @TYTLE,:graph_size => "600,400",:range => (7..19),:vs_temp => true
                  ) 
       #@graph_file =  opt[:graph_file]
-      Shimada::Power.gnuplot(@power,opt.delete(:method)||:powers,opt)
+      Shimada::Power.gnuplot(@factory_id,@power,opt.delete(:method)||:powers,opt)
     end
   end
 
@@ -154,7 +154,7 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
   end
 
   def graph_bugs_(month,opt={ })
-    @graph_file =  "month_bugs#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}"
+    @graph_file =  "month_bugs#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{@factory_id}"
     unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
       @power = month.powers
       @TYTLE = "袋数-消費電力#{@method == :revise_by_temp_sum ? '(補正後)' : ''}" + @power.first.date.strftime("(%Y年%m月)")
@@ -162,7 +162,7 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
                  :title => @TYTLE,:graph_size => "600,400",:vs_bugs => true#,:by_date => "%m/%d"
                  ) 
       #@graph_file =  opt[:graph_file]
-      Shimada::Power.gnuplot(@power,@method ||:powers_sum,opt)
+      Shimada::Power.gnuplot(@factory_id,@power,@method ||:powers_sum,opt)
     end
   end
 end

@@ -139,8 +139,9 @@ module Shimada::Analyze
                              ]
 
     @labels =   AllMonthLabels 
-      #factory = Shimada::Factory.find(params[:id])
+    @factory_id  = session[:shimada_factory] = params[:id] if  params[:id]
      @page = params[:page] || 1 
+   @FindOption = { :conditions => ["shimada_factory_id = ?",@factory_id],:order => "month desc" }
     find_and
 
     @TableEdit  =
@@ -224,7 +225,7 @@ module Shimada::Analyze
       
     #@models = %w(稼働1 稼働2 稼働3 稼働4).map{ |patern|
     @models = [1,2,3,4].map{ |patern|
-      Shimada::Power.average_line(patern)
+      Shimada::Power.average_line(@factory_id,patern)
     }
     @AfterIndexHtml = to_html(@models)
     render  :file => 'application/index',:layout => 'application'
@@ -251,7 +252,7 @@ module Shimada::Analyze
           when /by\s*,\s*(.*)/   ; { :by_ => $1}  
           end
     @power = Shimada::Power.all(:conditions => quely)
-    Shimada::Power.gnuplot(@power,method,opt.merge(:title => title))    
+    Shimada::Power.gnuplot(@factory_id,@power,method,opt.merge(:title => title))    
     render :action => :graph,:layout => "hospital_error_disp"
   end
   def graph_superman2
@@ -262,7 +263,7 @@ module Shimada::Analyze
           when /by\s*,\s*(.*)/   ; { :by_ => $1}  
           end
     @power = Shimada::Power.all(:conditions => quely)
-    Shimada::Power.gnuplot(@power,method,opt.merge(:title => title,:vs_temp => true,:range => (7..19)))    
+    Shimada::Power.gnuplot(@factory_id,@power,method,opt.merge(:title => title,:vs_temp => true,:range => (7..19)))    
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
@@ -356,7 +357,7 @@ logger.debug("GRAPH_ALMIGHTY:args=#{args.flatten.join(',')}")
       show_sub
 
     else
-      Shimada::Power.gnuplot(@models,method.to_sym,:by_date => by_date,
+      Shimada::Power.gnuplot(@factory_id,@models,method.to_sym,:by_date => by_date,
                              :title => patern )
       render :action => :graph,:layout => "hospital_error_disp"
     end

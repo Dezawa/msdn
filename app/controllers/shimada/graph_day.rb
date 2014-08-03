@@ -3,7 +3,7 @@ module Shimada::GraphDay
   Popup = %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"! 
   def graph_sub(method,title,opt={ })
     @power = Shimada::Power.find(params[:id])
-    Shimada::Power.gnuplot([@power],method,opt)
+    Shimada::Power.gnuplot(@factory_id,[@power],method,opt)
     @TYTLE = title + @power.date.strftime("(%Y年%m月%d日)")
     render  :action => :graph,:layout => "hospital_error_disp"
   end
@@ -34,7 +34,7 @@ module Shimada::GraphDay
   end
   def graph_temp    
     @power = Shimada::Power.find(params[:id])
-    Shimada::Power.gnuplot([@power])
+    Shimada::Power.gnuplot(@factory_id,[@power])
     @TYTLE = "温度-消費電力" + @power.date.strftime("(%Y年%m月%d日)")
     render :action => :graph,:layout => "hospital_error_disp"
   end

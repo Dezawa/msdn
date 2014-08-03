@@ -51,7 +51,7 @@ class Shimada::MonthController <  Shimada::Controller
       }
   def set_instanse_variable
     super
-    @factory_id  = session[:shimada_factory] = params[:id] if  params[:id]
+    # @factory_id  = session[:shimada_factory] = params[:id] if  params[:id]
     @Model= Shimada::Month
     @TYTLE = "シマダヤ:月度データ"
     @labels = Labels_for_month_results
@@ -70,7 +70,6 @@ class Shimada::MonthController <  Shimada::Controller
                                
                              ]
 
-        @FindOption = { :conditions => ["shimada_factory_id = ?",@factory_id],:order => "month desc" }
 
     #@Delete = true
     @Domain= @Model.name.underscore
@@ -87,6 +86,8 @@ class Shimada::MonthController <  Shimada::Controller
     #factory = Shimada::Factory.find(params[:id])
      @Show = true
      @page = params[:page] || 1 
+    @factory_id  = session[:shimada_factory] = params[:id] if  params[:id]
+   @FindOption = { :conditions => ["shimada_factory_id = ?",@factory_id],:order => "month desc" }
     find_and
     render  :file => 'application/index',:layout => 'application'
   end
@@ -131,7 +132,7 @@ class Shimada::MonthController <  Shimada::Controller
   def shape(month, run)    ;  month.powers.select{ |p| p.shape == run } ;  end
 
   def show_gif
-    graph_file = params[:graph_file].blank? ? "power" : params[:graph_file]
+    graph_file = (params[:graph_file].blank? ? "power" : params[:graph_file])
     send_file RAILS_ROOT+"/tmp/shimada/giffiles/#{graph_file}.gif", :type => 'image/gif', :disposition => 'inline'
   end
 
