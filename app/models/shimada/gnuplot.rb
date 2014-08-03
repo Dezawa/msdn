@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 module Shimada::Gnuplot
   class Plot
-
-    def initialize(powers,method,opt)
+    attr_reader :factory_id
+    def initialize(factory_id,powers,method,opt)
+      @factory_id = factory_id
       @powers = powers
       @method = method
       @opt    = opt
@@ -95,7 +96,7 @@ set x2tics 3,3 # 2,2
 set grid #ytics
 !
 
-    def initialize(powers,method,opt)
+    def initialize(factory_id,powers,method,opt)
       super
       @Def = Def
       @std_data_file = RAILS_ROOT+"/tmp/shimada/"+@graph_file
@@ -181,7 +182,7 @@ set grid #ytics
       }
     end   
    def output_stdfile(line)
-      pw = Shimada::Power.average_line(line)
+      pw = Shimada::Power.average_line(factory_id,line)
       open(@std_data_file,"w"){ |f|
         f.print "時刻 平均 上限 下限\n"
         (0..20).
@@ -205,7 +206,7 @@ set xtics 3,3 #1,1
 set x2tics 3,3 # 2,2
 set grid #ytics
 !
-   def initialize(powers,method,opt)
+   def initialize(factory_id,powers,method,opt)
      super
       @Def = Def
       @xrange =  "[3:24]"
@@ -213,7 +214,7 @@ set grid #ytics
  end
 
  class Tomorrow < Power
-   def initialize(powers,method,opt)
+   def initialize(factory_id,powers,method,opt)
      super
       @Def = Def
       @xrange =  "[3:24]"
@@ -255,7 +256,7 @@ set grid #ytics
  end
 
   class Standerd < Power
-    def initialize(powers,method,opt)
+    def initialize(factory_id,powers,method,opt)
       super
       @time_ofset,@xrange =  [ Shimada::Power::TimeOffset+1,
                                "[#{Shimada::Power::TimeOffset+1}:#{Shimada::Power::TimeOffset+25}]"]
@@ -296,7 +297,7 @@ set grid x2tics
 !
 
 
-    def initialize(powers,method,opt)
+    def initialize(factory_id,powers,method,opt)
       super
       @Def = Def
     end
@@ -330,7 +331,7 @@ set grid #ytics
 !
 
 
-    def initialize(powers,method,opt)
+    def initialize(factory_id,powers,method,opt)
       super
       @Def = Def
     end
@@ -348,7 +349,7 @@ set xtics  0,250
 set x2tics  0,250
 !
 
-    def initialize(powers,method,opt)
+    def initialize(factory_id,powers,method,opt)
       super
       @Def = Def
       #@graph_size = opt[:graph_size] || "700,400"  
@@ -390,7 +391,7 @@ set xtics -10,5
 set x2tics -10,5
 !
 
-    def initialize(powers,method,opt)
+    def initialize(factory_id,powers,method,opt)
       super
       @Def = Def
       @range = opt.delete(:range) || (0..23)
@@ -443,7 +444,7 @@ set x2tics -10,5
 set grid
 !
 
-    def initialize(powers,method,opt)
+    def initialize(factory_id,powers,method,opt)
       super
       @Def = Def
     end
@@ -473,7 +474,7 @@ set xrange [-1000:4000]
 plot '%s'   using 1:2 with boxes
 !
 
-    def initialize(powers,method,opt)
+    def initialize(factory_id,powers,method,opt)
       super
       @Def = Def
     end

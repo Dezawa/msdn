@@ -16,22 +16,22 @@ module Shimada::GnuplotDef
     DefaultTitle ={:normalized => "正規化消費電力",:difference => "温度差分",:powers => "消費電力",
       :difference_ave => "差分平均",:revise_by_temp => "温度補正電力",:diffdiff => "二階差分"}
 
-    def gnuplot(powers,method,opt={ })
+    def gnuplot(factory_id,powers,method,opt={ })
  logger.debug("GRAPH_BUGS_: :vs_temp #{ opt[:vs_temp]},:vs_bugs #{opt[:vs_bugs]} method #{method} powers.size =#{powers.size}")
 
       if opt[:vs_temp]
         case method.to_s 
-        when /^deviation/ ;Shimada::Gnuplot::TempDeff.new(powers,method,opt).plot
-        else              ;Shimada::Gnuplot::Temp.new(powers,method,opt).plot
+        when /^deviation/ ;Shimada::Gnuplot::TempDeff.new(factory_id,powers,method,opt).plot
+        else              ;Shimada::Gnuplot::Temp.new(factory_id,powers,method,opt).plot
         end
       elsif opt[:vs_bugs] ; logger.debug("GNUPLOT: moethod=#{method}")
-        Shimada::Gnuplot::Bugs.new(powers,method,opt).plot
+        Shimada::Gnuplot::Bugs.new(factory_id,powers,method,opt).plot
       else
         case method.to_s
-        when /^normalized/ ;  Shimada::Gnuplot::Nomalized.new(powers,method,opt).plot
-        when /^diff/       ;  Shimada::Gnuplot::Differ.new(powers,method,opt).plot
-        when /^standerd/   ;  Shimada::Gnuplot::Standerd.new(powers,method,opt).plot
-        else               ;  Shimada::Gnuplot::Power.new(powers,method,opt).plot
+        when /^normalized/ ;  Shimada::Gnuplot::Nomalized.new(factory_id,powers,method,opt).plot
+        when /^diff/       ;  Shimada::Gnuplot::Differ.new(factory_id,powers,method,opt).plot
+        when /^standerd/   ;  Shimada::Gnuplot::Standerd.new(factory_id,powers,method,opt).plot
+        else               ;  Shimada::Gnuplot::Power.new(factory_id,powers,method,opt).plot
         end
       end
    end
@@ -50,15 +50,15 @@ module Shimada::GnuplotDef
 
   def self.included(base) ;    base.extend(ClassMethod) ;end
 
-  def tomorrow_graph(line)
+  def tomorrow_graph(factory_id,line)
     temperature = Forecast.temperature24(:maebashi,self.date)
     #[:revise,:max,:min].each{ |method| self.copy_and_inv_revise(temperature,method)  }
-    Shimada::Gnuplot::Tomorrow.new([self],:powers,{:graph_file => "tomorrow"  ,
+    Shimada::Gnuplot::Tomorrow.new(factory_id,[self],:powers,{:graph_file => "tomorrow_#{factory_id}"  ,
                                 :fitting => :std_temp }).plot
   end
-  def today_graph
+  def today_graph factory_id
     temperature = Forecast.temperature24(:maebashi,self.date)
-    Shimada::Gnuplot::Today.new([self],:powers,{:graph_file => "today" ,
+    Shimada::Gnuplot::Today.new(factory_id,[self],:powers,{:graph_file => "today_#{factory_id}" ,
                                 :fitting => :std_temp }).plot
   end
 end
