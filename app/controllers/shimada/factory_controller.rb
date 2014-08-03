@@ -5,7 +5,8 @@ class Shimada::FactoryController <  Shimada::Controller
   Labels = 
     [
      HtmlText.new(:name,"工場名",:size => 8 ),
-     HtmlSelect.new(:weather_location,"気象エリア名",:correction => Forecast::ZP.map{ |location,value| [value[1],location]}
+     HtmlSelect.new(:weather_location,"気象エリア名",:correction => WeatherLocation.all.map{|wl| [wl.name,wl.location]}
+
 ),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/today",:link_label => "本日実績", :htmloption =>PopupToday}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/tomorrow",:link_label => "明日予報"}),
