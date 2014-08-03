@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140727011814) do
+ActiveRecord::Schema.define(:version => 20140803034956) do
 
   create_table "book_kamokus", :force => true do |t|
     t.text    "kamoku"
@@ -258,7 +258,8 @@ ActiveRecord::Schema.define(:version => 20140727011814) do
   end
 
   create_table "shimada_months", :force => true do |t|
-    t.date "month"
+    t.date    "month"
+    t.integer "shimada_factory_id"
   end
 
   create_table "shimada_powers", :force => true do |t|
@@ -399,6 +400,7 @@ ActiveRecord::Schema.define(:version => 20140727011814) do
     t.float   "by_vaper22"
     t.float   "by_vaper23"
     t.float   "by_vaper24"
+    t.integer "shimada_factory_id"
   end
 
   create_table "top_pages", :force => true do |t|
@@ -696,6 +698,15 @@ ActiveRecord::Schema.define(:version => 20140727011814) do
   end
 
   add_index "users", ["login"], :name => "index_users_on_login", :unique => true
+
+  create_table "weather_locations", :force => true do |t|
+    t.string  "name"
+    t.string  "location"
+    t.string  "weather_block"
+    t.string  "forecast_code"
+    t.string  "excite_zip"
+    t.integer "weather_prec"
+  end
 
   create_table "weathers", :force => true do |t|
     t.string "location"

@@ -158,6 +158,7 @@ class Shimada::Month < ActiveRecord::Base
   
   set_table_name 'shimada_months'
   has_many :shimada_powers ,:class_name =>  "Shimada::Power" ,:dependent => :delete_all
+  belongs_to :shimada_factory     ,:class_name => "Shimada::Factory"
 
   def powers
     @powers ||= shimada_powers.sort_by{ |p| p.date }

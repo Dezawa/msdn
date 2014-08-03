@@ -5,6 +5,7 @@ class Shimada::Power < ActiveRecord::Base
   set_table_name 'shimada_powers'
   belongs_to :month     ,:class_name => "Shimada::Month"
   belongs_to :db_weather,:class_name => "Weather" 
+  belongs_to :shimada_factory     ,:class_name => "Shimada::Factory"
 
   include Shimada::GnuplotDef
   include Statistics
