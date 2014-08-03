@@ -18,26 +18,42 @@ class ForecastController < ApplicationController
     Weather.map{ |clm| HtmlText.new(clm.to_sym,clm.sub(/weather/,"")) } 
   
   def set_instanse_variable
+    super
     @Model= Forecast
     @TYTLE = "予報 "
     @labels=Labels
+    correction = Forecast::ZP.map{ |location,value| [value[1],location]}
     @TableEdit = #[[:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}]]
-    [ [:input_and_action,:error_graph,"予報誤差:ロケーションを入力",{ }]
+    [ [:select_and_action,:change_location,"地域変更",
+       {:correction => correction ,:selected => @weather_location }],
+      [:form,:fetch,"取り込み"] ,[:form,:error_graph,"予報誤差"]
     ]
     @Domain= @Model.name.underscore
     @TableHeaderDouble = [3,[8,"気温"],[8,"蒸気圧"],[8,"湿度"],[8,"天気"]]
-    @FindOption = { :order => "date"}
+    @FindOption = { :conditions => ["location = ?", @weather_location],
+      :order => "date"}
+  end
+
+  def change_location
+    location = params[@Domain][:change_location]
+    @weather_location  = session[:weather_location] = location
+    redirect_to "/forecast"
   end
 
   def error_graph
-    location = params[@Domain][:error_graph] || :maebashi
+    location = @weather_location
     @Model.differrence_via_real_graph location 
     @graph_file  = "forecast-real"
     render :layout => "hospital_error_disp"
   end
 
-  def now
-    location = params[:location] || :maebashi
+  def fetch
+    fore = Forecast.fetch(@weather_location,Time.now.to_date)
+    redirect_to "/forecast"
+  end
+
+  def new
+    location = params[:location] || @weather_location
     fore = Forecast.fetch(location,Time.now.to_date)
     render :text => fore.to_s
   end

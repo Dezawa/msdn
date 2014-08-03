@@ -15,10 +15,14 @@ class WeatherController < ApplicationController
   Humidity = Weather::Humidity.map{ |h| HtmlNum.new(h, h.sub(/humidity/,""),:ro => true,:size => 2 ) }
 
   def set_instanse_variable
+    super
     @Model= Weather
     @TYTLE = "気象 "
     #@labels=Labels
-    @TableEdit = [[:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}]]
+    correction = Forecast::ZP.map{ |location,value| [value[1],location]}
+    @TableEdit = [[:select_and_action,:change_location,"地域変更",
+       {:correction => correction ,:selected => @weather_location }],
+    [:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}]]
     @Domain= @Model.name.underscore
     #@TableHeaderDouble = [3,[24,"時刻"]]
     @FindOption = { :order => "date"}
@@ -31,9 +35,17 @@ class WeatherController < ApplicationController
             ]
     @Show = false
     @Delete = true
-    @models = Weather.all(:select => :month,:select => "distinct month,location",
+    @models = Weather.all(:conditions => ["location = ?",@weather_location],
+                          :select => "distinct month,location",
                           :order => "location,month")
   end
+
+  def change_location
+    location = params[@Domain][:change_location]
+    @weather_location  = session[:weather_location] = location
+    redirect_to "/weather"
+  end
+
 
   def get_data
     y,m,d = params[@Domain][:get_data].split(/[^\d]+/).map(&:to_i)
@@ -43,7 +55,7 @@ class WeatherController < ApplicationController
       start =  Date.new(y,m)
       last = start.end_of_month
     end
-    (start..last).each{ |day|  @Model.find_or_feach(:maebashi,day) }
+    (start..last).each{ |day|  @Model.find_or_feach(@weather_location,day) }
     redirect_to :action => :index
   end
 

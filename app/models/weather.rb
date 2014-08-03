@@ -7,6 +7,11 @@ class Weather < ActiveRecord::Base
   Humidity    = ("humidity01".."humidity24").to_a
 
 
+    Block= { "maebashi" => [42,47624],
+             "minamiashigara" => [46,1008]
+  }
+
+
   class << self
     def fetch(location,day)
       y,m,d = [day.year, day.month, day.day]
@@ -49,11 +54,10 @@ class Weather < ActiveRecord::Base
 
     URLPast   = "http://www.data.jma.go.jp/obd/stats/etrn/view/hourly_s1.php?prec_no=%d&block_no=%d&year=%d&month=%02d&day=%d&view="
 
-    Block= { :maebashi => [42,47624] }
-
     def hours_data_of(block,y,m,d)
-      block = block.to_sym
+      block = block.to_s
       url = URLPast%[Block[block].first,Block[block].last,y,m,d]
+logger.debug("HOURS_DATA_OF: url =#{url}")
       fp = Tempfile.open("js.js")
       fp.write JS%url
       jspath = fp.path
