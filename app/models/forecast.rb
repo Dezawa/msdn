@@ -111,7 +111,8 @@ class Forecast < ActiveRecord::Base
   
     def forecast_html(zp)
       zp = zp.to_s
-      url = URLForecast%ZP[zp].first
+      #url = URLForecast%ZP[zp].first
+      url = URLForecast%WeatherLocation.find_by_location(zp).forecast_code
       open("js.js","w"){ |fp| fp.write JS%url}
       content = `#{PhantomJS} js.js`.split("<")
     end
@@ -247,10 +248,11 @@ class Forecast < ActiveRecord::Base
         f.puts
       }
     }
-logger.debug("DIFFERRENCE_VIA_REAL_GRAPH: location=#{location} zp =#{ZP[location.to_s]}")
+logger.debug("DIFFERRENCE_VIA_REAL_GRAPH: location=#{location} zp =#{WeatherLocation.find_by_location(location).forecast_code}")
     open(deffile,"w"){ |f|
       f.puts Def%[RAILS_ROOT,
-                  ZP[location.to_s][1],differ.first.first.strftime("%Y/%m/%d"),
+                  WeatherLocation.find_by_location(location).name,
+                  differ.first.first.strftime("%Y/%m/%d"),
                   differ.last.first.strftime("%Y/%m/%d"),differ.size/8-0.125,
                   RAILS_ROOT,RAILS_ROOT
                  ]
