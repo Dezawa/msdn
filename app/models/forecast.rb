@@ -205,7 +205,7 @@ class Forecast < ActiveRecord::Base
     weathers = dates.map{ |date|
       today    = Forecast.find_by_date_and_announce_day(date,date)
       tomorrow = Forecast.find_by_date_and_announce_day(date,date-1)
-      real     = Weather.find_or_feach(:maebashi,date)
+      real     = Weather.find_or_feach(location,date)
       [today,tomorrow,real]
     }
 
