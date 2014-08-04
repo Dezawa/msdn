@@ -254,7 +254,7 @@ logger.debug("DIFFERRENCE_VIA_REAL_GRAPH: location=#{location} zp =#{WeatherLoca
                   WeatherLocation.find_by_location(location).name,
                   differ.first.first.strftime("%Y/%m/%d"),
                   differ.last.first.strftime("%Y/%m/%d"),differ.size/8-0.125,
-                  RAILS_ROOT,RAILS_ROOT
+                  RAILS_ROOT,RAILS_ROOT,RAILS_ROOT
                  ]
     }
     @graph_file = "forecast-real.gif"

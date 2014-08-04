@@ -15,7 +15,7 @@ set x2tics 1
 set xtics  rotate by -90
 set  grid noxtics x2tics ytics
 
-plot '/opt/www/msdntest0/tmp/shimada/forecast-real'  using 3:xticlabel(2)  with line lc 1, \
+plot '%s/tmp/shimada/forecast-real'  using 3:xticlabel(2)  with line lc 1, \
      '' using 4   with line lc 1 lw 2,\
      '' using 5  with line lc 4,\
       '' using 6   with line lc 3, \
