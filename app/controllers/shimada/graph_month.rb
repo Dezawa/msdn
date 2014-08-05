@@ -148,7 +148,9 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
   def graph_month_bugs(opt={ })
     id = params[@Domain] ? params[@Domain][:id] : params[:id] 
     month = @Model.find(id)
-    @method = :revise_by_temp_sum
+    @method =  params[:method] ||  params["method"] ||:revise_by_temp_sum
+logger.debug("GRAPH_MONTH_BUGS:method = #{@method}, params=#{params}")
+    opt.merge!(:graph_file => @method)
     graph_bugs_(month,opt)
     render :action => :graph,:layout => "hospital_error_disp"
   end
