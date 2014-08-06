@@ -7,7 +7,17 @@ class Ubr::PointTest < ActiveSupport::TestCase
     Ubr::Waku.waku(true) 
       @point = Ubr::Point.new nil,"20130304"
   end
+  
+  OKPAT = %w(1D23 7A99 0A33)
+  NGPAT = %w(97A9 90AG)
+  must "全体は" do
+    reg = /^[1-6]|^7[A-D]|^0[A-GJ-L]/
+    OKPAT.each{ |pat|       assert reg =~ pat ,pat    }
 
+    NGPAT.each{ |pat|       assert reg !~ pat ,pat    }
+
+  end
+ 
   must "init" do
     @point.save
   end

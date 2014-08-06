@@ -18,12 +18,12 @@ class Ubr::Point
     $LOAD_PATH << File.join(File.dirname(__FILE__),"../System") << "~/lib/ruby"
     MasterDir =  File.join(@dir,"../System/Master")
   end
-  SoukoSort = [["全て",/./],
+  SoukoSort = [["全て",/^[1-6]|^7[A-D]|^0[A-GJ-L]/],
                ["1～3",/^[123][A-DF]/],
                ["4～6",/^[456][G-KO]/],
                ["2F",/^[25][ELMN]/],
                ["総合",/^0[A-G]/],
-               ["野積",/^7/],
+               ["野積",/^7[A-D]/],
                ["AP跡",/^0[JKL]/]
          ]
 

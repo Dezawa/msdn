@@ -21,7 +21,7 @@ set label "総在庫/千ton" at graph -0.13,0.5 center rotate
 set label "倉庫別在庫/千ton" at graph  1.12,0.5 center rotate 
 unset y2tics
 unset ytics
-set yrange [21:29   ]
+set yrange [14:20   ]
 set y2range [0:6  ]
 set ytics
 set y2tics
