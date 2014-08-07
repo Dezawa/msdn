@@ -24,7 +24,7 @@ class Ubr::Point
                ["2F",/^[25][ELMN]/],
                ["総合",/^0[A-G]/],
                ["野積",/^7[A-D]/],
-               ["AP跡",/^0[JKL]/]
+               ["AC跡",/^0[JKL]/]
          ]
 
   Extension = [:tuuro ,:products ,:not_products]
