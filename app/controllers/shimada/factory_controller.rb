@@ -5,9 +5,10 @@ class Shimada::FactoryController <  Shimada::Controller
   Labels = 
     [
      HtmlText.new(:name,"工場名",:size => 8 ),
-     HtmlSelect.new(:weather_location,"気象エリア名",:correction => WeatherLocation.all.map{|wl| [wl.name,wl.location]}
-
-),
+     HtmlSelect.new(:weather_location,"過去データ",:correction => WeatherLocation.name_location_past),
+     #all.map{|wl| [wl.name,wl.location]}),
+     HtmlSelect.new(:forecast_location,"予報",:correction => WeatherLocation.name_location),
+     #all.map{|wl| [wl.name,wl.location]}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/today",:link_label => "本日実績", :htmloption =>PopupToday}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/tomorrow",:link_label => "明日予報"}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/index",:link_label => "過去実績"}),
@@ -21,17 +22,17 @@ class Shimada::FactoryController <  Shimada::Controller
     @TYTLE = "シマダヤ工場電力管理"
     @labels=Labels
     @TableEdit  = true
+    @TableHeaderDouble = [1,[2,"気象データ"]]
     @Show = @Delete = @Edir = true
-    
   end
   def add_on_table
-    @labels =  Labels[0,2]
+    @labels =  Labels[0,3]
     super
   end
 
 
   def edit_on_table
-    @labels =  Labels[0,2]
+    @labels =  Labels[0,3]
     super
   end
 
