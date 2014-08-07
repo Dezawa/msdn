@@ -21,8 +21,10 @@ module Shimada::Analyze
         [:popup,:graph_all_month,"選抜蒸気量補正",{ :win_name => "graph",:method => :revise_by_vaper_3,:powers => :maybe3lines} ],
         [:popup,:graph_all_month,"全月度温度補正平均化",{ :win_name => "graph",:method => :revise_by_temp_ave} ],
         [:popup,:graph_all_month,"全月度正規化",{ :win_name => "graph",:method => :normalized}  ] ,
-        [:popup,:graph_all_month_vaper,"全月度対蒸気量",{ :win_name => "graph"} ],
+        [:popup,:graph_all_month_vaper,"未補正対蒸気量",{ :win_name => "graph",:method => :powers} ],
         [:popup,:graph_all_month_temp,"全月度対温度",{ :win_name => "graph"} ],
+        [:popup,:graph_all_month_vaper,"全月度対蒸気量",{ :win_name => "graph"} ],
+
         [:popup,:graph_all_month_temp,"全月度月別対温度",{ :win_name => "graph",:each_month => true} ],
         [:popup,:graph_all_month_bugs,"全月度対袋数",{ :win_name => "graph",:method => :revise_by_temp_sum} ],
         [:popup,:graph_all_month_bugs,"全月度対袋数:季節変動",{ :win_name => "graph",:method => :revise_by_month_sum} ],

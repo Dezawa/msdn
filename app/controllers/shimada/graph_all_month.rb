@@ -188,16 +188,17 @@ module Shimada::GraphAllMonth
 
   def graph_all_month_vaper
     line =  (params[@Domain] && params[@Domain][:line]) ? params[@Domain][:line] : nil 
+    method =   (params[@Domain] && params[@Domain][:method]) ? params[@Domain][:method] : :revise_by_temp
     if params[@Domain] && params[@Domain][:each_month]
       Shimada::Month.all.each{ |month| graph_temp_(month)}
     else
-      @graph_file =  "all_month_vs_vaper" + (line ? line : "")+"_#{@factory_id}"
+      @graph_file =  "all_month_vs_vaper_#{method}" + (line ? line : "")+"_#{@factory_id}"
       unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
         conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
         @power = Shimada::Power.power_all(@factory_id,conditions)
-        @TYTLE = "蒸気量-消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
+        @TYTLE = "蒸気量-#{:method == :powers ? '未補正' : ''}消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
 
-        Shimada::Power.gnuplot(@factory_id,@power,:revise_by_temp,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => :vaper,
+        Shimada::Power.gnuplot(@factory_id,@power,method,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => :vaper,
                                :graph_file =>  @graph_file, :with_Approximation => true,
                                :range => (7..19))
       end

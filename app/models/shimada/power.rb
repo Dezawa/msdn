@@ -893,3 +893,22 @@ powers
 # 629.36, [624.6, 629.6, 630.6, 630.8, 631.2]
 end
 
+__END__
+[2013,2014].each{ |y|
+open("tmp/shimada/time_vs_revise_by_vaper_#{y}","w"){ |f|
+  pw = Shimada::Power.power_all(1).select{ |p| p.date.year == y };1
+  pw.each{|p| d=p.date.yday ;(0..23).each{|h| 
+        f.printf "%s ",( p.date.day == 1 && h==0 ? p.date.month.to_s :  " \"\"")
+        #f.printf("%.1f\n",p.powers[h])}};1
+        f.printf("%.1f\n",p.revise_by_vaper[h])}};1
+  }
+}
+
+open("tmp/shimada/vaper_vs_power_#{y}","w"){ |f|
+  pw = Shimada::Power.power_all(1).select{ |p| p.date.year == y };1
+  pw.each{|p| d=p.date.yday ;(0..23).each{|h| 
+        f.printf "%s ",( p.date.day == 1 && h==0 ? p.date.month.to_s :  " \"\"")
+        #f.printf("%.1f\n",p.powers[h])}};1
+        f.printf("%.1f\n",p.revise_by_vaper[h])}};1
+  }
+}
