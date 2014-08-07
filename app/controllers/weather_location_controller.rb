@@ -16,6 +16,7 @@ class WeatherLocationController < ApplicationController
               HtmlText.new(:excite_zip,"Excite",:size=>9)
             ]
     @TableHeaderDouble =[2,[2,"過去データベース"],[2,"予報"]]
+    @FindOption = { :order => "forecast_code"}
     @CSVatrs   = @labels.map{ |l| l.symbol.to_s}
     @CSVlabels = @labels.map{ |l| l.label}
   end
