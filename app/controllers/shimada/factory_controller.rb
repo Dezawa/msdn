@@ -51,14 +51,14 @@ class Shimada::FactoryController <  Shimada::Controller
   end
 
   def today_graph
-    #factory = @Model.find params[:id]
+    factory = @Model.find params[:id]
     @today= Time.now.to_date
     @power = Shimada::Power.find_or_create_by_date(@today)
     month = Shimada::Month.find_or_create_by_month(@today.beginning_of_month)
     @power.month = month;@power.save
     @power.update_attribute(:line,3)  unless @power.line
     @power.today_graph @factory_id
-    @forecast = forecast = Forecast.find_or_fetch(:maebashi,@today)
+    @forecast = forecast = Forecast.find_or_fetch(factory.forecast_location,@today)
     @temp = forecast.temperature
     @humi = forecast.humidity
     @vaper = forecast.vaper
@@ -91,12 +91,13 @@ class Shimada::FactoryController <  Shimada::Controller
   end
 
   def tomorrow_graph(line)
+    factory = @Model.find params[:id]
     @today= Time.now.to_date
     @tomorrow = @today.tomorrow.to_date
     @power = Shimada::Power.new(:date => @tomorrow,:line => line)
     @date = @tomorrow
     @power.tomorrow_graph(@factory_id,line)
-    @forecast =  forecast = Forecast.find_or_fetch(:maebashi,@tomorrow,@today)
+    @forecast =  forecast = Forecast.find_or_fetch(factory.forecast_location,@tomorrow,@today)
     @temp = forecast.temperature
     @humi = forecast.humidity
     render :action => :tomorrow
