@@ -52,20 +52,25 @@ class Weather < ActiveRecord::Base
 }());
 "
 
-    URLPast   = "http://www.data.jma.go.jp/obd/stats/etrn/view/hourly_s1.php?prec_no=%d&block_no=%s&year=%d&month=%02d&day=%d&view="
+    URLPast_s   = "http://www.data.jma.go.jp/obd/stats/etrn/view/hourly_s1.php?prec_no=%d&block_no=%s&year=%d&month=%02d&day=%d&view="
+    URLPast_a   = "http://www.data.jma.go.jp/obd/stats/etrn/view/hourly_a1.php?prec_no=%d&block_no=%s&year=%d&month=%02d&day=%d&view="
 
-    def hours_data_of(block,y,m,d)
-      location = WeatherLocation.find_by_location(block)
-      url = URLPast%[location.weather_prec,location.weather_block,y,m,d]
+    def get_data(location,y,m,d)
+      url_past = /47\d{3}/ =~ location.weather_block ? URLPast_s : URLPast_a
+      url = url_past%[location.weather_prec,location.weather_block,y,m,d]
 logger.debug("HOURS_DATA_OF: url =#{url}")
       fp = Tempfile.open("js.js")
       fp.write JS%url
       jspath = fp.path
       fp.close
       content = `#{PhantomJS} #{jspath}`     
+    end
 
+    def hours_data_of(block,y,m,d)
+      location = WeatherLocation.find_by_location(block)
+      content =  get_data(location,y,m,d)
       lines = content.split(/[\n\r]+/)  
-      while ( line = lines.shift) && /tablefix2/ !~ line ;end
+      while ( line = lines.shift) && /tablefix[12]/ !~ line ;end
       return nil unless line
       /(201\d年\d{1,2}月\d{1,2}日)/ =~ line
       date = $1
@@ -78,8 +83,10 @@ logger.debug("HOURS_DATA_OF: url =#{url}")
         # puts line
         clms = line.split(/<\/td><td.*?>/)
         temp << clms[Temperature0].to_f
-        humi << clms[Humidity0].to_f
-        vaper << clms[Vaper0].to_f
+        if /47\d{3}/ =~ location.weather_block
+          humi << clms[Humidity0].to_f
+          vaper << clms[Vaper0].to_f
+        end
       }
       [temp,vaper,humi]
     end
