@@ -82,10 +82,13 @@ logger.debug("HOURS_DATA_OF: url =#{url}")
         while  /<td class="data_0_0/ !~ ( line = lines.shift);end
         # puts line
         clms = line.split(/<\/td><td.*?>/)
-        temp << clms[Temperature0].to_f
         if /47\d{3}/ =~ location.weather_block
+          temp << clms[Temperature0].to_f
           humi << clms[Humidity0].to_f
           vaper << clms[Vaper0].to_f
+        else
+          temp << clms[1].to_f
+          
         end
       }
       [temp,vaper,humi]
