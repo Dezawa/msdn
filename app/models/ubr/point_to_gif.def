@@ -1,11 +1,11 @@
-set terminal gif enhanced size 800,850 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+set terminal gif enhanced size 800,1800 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/ubr/SoukoInfo.gif'
-set multiplot layout 3,2
+set multiplot layout 6,1
 set style line 9 lw 2 lt rgb "black" 
 set style line 8 lt 1
 
 
-set key autotitle columnheader
+set key outside autotitle columnheader samplen 1 width -4
 set y2range [0:500]
 set y2tics  
 set yrange [0:100]
@@ -21,17 +21,27 @@ set label "総在庫/千ton" at graph -0.13,0.5 center rotate
 set label "倉庫別在庫/千ton" at graph  1.12,0.5 center rotate 
 unset y2tics
 unset ytics
-set yrange [14:20   ]
-set y2range [0:6  ]
+set yrange [15:22   ]
+set y2range [0:7  ]
 set ytics
 set y2tics
 plot 'tmp/ubr/SCM_stock_stat_products.ave' using 2:xtic(1)  with line ,\
-     '' using 3 with line axes x1y2,\
-     '' using 4 with line axes x1y2, \
-     '' using 5 with line axes x1y2, \
-     '' using 6 with line axes x1y2, \
-     '' using 8 with line axes x1y2, \
-     '' using 7 with line axes x1y2
+     '' using 3 with line axes x1y2 lt rgb  'blue',\
+     '' using 4 with line axes x1y2 lt rgb '#00a080', \
+     '' using 5 with line axes x1y2 lt rgb  '#0080c0', \
+     '' using 6 with line axes x1y2 lt rgb  'brown', \
+     '' using 8 with line axes x1y2 lt rgb  'orange', \
+     '' using 7 with line axes x1y2 lt rgb  '#808f00', \
+     21.199  with line lt  rgb "red" title '総容量' ,\
+     0.974+0.845+0.523+0.775+0.706  with line  axes x1y2 title '1～3容量' lt rgb  'blue',\
+     0.6+0.37+1.21+0.203  with line  axes x1y2 title '4～6容量' lt rgb  '#00a080',\
+     2.173+1.488  with line  axes x1y2 title '2F容量' lt rgb  '#0080c0' ,\
+     4.866  with line  axes x1y2 title '総合容量' lt rgb  'brown' ,\
+     1.499  with line  axes x1y2 title 'AC跡容量' lt rgb  'orange' ,\
+     4.969  with line  axes x1y2 title '野積容量' lt rgb  '#808f00'
+
+#, \
+     #4.969 label '野積み容量' lc #808080 ,\
 
 
 set title "原料・再処理・長期在庫 在庫量推移" font ",14"
