@@ -24,8 +24,10 @@ class WeatherController < ApplicationController
     correction = WeatherLocation.all.map{|wl| [wl.name,wl.location]}
     #Forecast::ZP.map{ |location,value| [value[1],location]}
     @TableEdit = [[:select_and_action,:change_location,"地域変更",
-       {:correction => correction ,:selected => @weather_location }],
-    [:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}]]
+                   {:correction => correction ,:selected => @weather_location }],
+                  [:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}],
+                  [:form,:weather_location,"気象エリア設定"]
+                 ]
     @Domain= @Model.name.underscore
     #@TableHeaderDouble = [3,[24,"時刻"]]
     @FindOption = { :order => "date"}
@@ -41,6 +43,10 @@ class WeatherController < ApplicationController
     @models = Weather.all(:conditions => ["location = ?",@weather_location],
                           :select => "distinct month,location",
                           :order => "location,month")
+  end
+
+  def weather_location
+    redirect_to :controller => :weather_location,:action => :index
   end
 
   def change_location
