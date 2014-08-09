@@ -200,6 +200,7 @@ class Forecast < ActiveRecord::Base
   end
 
   def differrence_via_real(location = "maebashi" )
+    weather_location = WeatherLocation.find_by_location(location)
     dates = Forecast.all(:conditions => ["location = ?",location]).
     map(&:date).uniq
     weathers = dates.map{ |date|
@@ -218,10 +219,11 @@ class Forecast < ActiveRecord::Base
         diff << (r ? r.temperatures[h-1] : nil )
         diff << (k ? (k.temperature[idx]-r.temperatures[h-1])  : nil)
         diff << (a ? (a.temperature[idx]-r.temperatures[h-1])  : nil)
-
-        diff << (r ? r.vapers[h-1] :  nil)
-        diff << (k ? (k.vaper[idx]-r.vapers[h-1])  : nil )
-        diff << (a ? (a.vaper[idx]-r.vapers[h-1])  : nil)
+        if /^47/ =~ weather_location.weather_block
+          diff << (r ? r.vapers[h-1] :  nil)
+          diff << (k  ? (k.vaper[idx]-r.vapers[h-1])  : nil )
+          diff << (a  ? (a.vaper[idx]-r.vapers[h-1])  : nil)
+        end
         differ << diff
       }
     }
@@ -229,6 +231,7 @@ class Forecast < ActiveRecord::Base
   end
 
   def differrence_via_real_graph(location = :maebashi)
+    weather_location = WeatherLocation.find_by_location(location)
     differ = differrence_via_real(location)
     deffile = RAILS_ROOT+"/tmp/shimada/forecast-real.def"
     open(RAILS_ROOT+"/tmp/shimada/forecast-real","w"){ |f|
