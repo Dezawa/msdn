@@ -27,14 +27,18 @@ class Ubr::Point
                ["AC跡",/^0[JKL]/],
                ["LD倉庫",/^[1-6]/]
          ]
+  GradeSort = [["製品","1","brue",18600],["OG","2","green",500],
+               ["原料","Z","red",1000],["再処理","R","purple",500],["長期","","brown",500]]
 
-  Extension = [:tuuro ,:products ,:not_products]
+  #Extension = [:tuuro ,:products ,:not_products]
+  Extension = [:tuuro ,:products ,:target_weight]
   Label = { 
     :tuuro        => "年月日 "+ 
                       SoukoSort.map{ |name,reg| "10桝以上穴数 5-9桝穴数 1-4桝穴数 通路置き量 通路置き枠数"
                      }.join(" ") ,
     :products     => "年月日"+  " 重量"+ SoukoSort.map{ |name_reg| name_reg[0]}.join(" ") ,
-    :not_products => "年月日  原料 SCP スネーク 再処理 長期"
+    :not_products => "年月日  原料 SCP スネーク 再処理 長期" ,
+    :target_weight => "年月日 "+ GradeSort.map{ |lbl,dmy| lbl }.join(" ")
   }
   label = 
     "年月日"+  " 穴" + SoukoSort.map{ |name_reg| "10桝以上穴数 5-9桝穴数 1-4桝穴数"}.join(" ") +
@@ -50,7 +54,8 @@ class Ubr::Point
     @point = { 
       :tuuro        =>  [date_of_file] + (vacants_list.zip(tuuro)).flatten ,# 穴数# 通路重量、枠数
       :products     =>  [date_of_file] + weights.flatten ,             # 総量
-      :not_products =>  [date_of_file] + weights_not_product.flatten   # 製品以外 
+      :not_products =>  [date_of_file] + weights_not_product.flatten ,  # 製品以外 
+      :target_weight => [date_of_file] + target_weight.flatten   
     }
   end
 
@@ -58,6 +63,24 @@ class Ubr::Point
     SoukoSort.map{ |name_reg| Ubr::Waku.tuuro_weight_wakusuu(name_reg[1],WithoutPull)}
   end
 
+
+  # 製品 OG 原料 再処理 長期 
+  #       G123B028-----S--F7
+  #       01234567890123
+  def target_weight
+    grade_sort = GradeSort.map{ |lbl,grade,color,limit|
+      Ubr::LotList.lotlist.select{ |id,lot| lot.grade == grade }.inject(0){ |s,l| s+l[1].weight}
+    }
+    
+    scp     = Ubr::LotList.lotlist.select{|id,l| /^G123SCP/ =~ l.meigara_code  }.
+      inject(0){ |s,l| s+l[1].weight}
+    grade_sort[2] -= scp
+
+    grade_sort[4] = Ubr::LotList.lotlist.select{ |id,lot| @today - lot.packed > 2.year}.
+      inject(0){ |s,l| s+l[1].weight}
+   
+    grade_sort.map{ |w| (w*0.000001)}
+  end
 
   # 原料 SCP スネーク、再処理、長期 
   #       G123B028-----S--F7
@@ -95,6 +118,11 @@ class Ubr::Point
   end
 
   def save
+    save_self
+    self.class.make_average_all
+  end
+
+  def save_self
     Extension.each{ |extension|
       path = Ubr::Const::SCM_stock_stat_FILEBASE+"_#{extension}.stat"
       lines = File.exist?(path) ? File.read(path).split(/[\n\r]+/).map{ |l| l.split} : []
@@ -113,11 +141,20 @@ class Ubr::Point
         fp.puts lines.map{ |l| l.join(" ")}.join("\n")
       }
 
+     # make_average(extension,label,lines)
+    }
+  end
+
+  def self.make_average_all
+    Extension.each{ |extension|
+      path = Ubr::Const::SCM_stock_stat_FILEBASE+"_#{extension}.stat"
+      lines = File.exist?(path) ? File.read(path).split(/[\n\r]+/).map{ |l| l.split} : []
+      label = Label[extension]
       make_average(extension,label,lines)
     }
   end
 
-  def average(row,orig,firstday,lastday) 
+  def self.average(row,orig,firstday,lastday) 
     sum = row[0,1] + row[1..-1].map{ |s| s.to_f}
     count = 1
     while row0=orig.shift
@@ -138,7 +175,7 @@ class Ubr::Point
   # 毎月    先々々四半期         2013/10～
   # 四半期  先年度               2013/4 ～
   # 年度    先々年度以前
-  def make_average(extension,label,orig)
+  def self.make_average(extension,label,orig)
     orig.each{ |row| row[0] = Time.parse(row[0]).to_date}
     @today     = orig[-1][0]
 
@@ -195,8 +232,9 @@ class Ubr::Point
       open(Ubr::Lot::SCMFILE,"w"){ |fp| fp.write(File.read(csvpath))}
       @waku_waku     = Ubr::Waku.waku(true) #load_from_master
       Ubr::LotList.lotlist(true)
-      self.new(@waku_waku,(/201\d{5}/.match(csvpath)[0])).save if /201\d{5}/.match(csvpath)[0]
+      self.new(@waku_waku,(/201\d{5}/.match(csvpath)[0])).save_self if /201\d{5}/.match(csvpath)[0]
     }
+    self.make_average_all
     File.rename(Ubr::Lot::SCMFILE+"save",Ubr::Lot::SCMFILE)
   end
 

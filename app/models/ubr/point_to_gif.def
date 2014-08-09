@@ -64,6 +64,25 @@ plot 'tmp/ubr/SCM_stock_stat_products.ave' using 3:xtic(1)  with line lt rgb  'b
      0.6+0.37+1.21+0.203  with line  axes x1y2 title '4～6容量' lt rgb  '#00a080',\
      2.173+1.488  with line  axes x1y2 title '2F容量' lt rgb  'orange'
 
+
+set title "製品・OG品・原料・再処理・長期在庫 在庫量推移" font ",14"
+set yrange [0:2.5]
+set y2range [14:24]
+unset label
+set label "在庫/ton" at graph -0.17,0.5 center rotate 
+
+set y2tics 14,2
+set ytics 
+plot 'tmp/ubr/SCM_stock_stat_target_weight.ave' using 2:xtic(1)  axes x1y2  with line ,\
+     '' using 3 with line,\
+     '' using 4 with line lt rgb "blue",\
+     '' using 5 with line,\
+     '' using 6 with line,\
+     18.600   with line   axes x1y2 lt rgb "red" ,0.500 with line lt rgb "green",\
+     1.000  with line  lt rgb "blue",\
+      0.500   with line lt rgb "purple",\
+      0.500   with line lt rgb "skyblue" title "OG,再,長期"
+
 set title "原料・再処理・長期在庫 在庫量推移" font ",14"
 set yrange [0:2500]
 unset label
@@ -77,7 +96,10 @@ plot 'tmp/ubr/SCM_stock_stat_not_products.ave' using 2:xtic(1)  with line ,\
      '' using 3 with line,\
      '' using 4 with line,\
      '' using 5 with line,\
-     '' using 6 with line
+     '' using 6 with line,\
+     1000  with line lt rgb "red" title "原料" ,\
+      500   with line lt rgb "purple" title "再処理"
+     
 
 
 set title "倉庫:穴数、通路置き量_1_～_3" font ",14"
