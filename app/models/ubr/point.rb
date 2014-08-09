@@ -196,7 +196,7 @@ class Ubr::Point
     }
   end
 
-  def from_to(today,date)
+  def self.from_to(today,date)
     wday0      = today.beginning_of_week
     wday1      = wday0 -  1.week    #   この日までは毎日
     wday9      = wday0 -  9.week    #   
