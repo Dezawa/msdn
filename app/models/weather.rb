@@ -87,7 +87,7 @@ logger.debug("HOURS_DATA_OF: url =#{url}")
           humi << clms[Humidity0].to_f
           vaper << clms[Vaper0].to_f
         else
-          temp << clms[1].to_f
+          temp << clms[2].to_f
           
         end
       }
