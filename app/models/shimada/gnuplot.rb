@@ -491,17 +491,22 @@ set xtics 1,1
 
     def output_def_file(path, group_by)
       open(@def_file,"w"){ |f|
-          f.puts @Def%[@graph_file,@opt[:title] ]
-          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2  pt 6 ps 2 "}.join(" , ")
-          f.puts "set terminal  jpeg  size 800,400 \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n"         #end
+        f.puts @Def%[@graph_file,@opt[:title] ]
+        i=5
+        f.puts "plot " + path.map{ |p| i+=1; "'#{p}' using 1:2  pt #{i} ps 2 "}.join(" , ")
+        f.puts "set terminal  jpeg  size 800,400 \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n"         #end
       }
     end
 
     def output_path
-      path = [RAILS_ROOT+"/tmp/shimada/data/shimada_power_by_month"]
-      open(path.first,"w"){ |f|
-        f.print "月 補正後電力\n"
-        @powers.each{ |month,average| f.printf("%s %.1f\n",month.month,average)}
+      powers_by_year = @powers.group_by{ |m,p_array| m.year }
+      path = []
+      powers_by_year.each{ |year,powers|
+        path << RAILS_ROOT+"/tmp/shimada/data/shimada_power_by_month_#{year}"
+        open(path.last,"w"){ |f|
+          f.print "月 #{year}\n"
+          powers.each{ |month,average| f.printf("%s %.1f\n",month.month,average)}
+        }
       }
       path
     end
