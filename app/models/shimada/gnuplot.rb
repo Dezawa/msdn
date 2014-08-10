@@ -33,7 +33,7 @@ module Shimada::Gnuplot
           #month_powers.last.each{ |power|
           ary_powres[k].each{ |power|
             yield f,power #power.send(method).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
-
+            f.puts
           }
         }
       }
