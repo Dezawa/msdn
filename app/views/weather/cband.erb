@@ -1,0 +1,11 @@
+<h3>C-bandレーダー 画像</h3>
+<% form_for :weather do |f| %>
+<%= text_field(:weather, :from_date_time,:value => @from_date_time,:size => 12) %>～
+<%= text_field(:weather, :end_date_time,:value => @end_date_time,:size => 13) %>
+<%= hidden_field(:weather,:now,:value => @now) %>
+<%= submit_tag(value = "表示") %>
+<% end %>
+<% if @img_url %>
+<%= @now %><br>
+<img src='<%= @img_url %>'>
+<% end %>

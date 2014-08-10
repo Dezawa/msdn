@@ -26,7 +26,8 @@ class WeatherController < ApplicationController
     @TableEdit = [[:select_and_action,:change_location,"地域変更",
                    {:correction => correction ,:selected => @weather_location }],
                   [:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}],
-                  [:form,:weather_location,"気象エリア設定"]
+                  [:form,:weather_location,"気象エリア設定"],
+                  [:form,:cband,"C-band"]
                  ]
     @Domain= @Model.name.underscore
     #@TableHeaderDouble = [3,[24,"時刻"]]
@@ -43,10 +44,63 @@ class WeatherController < ApplicationController
     @models = Weather.all(:conditions => ["location = ?",@weather_location],
                           :select => "distinct month,location",
                           :order => "location,month")
+    session[:c_band] = nil
   end
 
   def weather_location
     redirect_to :controller => :weather_location,:action => :index
+  end
+
+  def cband
+    if params[@Domain]
+      end_date_time  = params[@Domain][:end_date_time]
+      from_date_time = params[@Domain][:from_date_time]
+      now            = params[@Domain][:now] || from_date_time
+
+      limit = Time.at(Time.now.to_i/300*300-5.minute)
+      end_date_time = if end_date_time
+                        Time.at(Time.parse(end_date_time).to_i/300*300)
+                      else
+                        limit
+                      end
+      end_date_time =  limit if end_date_time > limit
+      
+      from_date_time = if from_date_time
+                         Time.at(Time.parse(from_date_time).to_i/300*300)
+                       else
+                         (end_date_time-2.hour)
+                       end
+      now = Time.at(Time.parse(now).to_i/300*300)
+      next_date_time  = from_date_time #[ now, from_date_time ].max
+      session[:c_band] = [from_date_time,end_date_time,next_date_time]
+logger.debug("CBAND:session if params [:c_band]=#{session[:c_band]}")
+      c_band_ref
+    else
+logger.debug("CBAND:session unless params [:c_band]=#{session[:c_band]}")
+      return c_band_ref if session[:c_band]
+      end_date_time  =Time.at(Time.now.to_i/300*300)
+      @end_date_time  = end_date_time.strftime("%Y-%m-%d-%H:%M")
+      @from_date_time = (end_date_time-2.hour).strftime("%Y-%m-%d-%H:%M")
+      @now          = @from_date_time 
+    end
+  end
+  
+  def c_band_ref
+logger.debug("CBAND_REF:session  [:c_band]=#{session[:c_band]}")
+    from_date_time,end_date_time,next_date_time = session[:c_band] 
+    logger.debug("CBAND_REF: from_date_time=#{from_date_time},end_date_time=#{end_date_time},next_date_time=#{next_date_time} ")
+    session[:c_band] = from_date_time,end_date_time,next_date_time+5.minute
+    @img_url = "http://www.river.go.jp/img/11/0083/#{next_date_time.strftime('%Y%m%d')}/#{next_date_time.strftime('%H%M')}00.png"
+    @interbal = 1
+    @now          = next_date_time.strftime("%Y-%m-%d-%H:%M")
+    @end_date_time = end_date_time.strftime("%Y-%m-%d-%H:%M")
+    @from_date_time = from_date_time.strftime("%Y-%m-%d-%H:%M")
+    if next_date_time < end_date_time
+      render :layout => 'refresh'
+    else
+      session[:c_band] = nil
+    end
+
   end
 
   def change_location
