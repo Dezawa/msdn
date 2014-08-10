@@ -868,6 +868,16 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def deviation_of_revice(range = 8..20 )
     revise_by_temp.zip(revise_by_temp_ave)[range].map{ |d,a| d-a }.standard_devitation
   end
+  # [ [month,average_power],[  ], [  ] ]
+  def self.average_group_by_month_maybe3line
+    average_group_by_month(maybe3lines).sort
+  end
+
+  def self.average_group_by_month(powers)
+    powers.group_by{ |p| p.month_id }.
+      map{ |month_id,pwrs| 
+      [Shimada::Month.find(month_id).month,pwrs.map{ |p| p.revise_by_vaper[14]}.average]}
+  end
 
   def self.maybe3lines
     ids =  Shimada::Month.all.sort_by{|m| m.month}.map(&:id)
