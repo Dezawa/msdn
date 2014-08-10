@@ -492,8 +492,8 @@ set xtics 1,1
     def output_def_file(path, group_by)
       open(@def_file,"w"){ |f|
           f.puts @Def%[@graph_file,@opt[:title] ]
-          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2  pt 2 ps 2 "}.join(" , ")
-          f.puts "set terminal  jpeg  size 800,200 \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n"         #end
+          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2  pt 6 ps 2 "}.join(" , ")
+          f.puts "set terminal  jpeg  size 800,400 \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n"         #end
       }
     end
 

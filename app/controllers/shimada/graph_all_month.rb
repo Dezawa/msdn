@@ -66,6 +66,8 @@ module Shimada::GraphAllMonth
     opt.merge!(:graph_file => "by_month",:title => title)
     @power = Shimada::Power.average_group_by_month_maybe3line
     Shimada::Power.gnuplot_by_month(@factory_id,@power,method,opt)
+    @graph_file =  opt[:graph_file]
+    render :action => :graph,:layout => "hospital_error_disp"
   end
 
   def graph_all_month #
