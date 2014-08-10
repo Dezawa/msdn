@@ -400,7 +400,7 @@ set x2tics -10,5
 
     def output_path
       sym = case @opt[:vs_temp]
-            when :vaper ;:vapers
+            when :vaper ; :vapers
             else        ; :temperatures
             end
       output_plot_data{ |f,power| 
@@ -413,17 +413,24 @@ set x2tics -10,5
 
     def output_def_file(path, group_by)
       size = @opt[:vs_temp] == :vaper ? "[0:35]" : "[-10:40]"
-      x0,y0,sll,slh = [:threshold_temp,:y0, :slope_lower, :slope_higher ].
-        map{ |sym|Shimada::Power::ReviceParms[sym]}
-      lines = case @opt[:vs_temp]
-                when :vaper
-                x0,slh = 20,5 #20
-                x0,slh,y0 = 20,6,620 #20
-          #  ",  (x>#{x0}) ? #{y0}+#{slh}*(x-#{x0}) : #{y0}+#{sll}+3*(x-#{x0}) title '蒸気補償' lt -1 lw 1.5\n"
-            ",  (x>#{x0}) ? #{y0}+#{slh}*(x-#{x0}) : #{y0} title '蒸気補償' lt -1 lw 1.5\n"
-        else
-            ",  (x>#{x0}) ? #{y0}+#{slh}*(x-#{x0}) : #{y0}+#{sll}+3*(x-#{x0}) title '温度補償' lt -1 lw 1.5, \\
- 0.440*(x-5)**1.8+750 title 'TopLine' lc rgbcolor '#FF0000' lw 1.5\n"
+      title,line_params = 
+        case @opt[:vs_temp]
+        when :vaper  ;
+          if @method == :revise_by_temp ;['蒸気補償', Shimada::Power::VaperParams]
+          else ;                        ; ['蒸気補償', Shimada::Power::VaperParamsRaw]
+          end
+        else         ; ['温度補償', Shimada::Power::ReviceParams]
+        end
+
+      x0,y0,sll,slh = [:threshold,:y0, :slope_lower, :slope_higher ].
+        map{ |sym| line_params[sym]}
+
+      lines = 
+        ",  (x>#{x0}) ? #{y0}+#{slh}*(x-#{x0}) : #{y0} title '#{title}' lt -1 lw 1.5" +
+        case @opt[:vs_temp]
+        when  :vaper  ; "\n"
+        else 
+          ",\\\n0.440*(x-5)**1.8+750 title 'TopLine' lc rgbcolor '#FF0000' lw 1.5\n"
         end
       open(@def_file,"w"){ |f|
           f.puts @Def%[@graph_size,@graph_file,@opt[:title]||"温度-消費電力 ",size]
