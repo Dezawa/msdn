@@ -33,7 +33,7 @@ module Shimada::Gnuplot
           #month_powers.last.each{ |power|
           ary_powres[k].each{ |power|
             yield f,power #power.send(method).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
-            f.puts
+
           }
         }
       }
@@ -470,6 +470,44 @@ set grid
           f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ")
           f.puts "set terminal  jpeg  size 600,200 \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n"         #end
       }
+    end
+  end
+
+  class PowerByMonth < Shimada::Gnuplot::Plot
+    Def =
+      %Q!set term gif  size 800,400 enhanced font '/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10'
+ set output 'tmp/shimada/giffiles/%s.gif'  
+ 
+set title "%s"
+set key outside autotitle columnheader samplen 2 width -10
+
+set xrange [1:12]
+set xtics 1,1
+!
+    def initialize(factory_id,powers,method,opt)
+      super
+      @Def = Def
+    end
+
+    def output_def_file(path, group_by)
+      open(@def_file,"w"){ |f|
+          f.puts @Def%[@graph_file,@opt[:title] ]
+          f.puts "plot " + path.map{ |p| "'#{p}' using 1:2  pt 2 ps 2 "}.join(" , ")
+          f.puts "set terminal  jpeg  size 800,200 \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n"         #end
+      }
+    end
+
+    def output_path
+      path = [RAILS_ROOT+"/tmp/shimada/data/shimada_power_by_month"]
+      open(path.first,"w"){ |f|
+        f.print "月 補正後電力\n"
+        @powers.each{ |month,average| f.printf("%s %.1f\n",month.month,average)}
+      }
+      path
+    end
+
+    def fitting_line(*args)
+      ""
     end
   end
 

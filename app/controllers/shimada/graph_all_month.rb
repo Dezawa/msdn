@@ -60,6 +60,14 @@ module Shimada::GraphAllMonth
     :difference_3       => [ "差分 全月度",{ :by_date => "%y/%m"} ],
     :difference_ave     => [ "差分平均 全月度",{ :by_date => "%y/%m"} ],
   }
+  def graph_all_by_month #
+    method = params[@Domain][:method].to_sym
+    title,opt = ["蒸気補正電力 季節変動" , { }]
+    opt.merge!(:graph_file => "by_month",:title => title)
+    @power = Shimada::Power.average_group_by_month_maybe3line
+    Shimada::Power.gnuplot_by_month(@factory_id,@power,method,opt)
+  end
+
   def graph_all_month #
     method = params[@Domain][:method].to_sym
     title,opt = TITLE_ALLMONTH[method]

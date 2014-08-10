@@ -34,7 +34,12 @@ module Shimada::GnuplotDef
         else               ;  Shimada::Gnuplot::Power.new(factory_id,powers,method,opt).plot
         end
       end
-   end
+    end
+
+    def gnuplot_by_month(factory_id,powers_group_by_month,method,opt={ })
+      Shimada::Gnuplot::PowerByMonth.
+        new(factory_id,powers_group_by_month,method,opt.merge(:fitting => true)).plot
+    end
 
     def gnuplot_histgram(powers,method,opt={ })
       values = powers.map{ |pw| pw.send(method) }
