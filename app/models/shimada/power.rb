@@ -172,10 +172,13 @@ class Shimada::Power < ActiveRecord::Base
   LinesVaper = [(0..280),(280..410),(410..540),(540..660),(660..800),(800..1000)]
   Header = "時刻"
 
-  ReviceParms = { :threshold_temp => 10.0, :slope_lower => 3.0, :slope_higher => 9.0,
+  ReviceParams = { :threshold => 10.0, :slope_lower => 0.0, :slope_higher => 9.0,
     :y0 => 660.0 , :power_0line => 200.0}
 
-  VaperParms = { :threshold_vaper => 20.0, :slope_lower => 0.0, :slope_higher => 20.0,
+  VaperParams = { :threshold => 20.0, :slope_lower => 0.0, :slope_higher => 6.0,
+    :y0 => 620.0 , :power_0line => 200.0}
+
+  VaperParamsRaw = { :threshold => 20.0, :slope_lower => 0.0, :slope_higher => 20.0,
     :y0 => 660.0 , :power_0line => 200.0}
 
   Differ = ("00".."23").map{ |h| "difference#{h}" }
@@ -247,10 +250,10 @@ class Shimada::Power < ActiveRecord::Base
 
   def self.rm_gif ;    File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif")) ;end
 
-  def self.average_diff
+  def self.average_diff(factory_id)
     return @@average_diff if @@average_diff
     #ave_power = Shimada::Power.power_all
-    ave_power = create_average_diff #unless ave_power && ave_power.first.difference[0]
+    ave_power = create_average_diff(factory_id) #unless ave_power && ave_power.first.difference[0]
     @@average_diff = ave_power
   end
 
@@ -340,9 +343,9 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def inv_revise(temperature)
     temperature.each_with_index{ |temp,idx|
       rev = self[Revs[idx]]
-      self[Hours[idx]] = temp >  ReviceParms[:threshold_temp]  ?
-      rev + ReviceParms[:slope_higher] * (temp - ReviceParms[:threshold_temp]) : 
-      rev + ReviceParms[:slope_lower] * (temp - ReviceParms[:threshold_temp])
+      self[Hours[idx]] = temp >  ReviceParams[:threshold]  ?
+      rev + ReviceParams[:slope_higher] * (temp - ReviceParams[:threshold]) : 
+      rev + ReviceParams[:slope_lower] * (temp - ReviceParams[:threshold])
     }
     self
   end
@@ -353,9 +356,9 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     temperature.each_with_index{ |temp,idx|
       Keys[method].each{ |hour|  
         value  = std[hour]
-        self[hour] = temp >  ReviceParms[:threshold_temp]  ?
-        value + ReviceParms[:slope_higher] * (temp - ReviceParms[:threshold_temp]) : 
-        value + ReviceParms[:slope_lower] * (temp - ReviceParms[:threshold_temp])
+        self[hour] = temp >  ReviceParams[:threshold]  ?
+        value + ReviceParams[:slope_higher] * (temp - ReviceParams[:threshold]) : 
+        value + ReviceParams[:slope_lower] * (temp - ReviceParams[:threshold])
       }
     }
     self
@@ -389,7 +392,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   def max_diff_from_average_difference
     return nil unless difference
-    return nil unless ave_difference = self.class.average_diff.difference
+    return nil unless ave_difference = self.class.average_diff(shimada_factory_id).difference
     difference.zip(ave_difference).map{ |a,b| (a-b).abs if a&&b}.compact.max
   end
 
@@ -668,9 +671,9 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
         power = self[h]
         temp  = weather[h]
          if power && temp
-           x0,y0,p0,sll,slh = [:threshold_temp,:y0,:power_0line, :slope_lower, :slope_higher ].
-             map{ |sym|Shimada::Power::ReviceParms[sym]}
-           slp = temp > ReviceParms[:threshold_temp]  ? slh : sll
+           x0,y0,p0,sll,slh = [:threshold,:y0,:power_0line, :slope_lower, :slope_higher ].
+             map{ |sym|Shimada::Power::ReviceParams[sym]}
+           slp = temp > ReviceParams[:threshold]  ? slh : sll
            power -  slp*(temp-x0)*(power-p0)/(slp*(temp-x0)+y0-p0)
          else power ? power : 0
          end
@@ -692,15 +695,15 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     unless self.by_vaper01
       return [] unless weather
 
-      x0,y0,p0,sll,slh = [:threshold_vaper,:y0,:power_0line, :slope_lower, :slope_higher ].
-        map{ |sym| VaperParms[sym]}
+      x0,y0,p0,sll,slh = [:threshold,:y0,:power_0line, :slope_lower, :slope_higher ].
+        map{ |sym| VaperParams[sym]}
 
       vapers0 = (0..23).map{ |h|
         revise = revise_by_temp[h]
         vaper  = weather[Vapers[h]]
         logger.debug("Vapers #{vaper},#{Vapers[h]}")
          if revise && vaper
-           slp = vaper > VaperParms[:threshold_vaper]  ? slh : sll
+           slp = vaper > VaperParams[:threshold]  ? slh : sll
            revise -  slp*(vaper-x0)*(revise-p0)/(slp*(vaper-x0)+y0-p0)
          else revise ? revise : 0
          end
