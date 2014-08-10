@@ -724,7 +724,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   # ΣPw = 4400 + 5.4 hukuro + offset
   # offset = ΣPw - 4400 - 5.4 hukuro
-  def offset_of_hukurosu_vs_pw(method)
+  def offset_of_hukurosu_vs_pw(method = :revise_by_temp)
     return 100 unless hukurosu
     bugs_fit = self.class.bugs_fit(method)
     revise_by_temp_sum - bugs_fit[:y0][0] - hukurosu * bugs_fit[:slop][0]

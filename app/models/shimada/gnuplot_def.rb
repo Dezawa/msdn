@@ -41,7 +41,7 @@ module Shimada::GnuplotDef
         new(factory_id,powers_group_by_month,method,opt.merge(:fitting => true)).plot
     end
 
-    def gnuplot_histgram(powers,method,opt={ })
+    def gnuplot_histgram(factory_id,powers,method,opt={ })
       values = powers.map{ |pw| pw.send(method) }
       min   = opt[:min]   ||= values.min
       max   = opt[:max]   ||= values.max
@@ -49,7 +49,7 @@ module Shimada::GnuplotDef
       step = opt[:step] = (max-min)/steps
       histgram = [0]*steps
       histgram = values.inject([0]*steps){ |s,e| s[e/step] += 1 ;s   }
-      Shimada::Gnuplot::Histgram.new(histgram,method,opt).plot
+      Shimada::Gnuplot::Histgram.new(factory_id,histgram,method,opt).plot
     end
   end # of module
 
