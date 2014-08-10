@@ -16,7 +16,7 @@ class Shimada::FactoryController <  Shimada::Controller
     ]
   def set_instanse_variable
     super
-    @factory_id = params[:factory_id]
+    @factory_id = params[:factory_id] if  params[:factory_id]
     @Model= Shimada::Factory
     @Domain= @Model.name.underscore
     @TYTLE = "シマダヤ工場電力管理"
@@ -51,7 +51,7 @@ class Shimada::FactoryController <  Shimada::Controller
   end
 
   def today_graph
-    factory = @Model.find params[:id]
+    factory = @Model.find @factory_id #params[:id]
     @today= Time.now.to_date
     @power = Shimada::Power.find_or_create_by_date(@today)
     month = Shimada::Month.find_or_create_by_month(@today.beginning_of_month)
@@ -66,6 +66,10 @@ class Shimada::FactoryController <  Shimada::Controller
     ############  Demo用 ####################
     if hr = @power.powers.index(nil)
       dmypw = Shimada::Power.find_or_create_by_date(@today.last_year).powers
+      if hr < 2
+        (0..1).each{ |h| @power.update_attribute( "hour%02d"%(h+1) , dmypw[h])}
+        hr = 3
+      end
       @power.update_attribute( "hour%02d"%(hr+1) , dmypw[hr])
     end
     #########################################
