@@ -149,13 +149,13 @@ set grid #ytics
       inv_temp(pw,temp)
     end
     def inv_temp(pw,temp)
-      params = Shimada::Power::ReviceParms
+      params = Shimada::Power::ReviceParams
       temp >  params[:threshold_temp]  ? pw + params[:slope_higher] * (temp - params[:threshold_temp]) : 
         pw + params[:slope_lower] * (temp - params[:threshold_temp])
     end
 
     def inv_vaper(pw,vaper)
-      params = Shimada::Power::VaperParms
+      params = Shimada::Power::VaperParams
       vaper >  params[:threshold_vaper]  ?
         pw + params[:slope_higher] * (vaper - params[:threshold_vaper]) : 
         pw + params[:slope_lower] * (vaper - params[:threshold_vaper])
