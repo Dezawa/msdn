@@ -575,6 +575,11 @@ class Waku < ActiveRecord::Base
      tuuro_used(idx_or_name,withoutpull).count]
   end
 
+  def self.lotseg_of_aria(idx_or_name,without_pull = WithPull)
+    #                  ↓ inactiveな枠でも集計
+    aria(idx_or_name,false).map{ |wk| wk.lot_list(without_pull) }.flatten
+  end
+
  
   def self.weight_of_aria(idx_or_name,without_pull = WithPull)
     #                  ↓ inactiveな枠でも集計

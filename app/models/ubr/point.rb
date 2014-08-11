@@ -18,7 +18,8 @@ class Ubr::Point
     $LOAD_PATH << File.join(File.dirname(__FILE__),"../System") << "~/lib/ruby"
     MasterDir =  File.join(@dir,"../System/Master")
   end
-  SoukoSort = [["全て",/^[1-6]|^7[A-D]|^0[A-GJ-L]/],
+  RegLDall     =  /^[1-6]|^7[A-D]|^0[A-GJ-L]/
+  SoukoSort = [["全て",RegLDall],
                ["1～3",/^[123][A-DF]/],
                ["4～6",/^[456][G-KO]/],
                ["2F",/^[25][ELMN]/],
@@ -69,15 +70,18 @@ class Ubr::Point
   #       01234567890123
   def target_weight
     grade_sort = GradeSort.map{ |lbl,grade,color,limit|
-      Ubr::LotList.lotlist.select{ |id,lot| lot.grade == grade }.inject(0){ |s,l| s+l[1].weight}
+      #Ubr::LotList.lotlist.
+      #select{ |id,lot| lot.grade == grade && RegLDall =~ lot.waku }.inject(0){ |s,l| s+l[1].weight}
+      Ubr::Waku.lotseg_of_aria(RegLDall).select{ |seg| seg.grade == grade }.inject(0){ |s,l| s+l.weight}
     }
-    
+
     scp     = Ubr::LotList.lotlist.select{|id,l| /^G123SCP/ =~ l.meigara_code  }.
       inject(0){ |s,l| s+l[1].weight}
-    grade_sort[2] -= scp
+    #grade_sort[2] -= scp
 
-    grade_sort[4] = Ubr::LotList.lotlist.select{ |id,lot| @today - lot.packed > 2.year}.
-      inject(0){ |s,l| s+l[1].weight}
+    grade_sort[4] = Ubr::Waku.lotseg_of_aria(RegLDall).
+      select{ |seg| @today - seg.lot.packed > 2.year}.
+      inject(0){ |s,l| s+l.weight}
    
     grade_sort.map{ |w| (w*0.000001)}
   end
