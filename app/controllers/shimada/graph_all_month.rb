@@ -73,7 +73,7 @@ module Shimada::GraphAllMonth
   def graph_all_month #
     method = params[@Domain][:method].to_sym
     title,opt = TITLE_ALLMONTH[method]
-    opt.merge!(:graph_file => "selected")
+    opt.merge!(:graph_file => "selected") if  params[@Domain][:powers] == :maybe3lines
     graph_all_month_sub(method,title,opt)
   end 
   def graph_all_month_pat
