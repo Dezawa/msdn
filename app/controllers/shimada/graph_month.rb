@@ -54,6 +54,10 @@ module  Shimada::GraphMonth
        }
       ]
 
+  def graph_bug_(month)
+
+  end
+
   def graph_month_sub(method,title,opt={ })
 logger.debug("GRAPH_MONTH_SUB: opt = #{opt}")
     id =  ( params[@Domain] ? params[@Domain][:id] : params[:id] ) || opt.delete(:id)
