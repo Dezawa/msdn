@@ -13,6 +13,71 @@ class Weather < ActiveRecord::Base
 
 
   class << self
+    def temp_vaper_graph(weather_location,opt={ })
+      path = output_plot_data(weather_location,opt)
+      opt = {:def_file => RAILS_ROOT+"/tmp/weather_temp_vaper.def",
+        :location => WeatherLocation.find_by_location(weather_location) }.merge(opt)
+      graph_file = output_def_file(path,opt)
+      `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{opt[:def_file]})`
+      graph_file+".jpeg"
+    end
+
+    def output_plot_data(weather_location,opt={ })
+      path = []
+      self.all(:conditions => ["location = ?" , weather_location]).
+        group_by{ |w| w.month.year}.
+        each{ |year,weathers|
+        path << RAILS_ROOT+"/tmp/weather_temp_vaper#{year}"
+        open( path.last,"w"){ |f|
+          f.puts "温度 #{year}"
+          weathers.each{ |w| 
+            w.temperatures.each_with_index{ |temp,idx| 
+              f.printf("%.1f %.1f\n",temp,w.vapers[idx])
+            }
+          }
+        }
+      }
+      path
+    end
+
+    Def =
+%Q!set terminal jpeg enhanced size 700,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+set out 'tmp/img/%s.jpeg'
+set title "%s " #"温度-消費電力 " 
+set key outside  autotitle columnheader #samplen 1 width -4
+set yrange [0:40]
+set xrange [-5:40]  #[-10:40]
+set xtics -5,5
+set x2tics -5,5
+set grid
+set ylabel "水蒸気圧/hPa"
+set xlabel "気温/℃"
+
+  pc = 221200   #[hPa]：　臨界圧
+  tc = 647.3    # [K]：　臨界温度
+  invtc = 1.0/tc
+  #x = 1 - (t + 273.15) / Tc
+  a = -7.76451
+  b = 1.45838
+  c = -2.7758
+  d = -1.23303
+  xx(x) = 1.0 - (x + 273.15) * invtc 
+  p(a,b,c,d,x)=pc*exp((a*xx(x) + b*xx(x)**1.5 + c*xx(x)**3 + d*xx(x)**6) / (1.0 - xx(x)))
+!
+    def output_def_file(path,opt={ })
+      grapf_file = opt[:grapf_file] || "temp_vaper_#{opt[:location].location}"
+      title      = opt[:title]      || "温度-水蒸気圧(#{opt[:location].name})"
+      open(opt[:def_file],"w"){ |f|
+        f.printf Def,grapf_file,title
+        f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 "}.join(" , ") +
+        " , \\"
+       f.puts  [100,80,60,40,20].map{ |r| rr = 0.01 * r
+          "p(a,b,c,d,x)*#{rr} with line title '#{r}%'"
+        }.join(" , ")
+      }
+      grapf_file
+    end
+
     def fetch(location,day)
       y,m,d = [day.year, day.month, day.day]
       #emp_vaper_humidity = `/usr/local/bin/weather_past.rb #{location} #{y} #{m} #{d}`

@@ -26,6 +26,7 @@ class WeatherController < ApplicationController
     @TableEdit = [[:select_and_action,:change_location,"地域変更",
                    {:correction => correction ,:selected => @weather_location }],
                   [:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}],
+                  [:form,:temp_vaper,"温度-水上気圧図"],
                   [:form,:weather_location,"気象エリア設定"],
                   [:form,:cband,"C-band"]
                  ]
@@ -45,6 +46,11 @@ class WeatherController < ApplicationController
                           :select => "distinct month,location",
                           :order => "location,month")
     session[:c_band] = nil
+  end
+
+  def temp_vaper
+    @graph_file = Weather.temp_vaper_graph(@weather_location)
+    render  :file => 'application/graph',:layout => 'application'
   end
 
   def weather_location
