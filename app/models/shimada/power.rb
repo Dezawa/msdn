@@ -868,9 +868,47 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def deviation_of_revice(range = 8..20 )
     revise_by_temp.zip(revise_by_temp_ave)[range].map{ |d,a| d-a }.standard_devitation
   end
+
+  def self.simulate_a_hour(line,hr,temp,vaper)
+     polyfits = Shimada::Power::PolyFits[ line]
+     [inv_revice(f4(hr,polyfits[:ave]),temp,vaper),
+      inv_revice(f4(hr,polyfits[:min]),temp,vaper),
+      inv_revice(f4(hr,polyfits[:max]),temp,vaper)
+     ]
+  end 
+
+  def self.inv_revice(pw,temp,vaper) 
+    pw =   inv_vaper(pw,vaper) 
+    inv_temp(pw,temp)
+  end
+
+  def self.inv_temp(pw,temp)
+    params = ReviceParams
+    temp >  params[:threshold]  ? pw + params[:slope_higher] * (temp - params[:threshold]) : 
+      pw + params[:slope_lower] * (temp - params[:threshold])
+  end
+
+  def self.inv_vaper(pw,vaper)
+    params = VaperParams
+    vaper >  params[:threshold]  ?
+    pw + params[:slope_higher] * (vaper - params[:threshold]) : 
+      pw + params[:slope_lower] * (vaper - params[:threshold])
+  end
+
+  def self.f4(h,a)
+    x = h - PolyFitX0
+    (((a[4] * x + a[3])*x + a[2])*x + a[1])*x+a[0] 
+  end
+
   # [ [month,average_power],[  ], [  ] ]
   def self.average_group_by_month_maybe3line
     average_group_by_month(maybe3lines).sort
+  end
+
+  def self.simulation(factory_id,from,to)
+    from ||= Time.now.beginning_of_year.to_date
+    to   ||= Time.now.to_date
+    #powers = self.
   end
 
   def self.average_group_by_month(powers)

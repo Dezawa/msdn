@@ -138,37 +138,19 @@ set grid #ytics
         fitting_poly(power,offset)
       end
     end
- 
-    def f4(h,a)
-      x = h - Shimada::Power::PolyFitX0
-      (((a[4] * x + a[3])*x + a[2])*x + a[1])*x+a[0] 
-    end
-
-    def inv_revice(pw,temp,vaper) 
-      pw =   inv_vaper(pw,vaper) 
-      inv_temp(pw,temp)
-    end
-    def inv_temp(pw,temp)
-      params = Shimada::Power::ReviceParams
-      temp >  params[:threshold]  ? pw + params[:slope_higher] * (temp - params[:threshold]) : 
-        pw + params[:slope_lower] * (temp - params[:threshold])
-    end
-
-    def inv_vaper(pw,vaper)
-      params = Shimada::Power::VaperParams
-      vaper >  params[:threshold]  ?
-        pw + params[:slope_higher] * (vaper - params[:threshold]) : 
-        pw + params[:slope_lower] * (vaper - params[:threshold])
-    end
-
 
    def output_std_temp_file(power)
      polyfits = Shimada::Power::PolyFits[ power.line]
      temp =  power.temps || Forecast.temperature24(:maebashi,power.date)
      vaper = power.vapers || Forecast.vaper24(:maebashi,power.date)
-     ave = (0..23).map{ |h| inv_revice(f4(h,polyfits[:ave]),temp[h],vaper[h])}
-     min = (0..23).map{ |h| inv_revice(f4(h,polyfits[:min]),temp[h],vaper[h])}
-     max = (0..23).map{ |h| inv_revice(f4(h,polyfits[:max]),temp[h],vaper[h])}
+      ave = []
+      min = []
+      max = []
+      (0..23).each{ |h| 
+        av,mn,mx = Shimada::Power.simulate_a_hour(power.line,h,temp[h],vaper[h])
+        ave << av; min << mn ; max << mx
+      }
+
      if @time_ofset > 1
        l = @time_ofset -1
        ave = ave[l..-1]+ave[0 .. l-1]
