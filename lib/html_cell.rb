@@ -142,7 +142,7 @@ class HtmlLink   < HtmlCell
 
     params = links.size == 0 ? "" : 
      links.map{ |k,v| "#{k}=#{v}"}.join("&")
-    logger.debug("HtmlLink: #{object.send(symbol)},#{url},#{key}, #{key_val}")
+    #logger.debug("HtmlLink: #{object.send(symbol)},#{url},#{key}, #{key_val}")
     if key
       "<a href='#{url}?#{key}=#{object.send(key_val)}&#{params}' #{htmloption}>#{lbl}</a>"
     else
