@@ -83,7 +83,8 @@ module Shimada::Analyze
 
     AllMonthaction_buttoms2 = 
     [ 1,
-      [[:input_and_action,"graph_almighty","line,shape,deform,month,method",{:size=>40 ,:popup => "graph_almighty",:scroll => true}],
+      [[:input_and_action,"graph_simyartion","気象データによる推定:Y-M-D,Y-M-D",{:size=>40 ,:popup => "graph_almighty",:scroll => true}],
+       [:input_and_action,"graph_almighty","line,shape,deform,month,method",{:size=>40 ,:popup => "graph_almighty",:scroll => true}],
        [:input_and_action,"graph_superman","title:検索条件：グルーピング:filename:method",{:size=>80 ,:popup => "graph_superman",:scroll => true}],
        [:input_and_action,"graph_superman2","title:検索条件：グルーピング:filename",{:size=>80 ,:popup => "graph_superman",:scroll => true,:method => :by_temp}],
 
@@ -91,7 +92,7 @@ module Shimada::Analyze
     ]
       
     AllMonthaction_buttoms3 = 
-    [ 3,
+    [ 4,
         [[:input_and_action,"graph_all_month_","数型グラフ",{:size=>7 ,:popup => "graph_all_month"}],
          [:input_and_action,"index_all_month_","数型の一覧",{:size=>7 ,:popup => "index_all_month",:scroll => true}],
          [:input_and_action,"graph_the_day","日付指定グラフ",{:size=>14 ,:popup => "graph_all_month"}],
@@ -273,7 +274,14 @@ module Shimada::Analyze
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
+  def graph_simyartion
+    from,to = params[@Domain]["graph_simyartion"].split(/[\s,]+/)
+    from = from ? Time.parse(from).to_date : Time.now.last_month.beginning_of_month.to_date
+    to  =  to   ? Time.parse(to).to_date  : Time.now.last_month.end_of_month.to_date
 
+    Shimada::Power.simulation(@factory_id,14,3,from,to)
+  end
+  
   def graph_almighty
     patern = params[@Domain][:graph_almighty]
     list = patern.sub!(/,?list/,"")

@@ -10,6 +10,7 @@ class Shimada::Power < ActiveRecord::Base
   include Shimada::GnuplotDef
   include Statistics
   include Shimada::Patern
+  extend  Function::Gnuplot
 
   attr_accessor :shape_is, :na, :f4_peaks, :f3_solve, :f2_solve, :differences
 
@@ -905,10 +906,30 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     average_group_by_month(maybe3lines).sort
   end
 
-  def self.simulation(factory_id,from,to)
+  def self.simulation(factory_id,hour=14,line=3,from=nil,to=nil)
+    location = Shimada::Factory.find(factory_id).weather_location
     from ||= Time.now.beginning_of_year.to_date
-    to   ||= Time.now.to_date
-    #powers = self.
+    to   ||= Time.now.to_date - 1
+    from = Time.parse(from).to_date if from.class == String
+    to   = Time.parse(to).to_date if to.class == String
+    power_list = (from..to).map{ |date| 
+      w = Weather.find_or_feach(location,date)
+      temp,vaper = [w.temperatures[hour],w.vapers[hour]]
+      [ date.strftime("%Y-%m-%d"),simulate_a_hour(line,hour,temp,vaper),temp].flatten
+    }
+    opt = { 
+      :column_labels   => %w(日 中央 - + 気温),
+      :column_format     => "%s %.1f %.1f %.1f %.1f\n",
+      :axis_labels => { :xlabel => "日",:ylabel => "推定電力",:y2label => "気温"},
+      :title  => "電力推定",
+      :with   => "line",
+      :tics   => { :xtics => "rotate by -90",:y2tics=> "-5,5"},
+      :by_tics => { 4 => "x1y2" },
+      :size   => "900,400",
+      :grid   => "ytics"
+      #:type   => "scatter"
+    }
+    gnuplot_(power_list,opt)
   end
 
   def self.average_group_by_month(powers)
