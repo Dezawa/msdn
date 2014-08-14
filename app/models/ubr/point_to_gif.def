@@ -74,8 +74,9 @@ plot 'tmp/ubr/SCM_stock_stat_products.ave' using 3:xtic(1)  with line lt rgb  'b
 
 
 set title "製品・OG品・原料・再処理・長期在庫 在庫量推移" font ",14"
-set yrange [0:3.0]
-set y2range [12:24]
+set yrange [0:1.8]
+set y2range [8:20]
+set ytics 0,0.3
 set format y '%.1f'
 unset label
 unset label
@@ -83,7 +84,6 @@ set label "在庫/千ton" at graph -0.07,0.5 center rotate
 set label "製品在庫/千ton" at graph  1.08,0.5 center rotate
 
 set y2tics 
-set ytics 
 plot 'tmp/ubr/SCM_stock_stat_target_weight.ave' using 2:xtic(1)  axes x1y2  with line ,\
      '' using 3 with line,\
      '' using 4 with line lt rgb "blue",\
@@ -122,8 +122,9 @@ set key autotitle columnheader
 set y2range [0:500]
 set y2tics  
 set yrange [0:100]
+set format y '%.0f'
 set ytics nomirror
-set ytics
+set ytics 0,10
 set auto x
 set xtics nomirror rotate by -90 scale 0 
 plot 'tmp/ubr/SCM_stock_stat_tuuro.ave'\

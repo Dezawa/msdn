@@ -28,8 +28,9 @@ class Ubr::Point
                ["AC跡",/^0[JKL]/],
                ["LD倉庫",/^[1-6]/]
          ]
-  GradeSort = [["製品","1","brue",18600],["OG","2","green",500],
-               ["原料","Z","red",1000],["再処理","R","purple",500],["長期","","brown",500]]
+  GradeSort = [["製品",/1/,"brue",18600],["OG",/2/,"green",500],
+               ["原料",/Z/,"red",1000],["再処理",/R/,"purple",500],
+               ["その他(GPQST-)",/[GPQST-]/,"brown",500]]
 
   #Extension = [:tuuro ,:products ,:not_products]
   Extension = [:tuuro ,:products ,:target_weight]
@@ -72,7 +73,8 @@ class Ubr::Point
     grade_sort = GradeSort.map{ |lbl,grade,color,limit|
       #Ubr::LotList.lotlist.
       #select{ |id,lot| lot.grade == grade && RegLDall =~ lot.waku }.inject(0){ |s,l| s+l[1].weight}
-      Ubr::Waku.lotseg_of_aria(RegLDall).select{ |seg| seg.grade == grade }.inject(0){ |s,l| s+l.weight}
+      Ubr::Waku.lotseg_of_aria(RegLDall).select{ |seg| grade =~ seg.grade }.
+      inject(0){ |s,l| s+l.weight}
     }
     # "T"=>246, "S"=>88, "Q"=>730, "P"=>188, "G"=>0.750, "-"=>1614, "2"=>614, "R"=>1048, "1"=>20540, "Z"=>2838
     scp     = Ubr::LotList.lotlist.select{|id,l| /^G123SCP/ =~ l.meigara_code  }.
