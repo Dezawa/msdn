@@ -10,7 +10,10 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/shimada/:controller'  ,:path_prefix => 'shimada'#,:action => /[^0-9]+/
   map.resources :shimada_month       ,:controller => 'shimada/month'
   map.resources :shimada_factory       ,:controller => 'shimada/factory'
-
+  map.resources :power_ube_hospital_month,:controller => 'power/ube_hospital/month'
+  #map.connect '/power/ube_hospital/month',:controller => 'power/ube_hospital/month'
+  #map.connect '/power/ube_hospital/:controller/:action',:path_prefix => 'power/ube_hospital'
+  #map.connect 'power/ube_hospital/:controller',:path_prefix => 'power/ube_hospital'
   # UBR
 #  map.connect '/ubr/倉庫状況.pdf'  ,:url => '/public/ubr/倉庫状況.pdf'
   map.connect '/ubr/:controller/:action'  ,:path_prefix => 'ubr'#,:action => /[^0-9]+/

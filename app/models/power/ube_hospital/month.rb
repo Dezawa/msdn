@@ -9,11 +9,6 @@ class Power::UbeHospital::Month < ActiveRecord::Base
   class << self
     def power_model ;   Power::UbeHospital::Power ;end
 
-    def csv_upload(file)
-      csv_files(file).each{ |csvfile|  create_month_by(csvfile) }
-      Power::UbeHospital::Power.delete_all("power01 = '0.0'")
-    end
-
 
     def search_year_month(lines)
       line=lines.shift

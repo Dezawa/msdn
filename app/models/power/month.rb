@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 module Power::Month
+  include ExcelToCsv
   module ClassMethods
 
+    def csv_upload(file)
+      csvfiles = csv_files(file)
+      csvfiles.each{ |csvfile|  create_month_by(csvfile) }
+      Shimada::Power.delete_all("hour01 = '0.0'")
+    end
 
     def  create_month_by(csvfile)
       lines = File.read(csvfile).split(/[\r\n]+/)
@@ -21,11 +27,13 @@ module Power::Month
 
       month = self.find_or_create_by_month(year_month)
       powers = days.map{ |day| 
-        break unless (day_data = month_data.shift).first
+        day_data = month_data.shift
+logger.debug("CREATE_ONE_MONTH_BY: #{day_data.first}")
+        next unless day_data && day_data.first.to_f > 0
         power = self.power_model.find_or_create_by_date( day)
         power.update_by_day_data(day_data)
         power
-        }
+        }.compact
       month.powers = powers
     end
 
