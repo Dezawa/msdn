@@ -7,7 +7,10 @@ module ExcelToCsv
              when ActionController::UploadedStringIO
                # Temp ファイルに書き出す
                tempfile = Tempfile.new("result_update")
-               while result=file.read;tempfile.write result;end
+               while result=file.read 
+                 break unless result.size > 0
+                 tempfile.write result
+               end
                tempfile.rewind
                tempfile
              when File,ActionController::UploadedTempfile #
