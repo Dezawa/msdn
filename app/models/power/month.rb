@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 module Power::Month
   include ExcelToCsv
+  include Power::MonthlyGraph
+  include Power::Graph
+  include Power::Scatter
   module ClassMethods
 
     def csv_upload(file)
@@ -28,7 +31,6 @@ module Power::Month
       month = self.find_or_create_by_month(year_month)
       powers = days.map{ |day| 
         day_data = month_data.shift
-logger.debug("CREATE_ONE_MONTH_BY: #{day_data.first}")
         next unless day_data && day_data.first.to_f > 0
         power = self.power_model.find_or_create_by_date( day)
         power.update_by_day_data(day_data)
