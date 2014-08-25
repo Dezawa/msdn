@@ -219,7 +219,7 @@ end
 !
 
   def popupform_buttom(action,label,opt ={ },htmlopt={ })
-    win_name = opt.delete(:win_name) || ""
+    win_name = opt.delete(:win_name) || "new_win"
     scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
     html = PopupHead%[@Domain,action,form_authenticity_token,label]
     if @model
