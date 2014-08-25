@@ -2,6 +2,9 @@
 class Power::UbeHospital::Month < ActiveRecord::Base
   extend ExcelToCsv
   include Power::Month
+  include Power::MonthlyGraph
+  extend  Power::Graph
+  extend Power::Scatter
   set_table_name 'power_ube_hospital_months'
   has_many :powers ,:class_name =>  "Power::UbeHospital::Power" ,
            :dependent => :delete_all
