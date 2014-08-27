@@ -4,7 +4,7 @@ module  Power::Graph
     opt = { :xlabel => "xl '時刻'",:ylabel => "yl '消費電力'"}.merge opt
     objs = group_by(objects,opt)
     path = output_plot_data(objs,opt){ |f,obj|
-      values = obj.send(opt[:method])
+      values = obj.send(opt["method"])
       ("01".."24").each_with_index{ |hr,idx| f.printf "%s %.3f\n",hr,values[idx] }
     }
     def_file = def_file_by_hour(path,opt)

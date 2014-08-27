@@ -64,7 +64,7 @@ logger.debug("GRAPH_ALL_MONTH: opt = #{opt.to_a.flatten.join(', ')}")
   end
 
   ScatterOpt =
-    { "temp-power" => { :method => :powers , :title => "気温と消費電力",:pt => 6,
+    { "temp-power" => { "method" => :powers , :title => "気温と消費電力",:pt => 6,
                         :xlabel => "xl '気温'",:ylabel => "yl '消費電力'" ,
                         :hour_range => [0,1,2,3,4,5,8,9,10,11,12,13,14,15],
       :by_date => "%a",

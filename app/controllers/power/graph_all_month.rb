@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 module  Power::GraphAllMonth # controller
   GraphOpt =
-    { "power" => {:method => :powers, :data_file_labels => "時刻 電力",
+    { "power" => {"method" => :powers, :data_file_labels => "時刻 電力",
                   :title  => "消費電力",:with => "line",
       :set_key => "set key outside  autotitle columnheader samplen 1 width 0",
       #:by_date => "%02d"
@@ -18,7 +18,7 @@ module  Power::GraphAllMonth # controller
   end
 
   ScatterOpt =
-    { "temp-power" => { :method => :powers , :title => "気温と消費電力",:pt => 6,
+    { "temp-power" => { "method" => :powers , :title => "気温と消費電力",:pt => 6,
                         :xlabel => "xl '気温'",:ylabel => "yl '消費電力'" ,
                         :hour_range => (7..15) ,
                         :x_method => :temps,:xrange => "[-10:40]"
