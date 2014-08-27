@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 module  Power::Scatter
+ 
+
   def graph_scatter(objects,opt={ })
     objs = group_by(objects,opt)
     path = output_plot_data(objs,opt){ |f,obj|
-      values   = obj.send(opt[:method])
+      values   = obj.send(opt["method"])
       x_values = obj.send(opt[:x_method]) 
 
-logger.debug("GRAPH_SCATTER opt = #{opt.to_a.flatten.join(', ')}")
       opt[:hour_range] = [1,2,3,4] if opt["night"] && opt[:hour_range]
-logger.debug(":HOUR_RANGE: :hour_range=#{opt[:hour_range]} opt[:night]=#{opt["night"]}")
       (opt[:hour_range] ||(0..23)).
-      each{ |idx| f.printf "%.2f %.1f\n",x_values[idx],values[idx]  }
+      each{ |idx| f.printf "%.2f %.1f\n",
+        case x_values; when Array;x_values[idx];else x_values;end,values[idx]  }
     }
     opt[:fitting_line] = objects.first.class.send(opt[:fitting],opt) if opt[:fitting]
     logger.debug("TEMP_VS_POWER: line = #{opt[:fitting_line]}")
@@ -20,7 +21,7 @@ logger.debug(":HOUR_RANGE: :hour_range=#{opt[:hour_range]} opt[:night]=#{opt["ni
 
   def  def_file_scatter(path,opt={ })
     deffile = ( opt[:def_dir] || RAILS_ROOT+"/tmp/graph")+"/"+(opt[:def_file] || "graph.def" )
-    graph_dir,graph_file,title,set_key,xrange,xtics,x2tics = dif_opts(opt)
+    #graph_dir,graph_file,title,set_key,xrange,tics,grid = dif_opts(opt)
     open(deffile,"w"){ |f|
       preunble = DefScatter% dif_opts(opt)
       f.puts preunble
@@ -40,6 +41,7 @@ logger.debug(":HOUR_RANGE: :hour_range=#{opt[:hour_range]} opt[:night]=#{opt["ni
       opt[:set_key]    || "",
       opt[:xrange]     || "[0:24]",
       opt[:tics]       || "set xtics 3,3\nset x2tics 3,3",
+      opt[:grid]       || "set grid"
     ]
   end
 
@@ -51,6 +53,6 @@ set title "%s"
 set yrange [0:1000]
 set xrange %s #  [1:24]
 %s 
-set grid #ytics
+%s #set grid #ytics
 !
 end
