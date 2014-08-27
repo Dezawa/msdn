@@ -3,15 +3,23 @@ class Power::UbeHospital::Month < ActiveRecord::Base
   extend ExcelToCsv
   include Power::Month
   include Power::MonthlyGraph
+  include Statistics
   extend  Power::Graph
   extend Power::Scatter
   set_table_name 'power_ube_hospital_months'
   has_many :powers ,:class_name =>  "Power::UbeHospital::Power" ,
            :dependent => :delete_all
-
+@@ave10hour = { }
+  
   class << self
     def power_model ;   Power::UbeHospital::Power ;end
 
+    def ave10hour(year_month)
+      @@ave10hour[year_month] ||= if true
+        Power::UbeHospital::Month.find_by_month(year_month).
+          powers.map(&:rev10).average
+      end
+    end
 
     def search_year_month(lines)
       line=lines.shift
@@ -35,5 +43,9 @@ logger.debug("SET_POWER:#{line}")
       powers.each{ |power| power[:hukurosu] = clms.shift.to_f ;power.save}
     end
 
+  end # of class method
+
+  def ave10hour
+      self.class.ave10hour(month)
   end
 end
