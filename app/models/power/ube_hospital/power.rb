@@ -41,4 +41,15 @@ class Power::UbeHospital::Power < ActiveRecord::Base
     #logger.debug("TEMP_VS_POWER: line = #{line}")
     #line
   end
+
+  def line
+    if rev10 > ave10hour ; 2
+    elsif rev10 > 250    ; 1
+    else                 ; 0
+    end
+  end
+  
+  def ave10hour ; self.month.ave10hour ;end
+
+
 end
