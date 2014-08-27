@@ -52,6 +52,8 @@ module Power::Power
       @weather2 = db_weather  
     end
   end
+ def month_of_day ;date.month ;end
+ def day_of_year ;date.yday ;end
 
   def revise_by_vaper
     return @revise_by_vaper if @revise_by_vaper
