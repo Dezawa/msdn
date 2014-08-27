@@ -11,36 +11,50 @@ module  Power::GraphMonthly # controller
   }
                      
   GraphOpt =
-    { "power" => {:method => :powers, #:data_file_labels => "時刻 電力",
+    { "power" => {"method" => :powers, #:data_file_labels => "時刻 電力",
                   :title  => "消費電力",:with => "line",
       :set_key => "set key outside  autotitle columnheader samplen 1 width 0",
       :by_date => "%a"
     },
-    "revise_temp" => { :method => :revise_by_temp , :x_method => :hours,:by_date => "%a",
+    "revise_temp" => { "method" => :revise_by_temp , :x_method => :hours,:by_date => "%a",
       :title  => "温度補正電力",:with => "line",
-      :set_key => "set key outside  autotitle columnheader samplen 1 width 0",}, 
-    "temp-power" => { :method => :powers , :title => "気温と消費電力",:pt => 6,
+      :set_key => "set key outside  autotitle columnheader samplen 1 width 0",
+    }, 
+    "temp-power" => { "method" => :powers , :title => "気温と消費電力",:pt => 6,
       :xlabel => "xl '気温'",:ylabel => "yl '消費電力'" ,
       :hour_range => [0,1,2,3,4,5,8,9,10,11,12,13,14,15],
       :by_date => "%a",
       :tics => "set xtics -10,10",
       :x_method => :temps,:xrange => "[-10:40]"
     }, 
-    "vaper-power" => { :method => :revise_by_temp , :title => "蒸気圧と温度補正電力",:pt => 6,
+    "vaper-power" => { "method" => :revise_by_temp , :title => "蒸気圧と温度補正電力",:pt => 6,
       :xlabel => "xl '蒸気圧/hPa'",:ylabel => "yl '温度補正電力'" ,
       :hour_range => (7..15) ,:by_date => "%a",
       :tics => "set xtics 0,10",
       :x_method => :vapers,:xrange => "[0:40]"
+    },
+    "hour10" => { "method" => :revise_by_temp, :x_method => :day_of_year,:by_date => "%Y",
+      :hour_range => [9],:xrange => "[0:367]", :tics => "set xtics 1,30,365 ",
+      :xlabel => "xl '年初からの経過日数'",
+      # :data_file_labels => ""
+    }, 
+    "temp-power" => { "method" => :powers , :title => "気温と消費電力",:pt => 6,
+      :xlabel => "xl '気温'",:ylabel => "yl '消費電力'" ,
+      :hour_range => [0,1,2,3,4,5,8,9,10,11,12,13,14,15],
+      :by_date => "%a",
+      :tics => "set xtics -10,10",
+      :x_method => :temps,:xrange => "[-10:40]"
     }
   }
 
   def graph_all_month
     para = params[@Domain]
     option = para.delete(:option) || para.delete("option") 
+    para.keys.each{ |k| para[k.to_sym] = para[k] if k.class == String}
 logger.debug("GRAPH_ALL_MONTH: para = #{para.to_a.flatten.join(', ')}")
     opt = GraphOpt[option].merge(AllMonthOpt[option]||{ }).merge(para)
-logger.debug("GRAPH_ALL_MONTH: opt = #{opt.to_a.flatten.join(', ')}")
-    
+logger.debug("GRAPH_ALL_MONTH: opt = #{opt.to_a.flatten.join(', ')}:year #{ opt[:year]},year#{opt["year"]}")
+    opt[:title] ||= params["commit"]
     opt[:title] += "-#{opt["year"]}年" if opt["year"]
     opt[:title] += "-#{opt["night"]}" if opt["night"]
     
