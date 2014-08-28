@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+require 'extentions'
 class Power::UbeHospital::MonthController  <   Power::MonthController
   include Power::GraphLinks
   before_filter :set_instanse_variable
@@ -10,10 +11,13 @@ class Power::UbeHospital::MonthController  <   Power::MonthController
 
   def index
     @Show = true
-    @labels =   eval Labels_for_month_index
+    @labels =   eval( Labels_for_month_index) <<
+      HtmlLink.new(:id,"",
+                   :link => {:url => "month/monthly_scatter", :link_label => "温度補正対蒸気",
+                     :option => "vaper-power" }.merge(POPUP))
     @action_buttoms = 
       #[
-       [ 4,
+       [ 6,
          [
           [:popup,:graph_all_month,"全年度グラフ",{ :option => :power} ],
           [:popup,:graph_all_month,"24年度グラフ",{ :option => :power,:year => 2012} ],
@@ -39,12 +43,11 @@ class Power::UbeHospital::MonthController  <   Power::MonthController
           [:popup,:graph_all_month,"24年度対蒸気圧",{ :option => "vaper-power",:year => 2012} ],
           [:popup,:graph_all_month,"25年度対蒸気圧",{ :option => "vaper-power",:year => 2013} ],
           [:popup,:graph_all_month,"26年度対蒸気圧",{ :option => "vaper-power",:year => 2014} ],
-       #  ]
-      # ],
-       #[4,
-        [:popup,:graph_all_month,"10時の温度補償電力 全年度",{ :option => "hour10"} ],
-        [:popup,:graph_all_month,"10時の電力 全年度",{ :option => "hour10","method" => :powers} ],
-       ]
+
+          [:popup,:graph_all_month,"日中平均温度補償電力 年間",{ :option => "hour10","method" => :ave_daytime} ],
+          [:popup,:graph_all_month,"10時の温度補償電力 年間",{ :option => "hour10"} ],
+          [:popup,:graph_all_month,"10時の電力 年間",{ :option => "hour10","method" => :powers} ],
+         ].re_order_by_line(4)
       ]
     [
      HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
