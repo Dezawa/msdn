@@ -90,7 +90,7 @@ module  Power::Graph
           else
             objects.group_by{ |p| true}
           end
-    keys = pws.keys.compact.sort
+    keys = opt[:by_date] == "%a" ? %w(Mon Tue Wed Thu Fri Sat Sun) : pws.keys.compact.sort
     pws
   end
 
