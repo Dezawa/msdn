@@ -202,7 +202,7 @@ end
     when :select_and_action  ;
       logger.debug(":INPUT_AND_ACTION: opt.nil?#{opt.nil?} opt=#{opt}")
       select_and_action(action,label,opt)
-
+    when nil; ""
     else function.to_s
     end
   end
