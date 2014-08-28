@@ -49,7 +49,10 @@ class Power::UbeHospital::Power < ActiveRecord::Base
     end
   end
   
-  def ave10hour ; self.month.ave10hour ;end
+  def ave10hour   ; self.month.ave10hour ;end
+  def ave_daytime 
+    [8,9,10,11,12,13,14,15].map{ |h| revise_by_temp[h]}.average
+  end
 
 
 end
