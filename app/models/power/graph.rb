@@ -57,7 +57,12 @@ module  Power::Graph
 
   def output_plot_data(objs,opt,&block)
       path = []
-      keys = opt[:keys] ? opt[:keys] : objs.keys.sort
+      keys = unless opt[:keys] 
+               if opt[:by_date] == "%a" ; %w(Mon Tue Wed Thu Fri Sat Sun)
+               else           ; objs.keys.sort
+               end
+             else             ; opt[:keys] 
+             end
       keys.each_with_index{ |k,idx|
         path << RAILS_ROOT+"/tmp/graph/data/graphdata_%02d"%idx
         open(path.last,"w"){ |f|
@@ -90,7 +95,7 @@ module  Power::Graph
           else
             objects.group_by{ |p| true}
           end
-    keys = opt[:by_date] == "%a" ? %w(Mon Tue Wed Thu Fri Sat Sun) : pws.keys.compact.sort
+    #keys = opt[:by_date] == "%a" ? %w(Mon Tue Wed Thu Fri Sat Sun) : pws.keys.compact.sort
     pws
   end
 
