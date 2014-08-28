@@ -11,7 +11,8 @@ module  Power::Scatter
       opt[:hour_range] = [1,2,3,4] if opt["night"] && opt[:hour_range]
       (opt[:hour_range] ||(0..23)).
       each{ |idx| f.printf "%.2f %.1f\n",
-        case x_values; when Array;x_values[idx];else x_values;end,values[idx]  }
+        case x_values;  when Array;x_values[idx]; else x_values; end,values[idx] }
+        #case values;  when Array;values[idx]; else values; end }
     }
     opt[:fitting_line] = objects.first.class.send(opt[:fitting],opt) if opt[:fitting]
     logger.debug("TEMP_VS_POWER: line = #{opt[:fitting_line]}")
@@ -38,7 +39,7 @@ module  Power::Scatter
     [ opt[:graph_dir]  || RAILS_ROOT+"/tmp/graph/jpeg",
       opt[:graph_file] || "graph",
       opt[:title]      || "",
-      opt[:set_key]    || "",
+      opt[:set_key]    || "set key outside  autotitle columnheader samplen 1 width 0",
       opt[:xrange]     || "[0:24]",
       opt[:tics]       || "set xtics 3,3\nset x2tics 3,3",
       opt[:grid]       || "set grid"
