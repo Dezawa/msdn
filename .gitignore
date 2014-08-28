@@ -41,3 +41,7 @@ tmp/hospital
 tmp/shimada/*def
 tmp/shimada/jpeg/*jpeg
 tmp/shimada/data
+tmp/gnuplot
+tmp/graph
+tmp/image.jpeg
+tmp/img
