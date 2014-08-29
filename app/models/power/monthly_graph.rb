@@ -27,7 +27,7 @@ module  Power::MonthlyGraph
         else
           self.all
         end.map(&:powers).flatten
-      objects = objects.select{ |pw| eval "pw.#{opt['select']}" } if opt["select"]
+      objects = objects.select{ |pw| eval opt['select'] } if opt["select"]
       objects
     end
 
@@ -37,7 +37,7 @@ module  Power::MonthlyGraph
       objs = group_by(objects,opt)
       path = output_plot_data(objs,opt.merge(:no_blank_line => true)){ |f,obj|
         values = obj.send(opt["method"])
-        xvalue = obj.date.day == 1 ? obj.date.strftime("%m/%d") : "''"
+        xvalue = obj.date.day == 1 ? obj.date.strftime("%m/%d") : "."
          f.printf "%s %.3f\n",xvalue,values[0] 
         ("02".."24").each_with_index{ |hr,idx| f.printf "'' %.3f\n",values[idx+1] }
       }
