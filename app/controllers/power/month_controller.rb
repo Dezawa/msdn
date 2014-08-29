@@ -23,6 +23,7 @@ class  Power::MonthController < ApplicationController
   DaylyLabels =
     [
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%y/%m/%d"),
+      HtmlText.new(:week_day,"曜",:ro=>true,:size =>1),
     ] + 
       ("01".."24").map{ |h| 
         HtmlNum.new( "power#{h}".to_sym,h,:tform => "%.0f",:size => 3)
@@ -41,7 +42,7 @@ class  Power::MonthController < ApplicationController
 
     @action_buttoms = nil; #Month_action_buttoms
     @labels = DaylyLabels
-    @TableHeaderDouble = [1,[24,"時刻"]]
+    @TableHeaderDouble = [2,[24,"時刻"]]
 
     @Show = @Edit = @Delete = nil
     @Graph = true
