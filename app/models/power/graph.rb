@@ -24,19 +24,6 @@ module  Power::Graph
     }
     deffile
   end
- def  def_file_by_days_hour(path,opt={ })
-    deffile = ( opt[:def_dir] || RAILS_ROOT+"/tmp/graph")+"/"+(opt[:def_file] || "graph.def" )
-    graph_dir,graph_file,title,set_key,xrange,tics = dif_opts(opt)
-    open(deffile,"w"){ |f|
-      preunble = DefByDayHour% dif_opts(opt)
-      f.puts preunble
-      [:xlabel,:ylabel].each{ |sym|
-        f.puts "set "+opt[sym] if opt[sym]
-      }
-      f.puts plot_list("'%s' using %d:xtic(%d)",path,opt){ |fmt,p,x,y| sprintf(fmt,p,y,x)}
-    }
-    deffile
-  end
 
   def dif_opts(opt)
     [ opt[:graph_dir]  || RAILS_ROOT+"/tmp/graph/jpeg",
