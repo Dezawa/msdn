@@ -52,8 +52,9 @@ module  Power::GraphMonthly # controller
       :tics => "set xtics -10,10",
       :x_method => :temps,:xrange => "[-10:40]"
     },
-    "by_days_hour" => { "method" => :revise_by_temp, :x_method => :by_hour,
-     #:xrange => "[90:212]", :tics => "set xtics 91,30,212",
+    "by_days_hour" => { "method" => :revise_by_temp, #:x_method => :by_hour,
+     #:xrange => "[90:212]", ][
+     :yrange => "[100:800]",
       #:xlabel => "xl '年初からの経過日数'",
       # :data_file_labels => ""
     }, 
