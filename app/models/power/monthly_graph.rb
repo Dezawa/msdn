@@ -4,6 +4,17 @@ module  Power::MonthlyGraph
   extend Power::Scatter
   module ClassMethods
    def monthly_graph(opt = { } )
+     objects = target_powers(opt)
+     opt[:set_key] ||= "set key outside  autotitle columnheader samplen 1 width 0"
+     graph_scatter(objects,opt)
+   end
+
+   def monthly_by_hour(opt = { } )
+     opt[:set_key] ||= "set key outside  autotitle columnheader samplen 1 width 0"
+     graph_scatter(objects,opt)
+   end
+
+   def target_powers(opt={ })
      objects = 
        if year = opt["year"] 
          opt[:by_date] = "%m"
@@ -15,9 +26,9 @@ module  Power::MonthlyGraph
          self.all
        end.map(&:powers).flatten
      objects = objects.select{ |pw| eval "pw.#{opt['select']}" } if opt["select"]
-     opt[:set_key] ||= "set key outside  autotitle columnheader samplen 1 width 0"
-     graph_scatter(objects,opt)
-   end
+     objects
+ end
+
 
   def graph_by_hour(objects,opt={ })
     opt = { :xlabel => "xl '時刻'",:ylabel => "yl '消費電力'"}.merge opt
