@@ -46,7 +46,8 @@ module  Power::Graph
         st = block_given? ? yield(plot_fmt,p,idx_x,idx_y) : sprintf(plot_fmt,p,idx_x,idx_y)
         st += 
         ( opt[:by_tics] && opt[:by_tics][idx] ? " axes #{opt[:by_tics][idx]}" : "") +
-        ( opt[:point_type] && opt[:point_type][idx] ? "pt #{opt[:point_type][idx]}" : "")+
+        ( opt[:point_type] && opt[:point_type][idx] ? " pt #{opt[:point_type][idx]}" : "")+
+        ( opt[:point_size]  ?   " ps #{opt[:point_size]}" : "")+
         ( opt[:with] ? " with #{opt[:with]}" : "")
         p=""
         idx += 1
@@ -115,9 +116,10 @@ set grid #ytics
 set out '%s/%s.jpeg' #  graph_dir,graph_file,
 set title "%s"
 %s #
-set yrange [0:1000]
+set xtics nomirror rotate by -90 scale 0
+#set yrange [0:1000]
 #set xrange %s #  [1:24]
 %s #3,3 #1,1
-set grid #ytics
+set grid ytics
 !
 end
