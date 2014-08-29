@@ -34,10 +34,10 @@ class Power::UbeHospital::MonthController  <   Power::MonthController
           [:popup,:graph_all_month,"25年度対温度夜間",{:option => "temp-power",:night =>'夜間',:year => 2013} ],
           [:popup,:graph_all_month,"26年度対温度夜間",{:option => "temp-power",:night =>'夜間',:year => 2014} ],
 
-          [:popup,:graph_all_month,"全年度対温度平日",{:option => "temp-power",:select => 'line==2'} ],
-          [:popup,:graph_all_month,"24年度対温度平日",{:option => "temp-power",:select => 'line==2',:year => 2012} ],
-          [:popup,:graph_all_month,"25年度対温度平日",{:option => "temp-power",:select => 'line==2',:year => 2013} ],
-          [:popup,:graph_all_month,"26年度対温度平日",{:option => "temp-power",:select => 'line==2',:year => 2014} ],
+          [:popup,:graph_all_month,"全年度対温度平日",{:option => "temp-power",:select => 'pw.line==2'} ],
+          [:popup,:graph_all_month,"24年度対温度平日",{:option => "temp-power",:select => 'pw.line==2',:year => 2012} ],
+          [:popup,:graph_all_month,"25年度対温度平日",{:option => "temp-power",:select => 'pw.line==2',:year => 2013} ],
+          [:popup,:graph_all_month,"26年度対温度平日",{:option => "temp-power",:select => 'pw.line==2',:year => 2014} ],
 
           [:popup,:graph_all_month,"全年度温度補償",{ :option => "revise_temp"} ],
           [:popup,:graph_all_month,"24年度温度補償",{ :option => "revise_temp",:year => 2012} ],
@@ -52,7 +52,14 @@ class Power::UbeHospital::MonthController  <   Power::MonthController
           [:popup,:graph_all_month,"日中平均温度補償電力 年間",{ :option => "hour10","method" => :ave_daytime} ],
           [:popup,:graph_all_month,"10時の温度補償電力 年間",{ :option => "hour10"} ],
           [:popup,:graph_all_month,"10時の電力 年間",{ :option => "hour10","method" => :powers} ],
-          [:popup,:graph_all_month,"25年度4月～7月の電力" ,{ :option => "by_days_hour",:year => 2013} ],
+          [:popup,:graph_all_month,"25年度4月～7月の補正電力" ,
+           { :option => "by_days_hour",:select => "pw.date.month >=4 && pw.date.month <= 7",:year => 2013} ],
+          [:popup,:graph_all_month,"26年度4月～7月の補正電力" ,
+           { :option => "by_days_hour",:select => "pw.date.month >=4 && pw.date.month <= 7",:year => 2014} ],
+          [:popup,:graph_all_month,"25年度4月～7月の未補正電力" ,
+           { :option => "by_days_hour",:select => "pw.date.month >=4 && pw.date.month <= 7",:method => :powers, :year => 2013} ],
+          [:popup,:graph_all_month,"26年度4月～7月の未補正電力" ,
+           { :option => "by_days_hour",:select => "pw.date.month >=4 && pw.date.month <= 7",:method => :powers, :year => 2014} ],
          ].re_order_by_line(8)
       ]
     [
