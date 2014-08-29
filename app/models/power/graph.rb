@@ -42,8 +42,9 @@ module  Power::Graph
     path.map{ |p|
       xy_ary = xy_ary_ary ? xy_ary_ary.shift : [[1,2]]
 #      str += 
-      s =xy_ary.map{ |idx_x,idx_y|
-        st = sprintf(plot_fmt,p,idx_x,idx_y) +
+      s = xy_ary.map{ |idx_x,idx_y|
+        st = block_given? ? yield(plot_fmt,p,idx_x,idx_y) : sprintf(plot_fmt,p,idx_x,idx_y)
+        st += 
         ( opt[:by_tics] && opt[:by_tics][idx] ? " axes #{opt[:by_tics][idx]}" : "") +
         ( opt[:point_type] && opt[:point_type][idx] ? "pt #{opt[:point_type][idx]}" : "")+
         ( opt[:with] ? " with #{opt[:with]}" : "")
