@@ -13,8 +13,9 @@ module Power::Power
     self.save
   end
 
-  def hours  ;("01".."24").to_a ;end
+  def week_day ; %w(日 月 火 水 木 金 土)[date.wday] ;end
 
+  def hours  ;("01".."24").to_a ;end
   def powers ; ("01".."24").map{ |hr| self["power#{hr}"] } ;end
   def temps 
     return @temps if @temps
