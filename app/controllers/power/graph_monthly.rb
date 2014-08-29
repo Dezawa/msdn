@@ -51,9 +51,18 @@ module  Power::GraphMonthly # controller
       :by_date => "%a", 
       :tics => "set xtics -10,10",
       :x_method => :temps,:xrange => "[-10:40]"
-    }
+    },
+    "by_hour" => { "method" => :revise_by_temp, :x_method => :by_hour,:by_date => "%Y",
+     :xrange => "[90:212]", :tics => "set xtics 91,30,212",
+      :xlabel => "xl '年初からの経過日数'",
+      # :data_file_labels => ""
+    }, 
   }
-
+  def title(opt)
+    opt[:title] ||= params["commit"]
+    opt[:title] += "-#{opt["year"]}年" if opt["year"]
+    opt[:title] += "-#{opt["night"]}" if opt["night"]
+  end
   def graph_all_month
     para = params[@Domain]
     option = para.delete(:option) || para.delete("option") 
@@ -61,10 +70,7 @@ module  Power::GraphMonthly # controller
 logger.debug("GRAPH_ALL_MONTH: para = #{para.to_a.flatten.join(', ')}")
     opt = GraphOpt[option].merge(AllMonthOpt[option]||{ }).merge(para)
 logger.debug("GRAPH_ALL_MONTH: opt = #{opt.to_a.flatten.join(', ')}:year #{ opt[:year]},year#{opt["year"]}")
-    opt[:title] ||= params["commit"]
-    opt[:title] += "-#{opt["year"]}年" if opt["year"]
-    opt[:title] += "-#{opt["night"]}" if opt["night"]
-    
+    title(opt)    
     opt[:graph_file] = opt[:title] unless  opt[:graph_file]
 
     @Model.monthly_graph(opt)
