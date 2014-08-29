@@ -11,7 +11,7 @@ module  Power::MonthlyGraph
 
     def monthly_by_days_hour(opt = { } )
       objects = target_powers(opt)
-      opt[:set_key] ||= "set key outside  autotitle columnheader samplen 1 width 0"
+      opt[:set_key] ||= "set key outside  autotitle columnheader samplen 1 width -4"
       opt[:by_date] = nil
       graph_by_days_hour(objects,opt)
     end
