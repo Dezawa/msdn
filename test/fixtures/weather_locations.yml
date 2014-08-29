@@ -1,0 +1,45 @@
+---
+id1:
+  id: 1
+
+    5YmN5qmL
+  excite_zip: zp-3792122
+  forecast_code: 3/13/4210/10201
+  id: "1"
+  location: maebashi
+  name: !binary |
+  weather_block: "47624"
+  weather_prec: "42"
+id2:
+  id: 2
+
+    6YOh5bGx
+  excite_zip: zp-9691203
+  forecast_code: 2/10/3610/7203
+  id: "2"
+  location: kouriyama
+  name: !binary |
+  weather_block: 0299
+  weather_prec: "36"
+id3:
+  id: 3
+
+    5bqc5Lit
+  excite_zip: zp-1960021
+  forecast_code: 3/16/4410/13207
+  id: "3"
+  location: fuchu
+  name: !binary |
+  weather_block: "1133"
+  weather_prec: "44"
+id4:
+  id: 4
+
+    5Y2X6Laz5p+E
+  excite_zip: zp-2500126
+  forecast_code: 3/17/4620/14217
+  id: "4"
+  location: minamiashigara
+  name: !binary |
+  weather_block: "1008"
+  weather_prec: "46"

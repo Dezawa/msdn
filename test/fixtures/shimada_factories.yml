@@ -1,0 +1,5 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+GMC:
+  name: GMC
+  weather_location: maebashi
