@@ -14,6 +14,7 @@ module  Power::MonthlyGraph
        else
          self.all
        end.map(&:powers).flatten
+     objects = objects.select{ |pw| eval "pw.#{opt['select']}" } if opt["select"]
      opt[:set_key] ||= "set key outside  autotitle columnheader samplen 1 width 0"
      graph_scatter(objects,opt)
    end
