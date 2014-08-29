@@ -52,9 +52,9 @@ module  Power::GraphMonthly # controller
       :tics => "set xtics -10,10",
       :x_method => :temps,:xrange => "[-10:40]"
     },
-    "by_hour" => { "method" => :revise_by_temp, :x_method => :by_hour,:by_date => "%Y",
-     :xrange => "[90:212]", :tics => "set xtics 91,30,212",
-      :xlabel => "xl '年初からの経過日数'",
+    "by_days_hour" => { "method" => :revise_by_temp, :x_method => :by_hour,
+     #:xrange => "[90:212]", :tics => "set xtics 91,30,212",
+      #:xlabel => "xl '年初からの経過日数'",
       # :data_file_labels => ""
     }, 
   }
@@ -72,9 +72,13 @@ logger.debug("GRAPH_ALL_MONTH: para = #{para.to_a.flatten.join(', ')}")
 logger.debug("GRAPH_ALL_MONTH: opt = #{opt.to_a.flatten.join(', ')}:year #{ opt[:year]},year#{opt["year"]}")
     title(opt)    
     opt[:graph_file] = opt[:title] unless  opt[:graph_file]
-
-    @Model.monthly_graph(opt)
     @graph_file = opt[:graph_file] || "graph"
+
+    if option == "by_days_hour"
+      @Model.monthly_by_days_hour(opt)
+    else
+      @Model.monthly_graph(opt)
+    end
     @url =  @Domain+"/show_jpeg"
     render :file => 'power/month/graph'
   end

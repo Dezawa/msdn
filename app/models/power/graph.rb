@@ -24,6 +24,19 @@ module  Power::Graph
     }
     deffile
   end
+ def  def_file_by_days_hour(path,opt={ })
+    deffile = ( opt[:def_dir] || RAILS_ROOT+"/tmp/graph")+"/"+(opt[:def_file] || "graph.def" )
+    graph_dir,graph_file,title,set_key,xrange,tics = dif_opts(opt)
+    open(deffile,"w"){ |f|
+      preunble = DefByDayHour% dif_opts(opt)
+      f.puts preunble
+      [:xlabel,:ylabel].each{ |sym|
+        f.puts "set "+opt[sym] if opt[sym]
+      }
+      f.puts plot_list("'%s' using %d:xtic(%d)",path,opt){ |fmt,p,x,y| sprintf(fmt,p,y,x)}
+    }
+    deffile
+  end
 
   def dif_opts(opt)
     [ opt[:graph_dir]  || RAILS_ROOT+"/tmp/graph/jpeg",
@@ -64,13 +77,14 @@ module  Power::Graph
                end
              else             ; opt[:keys] 
              end
+#logger.debug("OUTPUT_PLOT_DATA:keys = #{keys.join(',')}")
       keys.each_with_index{ |k,idx|
         path << RAILS_ROOT+"/tmp/graph/data/graphdata_%02d"%idx
         open(path.last,"w"){ |f|
           f.puts( opt[:data_file_labels] || "時刻 #{k}" )
           objs[k].each{ |obj|
             yield f,obj
-            f.puts
+            f.puts unless opt[:no_blank_line]
           }
         }
       }
@@ -92,11 +106,10 @@ module  Power::Graph
     pws = if opt[:by_date]
             objects.group_by{ |p| p.date.strftime(opt[:by_date])}
           elsif opt[:group_by] 
-            objects.group_by{ |p| p.send(by)}
+            objects.group_by{ |p| p.send( opt[:group_by])}
           else
             objects.group_by{ |p| true}
           end
-    #keys = opt[:by_date] == "%a" ? %w(Mon Tue Wed Thu Fri Sat Sun) : pws.keys.compact.sort
     pws
   end
 
@@ -107,6 +120,16 @@ set title "%s"
 %s #
 set yrange [0:1000]
 set xrange %s #  [1:24]
+%s #3,3 #1,1
+set grid #ytics
+!
+    DefByDayHour =
+      %Q!set terminal jpeg enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+set out '%s/%s.jpeg' #  graph_dir,graph_file,
+set title "%s"
+%s #
+set yrange [0:1000]
+#set xrange %s #  [1:24]
 %s #3,3 #1,1
 set grid #ytics
 !

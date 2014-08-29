@@ -52,7 +52,7 @@ class Power::UbeHospital::MonthController  <   Power::MonthController
           [:popup,:graph_all_month,"日中平均温度補償電力 年間",{ :option => "hour10","method" => :ave_daytime} ],
           [:popup,:graph_all_month,"10時の温度補償電力 年間",{ :option => "hour10"} ],
           [:popup,:graph_all_month,"10時の電力 年間",{ :option => "hour10","method" => :powers} ],
-          [:popup,:graph_all_month,"25年度4月～7月の電力" ,{ :option => "by_hour",:year => 2013} ],
+          [:popup,:graph_all_month,"25年度4月～7月の電力" ,{ :option => "by_days_hour",:year => 2013} ],
          ].re_order_by_line(8)
       ]
     [
