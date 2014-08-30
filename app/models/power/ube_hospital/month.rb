@@ -15,10 +15,14 @@ class Power::UbeHospital::Month < ActiveRecord::Base
     def power_model ;   Power::UbeHospital::Power ;end
 
     def ave10hour(year_month)
-      @@ave10hour[year_month] ||= if true
-                                    Power::UbeHospital::Month.find_by_month(year_month).
-                                      powers.map(&:rev10).average
-                                  end
+      @@ave10hour[year_month] ||=
+        if true
+          rev10s = Power::UbeHospital::Month.find_by_month(year_month).powers.map(&:rev10)
+          tmp_ave = rev10s.average
+          rev10s.group_by{ |rev| rev >= tmp_ave}. # {true => [,,,],false => [,,,]}
+            map{ |k,revs| revs.average}.          # [ ave1,ave 2]
+            inject(0){ |s,e| s + e}*0.5           # 平日の平均と休日の平均の平均
+        end
     end
 
     def search_year_month(lines)
