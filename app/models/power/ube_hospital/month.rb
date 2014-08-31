@@ -56,7 +56,7 @@ class Power::UbeHospital::Month < ActiveRecord::Base
       # keys[平日昼] => [line=1,time_zone = :day]
       days = objects.map{ |pw| pw.date}
       min,max = [days.min,days.max]
-      x2range = "[#{min.yday}:#{max.yday}]"
+      x2range = "[#{min.yday}:#{min.yday + (max-min)}]"
       opt = { :xlabel => "xl '日'",:ylabel => "yl '補正後 消費電力'", :y2label => "y2label '外気温'",
         :keys => Keys,
         :tics => "set xtics nomirror rotate by -90 scale 0
@@ -74,7 +74,7 @@ set ytics 0,100,800",
     Hours = { :night => (0 .. 4) , :day => (8..15)}
     def  output_plot_day_hour_data(objects,opt,key)
       line,timezone = KeyValues[key]
-      
+      first_day = objects.first.date
 logger.debug("OUTPUT_PLOT_DAY_HOUR_DATA : opt = #{opt.to_a.flatten.join(', ')}")
       path = RAILS_ROOT+"/tmp/graph/data/graphdata_#{line}#{timezone}"
       objes = objects.select{ |pw| pw.line == line}
@@ -83,21 +83,22 @@ logger.debug("OUTPUT_PLOT_DAY_HOUR_DATA : opt = #{opt.to_a.flatten.join(', ')}")
         if line
           objes.each{ |pw|
             Hours[timezone].each{ |h|
-              f.printf "%.2f %f\n",pw.date.yday+ h/24.0 , pw.send(opt["method"])[h]
+              f.printf "%.2f %f\n",(pw.date - first_day) + first_day.yday+ h/24.0 , pw.send(opt["method"])[h]
             }
           }
         elsif timezone == :temp
           days = objects.map{ |pw| pw.date}
           objects.each{ |pw| 
             [9].each{ |h| 
-              f.puts "#{pw.date.yday+h/24.0} #{pw.temps[h]}"
+              f.puts "#{(pw.date - first_day) + first_day.yday+ h/24.0} #{pw.temps[h]} #{pw.temps.max} #{pw.temps.min}"
             }
           }
         else
           days = objects.map{ |pw| pw.date}
           min,max = [days.min,days.max]
+          range,fmt = min.year == max.year ? [[1,11,21],'%m/%d'] : [[1],'%Y/%m/%d']
           (min..max).each{ |day| 
-            f.puts( [1,11,21].include?(day.day) ? "#{day.strftime('%m/%d')} 0" : ". 0")
+            f.puts( range.include?(day.day) ? "#{day.strftime(fmt)} 0" : ". 0")
             (2..24).each{  f.puts ". 0"}
           }
         end
@@ -109,20 +110,24 @@ logger.debug("OUTPUT_PLOT_DAY_HOUR_DATA : opt = #{opt.to_a.flatten.join(', ')}")
       opt.merge!( :point_size => 0.7,:point_type => [7,7,7,7,5,5,6,6,6,6])
       deffile = ( opt[:def_dir] || RAILS_ROOT+"/tmp/graph")+"/"+(opt[:def_file] || "graph.def" )
       graph_dir,graph_file,title,set_key,xrange,tics = dif_opts(opt)
+          range,fmt = opt[:min].year == opt[:max].year ? [[1,11,21],'%m/%d'] : [[1],'%Y/%m/%d']
       open(deffile,"w"){ |f|
         preunble = DefByDayHour%[graph_dir,graph_file,title,set_key,"[100:800]",xrange,tics ]
         f.puts preunble
         f.puts( "set x2tics ("+
                (opt[:min] .. opt[:max]).map{ |day|
-                 next unless [1,11,21].include?(day.day)
-                  day.yday
+                 next unless range.include?(day.day)
+                  ( day - opt[:min] )+opt[:min].yday
                }.compact.join(" , ") + ")"
                 )
         [:xlabel,:ylabel,:x2label,:y2label].each{ |sym|
           f.puts "set "+opt[sym] if opt[sym]
         }
         f.print plot_list("'%s' using %d:%d",path[0,4],opt)
-        f.puts " ,\\\n '#{path[-2]}' using 1:2 with lines axis x2y2 ,\\"
+        f.puts( " ,\\\n '#{path[-2]}' using 1:2 with lines axis x2y2 ,\\\n" 
+                #" '' using 1:3 with lines axis x2y2 lc rgb 'red'  title '最高温度', \\\n" +
+               # " '' using 1:4 with lines axis x2y2 title '最低温度', \\\n" 
+                )
         f.puts " '#{path.last}' using 2:xtic(1) notitle "
       }
       deffile
@@ -141,7 +146,7 @@ set title "%s"
 %s #  ,set_key
 set yrange %s #[0:1000]
 #set xrange %s #  [1:24]
-set y2range [5:40]
+set y2range [0:35]
 %s # tics
 set y2tics
 set grid x2tics ytics
