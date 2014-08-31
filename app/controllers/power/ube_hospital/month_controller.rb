@@ -17,7 +17,7 @@ class Power::UbeHospital::MonthController  <   Power::MonthController
                      :option => "vaper-power" }.merge(POPUP))
     @action_buttoms = 
       #[
-       [ 4,
+       [ 5,
          [
           [:popup,:graph_all_month,"全年度グラフ",{ :option => :power} ],
           [:popup,:graph_all_month,"24年度グラフ",{ :option => :power,:year => 2012} ],
@@ -52,14 +52,23 @@ class Power::UbeHospital::MonthController  <   Power::MonthController
           [:popup,:graph_all_month,"日中平均温度補償電力 年間",{ :option => "hour10","method" => :ave_daytime} ],
           [:popup,:graph_all_month,"10時の温度補償電力 年間",{ :option => "hour10"} ],
           [:popup,:graph_all_month,"10時の電力 年間",{ :option => "hour10","method" => :powers} ],
-          [:popup,:graph_all_month,"25年度4月～7月の補正電力" ,
-           { :option => "by_days_hour",:select => "pw.date.month >=4 && pw.date.month <= 7",:year => 2013} ],
-          [:popup,:graph_all_month,"26年度4月～7月の補正電力" ,
-           { :option => "by_days_hour",:select => "pw.date.month >=4 && pw.date.month <= 7",:year => 2014} ],
-          [:popup,:graph_all_month,"25年度4月～7月の未補正電力" ,
-           { :option => "by_days_hour",:select => "pw.date.month >=4 && pw.date.month <= 7",:method => :powers, :year => 2013} ],
-          [:popup,:graph_all_month,"26年度4月～7月の未補正電力" ,
-           { :option => "by_days_hour",:select => "pw.date.month >=4 && pw.date.month <= 7",:method => :powers, :year => 2014} ],
+          [:popup,:graph_all_month,"25年度1月～5月の補正電力" ,
+           { :option => "by_days_hour",:select => "pw.date.month >=1 && pw.date.month <=12",:year => 2013} ],
+          [:popup,:graph_all_month,"26年度1月～5月の補正電力" ,
+           { :option => "by_days_hour",:select => "pw.date.month >=1 && pw.date.month <=12",:year => 2014} ],
+          [:popup,:graph_all_month,"25年度4月～8月の補正電力" ,
+           { :option => "by_days_hour",:select => "pw.date.month >=4 && pw.date.month <= 8",:year => 2013} ],
+          [:popup,:graph_all_month,"26年度4月～8月の補正電力" ,
+           { :option => "by_days_hour",:select => "pw.date.month >=4 && pw.date.month <= 8",:year => 2014} ],
+          [:popup,:graph_all_month,"25年度4月～8月の未補正電力" ,
+           { :option => "by_days_hour",:select => "pw.date.month >=4 && pw.date.month <= 8",:method => :powers, :year => 2013} ],
+          [:popup,:graph_all_month,"26年度4月～8月の未補正電力" ,
+           { :option => "by_days_hour",:select => "pw.date.month >=4 && pw.date.month <= 8",:method => :powers, :year => 2014} ],
+          [:popup,:graph_all_month,"24年度8月～12月の補正電力" ,
+           { :option => "by_days_hour",:select => "pw.date.month >=8 && pw.date.month <= 12",:year => 2012} ],
+          [:popup,:graph_all_month,"25年度8月～12月の補正電力" ,
+           { :option => "by_days_hour",:select => "pw.date.month >=8 && pw.date.month <= 12",:year => 2013} ],
+          [:popup,:graph_all_month,"24年8月～26年8月補正電力" ,   { :option => "by_days_hour" ,} ],
          ].re_order_by_line(8)
       ]
     [

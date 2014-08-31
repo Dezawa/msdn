@@ -107,7 +107,7 @@ logger.debug("OUTPUT_PLOT_DAY_HOUR_DATA : opt = #{opt.to_a.flatten.join(', ')}")
     end
 
     def  def_file_by_days_hour(path,opt={ })
-      opt.merge!( :point_size => 0.7,:point_type => [7,7,7,7,5,5,6,6,6,6])
+      opt.merge!( :point_size => 0.5,:point_type => [7,7,7,7,5,5,6,6,6,6])
       deffile = ( opt[:def_dir] || RAILS_ROOT+"/tmp/graph")+"/"+(opt[:def_file] || "graph.def" )
       graph_dir,graph_file,title,set_key,xrange,tics = dif_opts(opt)
           range,fmt = opt[:min].year == opt[:max].year ? [[1,11,21],'%m/%d'] : [[1],'%Y/%m/%d']
