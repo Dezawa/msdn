@@ -38,3 +38,19 @@ gem 'spring',        group: :development
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
+#########################
+gem 'devise'
+
+gem "will_paginate"
+
+gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
+# gem 'database_cleaner'
+# group :development, :test do
+#   gem "rspec" 
+#   gem 'rspec-rails'
+#   gem 'guard-rspec'
+#   gem 'factory_girl_rails'
+#   gem 'poltergeist'   # needs sudo apt-get install phantomjs 
+#   gem 'turnip'
+#   # gem 'spring' # これを新しく追加 
+# end
