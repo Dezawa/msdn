@@ -1,44 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title><%= @title %></title>
-  <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
-  <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+  <title>Msdnrails41</title>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
 </head>
 <body>
-<BODY bgcolor="#Ffd0d0">
-<%-   names_free     = [["MSDN Top","/"],["線形計画法","/lips"],["複式簿記","/book/keeping"]]
-     names_login    = [["ログイン","/users/sign_in",{:id => "Sign in"}]]
-     names_logout = [["ログアウト","/users/sign_out",{:method => "DELETE",:id => "Log out"}]]
-     names_loggedin   = [["パスワード変更","/change_password"]]
-      begin ;@login = current_user;rescue ;@login=nil;end
-urls  = %w(/lips/free /lips/member /users/sign_in /logout /change_password)
-      names = %w(線形計画法(無償版) 線形計画法(会員版) ログイン ログアウト パスワード変更).zip(urls)
 
-      if @login 
-        if @login.username != "guest"
-          if option=@login.user_options.sort_by{|o| o.order
-            }.select{|opt| opt.order>0}.map{|opt| [opt.label,opt.url]}
-            names = names_free + option + names_loggedin + names_logout 
-          end
-        else
-          names =  names_free +  names_logout
-        end
-      else
-        names =  names_free +  names_login
-      end
-      
--%>
-<table id="menuline" border=0 bordercolor="#FFFFFF" width="100%" bgcolor="#e0d0Ff"><tr><td>
-<table border=1 cellspacing=0 id="menu"><tr>
-   <%- names.each{|name,url,option| option ||= {} -%>
-   <td width="90" align="center" ><font size=1><%= link_to_unless_current(name,url,{:id => url}.merge(option)) -%></td>
-   <%- } -%>
-<%= links_table  @Links %>
-</table></td></tr></table>　<br>
-  <%- unless notice ; -%>    <p class="notice"><%= notice -%></p> <%- end -%>
-  <%- unless alert  ; -%>    <p class="alert"><%= alert %></p> <%- end -%>
 <%= yield %>
 
 </body>

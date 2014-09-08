@@ -12,25 +12,5 @@
 /db/*.sqlite3-journal
 
 # Ignore all logfiles and tempfiles.
-/log
-
-Public/restart.txt
-Test/csv/
-Tmp/cache/
-Tmp/hospital/
-Tmp/pids/
-Tmp/tags
-Tmp/ubr/
-
-*.old
-*~
-\#*\#
-\#*
-
-Gemfile.lock
-tmp/cache
-tmp/pids
-public/lips/tmp/*csv
-tmp
-vendor
-.#*
+/log/*.log
+/tmp
