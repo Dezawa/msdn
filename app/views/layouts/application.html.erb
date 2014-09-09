@@ -9,9 +9,9 @@
 <% if /msdn.+/ =~ File.basename(Rails.root) %><BODY bgcolor="#Ffd0d0">
 <% else; %> <BODY> <% end %>
 <%   names_free     = [["MSDN Top","/"],["線形計画法","/lips/member"],["複式簿記","/book/keeping"]]
-     names_login    = [["ログイン","/login"]]
+     names_login    = [["ログイン","/users/sign_in"]]
      names_loggedin = []
-     names_logout   = [["ログアウト","/logout"],["パスワード変更","/change_password"]]
+     names_logout   = [["ログアウト","/users/sign_out"],["パスワード変更","/change_password"]]
       begin ;@login = current_user;rescue ;@login=nil;end
 urls  = %w(/lips/free /lips/member /login /logout /change_password)
       names = %w(線形計画法(無償版) 線形計画法(会員版) ログイン ログアウト パスワード変更).zip(urls)
