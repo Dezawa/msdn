@@ -15,7 +15,8 @@ class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable
+         :recoverable, :rememberable, :trackable, :validatable, 
+         :encryptable, :encryptor => :restful_authentication_sha1 
 
   has_and_belongs_to_many :user_options
 
@@ -52,13 +53,15 @@ class User < ActiveRecord::Base
     encrypted_password.blank? || !password.blank?
   end
 
-  def self.authenticate(login, password)
+  def self.ddauthenticate(login, password)
     return nil if login.blank? || password.blank?
     u = find_by(login: login.downcase) # need to get the salt
     u && u.authenticated?(password) ? u : nil
   end
 
   def login ; username ;end
+  def encrypted_password ;  crypted_password ;end
+  def password_salt      ;  salt ;end
 
   def login=(value)
     write_attribute :username, (value ? value.downcase : nil)

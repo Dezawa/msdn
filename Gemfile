@@ -44,6 +44,7 @@ gem 'spring',        group: :development
 
 #########################
 gem 'devise'
+gem 'devise-encryptable'
 
 gem "will_paginate"
 
