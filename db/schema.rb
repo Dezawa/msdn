@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140118140211) do
+ActiveRecord::Schema.define(version: 20140909104403) do
 
   create_table "book_kamokus", force: true do |t|
     t.text    "kamoku"
@@ -41,10 +41,78 @@ ActiveRecord::Schema.define(version: 20140118140211) do
     t.integer  "user_id"
   end
 
+  create_table "bushos", force: true do |t|
+    t.string "name"
+  end
+
+  create_table "delayed_jobs", force: true do |t|
+    t.integer  "priority",   default: 0
+    t.integer  "attempts",   default: 0
+    t.text     "handler"
+    t.text     "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string   "locked_by"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+
+  create_table "forecasts", force: true do |t|
+    t.string   "location"
+    t.date     "date"
+    t.date     "month"
+    t.date     "announce_day"
+    t.datetime "announce"
+    t.float    "temp03",       limit: 24
+    t.float    "temp06",       limit: 24
+    t.float    "temp09",       limit: 24
+    t.float    "temp12",       limit: 24
+    t.float    "temp15",       limit: 24
+    t.float    "temp18",       limit: 24
+    t.float    "temp21",       limit: 24
+    t.float    "temp24",       limit: 24
+    t.float    "humi03",       limit: 24
+    t.float    "humi06",       limit: 24
+    t.float    "humi09",       limit: 24
+    t.float    "humi12",       limit: 24
+    t.float    "humi15",       limit: 24
+    t.float    "humi18",       limit: 24
+    t.float    "humi21",       limit: 24
+    t.float    "humi24",       limit: 24
+    t.string   "weather03"
+    t.string   "weather06"
+    t.string   "weather09"
+    t.string   "weather12"
+    t.string   "weather15"
+    t.string   "weather18"
+    t.string   "weather21"
+    t.string   "weather24"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.float    "vaper03",      limit: 24
+    t.float    "vaper06",      limit: 24
+    t.float    "vaper09",      limit: 24
+    t.float    "vaper12",      limit: 24
+    t.float    "vaper15",      limit: 24
+    t.float    "vaper18",      limit: 24
+    t.float    "vaper21",      limit: 24
+    t.float    "vaper24",      limit: 24
+  end
+
   create_table "holydays", force: true do |t|
     t.integer "year"
     t.date    "day"
     t.string  "name"
+  end
+
+  create_table "hospital_avoid_combinations", force: true do |t|
+    t.integer "busho_id"
+    t.integer "nurce1_id"
+    t.integer "nurce2_id"
+    t.integer "weight"
   end
 
   create_table "hospital_bushos", force: true do |t|
@@ -62,25 +130,25 @@ ActiveRecord::Schema.define(version: 20140118140211) do
     t.string  "code"
     t.integer "kinmukubun_id"
     t.integer "with_mousiokuri"
-    t.float   "main_daytime"
-    t.float   "main_nignt"
-    t.float   "sub_daytime"
-    t.float   "sub_night"
+    t.float   "main_daytime",    limit: 24
+    t.float   "main_nignt",      limit: 24
+    t.float   "sub_daytime",     limit: 24
+    t.float   "sub_night",       limit: 24
     t.string  "name"
     t.string  "color"
     t.string  "start"
     t.string  "finish"
-    t.float   "main_next"
-    t.float   "sub_next"
-    t.float   "am",              default: 0.0
-    t.float   "night",           default: 0.0
-    t.float   "midnight",        default: 0.0
-    t.float   "am2",             default: 0.0
-    t.float   "night2",          default: 0.0
-    t.float   "midnight2",       default: 0.0
-    t.float   "nenkyuu",         default: 0.0
-    t.float   "pm",              default: 0.0
-    t.float   "pm2",             default: 0.0
+    t.float   "main_next",       limit: 24
+    t.float   "sub_next",        limit: 24
+    t.float   "am",              limit: 24, default: 0.0
+    t.float   "night",           limit: 24, default: 0.0
+    t.float   "midnight",        limit: 24, default: 0.0
+    t.float   "am2",             limit: 24, default: 0.0
+    t.float   "night2",          limit: 24, default: 0.0
+    t.float   "midnight2",       limit: 24, default: 0.0
+    t.float   "nenkyuu",         limit: 24, default: 0.0
+    t.float   "pm",              limit: 24, default: 0.0
+    t.float   "pm2",             limit: 24, default: 0.0
   end
 
   create_table "hospital_limits", force: true do |t|
@@ -90,6 +158,8 @@ ActiveRecord::Schema.define(version: 20140118140211) do
     t.integer "code3"
     t.integer "coden"
     t.integer "busho_id"
+    t.integer "kinmu_total"
+    t.integer "night_total"
     t.integer "nurce_id"
   end
 
@@ -99,8 +169,8 @@ ActiveRecord::Schema.define(version: 20140118140211) do
     t.integer  "number"
     t.string   "name"
     t.datetime "start"
-    t.float    "length"
-    t.boolean  "kaigi",    default: true
+    t.float    "length",   limit: 24
+    t.boolean  "kaigi",               default: true
   end
 
   create_table "hospital_monthlies", force: true do |t|
@@ -165,8 +235,12 @@ ActiveRecord::Schema.define(version: 20140118140211) do
   end
 
   create_table "hospital_roles", force: true do |t|
-    t.string "name"
-    t.string "comment"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "name"
+    t.string   "comment"
+    t.integer  "bunrui"
+    t.boolean  "need"
   end
 
   create_table "hospital_wants", force: true do |t|
@@ -175,9 +249,135 @@ ActiveRecord::Schema.define(version: 20140118140211) do
     t.integer "maximum"
   end
 
+  create_table "labels", force: true do |t|
+    t.string "system"
+    t.string "labelid"
+    t.string "label"
+    t.text   "labeloption"
+  end
+
+  create_table "nurces", force: true do |t|
+    t.string  "name"
+    t.integer "number"
+    t.integer "busho_id"
+    t.integer "pre_busho_id"
+    t.integer "pre_shokui_id"
+    t.integer "pre_shokushu_id"
+    t.integer "pre_kinmukubun_id"
+    t.date    "assign_date"
+    t.integer "idou"
+    t.integer "limit_id"
+  end
+
   create_table "nurces_roles", id: false, force: true do |t|
     t.integer "nurce_id"
     t.integer "role_id"
+  end
+
+  create_table "power_ube_hospital_months", force: true do |t|
+    t.date "month"
+  end
+
+  create_table "power_ube_hospital_powers", force: true do |t|
+    t.date    "date"
+    t.integer "month_id"
+    t.integer "weather_id"
+    t.float   "power01",    limit: 24
+    t.float   "power02",    limit: 24
+    t.float   "power03",    limit: 24
+    t.float   "power04",    limit: 24
+    t.float   "power05",    limit: 24
+    t.float   "power06",    limit: 24
+    t.float   "power07",    limit: 24
+    t.float   "power08",    limit: 24
+    t.float   "power09",    limit: 24
+    t.float   "power10",    limit: 24
+    t.float   "power11",    limit: 24
+    t.float   "power12",    limit: 24
+    t.float   "power13",    limit: 24
+    t.float   "power14",    limit: 24
+    t.float   "power15",    limit: 24
+    t.float   "power16",    limit: 24
+    t.float   "power17",    limit: 24
+    t.float   "power18",    limit: 24
+    t.float   "power19",    limit: 24
+    t.float   "power20",    limit: 24
+    t.float   "power21",    limit: 24
+    t.float   "power22",    limit: 24
+    t.float   "power23",    limit: 24
+    t.float   "power24",    limit: 24
+    t.float   "rev01",      limit: 24
+    t.float   "rev02",      limit: 24
+    t.float   "rev03",      limit: 24
+    t.float   "rev04",      limit: 24
+    t.float   "rev05",      limit: 24
+    t.float   "rev06",      limit: 24
+    t.float   "rev07",      limit: 24
+    t.float   "rev08",      limit: 24
+    t.float   "rev09",      limit: 24
+    t.float   "rev10",      limit: 24
+    t.float   "rev11",      limit: 24
+    t.float   "rev12",      limit: 24
+    t.float   "rev13",      limit: 24
+    t.float   "rev14",      limit: 24
+    t.float   "rev15",      limit: 24
+    t.float   "rev16",      limit: 24
+    t.float   "rev17",      limit: 24
+    t.float   "rev18",      limit: 24
+    t.float   "rev19",      limit: 24
+    t.float   "rev20",      limit: 24
+    t.float   "rev21",      limit: 24
+    t.float   "rev22",      limit: 24
+    t.float   "rev23",      limit: 24
+    t.float   "rev24",      limit: 24
+    t.float   "ave01",      limit: 24
+    t.float   "ave02",      limit: 24
+    t.float   "ave03",      limit: 24
+    t.float   "ave04",      limit: 24
+    t.float   "ave05",      limit: 24
+    t.float   "ave06",      limit: 24
+    t.float   "ave07",      limit: 24
+    t.float   "ave08",      limit: 24
+    t.float   "ave09",      limit: 24
+    t.float   "ave10",      limit: 24
+    t.float   "ave11",      limit: 24
+    t.float   "ave12",      limit: 24
+    t.float   "ave13",      limit: 24
+    t.float   "ave14",      limit: 24
+    t.float   "ave15",      limit: 24
+    t.float   "ave16",      limit: 24
+    t.float   "ave17",      limit: 24
+    t.float   "ave18",      limit: 24
+    t.float   "ave19",      limit: 24
+    t.float   "ave20",      limit: 24
+    t.float   "ave21",      limit: 24
+    t.float   "ave22",      limit: 24
+    t.float   "ave23",      limit: 24
+    t.float   "ave24",      limit: 24
+    t.float   "by_vaper01", limit: 24
+    t.float   "by_vaper02", limit: 24
+    t.float   "by_vaper03", limit: 24
+    t.float   "by_vaper04", limit: 24
+    t.float   "by_vaper05", limit: 24
+    t.float   "by_vaper06", limit: 24
+    t.float   "by_vaper07", limit: 24
+    t.float   "by_vaper08", limit: 24
+    t.float   "by_vaper09", limit: 24
+    t.float   "by_vaper10", limit: 24
+    t.float   "by_vaper11", limit: 24
+    t.float   "by_vaper12", limit: 24
+    t.float   "by_vaper13", limit: 24
+    t.float   "by_vaper14", limit: 24
+    t.float   "by_vaper15", limit: 24
+    t.float   "by_vaper16", limit: 24
+    t.float   "by_vaper17", limit: 24
+    t.float   "by_vaper18", limit: 24
+    t.float   "by_vaper19", limit: 24
+    t.float   "by_vaper20", limit: 24
+    t.float   "by_vaper21", limit: 24
+    t.float   "by_vaper22", limit: 24
+    t.float   "by_vaper23", limit: 24
+    t.float   "by_vaper24", limit: 24
   end
 
   create_table "sessions", force: true do |t|
@@ -189,6 +389,163 @@ ActiveRecord::Schema.define(version: 20140118140211) do
 
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true, using: :btree
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
+
+  create_table "shimada_factories", force: true do |t|
+    t.string "name"
+    t.string "weather_location"
+    t.string "forecast_location"
+  end
+
+  create_table "shimada_months", force: true do |t|
+    t.date    "month"
+    t.integer "shimada_factory_id"
+  end
+
+  create_table "shimada_powers", force: true do |t|
+    t.date    "date"
+    t.integer "month_id"
+    t.float   "hour01",             limit: 24
+    t.float   "hour02",             limit: 24
+    t.float   "hour03",             limit: 24
+    t.float   "hour04",             limit: 24
+    t.float   "hour05",             limit: 24
+    t.float   "hour06",             limit: 24
+    t.float   "hour07",             limit: 24
+    t.float   "hour08",             limit: 24
+    t.float   "hour09",             limit: 24
+    t.float   "hour10",             limit: 24
+    t.float   "hour11",             limit: 24
+    t.float   "hour12",             limit: 24
+    t.float   "hour13",             limit: 24
+    t.float   "hour14",             limit: 24
+    t.float   "hour15",             limit: 24
+    t.float   "hour16",             limit: 24
+    t.float   "hour17",             limit: 24
+    t.float   "hour18",             limit: 24
+    t.float   "hour19",             limit: 24
+    t.float   "hour20",             limit: 24
+    t.float   "hour21",             limit: 24
+    t.float   "hour22",             limit: 24
+    t.float   "hour23",             limit: 24
+    t.float   "hour24",             limit: 24
+    t.integer "weather_id"
+    t.float   "rev01",              limit: 24
+    t.float   "rev02",              limit: 24
+    t.float   "rev03",              limit: 24
+    t.float   "rev04",              limit: 24
+    t.float   "rev05",              limit: 24
+    t.float   "rev06",              limit: 24
+    t.float   "rev07",              limit: 24
+    t.float   "rev08",              limit: 24
+    t.float   "rev09",              limit: 24
+    t.float   "rev10",              limit: 24
+    t.float   "rev11",              limit: 24
+    t.float   "rev12",              limit: 24
+    t.float   "rev13",              limit: 24
+    t.float   "rev14",              limit: 24
+    t.float   "rev15",              limit: 24
+    t.float   "rev16",              limit: 24
+    t.float   "rev17",              limit: 24
+    t.float   "rev18",              limit: 24
+    t.float   "rev19",              limit: 24
+    t.float   "rev20",              limit: 24
+    t.float   "rev21",              limit: 24
+    t.float   "rev22",              limit: 24
+    t.float   "rev23",              limit: 24
+    t.float   "rev24",              limit: 24
+    t.float   "ave01",              limit: 24
+    t.float   "ave02",              limit: 24
+    t.float   "ave03",              limit: 24
+    t.float   "ave04",              limit: 24
+    t.float   "ave05",              limit: 24
+    t.float   "ave06",              limit: 24
+    t.float   "ave07",              limit: 24
+    t.float   "ave08",              limit: 24
+    t.float   "ave09",              limit: 24
+    t.float   "ave10",              limit: 24
+    t.float   "ave11",              limit: 24
+    t.float   "ave12",              limit: 24
+    t.float   "ave13",              limit: 24
+    t.float   "ave14",              limit: 24
+    t.float   "ave15",              limit: 24
+    t.float   "ave16",              limit: 24
+    t.float   "ave17",              limit: 24
+    t.float   "ave18",              limit: 24
+    t.float   "ave19",              limit: 24
+    t.float   "ave20",              limit: 24
+    t.float   "ave21",              limit: 24
+    t.float   "ave22",              limit: 24
+    t.float   "ave23",              limit: 24
+    t.float   "ave24",              limit: 24
+    t.string  "shape"
+    t.float   "difference00",       limit: 24
+    t.float   "difference01",       limit: 24
+    t.float   "difference02",       limit: 24
+    t.float   "difference03",       limit: 24
+    t.float   "difference04",       limit: 24
+    t.float   "difference05",       limit: 24
+    t.float   "difference06",       limit: 24
+    t.float   "difference07",       limit: 24
+    t.float   "difference08",       limit: 24
+    t.float   "difference09",       limit: 24
+    t.float   "difference10",       limit: 24
+    t.float   "difference11",       limit: 24
+    t.float   "difference12",       limit: 24
+    t.float   "difference13",       limit: 24
+    t.float   "difference14",       limit: 24
+    t.float   "difference15",       limit: 24
+    t.float   "difference16",       limit: 24
+    t.float   "difference17",       limit: 24
+    t.float   "difference18",       limit: 24
+    t.float   "difference19",       limit: 24
+    t.float   "difference20",       limit: 24
+    t.float   "difference21",       limit: 24
+    t.float   "difference22",       limit: 24
+    t.float   "difference23",       limit: 24
+    t.float   "f4_na0",             limit: 24
+    t.float   "f4_na1",             limit: 24
+    t.float   "f4_na2",             limit: 24
+    t.float   "f4_na3",             limit: 24
+    t.float   "f4_na4",             limit: 24
+    t.float   "f3_x1",              limit: 24
+    t.float   "f3_x2",              limit: 24
+    t.float   "f3_x3",              limit: 24
+    t.float   "f2_x1",              limit: 24
+    t.float   "f2_x2",              limit: 24
+    t.integer "line"
+    t.string  "deform"
+    t.float   "hukurosu",           limit: 24
+    t.float   "by_vaper01",         limit: 24
+    t.float   "by_vaper02",         limit: 24
+    t.float   "by_vaper03",         limit: 24
+    t.float   "by_vaper04",         limit: 24
+    t.float   "by_vaper05",         limit: 24
+    t.float   "by_vaper06",         limit: 24
+    t.float   "by_vaper07",         limit: 24
+    t.float   "by_vaper08",         limit: 24
+    t.float   "by_vaper09",         limit: 24
+    t.float   "by_vaper10",         limit: 24
+    t.float   "by_vaper11",         limit: 24
+    t.float   "by_vaper12",         limit: 24
+    t.float   "by_vaper13",         limit: 24
+    t.float   "by_vaper14",         limit: 24
+    t.float   "by_vaper15",         limit: 24
+    t.float   "by_vaper16",         limit: 24
+    t.float   "by_vaper17",         limit: 24
+    t.float   "by_vaper18",         limit: 24
+    t.float   "by_vaper19",         limit: 24
+    t.float   "by_vaper20",         limit: 24
+    t.float   "by_vaper21",         limit: 24
+    t.float   "by_vaper22",         limit: 24
+    t.float   "by_vaper23",         limit: 24
+    t.float   "by_vaper24",         limit: 24
+    t.integer "shimada_factory_id"
+  end
+
+  create_table "top_pages", force: true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "ube_change_times", force: true do |t|
     t.text    "ope_name"
@@ -245,11 +602,11 @@ ActiveRecord::Schema.define(version: 20140118140211) do
 
   create_table "ube_operations", force: true do |t|
     t.text  "ope_name"
-    t.float "west"
-    t.float "east"
-    t.float "old"
-    t.float "new"
-    t.float "kakou"
+    t.float "west",     limit: 24
+    t.float "east",     limit: 24
+    t.float "old",      limit: 24
+    t.float "new",      limit: 24
+    t.float "kakou",    limit: 24
   end
 
   create_table "ube_plans", force: true do |t|
@@ -289,7 +646,7 @@ ActiveRecord::Schema.define(version: 20140118140211) do
     t.string  "shozo"
     t.string  "dryer"
     t.integer "lot_size"
-    t.float   "defect_rate"
+    t.float   "defect_rate",   limit: 24
     t.text    "ope_condition"
     t.text    "color"
     t.boolean "hozen"
@@ -358,12 +715,106 @@ ActiveRecord::Schema.define(version: 20140118140211) do
     t.date     "plan_from"
   end
 
+  create_table "ubr_pillars", force: true do |t|
+    t.string  "name"
+    t.integer "souko_floor_id"
+    t.integer "kazu_x"
+    t.integer "kazu_y"
+    t.float   "start_x",        limit: 24
+    t.float   "start_y",        limit: 24
+    t.float   "kankaku_x",      limit: 24
+    t.float   "kankaku_y",      limit: 24
+    t.float   "size_x",         limit: 24
+    t.float   "size_y",         limit: 24
+  end
+
+  create_table "ubr_souko_floor_souko_plans", force: true do |t|
+    t.integer "souko_floor_id"
+    t.integer "souko_plan_id"
+    t.float   "floor_offset_x", limit: 24
+    t.float   "floor_offset_y", limit: 24
+  end
+
+  create_table "ubr_souko_floor_waku_blocks", id: false, force: true do |t|
+    t.integer "souko_floor_id"
+    t.integer "waku_block_id"
+  end
+
+  create_table "ubr_souko_floors", force: true do |t|
+    t.text  "name"
+    t.float "outline_x0", limit: 24
+    t.float "outline_y0", limit: 24
+    t.float "outline_x1", limit: 24
+    t.float "outline_y1", limit: 24
+  end
+
+  create_table "ubr_souko_plans", force: true do |t|
+    t.text    "name"
+    t.text    "stat_name_list"
+    t.text    "stat_reg_list"
+    t.float   "offset_x",       limit: 24
+    t.float   "offset_y",       limit: 24
+    t.float   "stat_offset_x",  limit: 24
+    t.float   "stat_offset_y",  limit: 24
+    t.float   "stat_font",      limit: 24
+    t.float   "stat_point",     limit: 24
+    t.boolean "landscape"
+  end
+
+  create_table "ubr_waku_blocks", force: true do |t|
+    t.integer "souko_floor_id"
+    t.text    "souko"
+    t.text    "content"
+    t.text    "sufix"
+    t.text    "max"
+    t.float   "label_pos_x",    limit: 24
+    t.float   "label_pos_y",    limit: 24
+    t.float   "base_point_x",   limit: 24
+    t.float   "base_point_y",   limit: 24
+  end
+
+  create_table "ubr_wakus", force: true do |t|
+    t.text    "name"
+    t.text    "areaknb"
+    t.text    "direct_to"
+    t.text    "palette"
+    t.integer "volum"
+    t.integer "dan3"
+    t.integer "dan2"
+    t.integer "dan1"
+    t.integer "retusu"
+    t.float   "pos_x",     limit: 24
+    t.float   "pos_y",     limit: 24
+  end
+
+  create_table "ubr_walls", force: true do |t|
+    t.integer "souko_floor_id"
+    t.float   "name",           limit: 24
+    t.float   "x0",             limit: 24
+    t.float   "y0",             limit: 24
+    t.float   "dx1",            limit: 24
+    t.float   "dy1",            limit: 24
+    t.float   "dx2",            limit: 24
+    t.float   "dy2",            limit: 24
+    t.float   "dx3",            limit: 24
+    t.float   "dy3",            limit: 24
+    t.float   "dx4",            limit: 24
+    t.float   "dy4",            limit: 24
+  end
+
+  create_table "user_option_users", id: false, force: true do |t|
+    t.integer "user_id"
+    t.integer "user_option_id"
+  end
+
   create_table "user_options", force: true do |t|
-    t.text    "label"
-    t.text    "url"
-    t.integer "order"
-    t.text    "comment"
-    t.text    "authorized"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "label"
+    t.text     "url"
+    t.integer  "order"
+    t.text     "comment"
+    t.text     "authorized"
   end
 
   create_table "user_options_users", id: false, force: true do |t|
@@ -372,33 +823,123 @@ ActiveRecord::Schema.define(version: 20140118140211) do
   end
 
   create_table "users", force: true do |t|
-    t.string   "email",                              default: "",        null: false
-    t.string   "encrypted_password",                 default: "",        null: false
+    t.string   "username",                  limit: 40
+    t.string   "name",                      limit: 100, default: ""
+    t.string   "email",                     limit: 100
+    t.string   "crypted_password",          limit: 40
+    t.string   "salt",                      limit: 40
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "remember_token",            limit: 40
+    t.datetime "remember_token_expires_at"
+    t.boolean  "lipscsvio",                             default: false
+    t.boolean  "lipssizeoption",                        default: false
+    t.integer  "lipssizepro",                           default: 10
+    t.integer  "lipssizeope",                           default: 10
+    t.string   "lipslabelcode",                         default: "default"
+    t.string   "lipsoptlink"
+    t.string   "state",                                 default: "passive"
+    t.datetime "deleted_at"
+    t.string   "subdomain"
+    t.datetime "confirmed_at"
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                      default: 0,         null: false
+    t.integer  "sign_in_count",                         default: 0,         null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "username",               limit: 40
-    t.string   "name",                   limit: 100, default: ""
-    t.boolean  "lipscsvio",                          default: false
-    t.boolean  "lipssizeoption",                     default: false
-    t.integer  "lipssizepro",                        default: 10
-    t.integer  "lipssizeope",                        default: 10
-    t.string   "lipslabelcode",                      default: "default"
-    t.string   "lipsoptlink"
-    t.string   "state",                              default: "passive"
-    t.datetime "deleted_at"
-    t.string   "subdomain"
-    t.datetime "confirmed_at"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
+
+  create_table "weather_locations", force: true do |t|
+    t.string  "name"
+    t.string  "location"
+    t.string  "weather_block"
+    t.string  "forecast_code"
+    t.string  "excite_zip"
+    t.integer "weather_prec"
+  end
+
+  create_table "weathers", force: true do |t|
+    t.string "location"
+    t.date   "date"
+    t.float  "hour01",     limit: 24
+    t.float  "hour02",     limit: 24
+    t.float  "hour03",     limit: 24
+    t.float  "hour04",     limit: 24
+    t.float  "hour05",     limit: 24
+    t.float  "hour06",     limit: 24
+    t.float  "hour07",     limit: 24
+    t.float  "hour08",     limit: 24
+    t.float  "hour09",     limit: 24
+    t.float  "hour10",     limit: 24
+    t.float  "hour11",     limit: 24
+    t.float  "hour12",     limit: 24
+    t.float  "hour13",     limit: 24
+    t.float  "hour14",     limit: 24
+    t.float  "hour15",     limit: 24
+    t.float  "hour16",     limit: 24
+    t.float  "hour17",     limit: 24
+    t.float  "hour18",     limit: 24
+    t.float  "hour19",     limit: 24
+    t.float  "hour20",     limit: 24
+    t.float  "hour21",     limit: 24
+    t.float  "hour22",     limit: 24
+    t.float  "hour23",     limit: 24
+    t.float  "hour24",     limit: 24
+    t.date   "month"
+    t.float  "vaper01",    limit: 24
+    t.float  "vaper02",    limit: 24
+    t.float  "vaper03",    limit: 24
+    t.float  "vaper04",    limit: 24
+    t.float  "vaper05",    limit: 24
+    t.float  "vaper06",    limit: 24
+    t.float  "vaper07",    limit: 24
+    t.float  "vaper08",    limit: 24
+    t.float  "vaper09",    limit: 24
+    t.float  "vaper10",    limit: 24
+    t.float  "vaper11",    limit: 24
+    t.float  "vaper12",    limit: 24
+    t.float  "vaper13",    limit: 24
+    t.float  "vaper14",    limit: 24
+    t.float  "vaper15",    limit: 24
+    t.float  "vaper16",    limit: 24
+    t.float  "vaper17",    limit: 24
+    t.float  "vaper18",    limit: 24
+    t.float  "vaper19",    limit: 24
+    t.float  "vaper20",    limit: 24
+    t.float  "vaper21",    limit: 24
+    t.float  "vaper22",    limit: 24
+    t.float  "vaper23",    limit: 24
+    t.float  "vaper24",    limit: 24
+    t.float  "humidity01", limit: 24
+    t.float  "humidity02", limit: 24
+    t.float  "humidity03", limit: 24
+    t.float  "humidity04", limit: 24
+    t.float  "humidity05", limit: 24
+    t.float  "humidity06", limit: 24
+    t.float  "humidity07", limit: 24
+    t.float  "humidity08", limit: 24
+    t.float  "humidity09", limit: 24
+    t.float  "humidity10", limit: 24
+    t.float  "humidity11", limit: 24
+    t.float  "humidity12", limit: 24
+    t.float  "humidity13", limit: 24
+    t.float  "humidity14", limit: 24
+    t.float  "humidity15", limit: 24
+    t.float  "humidity16", limit: 24
+    t.float  "humidity17", limit: 24
+    t.float  "humidity18", limit: 24
+    t.float  "humidity19", limit: 24
+    t.float  "humidity20", limit: 24
+    t.float  "humidity21", limit: 24
+    t.float  "humidity22", limit: 24
+    t.float  "humidity23", limit: 24
+    t.float  "humidity24", limit: 24
+  end
 
 end
