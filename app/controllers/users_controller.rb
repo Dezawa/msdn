@@ -64,7 +64,7 @@ class UsersController < CommonController
   end
 
   def show
-    @user = User.find(params[:id],:include=> :user_options)
+    @user = User.find(params[:id]) #,:include=> :user_options)
     @arrowed_options = @user.user_options.map(&:id)
   end
   def edit
