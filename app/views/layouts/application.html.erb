@@ -6,7 +6,8 @@
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
 </head>
-<BODY bgcolor="#Ffd0d0">
+<% if /msdn.+/ =~ File.basename(Rails.root) %><BODY bgcolor="#Ffd0d0">
+<% else; %> <BODY> <% end %>
 <%   names_free     = [["MSDN Top","/"],["線形計画法","/lips/member"],["複式簿記","/book/keeping"]]
      names_login    = [["ログイン","/login"]]
      names_loggedin = []
