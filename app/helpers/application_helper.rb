@@ -133,7 +133,7 @@ module ApplicationHelper
     when Integer ; action_buttom_table_sub(action_buttoms)
     when Array   ; action_buttoms.map{ |ab| action_buttom_table_sub(ab) }.join
     else         ; ""
-    end
+    end.html_safe
   end
   def action_buttom_table_sub(action_buttoms=nil)
     return "" unless action_buttoms && action_buttoms.size > 0 
