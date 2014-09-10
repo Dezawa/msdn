@@ -127,7 +127,7 @@ module Actions
     end
     if @model.save
       page =  if @Pagenation
-                (@Model.where(@FindOption||{}).count.to_f/@Pagenation).ceil
+                (@Model.where(@FindWhere).count.to_f/@Pagenation).ceil
               end
       @models = @Pagenation ? pagenate(page) : find(page)
       redirect_to :action => "index" ,:page => page
@@ -397,15 +397,15 @@ logger.debug("APPLICATION#GRAPH: params=#{params.to_a.flatten.join(',')}")
   end
 
   def lastpage
-    page = (@Model.where(@FindOption||{}).count.to_f/@Pagenation).ceil 
+    page = (@Model.where(@FindWhere).count.to_f/@Pagenation).ceil 
     page > 0 ? page : nil
   end
 
-  def find(page=1); @Model.where(@FindOption||{});end
+  def find(page=1); @Model.where(@FindWhere).order(@FindOrder);end
 
   def pagenate(page=1)
     page=1 unless page.to_i >0
-    @Model.where(@FindOption||{}).order(@FindOrder).
+    @Model.where(@FindWhere).order(@FindOrder).
       paginate( :page => page,:per_page => @Pagenation)
   end
   def attr_list(labels = nil)
