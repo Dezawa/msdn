@@ -170,7 +170,7 @@ end
   # 追加、編集ボタンの表示
   def add_edit_buttoms(dom,arg={ })
     buttoms =  edit_buttoms(dom,arg)
-    ("<table><tr><td>"+ buttoms + "</td></tr></table>")..html_safe
+    ("<table><tr><td>"+ buttoms + "</td></tr></table>").html_safe
   end
 
 
