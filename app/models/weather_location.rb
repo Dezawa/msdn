@@ -1,5 +1,5 @@
 class WeatherLocation < ActiveRecord::Base
-  extend Function::CsvIo
+  extend CsvIo
   def self.name_location
     all(:order =>"forecast_code").map{|wl| [wl.name,wl.location]}
   end

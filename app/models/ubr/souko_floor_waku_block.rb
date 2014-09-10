@@ -1,5 +1,5 @@
 class Ubr::SoukoFloorWakuBlock < ActiveRecord::Base
-  extend Function::CsvIo
+  extend CsvIo
   set_table_name :ubr_souko_floor_waku_blocks
   
     belongs_to :souko_floor,:class_name => "Ubr::SoukoFloor"

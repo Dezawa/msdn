@@ -5,7 +5,7 @@ module Ubr
   # どのページに表示するかは 結合Table SoukoFlooSouko_plan にて
   #  ページ上のoffsetと共に指定する。
   class SoukoFloor < ActiveRecord::Base
-    extend Function::CsvIo
+    extend CsvIo
     include Ubr::Const
     set_table_name :ubr_souko_floors
 

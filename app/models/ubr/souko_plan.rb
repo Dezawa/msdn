@@ -17,7 +17,7 @@ module Ubr
   #   このアプリで用いる長さの単位は、この二組以外はすべて 実寸での m(メートル）
   # このページに表示する倉庫群は 結合Table SoukoFloorSoukoPlan で定義する
   class SoukoPlan  < ActiveRecord::Base
-    extend Function::CsvIo
+    extend CsvIo
     set_table_name :ubr_souko_plans
 
     has_many :souko_floor_souko_plans,:class_name => "Ubr::SoukoFloorSoukoPlan",:dependent => :destroy

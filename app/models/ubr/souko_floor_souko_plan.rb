@@ -16,7 +16,7 @@ module Ubr
   #   floor_offset  : ofsetからの倉庫平面図の相対位置 単位 m。
   #   floor         : このページに出力する SoukoFloorの配列
   class SoukoFloorSoukoPlan  < ActiveRecord::Base
-    extend Function::CsvIo
+    extend CsvIo
     set_table_name :ubr_souko_floor_souko_plans
 
     belongs_to :souko_floor,:class_name => "Ubr::SoukoFloor"

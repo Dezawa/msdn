@@ -20,7 +20,7 @@ module Ubr
 
 
   class Pillar < ActiveRecord::Base
-    extend Function::CsvIo
+    extend CsvIo
     include Ubr::Const
     set_table_name :ubr_pillars
     belongs_to  :souko_floor,:class_name => "Ubr::SoukoFloor"
