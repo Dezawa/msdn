@@ -176,10 +176,11 @@ end
   end
   def add_buttom(dom,arg={ })
     option = { :action => (arg.delete(:add_action) || :add_on_table)}.merge(arg)
-    form_tag(option) + #:action => :add_on_table) + 
-      "<input type='hidden' name='page' value='#{@page}'>"+
+    (form_tag(option) + #:action => :add_on_table) + 
+      "<input type='hidden' name='page' value='#{@page}'>".html_safe+
       submit_tag("追加")+
-      text_field( dom, :add_no,:size=>2, :value => 1 ) +  "</form></td><td>"
+      text_field( dom, :add_no,:size=>2, :value => 1 ) +  "</form></td><td>".html_safe
+     )
   end
 
   def csv_up_buttom
@@ -640,9 +641,10 @@ end
     return "" if errors.size == 0
     fullmsg="<div  align=left id='errorExplanation'><table>" ; count =0
     errors.each{|attr,msg| 
-           #if attr.to_s == "base"
-              fullmsg += "<tr><td><font color=Red>　○#{msg}</td></tr>"; count += 1
-           #end
+      #if attr.to_s == "base"
+      fullmsg += "<tr><td><font color=Red>　○#{msg}</td></tr>".html_safe
+      count += 1
+      #end
     } 
     fullmsg+"</table></div>\n"
   end
@@ -655,7 +657,7 @@ end
       id=obj.id
       obj.errors.map{|er| "ID=#{id}:#{er[0]} #{er[1]}" }.compact.join("<br>\n")
     }.compact.join("<br>\n")
-    "<font color=Red>#{msg}</font>"
+    "<font color=Red>#{msg}</font>".html_safe
   end
 
   def t(sym,lang=nil)
