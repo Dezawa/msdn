@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 class Book::PermissionController < Book::Controller
-  #before_filter :login_required 
+  #before_filter :authenticate_user! 
   before_filter {|ctrl| ctrl.set_permit %w(複式簿記試用 複式簿記利用 複式簿記メンテ)}
   before_filter :set_instanse_variable
   before_filter :set_const

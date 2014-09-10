@@ -3,7 +3,7 @@ class LipsController < CommonController #ApplicationController
   include Actions
   include LipsHelper
   include CsvIo
-  #before_filter :login_required , :except => [:free,:calc,:error]
+  #before_filter :authenticate_user! , :except => [:free,:calc,:error]
   before_action :authenticate_user! ,except: [:msdn,:free,:calc]
   before_filter {|ctrl| ctrl.set_permit %w(LiPS会員 LiPS会員 LiPS会員)}
   before_filter(:only => [:csv_upload,:csv_download,:change_form]){|ctrl|

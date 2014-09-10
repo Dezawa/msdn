@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 class UserOptionsController < CommonController
- # before_filter :login_required 
+ # before_filter :authenticate_user! 
   before_action :authenticate_user! 
   before_filter {|ctrl| ctrl.require_permit_label "ユーザメンテ"}
   before_filter :set_instanse_variable

@@ -3,7 +3,7 @@
 class Ubeboard::TopController < CommonController #ApplicationController
   include Actions
   before_action :authenticate_user! 
-  #before_filter :login_required
+  #before_filter :authenticate_user!
   before_filter {|ctrl| ctrl.set_permit %w(生産計画利用 生産計画利用 生産計画メンテ)}
   before_filter {|ctrl| ctrl.require_permit}
   skip_before_filter :verify_authenticity_token

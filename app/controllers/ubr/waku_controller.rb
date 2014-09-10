@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class Ubr::WakuController <  Ubr::Controller
   include ExcelToCsv
-  before_filter :login_required 
+  before_filter :authenticate_user!  #:authenticate_user! 
 
 
    Labels = [HtmlText.new(:name,"枠名",:size =>7),

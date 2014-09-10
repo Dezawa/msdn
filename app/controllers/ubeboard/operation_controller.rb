@@ -2,7 +2,7 @@
 class Ubeboard::OperationController < CommonController #ApplicationController
   include Actions
   before_action :authenticate_user! 
-  #before_filter :login_required
+  #before_filter :authenticate_user!
   before_filter {|ctrl| ctrl.set_permit %w(生産計画利用 生産計画利用 生産計画メンテ)}
   before_filter {|ctrl| ctrl.require_permit}
   before_filter :set_instanse_variable

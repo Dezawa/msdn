@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class Ubr::PillarController <  Ubr::Controller
   include ExcelToCsv
-  before_filter :login_required 
+  before_filter :authenticate_user! 
 
    Labels = [HtmlText.new(:name,"柱群名",:size =>7),
              HtmlSelect.new(:souko_floor_id,"倉庫",:size=> 5,

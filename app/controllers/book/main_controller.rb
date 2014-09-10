@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class Book::MainController < Book::Controller
   #include BookPermit
-  #before_filter :login_required 
+  #before_filter :authenticate_user! 
   before_filter {|ctrl| ctrl.set_permit %w(複式簿記試用 複式簿記利用 複式簿記メンテ)}
   #before_filter {|ctrl| ctrl.require_permit "/msg_book_permit.html"}
   before_filter(:only => :csv_upload){|ctrl| ctrl.require_book_editor( "/msg_book_permit.html");false}

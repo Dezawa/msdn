@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class Ubr::SoukoFloorController <  Ubr::Controller
   include ExcelToCsv
-  before_filter :login_required 
+  before_filter :authenticate_user! 
 
 
    Labels = [HtmlText.new(:name,"倉庫名",:size =>7),

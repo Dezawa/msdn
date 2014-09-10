@@ -67,7 +67,7 @@ class  Power::MonthController < CommonController #ApplicationController
 
   def show_jpeg
     graph_file = (params[:graph_file].blank? ? "power" : params[:graph_file])
-    send_file RAILS_ROOT+"/tmp/graph/jpeg/#{graph_file}.jpeg", :type => 'image/gif', :disposition => 'inline'
+    send_file Rails.root+"tmp/graph/jpeg/#{graph_file}.jpeg", :type => 'image/gif', :disposition => 'inline'
   end
 
   def csv_upload
