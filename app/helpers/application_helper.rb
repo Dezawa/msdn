@@ -210,7 +210,7 @@ end
     when :select_and_action  ;
       logger.debug(":INPUT_AND_ACTION: opt.nil?#{opt.nil?} opt=#{opt}")
       select_and_action(action,label,opt)
-
+    when nil; ""
     else function.to_s
     end.html_safe
   end
@@ -239,6 +239,30 @@ end
     (html + "\n</form>").html_safe
   end
 
+#  <input name="commit" type="submit"  value="%s" style="margin-top: -12px; left;"
+  PopupHead =  %Q!<form action="/%s/%s">
+  <input name="authenticity_token" type="hidden" value="%s" />
+  <input name="commit" type="submit"  value="%s" style='margin-top: -12px; left;' 
+!
+  PopupWithOUTModel = %Q! onclick="window.open('/%s/%s', '%s', 'width=500,height=400 %s'); target='%s'">
+!
+  PopupWithModel = %Q!  onclick="window.open('/%s/%s?id=%d', '%s', 'width=500,height=400 %s'); target='%s'">
+  <input id="%s_id" name="%s[id]" type="hidden" value="%d" />
+!
+
+  def popupform_buttom(action,label,opt ={ },htmlopt={ })
+    win_name = opt.delete(:win_name) || "new_win"
+    scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
+    html = PopupHead%[@Domain,action,form_authenticity_token,label]
+    if @model
+      html += PopupWithModel%[@Domain,action,@model.id,win_name,scroll,win_name,@Domain,@Domain,@model.id] 
+    else
+      html += PopupWithOUTModel%[@Domain,action,win_name,scroll,win_name]
+    end
+    opt.each{ |k,v|  html += hidden_field(@Domain,k,:value => v) +"\n"  }
+    html + "\n</form>"
+  end
+
   def form_buttom(action,label,opt ={ },htmlopt={ })
     hidden = opt.delete(:hidden) if opt.class==Hash
     hidden_value = opt.delete(:hidden_value) if opt.class==Hash
@@ -252,6 +276,7 @@ end
        )+
       "<input type='hidden' name='page' value='#{@page}'>".html_safe+
       (opt.class==Symbol ? send(opt) : "") +
+
       (submit_tag(label)+from_notclose).html_safe
   end
 

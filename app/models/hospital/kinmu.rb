@@ -21,16 +21,39 @@ delegate :logger, :to=>"ActiveRecord::Base"
   end
 
   def kinmucode_code
-    kinmucode_id ? kinmucode.code : nil
+    Hospital::Kinmucode.id2code(kinmucode_id) #kinmucode.code : nil
+  end 
+
+  def shift1
+    kinmucode_id ? Hospital::Kinmucode.shift1(kinmucode_id%1000) : 0
+  end
+
+  def shift2
+    kinmucode_id ? Hospital::Kinmucode.shift2(kinmucode_id%1000) : 0
+  end
+
+  def shift3
+    kinmucode_id ? Hospital::Kinmucode.shift3(kinmucode_id%1000) : 0
+  end
+
+  def daytime
+    kinmucode_id ? Hospital::Kinmucode.daytime(kinmucode_id%1000) : 0
+  end
+
+  def night
+    kinmucode_id ? Hospital::Kinmucode.night(kinmucode_id%1000) : 0
+  end
+
+  def midnight
+    kinmucode_id ? Hospital::Kinmucode.midnight(kinmucode_id%1000) : 0
   end
 
   def kinmucode_id=(id)
-    #logger.debug("Kinmu#kinmucode_id id = #{id} ")
     if id && id%1000 > 0
       @kinmucode_id = id % 1000
       @want         = id / 1000
       @kinmucode    = Hospital::Kinmucode.k_code(id%1000)
-      @shift        = kinmucode.to_0123 
+      @shift        = @kinmucode.to_0123 
       @color = ["","bgcolor='orange'","bgcolor='red'"][ @want ]
     else
       @kinmucode_id = 

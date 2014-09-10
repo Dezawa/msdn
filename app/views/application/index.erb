@@ -1,6 +1,3 @@
-<%# if @Links %> <%#= links  @Links %>
-<%#　　ユーザ：%><%#= current_user.username %><hr>
-<%# end %>
 <h3><%= @TYTLE  %> 一覧 <%= @TYTLE_post %></h3>
 <%= flash[:message] %>
 <%= @errors.call if @errors -%>
@@ -9,8 +6,10 @@
  when String; @TableEdit 
  when Array ; action_buttoms @TableEdit 
  end %>
+<%= action_buttom_table %>
 <%= will_page = pagenation @models %>
-<table border=1 id="index_table"><%= @TableHeader ? send(@TableHeader) : label_line_option %>
+<%= select_box if @Select%>
+  <table border=1 id="IndexTable"><%= @TableHeader ? send(@TableHeader) : label_line_option %>
 <% @models.each do |obj|  -%>
   <tr id='<%= obj.id %>'><% @labels.each{|html_cell| 
         next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
@@ -28,5 +27,6 @@
 </table>
 <br />
 <%= send(@AfterIndex,:show) if @AfterIndex %>
+<%= @AfterIndexHtml %>
 <%= on_cell_edit() if @on_cell_edit%>
 <token name ='<%= form_authenticity_token %>'></token>

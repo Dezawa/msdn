@@ -72,7 +72,7 @@ class LotList
     @list[lot.id] 
   end
     
-  def list(without_pull=false,&block)
+  def list(without_pull=WithPull,&block)
     unless without_pull
       return @list unless block
       list_wp = {}
@@ -149,7 +149,7 @@ class LotList
     @list.select{|id,lot| lot.segments.size>1 }
   end
 
-  def has_mult_segments_for_same_waku(without_pull = false)
+  def has_mult_segments_for_same_waku(without_pull = WithPull)
     unless without_pull
       @list.select{|id,lot| 
         lot.segments.map{|seg| seg.waku}.uniq.size != lot.segments.size
@@ -188,7 +188,7 @@ class LotList
   def histgram(step_limit_unit_start,
                classify = :niugoki,niugoki = nil,block=nil,option = {} )
     opt = { 
-      :method => nil, :without_pull => false, :classfy => :niugoki
+      :method => nil, :without_pull => WithPull, :classfy => :niugoki
     }.merge(option)
     lot_list = case classify
                when :niugoki ;extract_lot_list_by_niugoki( niugoki,opt )
@@ -224,7 +224,7 @@ class LotList
   end
 
   def histgram_place(niugoki = nil,option = {})
-    opt = {:method => :weight, :without_pull => false }
+    opt = {:method => :weight, :without_pull => WithPull}
     opt.merge!(option)
     lot_list = extract_lot_list_by_niugoki( niugoki,opt )
     #lot_list = 

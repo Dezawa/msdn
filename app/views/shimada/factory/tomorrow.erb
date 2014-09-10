@@ -1,0 +1,12 @@
+<h3>電力消費量予測 <%= @date %></h3>
+
+<%= form_tag(:action => :update_tomorrow) %>
+<%= submit_tag ("稼働パターン") %> <%= text_field(:power,:line,:size => 3) %>
+</form>
+気候予報 <%= @forecast.announce.strftime("%Y/%m/%d %H:00予報") %>
+<table border=1><tr><td>時刻</td><%= [3,6,9,12,15,18,21,24].map{|h| "<td>#{h}</td>"} %></tr>
+<tr><td>気温</td><%= @temp.map{|t| "<td>%.1f</td>"%t} %></tr>
+<tr><td>湿度</td><%= @humi.map{|t| "<td>%d</td>"%t} %></tr>
+<tr><td>蒸気圧</td><%=@forecast.vaper.map{|t| "<td>%.1f</td>"%t} %></tr>
+</table>
+<img src='/shimada/factory/show_gif?graph_file=tomorrow'>

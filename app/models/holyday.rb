@@ -6,7 +6,8 @@ class Holyday < ActiveRecord::Base
     @holydays ||= Holyday.all.map(&:day)
   end
   def self.holyday?(day)
-    holydays.include?(day)
+#pp [day,holydays[0]]
+    holydays.include?(day.to_date)
   end
 
   def self.create_newyear(arg_year)

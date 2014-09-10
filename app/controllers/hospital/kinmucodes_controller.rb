@@ -4,7 +4,7 @@ class Hospital::KinmucodesController < Hospital::Controller
 
   Labels= [HtmlText.new(:id,"ID",:ro => true),
            HtmlSelect.new(:kinmukubun_id ,"勤務"      ,
-                          :correction =>  Hospital::Const::Kinmukubun),
+                          :correction =>  Hospital::Role.kinmukubun),
            HtmlText.new(:code            ,"Code"      ,:size =>3),
            HtmlText.new(:name            ,"名称"                 ),
 #           HtmlText.new(:shift           ,"シフト"        ,:size =>3),

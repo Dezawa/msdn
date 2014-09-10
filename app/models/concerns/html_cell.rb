@@ -19,7 +19,7 @@ class HtmlCell
   include ActionView::Helpers::FormOptionsHelper
   delegate :logger, :to=>"ActiveRecord::Base"
   Attr_names = [:type,:correction,:display,:size,:align,:comment,:help,
-                :tform,:include_blank,:link,:event]
+                :tform,:include_blank,:link,:event,:link_label]
   attr_writer :field_disable,:ro
   attr_accessor :symbol,:label
   attr_accessor *Attr_names
@@ -76,7 +76,10 @@ class HtmlCell
 
   def disp(object,htmlopt="")
     #txt=object.send(symbol); txt.blank? || !txt ? "　" : object.send(symbol)
-    object.send(symbol).blank?  ? "　" : object.send(symbol).to_s
+    case symbol
+    when Symbol;    object.send(symbol).blank?  ? "　" : object.send(symbol)
+    when String;    symbol
+    end
   end
   def checked( obj,symbol,choice)
     {:checked => ( obj.send(symbol) == choice[-1] )}
@@ -100,27 +103,66 @@ class HtmlCell
   end
 end
 
+class HtmlCeckForSelect < HtmlCell
+  def disp(object,htmlopt="")
+    check_box(@Domain,symbol,:id => object.id,:name => "check_id[#{object.id}]")
+  end
+end
+
 class HtmlText  < HtmlCell
   def edit(domain,obj,controller,opt)
     text_field(domain,symbol,opt)
   end
 end
 
-class HtmlLink   < HtmlCell
-  def disp(object,htmlopt="")
-    #safe_join(
-    "<a href='".html_safe+
-              link[:url].html_safe+
-              "?".html_safe+
-              link[:key].to_s.html_safe+
-              "=".html_safe+
-              object.send(link[:key_val]).to_s.html_safe+
-              "'>".html_safe+
-              object.send(symbol).html_safe+
-              "</a>G".html_safe
 
-    ("<a href='#{link[:url]}?#{link[:key]}=#{object.send(link[:key_val])}"+
-     "'>#{object.send(symbol)}</a>").html_safe
+class HtmlNum  < HtmlText
+  def disp(object,htmlopt="")
+    @align = :right
+    object.send(symbol).blank?  ? "　" : tform ? tform%object.send(symbol) : object.send(symbol)
+  end
+end
+
+class HtmlLink   < HtmlCell
+  def initialize(sym,lbl=nil,args={})
+    @ro = true
+    super
+  end
+  def edit_text(domain,object,htmlopt="")
+    disp(object,htmlopt="")
+  end
+  def disp(object,htmlopt="")
+# <<<<<<< HEAD:app/models/concerns/html_cell.rb
+#     #safe_join(
+#     "<a href='".html_safe+
+#               link[:url].html_safe+
+#               "?".html_safe+
+#               link[:key].to_s.html_safe+
+#               "=".html_safe+
+#               object.send(link[:key_val]).to_s.html_safe+
+#               "'>".html_safe+
+#               object.send(symbol).html_safe+
+#               "</a>G".html_safe
+#
+#     ("<a href='#{link[:url]}?#{link[:key]}=#{object.send(link[:key_val])}"+
+#      "'>#{object.send(symbol)}</a>").html_safe
+# =======
+    links = link.dup
+    url = links.delete(:url)
+    key = links.delete(:key)
+    key_val = links.delete(:key_val)
+    htmloption = links.delete(:htmloption)
+    lbl = links.delete(:link_label) || object.send(symbol)
+
+    params = links.size == 0 ? "" : 
+     links.map{ |k,v| "#{k}=#{v}"}.join("&")
+    #logger.debug("HtmlLink: #{object.send(symbol)},#{url},#{key}, #{key_val}")
+    if key
+      "<a href='#{url}?#{key}=#{object.send(key_val)}&#{params}' #{htmloption}>#{lbl}</a>"
+    else
+      "<a href='#{url}/#{object.id}?#{params}' #{htmloption}>#{lbl}</a>"
+    end
+#>>>>>>> HospitalPower:lib/html_cell.rb
   end  
 end
 

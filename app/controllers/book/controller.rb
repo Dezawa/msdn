@@ -19,12 +19,12 @@ class Book::Controller <  ApplicationController
     end
     @arrowed.sort!{|a,b|  (b.permission <=> a.permission)*2 + (a.login <=> b.login)}
     @arrowed.unshift(myself) if myself
-
-    logger.debug "BookCtrl SET_INSTANSE_VARIABLE : permittion_id = session[:BK_owner]=#{session[:BK_owner]}"
-   permittion_id = session[:BK_owner] 
-    @owner  = (permittion_id ? 
-                                   Book::Permission.find(permittion_id) : 
-                                   @arrowed.first) || 
+    session[:book_keeping_owner] = @arrowed.first
+    logger.debug "BookCtrl SET_INSTANSE_VARIABLE : "+
+      "@arrowed.first=#{@arrowed.first.login}/#{@arrowed.first.owner}, "+
+      "session[:book_keeping_owner] =#{session[:book_keeping_owner].login}/#{session[:book_keeping_owner].owner}. "+
+      "YEAR = #{session[:book_keeping_year]}"
+    @owner = (session[:book_keeping_owner] ? session[:book_keeping_owner] : @arrowed.first) ||
       Book::Permission.create_nobody #owner
 #    session[:BK_owner] ||= @owner 
 #   logger.debug "BookCtrl SET_INSTANSE_VARIABLE : "+

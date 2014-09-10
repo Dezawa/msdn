@@ -5,7 +5,7 @@ require 'pp'
 
 module Ubr
 
-WithoutPull = true
+#WithoutPull = true
 
 LotAttrs = [:grade,:meigara_code,:meigara,:lot_no,:count,
             :packed_date,:hasuukubun,:unit,:paret,:dmy
@@ -29,7 +29,7 @@ class Lot
   attr_accessor :grade,:meigara_code,:meigara,:lot_no,:count,:unit,:packed_date,:qa,:paret
   attr_accessor :hasuukubun
   attr_writer :segments
-  def initialize(arg)
+  def initialize(arg={ })
     Attrs.each{|atr|
       case atr
       when :weight,:waku; next
@@ -46,15 +46,21 @@ class Lot
     @meigara = Meigara.meigara_by_code[@meigara_code]
     unless @meigara
       @meigara = Meigara.add_meigara(@meigara_code,arg[:meigara])
-      pp [@meigara_code,lot_no,"Meigara Missing"]
+      #pp [@meigara_code,lot_no,"Meigara Missing"]
     end
     wt    = arg.delete(:weight).to_f
     w=arg.delete(:waku)
     wk  = case w
           when Waku ; #puts w unless w
             w
-          when String;ww=Waku.by_name(w)#;puts ww# unless ww
-            ww || w
+          when String;
+            if ww=Waku.by_name(w)#;puts ww# unless ww
+              ww
+            else 
+              $WAKUMISSING ||= []
+              $WAKUMISSING.push(w).uniq! 
+              ww = Waku.new({:name => w })
+            end
           else ;  pp [w,@meigara_code] ;raise "ありえない #{w} #{@meigara_code}"
           end
     @segments = [segment = LotSegment.new(self,wt,wk,@paret,@comment_urb,@comment_qa,
@@ -65,7 +71,7 @@ class Lot
     rescue
       $WAKUMISSING ||= []
       $WAKUMISSING.push(w).uniq!
-      pp [w,lot_no,"Waku missing"]
+      #pp [w,lot_no,"Waku missing"]
     end
   end
 
@@ -81,11 +87,18 @@ class Lot
     self
   end
 
-  def segments(without_pull=false)
-    without_pull ? @segments.dup.select{|seg| !seg.pull?} : @segments
+  # without_pull :: true     : 引き合い無いもの 
+  #              :: :export  : 出荷
+  #              :: false,nil: 引き合いあるもの
+ def segments(without_pull=WithPull)
+    case without_pull
+    when OnlyExport  ;  @segments.dup.select{|seg| seg.pull?(OnlyExport)}
+    when WithoutPull ;  @segments.dup.select{|seg| !seg.pull?}
+    else             ;  @segments.dup
+    end
   end
 
-  def to_csv(without_pull = false)
+  def to_csv(without_pull = WithPull)
     segments.sort_by{|seg| pp seg unless seg.waku
       seg.waku.name}.
       map{|seg| seg.to_csv(without_pull) }.compact.join("\n")
@@ -95,11 +108,12 @@ class Lot
   def grade_comment_qa ; [ @grade,@comment_qa] ;end
   def niugoki ; self.meigara.niugoki ;end
   def keitai
-    begin #if self.meigara.housou
-      self.meigara.housou.keitai 
-    rescue #else
-      logger.info("UBR::Lot#keitai  銘柄 #{@meigara_code},ロット #{ @lot_no} 包装未定義")
-    end
+    meigara_code[-2,2]
+    #begin #if self.meigara.housou
+    #  self.meigara.housou.keitai 
+    #rescue #else
+    #  logger.info("UBR::Lot#keitai  銘柄 #{@meigara_code},ロット #{ @lot_no} 包装未定義")
+    #end
   end
 
   def stack_limit ; #@meigara.stack_limit ; end
@@ -130,7 +144,7 @@ class Lot
   end
 
   def packed
-    Time.local(*packed_date.split(/[^\d]/)) 
+    Time.local(*packed_date.split(/[^\d]/)) rescue Time.local(1970,1,1)
   end
 
   def period(date=nil)
@@ -196,7 +210,7 @@ class LotSegment
     if  paret == "Y-14" && /^N/ =~ @lot.keitai
       # Y-14 は輸出用紙袋55袋積み
       
-      logger.debug("Y-14 は輸出用紙袋55袋積み @weight=#{@weight} unit_weight=#{@lot.meigara.unit_weight} #{(@weight.to_f/@lot.meigara.unit_weight/55).ceil}")
+      #logger.debug("Y-14 は輸出用紙袋55袋積み @weight=#{@weight} unit_weight=#{@lot.meigara.unit_weight} #{(@weight.to_f/@lot.meigara.unit_weight/55).ceil}")
       (@weight.to_f/@lot.meigara.unit_weight/55).ceil
     else 
       (@weight.to_f/@lot.meigara.paret_weight).ceil
@@ -211,10 +225,15 @@ class LotSegment
     (paret_su.to_f/@lot.stack_limit).ceil    
   end
   def kazu ; count ;end #(@weight.to_f/@lot.meigara.housou.unit_weight).ceil ;end
-  def pull? ; @pull > "";end
-  
 
-  def to_csv(without_pull = false)
+  def pull?(exportonly = AllPull) 
+    case exportonly
+    when OnlyExport ; /出荷/ =~ @pull
+    else            ; @pull > ""
+    end
+  end
+
+  def to_csv(without_pull = WithPull)
     return nil if without_pull && pull?
     CSV.csvline(Attrs.map{|atr| send(atr)}) #unless ( without_pull && pull? )
   end

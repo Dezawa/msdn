@@ -11,8 +11,10 @@ class Hospital::RolesController < Hospital::Controller
                   [:form,:show_assign,"所属メンバー"]]
     @Edit = true
     @Delete=true
-    @labels= [HtmlText.new(:name,"役割")
-
+    @labels= [HtmlText.new(:name,"役割"),
+              HtmlSelect.new(:bunrui,"分類",
+                             :correction => [["職位",1],["職種",2],["勤務区分",3],["資格",4]]),
+              HtmlCheck.new(:need,"要否",:help => "Hospital#need")
              ]
     @on_cell_edit = true
     super
@@ -24,16 +26,20 @@ class Hospital::RolesController < Hospital::Controller
      HtmlText.new(:code1,"日勤",:size => 2),
      HtmlText.new(:code2,"準夜",:size => 2),
      HtmlText.new(:code3,"深夜",:size => 2),
-     HtmlText.new(:coden,"年休",:size => 2)
+     HtmlText.new(:coden,"年休",:size => 2),
+     HtmlText.new(:night_total,"夜勤計",:size => 2),
+     HtmlText.new(:kinmu_total,"勤務計",:size => 2),
      ]
 
   def show_assign
-    @roles  = Hospital::Role.all
+    $HP_DEF =  Hospital::Define.create
+    @roles  = Hospital::Role.all(:conditions => "bunrui <> 3")
     @labels = AssignLabel 
     @nurces = Hospital::Nurce.by_busho(@current_busho_id)
     @TableEdit = [[:form,:assign,"編集"],
                   ["　　　"],
                   [:form,:set_busho,"部署変更",:input_busho]]
+    @warn = Hospital::Limit.enough?(@current_busho,@month).first
   end
   def dddset_busho
     super

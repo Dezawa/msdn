@@ -107,6 +107,10 @@ module Actions
   def require_configure(url="/404.html") 
     redirect_to url unless  @configure
   end
+
+  def set_instanse_variable
+    @weather_location = session[:weather_location] || "maebashi"
+  end
   ##########################
   def new
     @model = @Model.new(@New)
@@ -249,22 +253,18 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     render  :file => 'application/cell_edit'
   end
 
-  def update_on_table
-    @page = params[:page] || 1 
-    @models= @PagenatTbl ? find_and : find #@Model.all(@conditions)#@PagenatTbl
-    @maxid    = @Model.all.count == 0 ? 0 : @Model.maximum(:id)
-    @modelList = params[@Domain]
+  def update_on
     @new_models = []
-    @models = []
     @errors = []
     @result = true
     @modelList.each_pair{|i,model| id=i.to_i
       logger.debug("Update_on_table:#{i} #{id}#{@maxid} #{model}")
       if id >@maxid
-        @model=@Model.new(model)
-        @new_models << @model
         next if model.map{|k,v| v}.join == ""
-        unless @model.save 
+        @model=@Model.new(model)
+        if @model.save 
+          @new_models << @model
+        else
           @result = false 
           @errors <<  @model.errors if @model.errors.size>0
         end
@@ -276,6 +276,14 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
         @models << @mdl
       end
     }
+  end
+  def update_on_table
+    @page = params[:page] || 1
+    @models = [] 
+    @models= @PagenatTbl ? find_and : find #@Model.all(@conditions)#@PagenatTbl
+    @maxid    = @Model.count == 0 ? 0 : @Model.maximum(:id)
+    @modelList = params[@Domain]
+    update_on
     if @result
       #UbeMeigara.meigaras true
       @Model.send(@Refresh,true) if @refresh #BookKamoku.kamokus true
@@ -295,6 +303,63 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     redirect_to :action => :index
   end
 
+  # have_many :through に於いて、関連だけ削除する。
+  # applycation_helper# delete_connection_if_accepted(obj) と連動
+  #  throughに使うテーブルのModelを@AssociationTableに定義する
+  def delete_bind
+    if @ThroughTable
+      @ThroughTable.delete(params[:bind_id])
+    else
+      @Model.find(params[:id]).send(@assosiation).delete(@AssociationTable.find(params[:bind_id]))
+    end
+    redirect_to :action => :show,:id => params[:id]
+  end
+
+  def edit_assosiation
+    @model = @Model.find(params[:id])
+    @assosiations = @model.send(@assosiation)
+    render  :file => 'application/edit_association',:layout => 'application'
+  end
+
+  def image(graph_file)
+    "image/#{File.extname(graph_file)}"
+  end
+
+  def show_img
+    graph_file = (params[:graph_file].blank? ? "image.jpeg" : params[:graph_file])
+    send_file( RAILS_ROOT+"/tmp/img/#{graph_file}",
+               :type => image(graph_file), :disposition => 'inline' )
+  end
+  def graph
+logger.debug("APPLICATION#GRAPH: params=#{params.to_a.flatten.join(',')}")
+  end
+
+
+  def update_assosiation
+    model  = @Model.find(params[:id])
+    @models= model.send( @assosiation)
+    @Model  = @ThroughTable || @AssociationTable
+    @maxid = @Model.count == 0 ? 0 : @Model.maximum(:id)
+    @modelList = params[:assosiation]
+    update_on
+    model.send( @assosiation) << @new_models
+    redirect_to :action => :show,:id => params[:id]
+  end
+
+  def add_assosiation
+    @model = @Model.find(params[:id])
+    assoc_table = @ThroughTable || @AssociationTable
+    @assosiations= @model.send(@assosiation)
+    #find_and
+    
+    @add_no = params[:assosiation][:add_no].to_i
+    @maxid    = @assosiations.size == 0 ? 1 : assoc_table.maximum(:id)+1
+    @new_models = @add_no.times.map{model = assoc_table.new }
+    @new_models.each_with_index{|model,id| model.id = id + @maxid}
+    @assosiations += @new_models
+    render  :file => 'application/edit_association',:layout => 'application'
+
+  end
 
   def change_per_page
     if params[:line_per_page] && params[:line_per_page].to_i > 0
@@ -319,7 +384,8 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     send_file(tmpfile,:filename =>  filename)
   end
   def csv_upload
-    errors= @Model.csv_upload(params[:csvfile], @CSVlabels,@CSVatrs)
+    
+    errors= @Model.csv_upload(params[:csvfile]||params[@Domain][:csvfile], @CSVlabels,@CSVatrs)
     unless errors[0]
       flash[:message] = errors[1]
       redirect_to :action => :index
@@ -350,4 +416,5 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
   def permit_attr
     params.require(@Domain).permit(attr_list)
   end
+
 end

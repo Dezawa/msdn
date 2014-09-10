@@ -44,6 +44,7 @@ class ActiveSupport::TestCase
     timestrings.map{|str| Time.parse(str) }
   end
 
+<<<<<<< HEAD
  def assert_equal_array(expected,actual,labels=nil,msg=nil)
    labels = (0..expected.size-1).to_a  unless labels && labels.size>0
    labels.each_with_index{|label,idx|
@@ -57,6 +58,12 @@ class ActiveSupport::TestCase
      }
    }
  end
+=======
+  def ids_of_ary_of_ary(aryary)
+    aryary.map{ |ary| ary.map(&:id)}
+  end
+
+>>>>>>> HospitalPower
 end
 
 class Time
@@ -75,4 +82,9 @@ end
 
 class String
   def times; self.split(/[ ,]+/).map{|tstr| Time.parse("2012/"+tstr+" +9:00")};end
+end
+class Symbol
+  def <=>(other)
+    self.to_s <=> other.to_s
+end
 end

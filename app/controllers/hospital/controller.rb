@@ -30,17 +30,18 @@ class Hospital::Controller < ApplicationController
 
   def set_instanse_variable
     @Links = [
-              Menu.new("記号一覧",:kinmucodes),
-              Menu.new("役割一覧",:roles),
-              Menu.new("部署登録",:bushos), 
-              Menu.new("必要人数",:needs),
+              Menu.new("記号一覧",:kinmucode),
+              Menu.new("役割一覧",:role),
+              Menu.new("禁忌",:avoid_combination),
+              Menu.new("部署登録",:busho), 
+              Menu.new("必要人数",:need),
               Menu.new("個人登録",:nurces), 
               Menu.new("役割割当",:roles, :action => :show_assign),
               Menu.new("会議登録",:meetings),
               Menu.new("希望入力",:monthly,:action => :hope_regist),
               Menu.new("割付",:monthly,:action => :show_assign),
-              Menu.new("様式9",:form9,:action => :index)#,
-#              Menu.new("休日",:holyday,:controller => :holydays,:action => :index)
+              Menu.new("様式9",:form9,:action => :calc),
+              Menu.new("休日",:holyday,:controller => "../holyday",:action => :index,:page=>1,:id => Time.now.year)
              ]
     session[:hospital] ||= BushoGetudo.new
     session[:hospital].busho_id = 1 unless session[:hospital] && session[:hospital].busho_id > 0

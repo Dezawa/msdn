@@ -1,10 +1,10 @@
 #!/usr/bin/ruby1.9
 # -*- coding: utf-8 -*-
 require 'pp'
-require 'ubr/waku'
-require 'ubr/lot'
-require 'ubr/meigara'
-require 'ubr/const'
+#require 'ubr/waku'
+#require 'ubr/lot'
+#require 'ubr/meigara'
+#require 'ubr/const'
 require 'csv'
 
 #Inv3 = 1.0/3.0

@@ -19,10 +19,21 @@ module Ubr
 
 
 
-  class Pillar
-    attr_reader :kazu,:start,:kankaku,:missing,:size
-    def initialize(arg={ })
-      [:kazu,:start,:kankaku,:missing,:size].each{| attr_name| 
+  class Pillar < ActiveRecord::Base
+    extend Function::CsvIo
+    include Ubr::Const
+    set_table_name :ubr_pillars
+    belongs_to  :souko_floor,:class_name => "Ubr::SoukoFloor"
+
+    def kazu ; [kazu_x,kazu_y]  ; end
+    def start ; [start_x,start_y]  ; end
+    def kankaku ; [kankaku_x,kankaku_y]  ; end
+    def size ; [size_x,size_y]  ; end
+
+    #attr_reader :size,:start,:kankaku,:missing,:size
+    attr_reader :missing
+    def ddinitialize(arg={ })
+      [:size,:start,:kankaku,:missing,:size].each{| attr_name| 
         instance_variable_set  "@#{attr_name}",arg.delete(attr_name) 
       }
     end

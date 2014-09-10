@@ -19,80 +19,187 @@
 # @monmthに置く
 class Hospital::Nurce < ActiveRecord::Base
   extend CsvIo
-  extend Cost
-  extend  Hospital::Cost::ClassMethod
-  include Hospital::Cost
-  include  Hospital::Reguration
+#  extend Cost
+#  extend  Hospital::Cost::ClassMethod
+#  include Hospital::Cost
+#  include  Hospital::Reguration
   
   self.table_name = 'hospital_nurces'
+
+  include Hospital::Const
+  include Hospital::NurceCost
+  include Hospital::Reguration
+
   has_and_belongs_to_many :hospital_roles,:class_name => "Hospital::Role"
+  has_and_belongs_to_many :shokui,:class_name => "Hospital::Role",:conditions => "bunrui = 1"
+  has_and_belongs_to_many :shokushu,:class_name => "Hospital::Role",:conditions => "bunrui = 2"
+  has_and_belongs_to_many :kinmukubun,:class_name => "Hospital::Role",:conditions => "bunrui = 3"
   belongs_to :limit    ,:class_name => "Hospital::Limit"
   belongs_to :busho    ,:class_name => "Hospital::Busho"
+# <<<<<<< HEAD
 
-  attr_reader :Reguration
-  LimitDefault={:code0 => 8,:code1 => 20,:code2 => 4,:code3 => 4,:coden => 1}
+#   attr_reader :Reguration
+#   LimitDefault={:code0 => 8,:code1 => 20,:code2 => 4,:code3 => 4,:coden => 1}
+#   CheckFail = Class.new(StandardError)
+
+#   attr_accessor :month
+
+#   #def 
+#   after_find do
+#     set_check_regulation
+#   end 
+
+#   def set_check_regulation
+    
+#     @Reguration = 
+#       [
+#        {        },{ },
+#        {
+#          :junya => [/([2L5][^25]*){#{limit.code2+1}}/,nil,nil,"順夜が#{limit.code2}を越えた"]
+#        },{ 
+#          :shinya =>[/([3M6][^36]*){#{limit.code3+1}}/,nil,nil,"深夜が#{limit.code3}を越えた"] 
+#        }
+#       ]
+#     @Wants = [{},{},{},{}] 
+#     @Reguration_keys = (0..3).map{|shift| @Reguration[shift].keys + @Wants[shift].keys }
+#     [@Reguration ,    @Wants ,  @Reguration_keys] # retern for TDD
+#   end
+
+#   def check_regulation
+#     @check_regulation ||=
+#       [@Reguration ,@Wants,Reguration[ Hospital::Define.koutai3?],Wants[ Hospital::Define.koutai3?] ]
+# =======
+  
+  LimitDefault =
+    { :code0 => 8,:code1 => 20,:code2 => 4,:code3 => 4,:coden => 1,
+    :night_total => 9,:kinmu_total => 20
+  }
   CheckFail = Class.new(StandardError)
 
-  attr_accessor :month
+  attr_accessor :month,:shift_used
 
-  #def 
-  after_find do
-    set_check_regulation
-  end 
 
-  def set_check_regulation
-    
-    @Reguration = 
-      [
-       {        },{ },
-       {
-         :junya => [/([2L5][^25]*){#{limit.code2+1}}/,nil,nil,"順夜が#{limit.code2}を越えた"]
-       },{ 
-         :shinya =>[/([3M6][^36]*){#{limit.code3+1}}/,nil,nil,"深夜が#{limit.code3}を越えた"] 
-       }
-      ]
-    @Wants = [{},{},{},{}] 
-    @Reguration_keys = (0..3).map{|shift| @Reguration[shift].keys + @Wants[shift].keys }
-    [@Reguration ,    @Wants ,  @Reguration_keys] # retern for TDD
+  def after_find
+    set_check_reg 
   end
 
-  def check_regulation
-    @check_regulation ||=
-      [@Reguration ,@Wants,Reguration[ Hospital::Define.koutai3?],Wants[ Hospital::Define.koutai3?] ]
+
+  class AssignPatern
+    attr_accessor :patern, :reg, :back,:length,:checks,:target_days
+    def initialize(*args)
+      @patern, @reg, @back,@length,@checks,@target_days = args.first
+    end
   end
+  LongPatern = { 
+    true => {
+      Sshift3 => [  # patern, reg, back,length,[調べるshift],[ [0の割り当て数見る日],[1の][2の],[3の]]
+           AssignPatern.new(["330"    , /^[^3M6][0_]_[3_][0_]/,2,5,[Sshift3],[[2],[],[],[1]] ]),
+           AssignPatern.new(["30"     , /^[2LM356]_[0_]/       ,1,3,[Sshift3],[[1],[],[],[1]] ]),
+           AssignPatern.new(["3"      , /^_/,0,1,["3"],[[],[],[],[]]])
+           ],
+      Sshift2 => [ #  patern, reg,                back,length,[調べるshift],[ [2の割り当て数見る日],[3の]]
+            AssignPatern.new(["220330",/^[^2L5][0_]_[2_][0_][3_]{2}[0_]/,2,8,[Sshift3,Sshift2],[[2,5],[],[1],[3,4]]]),
+            AssignPatern.new(["220"   , /^[^2L5][0_]_[2_][0_]/,2,5,[Sshift2],[[2],[],[1],[]] ]),
+            AssignPatern.new(["20"    , /^[2L3M56]_[0_]/      ,1,3,[Sshift2],[[1],[],[1],[]] ]),
+            AssignPatern.new(["2"     , /^_/                 ,0,1,[Sshift2],[[],[],[],[]]])
+           ],
+       Sshift1 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
+             AssignPatern.new(["1"    , /^_/                 ,0,1,[Sshift1],[[],[],[],[]]])
+            ]
+       },
+     false => { 
+       Sshift2 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
+             AssignPatern.new(["220"  , /^[^25][0_]_[2_][0_]/,2,5,[Sshift2],[[2],[],[1],[]] ]),
+             AssignPatern.new(["2"    , /^_/                 ,0,1,[Sshift2],[[],[],[],[]]])
+            ],
+        Sshift1 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]  
+             AssignPatern.new(["1"    , /^_/                 ,0,1,[Sshift1],[[],[],[],[]]])
+             ]
+      }     
+
+  }
+  
 
 
   def self.by_busho(busho_id,option = {})
-    where(  ["busho_id = ?",busho_id] )
+    all( option.merge({:conditions => ["busho_id = ?",busho_id]}))
+  end
+  def self.correction(busho_id,option = {})
+    all( option.merge({:conditions => ["busho_id = ?",busho_id]})).map{ |nurce| [nurce.name,nurce.id]}
   end
 
-  ### 看護師の属性関連
-  #  def busho_name ; busho ? busho.name : ""          ;end
-  #  def pre_busho_name ; pre_busho ? pre_busho.name : "" ; end
-  #  def idou_name ; (a=Hospital::Const::Idou.rassoc(idou)) ? a.first : "";end
-  def shokui_name; (a=Hospital::Const::Shokui.rassoc(shokui_id)) ? a.first : "";end
-  #  def pre_shokui_name; (a=Hospital::Const::Shokui.rassoc(pre_shokui_id)) ? a.first : "";end
-  def shokushu_name;(a=Hospital::Const::Shokushu.rassoc(shokushu_id)) ? a.first : "";end
-  # def pre_shokushu_name;(a=Hospital::Const::Shokushu.rassoc(pre_shokushu_id)) ? a.first : "";end
-  def kinmukubun_name;(a=Hospital::Const::Kinmukubun.rassoc(kinmukubun_id)) ? a.first : "";end
-  #  def pre_kinmukubun_name;(a=Hospital::Const::Kinmukubun.rassoc(pre_kinmukubun_id)) ? a.first : "";end
+  def shokui_id     ; shokui.first ? shokui.first.id         : nil ;end
+  def shokushu_id   ; shokushu.first ? shokushu.first.id     : nil ;end
+  def kinmukubun_id ; kinmukubun.first ? kinmukubun.first.id : nil ;end
+  def shokui_id=(arg_id) 
+    if arg_id.blank? || !(role = Hospital::Role.find arg_id)
+      self.shokui=[]
+    else
+      self.shokui=[role]
+    end
+#>>>>>>> HospitalPower
+  end
+
+  def shokushu_id=(arg_id)
+      shokushu=[]
+    if arg_id.blank? || !(role = Hospital::Role.find arg_id.to_i)
+      self.shokushu=[]
+    else
+      self.shokushu=[role]
+    end
+  end
+
+# <<<<<<< HEAD
+#   def self.by_busho(busho_id,option = {})
+#     where(  ["busho_id = ?",busho_id] )
+#   end
+
+#   ### 看護師の属性関連
+#   #  def busho_name ; busho ? busho.name : ""          ;end
+#   #  def pre_busho_name ; pre_busho ? pre_busho.name : "" ; end
+#   #  def idou_name ; (a=Hospital::Const::Idou.rassoc(idou)) ? a.first : "";end
+#   def shokui_name; (a=Hospital::Const::Shokui.rassoc(shokui_id)) ? a.first : "";end
+#   #  def pre_shokui_name; (a=Hospital::Const::Shokui.rassoc(pre_shokui_id)) ? a.first : "";end
+#   def shokushu_name;(a=Hospital::Const::Shokushu.rassoc(shokushu_id)) ? a.first : "";end
+#   # def pre_shokushu_name;(a=Hospital::Const::Shokushu.rassoc(pre_shokushu_id)) ? a.first : "";end
+#   def kinmukubun_name;(a=Hospital::Const::Kinmukubun.rassoc(kinmukubun_id)) ? a.first : "";end
+#   #  def pre_kinmukubun_name;(a=Hospital::Const::Kinmukubun.rassoc(pre_kinmukubun_id)) ? a.first : "";end
   
-  def roles
-     @roles ||= hospital_roles.map{|role| [role.id,role.name]}.uniq #+ 
-    #(shokui_id ? [shokui_id+100,shokui.name] : [])
-  end
-  def role_ids   ; @role_ids ||= roles.map{ |r| r[0]}
-  end
-  def roles_by_id
-    Hospital::Role.roles_by_id # @rolls_by_id ||= Hash[*roles.flatten]
-  end
+#   def roles
+#      @roles ||= hospital_roles.map{|role| [role.id,role.name]}.uniq #+ 
+#     #(shokui_id ? [shokui_id+100,shokui.name] : [])
+#   end
+#   def role_ids   ; @role_ids ||= roles.map{ |r| r[0]}
+#   end
+#   def roles_by_id
+#     Hospital::Role.roles_by_id # @rolls_by_id ||= Hash[*roles.flatten]
+#   end
   
-  def dddrole?(rolename)
-    roles[hospital_roles.find_by(name: rolename).id]
-  end
+#   def dddrole?(rolename)
+#     roles[hospital_roles.find_by(name: rolename).id]
+#   end
   
-  def role_id?(role_id);role_ids.include?(role_id) #.to_i);
+#   def role_id?(role_id);role_ids.include?(role_id) #.to_i);
+#   end
+# =======
+  def kinmukubun_id=(arg_id) 
+    if arg_id.blank? || !(role = Hospital::Role.find arg_id)
+      self.kinmukubun=[]
+    else
+      self.kinmukubun=[role]
+    end
   end
+
+  def busho_name ; busho ? busho.name : ""          ;end
+  def pre_busho_name ; pre_busho ? pre_busho.name : "" ; end
+  def idou_name ; (a=Idou.rassoc(idou)) ? a.first : "";end
+  def shokui_name; (a=Shokui.rassoc(shokui_id)) ? a.first : "";end
+  def pre_shokui_name; (a=Shokui.rassoc(pre_shokui_id)) ? a.first : "";end
+  def shokushu_name;(a=Shokushu.rassoc(shokushu_id)) ? a.first : "";end
+  def pre_shokushu_name;(a=Shokushu.rassoc(pre_shokushu_id)) ? a.first : "";end
+  def kinmukubun_name;(a=Kinmukubun.rassoc(kinmukubun_id)) ? a.first : "";end
+  def pre_kinmukubun_name;(a=Kinmukubun.rassoc(pre_kinmukubun_id)) ? a.first : "";end
+#>>>>>>> HospitalPower
 
   ########## 月度の割付状況
   # month が指定されていない場合は同じ月度情報を用いる
@@ -101,8 +208,14 @@ class Hospital::Nurce < ActiveRecord::Base
   #         指定されて居らずかつまだ月度を読んで居ないときは、来月
   def monthly(month=nil)
     return @monthly if @monthly && ( @monthly.month == month || !month)
-    @month = month || Time.now.beginning_of_month.next_month.to_date
-    @monthly = Hospital::Monthly.find_or_create_by(nurce_id: id, month: @month)
+#<<<<<<< HEAD
+#    @month = month || Time.now.beginning_of_month.next_month.to_date
+#    @monthly = Hospital::Monthly.find_or_create_by(nurce_id: id, month: @month)
+#=======
+    @month = month if month
+    @monthly = Hospital::Monthly.
+      find_or_create_by_nurce_id_and_month(id,month)
+#>>>>>>> HospitalPower
     @monthly.nurce=self
     @lastday=@month.end_of_month.day
     @monthly
@@ -149,46 +262,66 @@ class Hospital::Nurce < ActiveRecord::Base
     sft = sft_str.hex
     
     role_shift[day]=role_shift_of(sft_str)
-    if /[0123]/ =~ sft_str
-      shift_remain[sft_str] -= 1 
-      roles.each{|role_id,name| 
-        role_used[[role_id,sft_str]] += 1
-        role_remain[[role_id,sft_str]] -= 1
-      }
+    case sft_str
+    when "0"      ;update_remain(sft_str)
+    when "2","3"  ;update_remain(sft_str);update_remain(:night_total);update_remain(:kinmu_total)
+    when "1"      ;update_remain(sft_str);update_remain(:kinmu_total)
     end
     monthly.set_shift(day,sft_str)
     self
   end
 
-  ########### 割付に当たっての評価 #########
-  # return: {[role,shift] => 回数 }
-  def role_used(recalc=false)
-    return @role_used if @role_used && !recalc
-    @role_used=Hash.new{|h,k| h[k]=0}
-    #    role_shift.each{|day_rs| day_rs.each{|rs| @role_used[rs] += 1}}
-    [/[^0]/,/[^1478]/,/[^25]/,/[^36]/].each_with_index{|reg,shift|
-      used = shifts.gsub(reg,"").size
-      role_ids.each{|role| @role_used[[role,shift.to_s]] = used }
-    }
-   @role_used
+# <<<<<<< HEAD
+#   ########### 割付に当たっての評価 #########
+#   # return: {[role,shift] => 回数 }
+#   def role_used(recalc=false)
+#     return @role_used if @role_used && !recalc
+#     @role_used=Hash.new{|h,k| h[k]=0}
+#     #    role_shift.each{|day_rs| day_rs.each{|rs| @role_used[rs] += 1}}
+#     [/[^0]/,/[^1478]/,/[^25]/,/[^36]/].each_with_index{|reg,shift|
+#       used = shifts.gsub(reg,"").size
+#       role_ids.each{|role| @role_used[[role,shift.to_s]] = used }
+#     }
+#    @role_used
+#   end
+
+#   def role_remain(recalc=false)
+#     return @role_remain if @role_remain && !recalc
+#     @role_remain = Hash.new{|h,k| h[k]=0}
+#     assinable_roles.each_pair{|role_shift,assinable|
+#       @role_remain[role_shift] = assinable - role_used[role_shift]
+#     }
+#     @role_remain
+#   end
+
+#     # この看護師を選ぶに当たってのポイントを評価する。
+#     # 考慮するのは
+#     #   1 不足ロールと持ってるロールのマッチング、
+#     #   2 割り当てようとしている勤務の残り数
+#     #   3 未割り当ての日数
+#     #   4 リーダの 要否とリーダかどうか
+#     # 1,2 は100点満点、3は100～200点満点、4は場合による。
+# =======
+  def update_remain(sft_str)
+    shift_remain[sft_str] -= 1 
   end
 
-  def role_remain(recalc=false)
-    return @role_remain if @role_remain && !recalc
-    @role_remain = Hash.new{|h,k| h[k]=0}
-    assinable_roles.each_pair{|role_shift,assinable|
-      @role_remain[role_shift] = assinable - role_used[role_shift]
-    }
-    @role_remain
+  def save_shift #; [shifts.dup  ,role_remain.dup,shift_remain.dup];end
+  [shifts.dup  ,shift_remain.dup]
+  end
+  def restore_shift(saved_shift)
+    #dbgout( "HP  restore_shift前 #{id}:#{shifts} #{role_shift.to_a.flatten.join(' ')}")
+    self.shifts = saved_shift[0]
+    @shift_remain= saved_shift[1]
+
+    @role_shift=(self.shifts||"").split("").map{|sft_str|   role_shift_of(sft_str) }
+    self
   end
 
-    # この看護師を選ぶに当たってのポイントを評価する。
-    # 考慮するのは
-    #   1 不足ロールと持ってるロールのマッチング、
-    #   2 割り当てようとしている勤務の残り数
-    #   3 未割り当ての日数
-    #   4 リーダの 要否とリーダかどうか
-    # 1,2 は100点満点、3は100～200点満点、4は場合による。
+  def shift(day) ;    monthly.shift[day,1] ;  end
+  def shifts     ;    monthly.shift ;end #|| ""        ;  end
+  def shifts=(shft) ; monthly.shift=shft   ;  end
+#>>>>>>> HospitalPower
 
     def ddlimits
       #limit ||= Hospital::Limit.crate
@@ -200,41 +333,108 @@ class Hospital::Nurce < ActiveRecord::Base
   def assinable_roles
     return @assinable_roles if @assinable_roles
     @assinable_roles = Hash.new{|h,k| h[k]=0}
-    [ [:code0,"0"],[:code1,"1"], [:code2,"2"], [:code3,"3"]].
+# <<<<<<< HEAD
+#     [ [:code0,"0"],[:code1,"1"], [:code2,"2"], [:code3,"3"]].
+#       each{|sym,sft_str|
+#       roles.each{|role_id,name| 
+#         @assinable_roles[[role_id,sft_str]] = limit[sym]
+# =======
+    [ [:code1,Sshift1], [:code2,Sshift2], [:code3,Sshift3]].
       each{|sym,sft_str|
       roles.each{|role_id,name| 
-        @assinable_roles[[role_id,sft_str]] = limit[sym]
+        next unless Hospital::Need.roles.include?(role_id)
+        @assinable_roles[[role_id,sft_str]] = limits[sym]
+      }}
+    assinable_total
+    @assinable_roles
+  end
+  def assinable_total
+    #@assinable_total = Hash.new{|h,k| h[k]=0}
+    [[:kinmu_total,:kinmu_total],[:night_total, :night_total]].
+      each{|sym,sft_str|
+      roles.each{|role_id,name| 
+        next unless Hospital::Need.roles.include?(role_id)
+        @assinable_roles[[role_id,sft_str]] = limits[sym]
+#>>>>>>> HospitalPower
       }}
     @assinable_roles
   end
 
-  def has_assignable_roles_atleast_one(sft_str,roles)
+
+
+  def has_assignable_roles_atleast_one(sft_str,need_roles)
     #logger.debug("### roles & role_ids(#{__LINE__}) #{roles} #{roles.class} & #{role_ids}#{role_ids.class}")
       shift_remain[sft_str]>0 &&
-      (roles & role_ids).size > 0
+      (need_roles & role_ids).size > 0
   end
 
 ####################################################################
   def refresh
-    role_used true
-    role_remain true
     shift_remain true
   end
 
+# <<<<<<< HEAD
+
+#   def shift_remain(recalc=false)
+#     return @shift_remain if @shift_remain && !recalc
+#     @shift_remain = Hash[*%w(0 1 2 3).
+#                          zip([limit.code0,limit.code1,limit.code2,limit.code3]).flatten]
+#     [ /[^0]/,  /[^1478]/ , /[^25]/ , /[^36]/].
+#       each_with_index{|reg,shift| @shift_remain[shift.to_s] -= shifts.gsub(reg,"").size }
+#     @shift_remain["0"] -= shifts.gsub(/[^9ABC]/,"").size*0.5
+#     @shift_remain["1"] -= shifts.gsub(/[^9ABC]/,"").size*0.5
+#     @shift_remain
+#   end
+
+#   # 各日の [[role_id,shift],,,[]] が日数分
+#   #   何に使っているのだろう。。。わかるまでテストなし
+# =======
+  def shift_used(recalc=false)
+    return @shift_used if @shift_used && !recalc
+    @shift_used=Hash.new{|h,k| h[k]=0}
+
+    @shift_used["0"]  =  shifts.gsub(/[^0]/,"").size + shifts.gsub(/[^9ABC]/,"").size*0.5
+    @shift_used["1"]  = shifts.gsub(/[^1478]/,"").size + shifts.gsub(/[^9ABC]/,"").size*0.5
+    @shift_used["2"]  = shifts.gsub(/[^25]/,"").size
+    @shift_used["3"]  = shifts.gsub(/[^36]/,"").size
+    @shift_used[:night_total]  = @shift_used["2"] + @shift_used["3"]
+    @shift_used[:kinmu_total]  = @shift_used[:night_total] + @shift_used["1"]
+    @shift_used
+  end
 
   def shift_remain(recalc=false)
     return @shift_remain if @shift_remain && !recalc
-    @shift_remain = Hash[*%w(0 1 2 3).
-                         zip([limit.code0,limit.code1,limit.code2,limit.code3]).flatten]
-    [ /[^0]/,  /[^1478]/ , /[^25]/ , /[^36]/].
-      each_with_index{|reg,shift| @shift_remain[shift.to_s] -= shifts.gsub(reg,"").size }
-    @shift_remain["0"] -= shifts.gsub(/[^9ABC]/,"").size*0.5
-    @shift_remain["1"] -= shifts.gsub(/[^9ABC]/,"").size*0.5
+    shift_used true
+    @shift_remain = Hash[*Sshift0123.
+                         zip([limits.code0,limits.code1,limits.code2,limits.code3]).flatten
+                        ]
+    @shift_remain[:night_total] = limits.night_total - shift_used[:night_total]
+    @shift_remain[:kinmu_total] = limits.kinmu_total - shift_used[:kinmu_total] 
+    ["0","1","2","3"].each{ |sft_str|  @shift_remain[sft_str] -= shift_used[sft_str]}
+    
     @shift_remain
   end
 
-  # 各日の [[role_id,shift],,,[]] が日数分
-  #   何に使っているのだろう。。。わかるまでテストなし
+  def roles
+    @roles ||=
+      hospital_roles.map{|role| [role.id,role.name]}.uniq #+ 
+    #(shokui_id ? [shokui_id+100,shokui.name] : [])
+  end
+  def role_ids 
+    @role_ids ||= (hospital_roles.map(&:id).uniq & Hospital::Need.roles)
+  end
+  def roles_by_id
+    @rolls_by_id ||= Hash[*roles.flatten]
+  end
+
+  def role?(rolename)
+    roles[hospital_roles.find_by_name(rolename).id]
+  end
+
+  def role_id?(role_id);role_ids.include?(role_id) #.to_i);
+  end
+
+#>>>>>>> HospitalPower
   def role_shift(month=nil,reculc=false)
     return @role_shift if @role_shift  && !reculc && (!month ||month == monthly.month)
     #return @role_shift if @role_shift && month == monthly.month && !reculc
@@ -257,14 +457,28 @@ class Hospital::Nurce < ActiveRecord::Base
 
   def shift1
     monthly.days.
-      inject(0){|sum,kinmu| sum + [:am,:pm,:am2,:pm2].inject(0){|s,sym| s + kinmu.send(sym) }
-      }
+# <<<<<<< HEAD
+#       inject(0){|sum,kinmu| sum + [:am,:pm,:am2,:pm2].inject(0){|s,sym| s + kinmu.send(sym) }
+#       }
+#   end 
+#   def shift2
+#     monthly.days.inject(0){|sum,kinmu|  sum + kinmu.night+kinmu.night2     }
+#   end 
+#   def shift3
+#     monthly.days.inject(0){|sum,kinmu|  sum + kinmu.midnight+kinmu.midnight2     }
+# =======
+      inject(0){|sum,kinmu| sum + kinmu.shift1 }
+      #[:am,:pm,:am2,:pm2].inject(0){|s,sym| s +  kinmu.shift1 } #(kinmu.kinmucode ? kinmu.kinmucode[sym] : 0) }
+      #}
   end 
   def shift2
-    monthly.days.inject(0){|sum,kinmu|  sum + kinmu.night+kinmu.night2     }
+    monthly.days.
+      inject(0){|sum,kinmu| sum +  kinmu.shift2 } #(kinmu.kinmucode ? kinmu.kinmucode.night + kinmu.kinmucode.night2 : 0 )}
   end 
   def shift3
-    monthly.days.inject(0){|sum,kinmu|  sum + kinmu.midnight+kinmu.midnight2     }
+    monthly.days.
+      inject(0){|sum,kinmu| sum + kinmu.shift3 } #(kinmu.kinmucode ? kinmu.kinmucode.midnight + kinmu.kinmucode.midnight2 : 0)}
+#>>>>>>> HospitalPower
   end 
   def nenkyuu
     monthly.days.
@@ -322,6 +536,7 @@ class Hospital::Nurce < ActiveRecord::Base
   #  shift_with_last_month[7]   8-5+4
   # 違反項目がないとき nil が返る
   def check_at_assign(day,sft_str,imidiate=true)
+    return [[:no_space,true]] unless  monthly.shift[day,1] == "_"
     save = monthly.shift[day,1]
     monthly.shift[day,1] = sft_str
     ret = check(day,sft_str,imidiate)  
@@ -330,77 +545,105 @@ class Hospital::Nurce < ActiveRecord::Base
     return ret.size > 0 ? ret : nil
   end
 
-  def long_check(day,sft_str,long_patern)
-    patern,reg,back,length,checks,daily_checks = long_patern
-    offset,len = back ? [day-back+4,length] : [5,31] 
-    #pp [day,shift,id,reg,patern,shifts[day,patern.size]]
-    if reg =~ shift_with_last_month[offset,len]
-      shiftsave = shifts[day,patern.size]
-      shifts[day,patern.size] = patern
+  def long_check(day,sft_str,long_patern,imidiate=true)
+    #patern,reg,back,length,checks,daily_checks = long_patern
+    offset,len = long_patern.back ? [day - long_patern.back + 4,long_patern.length] : [5,31] 
 
-      ret,errors = long_check_sub(day,checks)
-      shifts[day,patern.size] = shiftsave
-      if ret
-        return [patern ,daily_checks]
-      else
-        return [false ,errors]
+    # そもそもそのlong_paternを入れる予知があるか見る
+    if long_patern.reg =~ shift_with_last_month[offset,len]
+      shiftsave = shifts.dup#[day,long_patern.patern.size]
+      shifts[day,long_patern.patern.size] = long_patern.patern
+
+      ret,errors = long_check_sub(day,long_patern.checks,imidiate)
+      shifts= shiftsave #[day,long_patern.patern.size] = shiftsave
+      if ret ;        return [long_patern ]
+      else   ;        return [false ,errors]
       end
     end
     #    errors.each{|item,d| @count_cause[item] += 1
     [false,[[:no_space]]]
   end
 
-  def long_check_sub(day,checks)
+  def long_check_sub(day,checks,imidiate=true)
     ret = []
-    checks.each{|sft_str|
-      ret += check(day,sft_str)
+    checks.each{|sft_str|   ret += check(day,sft_str,imidiate)
       #return false if ret.size > 0
     }
-    #true
     [ret.size == 0,ret]
   end
 
   # 
   def check(day,sft_str,imidiate=true)
     ret = []
-    check_regulation.each{|regulation|
-      [0,sft_str.to_i].each{|s|
-        regulation[s].each_pair{|item,reg_arry|
-          d = check_sub(day,item,reg_arry)
-          if d
-            ret << [item,d]
-            return ret if imidiate
-          end
-        }
+# <<<<<<< HEAD
+#     check_regulation.each{|regulation|
+#       [0,sft_str.to_i].each{|s|
+#         regulation[s].each_pair{|item,reg_arry|
+#           d = check_sub(day,item,reg_arry)
+#           if d
+#             ret << [item,d]
+#             return ret if imidiate
+#           end
+#         }
+# =======
+    [0,sft_str.to_i].each{|s|
+      check_reg[s].each_pair{|item,regration|
+        d = regration.check(day,shift_with_last_month)
+        if d
+          ret << [item,d]
+          return ret if imidiate
+        end
+#>>>>>>> HospitalPower
       }
     }
     ret
   end
 
-  def check_sub(day,item,reg_arry)
-    reg,back,length,msg =reg_arry# @Reguration[item]
+  def check_sub(day,item,regration)
+    #reg,back,length,msg =regration# @Reguration[item]
     #     shift_with_last_month  0123456789
     #                     shift       12345
     #                                   +   3-1+4 = 6
-    offset,len = back ? [day-back+4,length] : [5,31] #[0,31] 
-    (reg =~ shift_with_last_month[offset,len])
+    #offset,len = back ? [day-back+4,length] : [5,31] #[0,31] 
+    #(reg =~ shift_with_last_month[offset,len])
+    if back
+      (reg =~ shift_with_last_month[day-back+4,length])
+    else
+#pp limit
+      shift_with_last_month[5,31].gsub(reg,"").size > length
+    end
   end
 
   def error_check
     ret = []
-    #[@Reguration,@Wants,Reguration,Wants].each{|regulation|
-    check_regulation.each{|regulation|
-      regulation.each{|reg_hash| # { :after_nights =>  [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
-        reg_hash.values.each{|reg_arry|  # [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
-          reg,back,length,msg = reg_arry # 
-          if back
-            match = (reg =~ shift_with_last_month)
-            ret <<  [name,msg,[match-4,1].max,shift_with_last_month] if match && match-4+back>0
-          else
-            match = (reg =~ shifts)
-            ret <<  [name,msg,match,shift_with_last_month] if match
-          end
-        }
+# <<<<<<< HEAD
+#     #[@Reguration,@Wants,Reguration,Wants].each{|regulation|
+#     check_regulation.each{|regulation|
+#       regulation.each{|reg_hash| # { :after_nights =>  [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
+#         reg_hash.values.each{|reg_arry|  # [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
+#           reg,back,length,msg = reg_arry # 
+#           if back
+#             match = (reg =~ shift_with_last_month)
+#             ret <<  [name,msg,[match-4,1].max,shift_with_last_month] if match && match-4+back>0
+#           else
+#             match = (reg =~ shifts)
+#             ret <<  [name,msg,match,shift_with_last_month] if match
+#           end
+#         }
+# =======
+    #[@Reguration,@Wants,Reguration,Wants].each{|reguretion|
+    check_reg.each{|reg_hash| # { :after_nights =>  [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
+      reg_hash.values.each{|regration|  # [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
+        #reg,back,length,msg = reg_arry # 
+        day=regration.error_check(day,shift_with_last_month)
+        ret << [name,regration.comment,day,shift_with_last_month]  if day
+        #if back
+        #  match = (reg =~ shift_with_last_month)
+        #  ret <<  [name,msg,[match-4,1].max,shift_with_last_month] if match && match-4+back>0
+        #else
+        #  ret <<  [name,msg,0,shift_with_last_month] if shifts.gsub(reg,"").size > length
+        #end
+#>>>>>>> HospitalPower
       }
     }
     ret.uniq

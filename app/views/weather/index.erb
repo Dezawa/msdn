@@ -1,0 +1,38 @@
+<%# if @Links %> <%#= links  @Links %>
+<%#　　ユーザ：%><%#= current_user.login %><hr>
+<%# end %>
+<h3><%= @TYTLE  %> 一覧 <%= @TYTLE_post %></h3>
+<%= flash[:message] %>
+<%= @errors.call if @errors -%>
+<%= case @TableEdit
+ when TrueClass ; add_edit_buttoms(@Domain) 
+ when String; @TableEdit 
+ when Array ; action_buttoms @TableEdit 
+ end %>
+<%= action_buttom_table%>
+<%= will_page = pagenation @models %>
+<%= select_box if @Select%>
+  <table border=1 id="IndexTable"><%= @TableHeader ? send(@TableHeader) : label_line_option %>
+<% @models.each do |obj|  -%>
+  <tr id='<%= obj.id %>'><% @labels.each{|html_cell| 
+        next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
+  <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
+
+    <td><%= link_to '気温・蒸気圧', :controller => :weather, :action => :temperatuer,
+      :month => obj.month ,:location => obj.location%></td>
+    <td><%= link_to '湿度', :controller => :weather, :action => :humidity,
+      :month => obj.month ,:location => obj.location%></td>
+
+  <% if @Edit %>
+    <td><%= link_to 'Edit', :action => :edit ,:page => @page,:id => obj.id %>
+    </td>
+  <% end %>
+    </tr>
+<% end -%>
+</table>
+<%= will_page %>
+<br />
+<%= send(@AfterIndex,:show) if @AfterIndex %>
+<%= @AfterIndexHtml %>
+<%= on_cell_edit() if @on_cell_edit%>
+<token name ='<%= form_authenticity_token %>'></token>

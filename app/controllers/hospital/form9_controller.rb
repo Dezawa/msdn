@@ -30,8 +30,8 @@ end
   end
 
   def calc
-    items = params[:hospital_form9]
-
+    #items = params[:hospital_form9]
+    items={ }
     form9 = Hospital::Form9.new(@month)
     form9.calc(items)
     send_file(Hospital::Form9::Sheet9nsNew, :filename => "様式9-#{@month.strftime('%Y-%m')}.xls")

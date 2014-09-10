@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Ubr::MainController < ApplicationController
+class Ubr::MainController <  Ubr::Controller
   include ExcelToCsv
   before_action :authenticate_user! 
   before_filter :set_instanse_variable
@@ -14,9 +14,9 @@ class Ubr::MainController < ApplicationController
   #   Menu.new( Ubr::Waku::Aria[idx].first ,:ubr_main ,:action => "list_#{idx}" )
   #}
 
-  Links = Labels
+  #Links = Labels
   def set_instanse_variable
-    @Links=Labels
+    @Links=Links
 
     @filename = "枠詰まり具合"
     @pdffile  =File.join(Rails.root,"tmp","ubr",@filename)
@@ -24,7 +24,7 @@ class Ubr::MainController < ApplicationController
 
   # メニューを出す
   def index
-    @labels = Labels 
+    @labels = Links #Labels 
     @lastday = /201\d{3,5}/.match(File.read(Ubr::Lot::SCMFILEBASE))
   end
   def occupy_pdf

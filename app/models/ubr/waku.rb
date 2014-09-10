@@ -2,55 +2,23 @@
 # -*- coding: utf-8 -
 require 'pp'
 require 'csv'
-require 'postscript'
-require 'ubr/const'
+#require 'postscript'
+#require 'ubr/const'
 module Ubr
-class Waku
+class Waku < ActiveRecord::Base
+  extend Function::CsvIo
+  case RAILS_GEM_VERSION
+  when /^2/ ;set_table_name 'ubr_wakus'
+  when /^[34]/ ; self.tabele_name =  'ubr_wakus'
+  end
   delegate :logger, :to=>"ActiveRecord::Base"
-  Aria = %w(1号倉庫 2号倉庫 3号倉庫 4号倉庫 5号倉庫 6号倉庫 2号2階 5号2階 総合倉庫 番兵).
+
+  Direction = { "↑"=>Pos[0,-1],"↓" =>Pos[0,1], "→" => Pos[1,0],"←" => Pos[-1,0]}
+  Aria = %w(1号倉庫 2号倉庫 3号倉庫 4号倉庫 5号倉庫 6号倉庫 2号2階 5号2階 総合倉庫 AP跡 野積 番兵).
     #SPE倉庫 7号残 0H 番兵).
-    zip([ /^[1]/,/^2[CD]/,/^3/,/^4/,/^5[I-K]/,/^6/,/^2E/,/^5[LMN]/,/^0H/,/./])
+    zip([ /^[1]/,/^2[CD]/,/^3/,/^4/,/^5[I-K]/,/^6/,/^2E/,/^5[LMN]/,/^0[A-H]/,/^0[J-L]/,/^7/,/./])
   AriaEx = %w(SPE倉庫 7号残 0H 番兵).zip([/^7[^A-E]/,/^0H/,/./])
   Place=Aria
-  Attr_str = [:name,:accessbility,:location,:aria,:kata]
-  Attr_ary = [:lot_list,:direction]
-
-  Attr_num = [:kawa_suu,:volum3,:volum2,:volum1,:dan3,:dan2,:dan1,:retusu]
-  attr_accessor *Attr_str
-  attr_accessor *Attr_ary
-  attr_accessor  :enable
-  attr_accessor  :pos_x,:pos_y,:pos_xy,*Attr_num
-  attr_writer :lot_list
-  #$Waku = {}
-
-  def self.waku(reload=false) ; 
-    if !$Waku || reload
-      $Waku = { }
-    end
-    return $Waku if $Waku.size>0
-    load_from_master
-    $Waku
-  end  
-
-  def self.idx_or_name2name(idx_or_name)
-    case idx_or_name
-    when Integer ; Aria[idx_or_name].first
-    when /^\d+$/ ; Aria[idx_or_name.to_i].first
-      
-    else         ; idx_or_name
-    end
-  end
-
-  def self.load(file = "Master/Waku.csv") # 名前 川数
-    CSV.foreach(file) do |row|
-      next unless row[0] #&& row[1]
-      $Waku[row[0]] = 
-        Waku.new(:name => row[0],:kawa_suu => row[1].to_i
-                 )
-    end
-    $Waku
-  end
-  Direction = { "↑"=>Pos[0,-1],"↓" =>Pos[0,1], "→" => Pos[1,0],"←" => Pos[-1,0]}
   Kata      = { 
     ["↑","N"] => :UN, ["↓","N"] => :DN, 
     ["→","N"] => :RN, ["←","N"] => :LN, 
@@ -63,7 +31,46 @@ class Waku
     ["↑","S"] => :HS, ["↓","S"] => :HS, 
     ["→","S"] => :VS, ["←","S"] => :VS
   }
+
+  attr_accessor  :enable,:kawa_suu,:direction,:aria,:angle
   
+  attr_writer :lot_list,:pos_xy
+
+  def after_find
+    @lot_list = []
+    @angle = %w(→ ←).include?(direct_to) ? 0 : 270
+  end
+
+  def self.waku(reload=false)
+    if !$Waku || reload
+      $Waku = { }
+    end
+    return $Waku if $Waku.size>0
+    $Waku = Hash[*self.all.map{ |waku| [waku.name,waku]}.flatten]
+  end  
+
+ def self.by_name(name) ; waku[name]; end
+  def self.idx_or_name2name(idx_or_name)
+    case idx_or_name
+    when Integer ; Aria[idx_or_name].first
+    when /^\d+$/ ; Aria[idx_or_name.to_i].first
+      
+    else         ; idx_or_name
+    end
+  end
+
+  def self.tuuro(idx_or_name=nil,withoutpull=WithoutPull)
+    case idx_or_name
+    when nil
+      waku.values.select{ |w| /Z$/ =~ w.name } 
+    when      Integer ; aria = Aria[idx_or_name].first
+      waku.values.select{ |w| w.aria ==  aria && /Z$/ =~ w.name } 
+    when String       ;
+      waku.values.select{ |w| w.aria ==  idx_or_name && /Z$/ =~ w.name } 
+    when Regexp
+      waku.values.select{ |w| idx_or_name =~ w.name && /Z$/ =~ w.name } 
+    end    
+  end
   def self.aria(idx_or_name,active = true)
     ret = 
       case idx_or_name
@@ -76,29 +83,30 @@ class Waku
     active ? ret.select{ |wk| wk.direction} : ret
   end
 
-  def self.tuuro(idx_or_name=nil)
-    case idx_or_name
-    when nil
-      waku.values.select{ |w| /Z$/ =~ w.name } 
-    when      Integer ; aria = Aria[idx_or_name].first
-      waku.values.select{ |w| w.aria ==  aria && /Z$/ =~ w.name } 
-    when String       ;
-      waku.values.select{ |w| w.aria ==  idx_or_name && /Z$/ =~ w.name } 
-    when Regexp
-      waku.values.select{ |w| idx_or_name =~ w.name && /Z$/ =~ w.name } 
+  def direction ; Direction[direct_to] ;end
+  def aria      ; Aria[Aria.index{|p| p[1] =~ name}][0]; end
+  def kata      ;     Kata[[direct_to||"↑",palette || "N"]] ;  end
+  def kawa_suu  ; @kawa_suu ||= (dan1||0) +(dan2||0)  +(dan3||0)   ;end
+  def volum3    ; @volum3   ||= (dan1||0) +(dan2||0)*2+(dan3||0)*3 ;end
+  def tuuro?    ; !!(/Z$/ =~ name) ; end
+  def to_s      ; self.name ; end
+  def pos_xy    ; @pos_xy ||= Pos[pos_x,pos_y]  ;end
 
-    end    
+    def masu_xy ; Masu[kata] ;end
+    def delta_xy;masu_xy*direction;end
+    def waku_xy(offset=[0,0]) ; pos_xy + offset+[-masu_xy.x,0] ;end
+
+
+  def self.load(file = "Master/Waku.csv") # 名前 川数
+    CSV.foreach(file) do |row|
+      next unless row[0] #&& row[1]
+      $Waku[row[0]] = 
+        Waku.new(:name => row[0],:kawa_suu => row[1].to_i
+                 )
+    end
+    $Waku
   end
-
-  def self.tuuro_used(idx_or_name=nil)
-    tuuro(idx_or_name).select{ |waku| waku.weight > 0}
-  end
-
-  def self.tuuro_weight_wakusuu(idx_or_name=nil)
-    [(tuuro_used(idx_or_name).inject(0){ |w,waku| w += waku.weight}*0.001).to_i,
-     tuuro_used(idx_or_name).count]
-  end
-
+  
   def self.load_from_master(file = nil)
     file ||= File.join(Const::MasterDir,"SoukoMaster.csv")
     # 倉庫ブロック,枠,   ,容量/kg
@@ -152,106 +160,31 @@ class Waku
     }
   end
 
-  def self.by_name(name) ; waku[name]; end
-
-  def self.weight_of_aria(idx_or_name,without_pull = false)
-    #                  ↓ inactiveな枠でも集計
-    aria(idx_or_name,false).inject(0){ |weight,waku| weight + waku.weight(without_pull)}
-  end
-
-  def self.empty(idx_or_name,without_pull = false)
-    waku_list = 
-      #(case idx_or_name
-      # when Regexp
-      #   waku.select{ |name,wk| idx_or_name =~ name }
-      # else 
-         aria(idx_or_name).select{ |waku| waku.empty?(without_pull) && /Z$/ !~ waku.name}
-       #end
-       #).select{ |waku| waku.empty?(without_pull) && /Z$/ !~ waku.name}
-  end
-
-  def self.empty_by_masusuu(idx_or_name,masusuu,without_pull = false)
-    emptys = empty(idx_or_name,without_pull)
-    masusuu.map{ |masu| emptys.select{ |wk| wk.kawa_suu >= masu } }
-  end
-
-  def self.empty_number_by_masusuu(idx_or_name,masusuu,without_pull = false)
-    self.empty_by_masusuu(idx_or_name,masusuu,without_pull).map{ |lst| lst.size}
-  end
-
-  def self.by_occupied(idx_or_name,without_pull = false)
-    waku_list = aria(idx_or_name).
-      group_by{ |waku| waku.occupied(without_pull) }
-  end
-
-  def self.by_volume_occupied(idx_or_name,without_pull = false)
-    by_tuuro_or_not = aria(idx_or_name).group_by{ |waku| waku.tuuro? }
-    
-    pack_by_volum = by_tuuro_or_not[false].
-      group_by{ |waku| [ waku.volum3,waku.dan3,waku.dan2,waku.dan1] }
-    pack_by_volum[[999,0,0,0]] = by_tuuro_or_not[true] if by_tuuro_or_not[true].size > 0
-
-    list = { }
-    pack_by_volum.keys.each{|volum| 
-      list[volum] =
-      pack_by_volum[volum].group_by{|waku| waku.occupied(without_pull)}
-    }
-
-    list
-  end
-
-  def self.by_volume_occupied_org(idx_or_name,without_pull = false)
-    pack_by_volum = aria(idx_or_name).
-      group_by{ |waku| [ waku.volum3,waku.dan3,waku.dan2,waku.dan1] }
-    list = { }
-    pack_by_volum.keys.each{|volum| 
-      list[volum] =
-      pack_by_volum[volum].group_by{|waku| waku.occupied(without_pull)}
-     }
-    list
-   end
- 
-  def initialize(*args)
-    arg = {:kawa_suu => 10, :lot_list => []}.merge(args[0])
-    Attr_str.each do | attr_name|
-      instance_variable_set "@#{attr_name}",arg.delete(attr_name)
-    end
-    @lot_list = arg.delete(:lot_list)
-    @direction = arg.delete(:direction)
-    @pos_x = arg.delete(:pos_x)
-    @pos_y = arg.delete(:pos_y)
-    @pos_xy = Pos[@pos_x,@pos_y]    
-    Attr_num.each do | attr_name|
-      instance_variable_set "@#{attr_name}",arg.delete(attr_name).to_i
-    end
-
-    @location = Place[Place.index{|p| p[1] =~ @name}][0]
-    @aria = Aria[Aria.index{|p| p[1] =~ @name}][0]
-  end
-
-  def lot_list(without_pull = false)
+  # without_pull には、WithoutPull、WithPull、OnlyExport が来る
+  ######## Ube::Lotとの関連
+  def lot_list(without_pull = WithPull)
     return @lot_list unless without_pull
-    @lot_list.select{|seg| !seg.pull? }
+    @lot_list.select{|seg| 
+      case without_pull
+      when OnlyExport ; /出荷/ =~ seg.pull
+      else            ; seg.pull == ""
+      end
+    }
   end
 
-  def paret_su(without_pull = false)
+  def paret_su(without_pull = WithPull)
     lot_list(without_pull).inject(0){|sum,seg| sum + seg.paret_su}
   end
 
-  def empty?(without_pull = false) ; 
+  def empty?(without_pull = WithPull) ; 
     without_pull ? lot_list.select{ |seg| !seg.pull? && /Z$/ !~ name }.size == 0 :
       lot_list.select{ |seg| /Z$/ !~ name }.size == 0
   end
-  def tuuro? ; !!(/Z$/ =~ name) ; end
-
-  def to_s ; name ; end
   def add(lot_segment);    @lot_list << lot_segment
   end
   def remove(lot_segment);    @lot_list.delete(lot_segment) ;  end
-  def weight(without_pull = true)
-    if @name == "1A4D" 
-      logger.debug("UBR::Waku")
-    end
+
+  def weight(without_pull = WithPull)
     lot_list(without_pull).inject(0){|wt,segment| wt + segment.weight }
   end
 
@@ -262,45 +195,80 @@ class Waku
 
   #def tuuro? ; /Z$/ =~ name ;end
 
-  def max_packets
-    return dan3*3 + dan2*2 + dan1 if  @lot_list.size == 0
-    case @lot_list.first[1].lot.stack_limit
-    when 3 ; dan3*3 + dan2*2  + dan1
-    when 2 ; (dan3  + dan2)*2 + dan1
-    when 1 ; dan3   + dan2    + dan1
-    end
-  end
-
   #  [空き,引き合い,引き合い無,過剰]
   def used_map
-    without = occupied(true)  # 引き合い含まず
-    within  = occupied(false) # 引き合い込み
+    ary,masu = oppupied_map
+    destribute_ary(ary,masu)
+  end
+
+  # 過剰な量が無い場合                within <= masu
+  # |<---------  masu  --------->|
+  # |vacunt|<----  within ------>|     vacunt = masu - within
+  # |vacunt|    pull     |without|
+  # |vacunt|export|others|without|
+  #
+  # 過剰な量がある。pullまでは及ばない     pull <=   masu   < within
+  # |<----------  within ----------->|
+  # |    pull     |    fill0     |ovr|  ovr = within - masu
+  # |export|others|<--- without ---->|
+  # |export|others|    fill  |ovr|      fill = masu - (pull+ovr)
+  #
+  # 過剰な量がある。
+  #  pullまでは及ばないものの、ovr表示が食い込む
+  # |<--------------  within --------------->|
+  # |       pull       |  fill0  |<---ovr--->|  ovr = within - masu
+  # | export  | others |<----- without ----->|  fill =  masu - (pull+ovr) < 0
+  # | export  |others|<---ovr--->|              others = masu - (export+ovr)
+  #
+  # 過剰な量がある。pullも過剰
+  # |<------------  within --------->|
+  # |                            | ovr|  ovr = within - masu
+  # |<-----------  pull ---------->|without|
+  # |<----export---->|others |ovr| 
+  #
+  # 過剰な量がある。exportも過剰
+  # |<------------------  within ------------------>|
+  # |<-----------------  pull ------------->|without|
+  # |<------------export------------>|others|without|
+  # |<----------export---------->|ovr|others|without|
+  def oppupied_map
+    without = occupied(WithoutPull)  # 引き合い含まず
+    within  = occupied(WithPull)     # 引き合い込み
+    export  = occupied(OnlyExport)   # 出荷
     if tuuro? # 通路のときはmasu数は無限なので、占有数だけあることにする
       masu     = within #.to_f/retusu).ceil 
     else
       masu     = kawa_suu * retusu
     end
     vacunt = [ masu - within,0].max
+    others = within - without-export
+    over   = [within - masu,0].max
+    fill   = without - over
     ary = [ vacunt,                                              # 空枠
-            [masu - vacunt - without,0].max,                    # 引き合い
-            without <= masu+1 ? [masu, without].min : 0,       # 埋まり
-            without >  masu+1 ? [without-1-masu,masu].min : 0] # 超過
-    ary[2] = masu - ary[3] if ary[3]>0                           # 埋まり
-    destribute_ary(ary,masu)
+            # 出荷の正味              過剰がwithout+引き合いでは収まらん
+            #[export - [over+over-without -(within - without - export),0].max ,
+            [export -  [over+over         -(within           - export),0].max,0].max ,
+            # 引き合いの正味              過剰がwithoutでは収まらん
+            [within - without - export - [over+over-without,0].max ,0].max,  # 引き合い
+            [without-over-over,0].max ,
+           [over,masu].min  # 超過
+          ] 
+    [ary,masu,without,within,within - without,within - without - export]
   end
 
   # ary（空き、埋まり、引き合い、溢れ） をretusu列に分ける
-  def  destribute_ary(arg_ary,masu)
+  def destribute_ary(arg_ary,masu=nil)
+    masu ||= kawa_suu * retusu
     ary = arg_ary.dup
     k_suu = Array.new(retusu){ |a| a=masu/retusu} #kawa_suu}
-    aary = Array.new(retusu){ |a| a=[0,0,0,0]}
+    aary = Array.new(retusu){ |a| a=[0,0,0,0,0]}
     if tuuro? # 通路のときは複数列均等に分ける
       if retusu == 1
         aary[0] = ary
       else
-        (1..2).each{ |s|
+        (1..3).each{ |s|
           (0..retusu-2).each{ |r| 
-            aary[r][s] = [k_suu[r],ary[s]/retusu].min
+            aary[r][s] = [k_suu[r],ary[s]/(retusu-r)].min
             ary[s]   -=  aary[r][s]
             k_suu[r] -=   aary[r][s]
           }
@@ -308,7 +276,7 @@ class Waku
         }
       end
     else # 通常枠は複数列端から振り分ける
-      (0..3).each{ |s| 
+      (0..4).each{ |s| 
         (0..retusu-1).each{ |r| 
           aary[r][s] = [k_suu[r],ary[s]].min
           ary[s]   -=  aary[r][s]
@@ -321,7 +289,7 @@ class Waku
 
   # 何桝使われているか求める
   # 3段積みフレコンと40袋積んだ紙袋パレットは、規程の段数積まれる
-  # 11型パレットは2段積み
+  # 11型パレットとY14は2段積み.
   # 包装日の順に奥から詰める。
   # ロットが異なる場合は重ねない。但し1トン以下の紙袋の場合は重ねる
   # 40袋に満たない紙袋パレットは積み過ぎると危ないので24面を上限にする
@@ -329,7 +297,7 @@ class Waku
   #   これにパレットの 1面を加え、1tonパレット3段だと3x9=27面となる。
   #   8面積みパレットが1or2段ある上に乗せる場合も合わせて24面を上限とする。
   #   計算は「24で除して繰り上げ」で済ませる。
-  def occupied(without_pull = false)
+  def occupied(without_pull = WithPull)
     # 1段～3段積み桝でまだ残っている数
     remain = [ 0,dan1,dan2,dan3] 
 
@@ -338,13 +306,14 @@ class Waku
 
     # 包装日の順に奥から詰める。
     masu_need = lot_main_part.
-      inject(0){ |need,seg| need + stack_palet(seg,remain) }
-    
+      inject(0){ |need,seg| f= stack_palet(seg,remain);need + f} # stack_palet(seg,remain) }
+
     # 1トン以下の紙袋を詰める
     masu_need += stack_paper_palet(lot_paper_le_1ton,remain)
+    masu_need
   end
 
-  def lot_sort_by_packed(without_pull=false)
+  def lot_sort_by_packed(without_pull=WithPull)
     sort_by_packed = lot_list(without_pull).sort_by{ |seg| seg.lot.packed_date}
     lot_paper_le_1ton  = 
       sort_by_packed.select{ |seg| seg.count <= 40 &&  /^N/ =~ seg.lot.keitai }
@@ -397,12 +366,13 @@ class Waku
 
       remain[3] =  0 
     elsif parets <= 2*(remain[2]+remain[3]) + remain[1]
-      y = parets  - 2*(remain[2]-remain[3])
+      y = parets - remain[2]-remain[3] # d1 = p - 2(d2+d3), d1+d2+d3 = p-d2-d3
       remain[1] -= (y - remain[3] - remain[2])
       remain[3] = remain[2] = 0
       y
     else     
-      y = ((parets - 2*(remain[2]-remain[3]) - remain[1])/3.0).ceil
+      y = (remain[2]+remain[3]+ remain[1])+ #空き枠に収まった分
+        ((parets - 2*(remain[2]+remain[3]) - remain[1])*0.5).ceil # 足りない分
       remain[3] = remain[2] = remain[1] = 0
       y
     end
@@ -432,49 +402,6 @@ class Waku
   #とりあえず、全量を一枡3トンで積むことにして計算する
   def stack_paper_palet(lot_paper_le_1ton,remain)
     (lot_paper_le_1ton.inject(0){ |count,seg| count + seg.count}/40.0).ceil
-  end
-
-
-  # 何桝使われているか求める
-  # 3段積みフレコンと40袋積んだ紙袋パレットは、規程の段数積まれる
-  # 2段積みフレコンは2段まで 11型
-  # 40袋に満たない紙袋パレットは積み過ぎると危ないので24面を上限にする
-  #   面とは、5俵8段で1パレットだが、段が多義なので5俵8面と表現する
-  #   これにパレットの 1面を加え、1tonパレット3段だと3x9=27面となる。
-  #   8面積みパレットが1or2段ある上に乗せる場合も合わせて24面を上限とする。
-  #   計算は「24で除して繰り上げ」で済ませる。
-  # 3段フレコン、2段フレコン、8面紙パレット、半端紙パレットの順に加えていく。
-  # 異なるロットは重ねない。ただし、紙の1トン以下ロットは重ねる
-  def occupied_old(without_pull = false)
-    # 1段～3段積み桝でまだ残っている数
-    remain = [ 0,dan1,dan2,dan3] 
-
-    ### 紙とフレコンと分ける
-    # 紙 皆 3段
-    lot_paper          = lot_list(without_pull).select{ |seg| /^N/ =~ seg.lot.keitai }
-    # 「フレコン.何段まで積めるか」毎にグルーピングする
-    lot_by_stack_limit = lot_list(without_pull).
-      select{ |seg| /^F/ =~ seg.lot.keitai }.
-      group_by{|segment| segment.lot.stack_limit}
-
-    #  何段まで積めるか 毎にパレット数をまとめる
-    paret_by_stack_limit = []
-    lot_by_stack_limit.
-      each{|stack,segments| 
-      paret_by_stack_limit[stack] = segments.inject(0){|p,seg| p+seg.paret_su}
-    }
-
-    ########### 積み込み開始
-    last_masu = [0]*4
-    used = 0
-    # フレコン
-    [3,2,1].each{ |stack_limit|
-      next unless paret_by_stack_limit[stack_limit] || paret_by_stack_limit[stack_limit] == 0
-      used += masu_used(stack_limit,paret_by_stack_limit[stack_limit],remain,last_masu)
-    }
-
-    ## 紙袋
-   used += masu_used_paper(lot_paper,remain,last_masu)
   end
 
   # 空の桝が 3段桝 n3, 2段桝 n2, 1段桝 n1個あり、
@@ -637,30 +564,79 @@ class Waku
     used
   end
 
-  def stack_40hyou(segments,remain,last_masu)
-    used = 0
-    segments.each{ |segment|
-      used += masu_used_3stack((segment.count/40).to_i,remain,last_masu)
-    }
-    used
+
+  ## stat
+  def self.tuuro_used(idx_or_name=nil,withoutpull=WithoutPull)
+    tuuro(idx_or_name,withoutpull).select{ |waku| waku.weight > 0}
   end
 
-  def masu_used_paper_hasu(men,remain,last_masu_men)
-    (1..3).each{ |s| next if last_masu_men[s] <= 0
-      last_masu_men[s] = [last_masu_men[s] - men,0].max
-      return 0
-    }
-    if remain[3]>0
-      remain[3] -= 1 
-      last_masu_men[3] = 24 - men
-    elsif remain[2]>0
-      remain[2] -= 1 
-      last_masu_men[2] = 18 - men
-    else
-      remain[1] -= 1 
-      last_masu_men[1] = 9 - men
-    end
-    1
+  def self.tuuro_weight_wakusuu(idx_or_name=nil,withoutpull=WithoutPull)
+    [(tuuro_used(idx_or_name,withoutpull).inject(0){ |w,waku| w += waku.weight(withoutpull)}*0.001).to_i,
+     tuuro_used(idx_or_name,withoutpull).count]
   end
+
+  def self.lotseg_of_aria(idx_or_name,without_pull = WithPull)
+    #                  ↓ inactiveな枠でも集計
+    aria(idx_or_name,false).map{ |wk| wk.lot_list(without_pull) }.flatten
+  end
+
+ 
+  def self.weight_of_aria(idx_or_name,without_pull = WithPull)
+    #                  ↓ inactiveな枠でも集計
+    aria(idx_or_name,false).inject(0){ |weight,waku| weight + waku.weight(without_pull)}
+  end
+
+  def self.empty(idx_or_name,without_pull = WithPull)
+    waku_list = 
+      #(case idx_or_name
+      # when Regexp
+      #   waku.select{ |name,wk| idx_or_name =~ name }
+      # else 
+         aria(idx_or_name).select{ |waku| waku.empty?(without_pull) && /Z$/ !~ waku.name}
+       #end
+       #).select{ |waku| waku.empty?(without_pull) && /Z$/ !~ waku.name}
+  end
+
+  def self.empty_by_masusuu(idx_or_name,masusuu,without_pull = WithPull)
+    emptys = empty(idx_or_name,without_pull)
+    masusuu.map{ |masu| emptys.select{ |wk| wk.kawa_suu >= masu } }
+  end
+
+  def self.empty_number_by_masusuu(idx_or_name,masusuu,without_pull = WithPull)
+    self.empty_by_masusuu(idx_or_name,masusuu,without_pull).map{ |lst| lst.size}
+  end
+
+  def self.by_occupied(idx_or_name,without_pull = WithPull)
+    waku_list = aria(idx_or_name).
+      group_by{ |waku| waku.occupied(without_pull) }
+  end
+
+  def self.by_volume_occupied(idx_or_name,without_pull = WithPull)
+    by_tuuro_or_not = aria(idx_or_name).group_by{ |waku| waku.tuuro? }
+    
+    pack_by_volum = by_tuuro_or_not[false].
+      group_by{ |waku| [ waku.volum3,waku.dan3,waku.dan2,waku.dan1] }
+    pack_by_volum[[999,0,0,0]] = by_tuuro_or_not[true] if by_tuuro_or_not[true].size > 0
+
+    list = { }
+    pack_by_volum.keys.each{|volum| 
+      list[volum] =
+      pack_by_volum[volum].group_by{|waku| waku.occupied(without_pull)}
+    }
+
+    list
+  end
+
+  def self.by_volume_occupied_org(idx_or_name,without_pull = WithPull)
+    pack_by_volum = aria(idx_or_name).
+      group_by{ |waku| [ waku.volum3,waku.dan3,waku.dan2,waku.dan1] }
+    list = { }
+    pack_by_volum.keys.each{|volum| 
+      list[volum] =
+      pack_by_volum[volum].group_by{|waku| waku.occupied(without_pull)}
+     }
+    list
+   end
+ 
 end
 end

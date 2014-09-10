@@ -1,44 +1,6 @@
-<script type="text/javascript">
-jQuery(function($) {
-// when the #year_owner_year field changes
-  $("#year_owner_year").change(function() {
-    // make a POST call and replace the content
-    var year = $('select#year_owner_year :selected').val();
-    if(year == "") year="2010";
-    jQuery.post('/book/keeping/year_change/' + year, function(data){
-       $("#keeping_body").html(data);
-    })
-    return false;
-  });
-})
-</script>
- <div id='year_change' >
-   <%= select_year( @year.year, {start_year: 2012, end_year: Time.now.next_year.year},
-                                id: 'year_owner_year' ,name: 'year_owner[year]' ) -%>年度
-　　ログインユーザ：<%= current_user.username %>
-　<%= @owner.owner %>の簿記(<%= @owner.permission_string %>)
- <% if   @owner_choices.size>1 %>
-  <%= link_to( '変更', :action => :owner_change_win ,:popup => true) %> 
-  <% end %>
-</div>
-<hr>
-<div align=center id='keeping_body'>
+<%# if @Links %> <%#= links  @Links if @Links %>
+<div align=center id='body'>
 <%= render :partial => "index" %>
-</div>
-<%= flash[:message] %>
-<div align=center>
-<table border=1 cellspacing=0 id='index'>
-<% @labels[0..-2].each{|menu| %>
-   <%=  menu.show self %> 
-<% } %>
-<div id='menu'>
-<%= @labels[-1].show self %>
-</div>
-</table>
- <%= link_to("振替伝票一覧 印刷用CSV","/book/main/csv_out_print",id: "main/csv_out_print")%><br>
- <%= link_to("勘定元帳一覧 CSV","/book/keeping/csv_motocho",id: "csv_motocho")%><br>
- 　　各科目の元帳の表示は、勘定科目、貸借対照表、清算表 の画面で科目名からリンクしています。
-</div>
 <p></p>
 <hr>
 <div align=center>

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 class Hospital::MonthlyController < Hospital::Controller
+ # extend Hospital::Const
+  include Hospital::Const
   before_filter :set_instanse_variable
 
   def set_instanse_variable
@@ -92,10 +94,10 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
   end
 
   def assign
-    single=1 # 最初の解だけ求める
-    @assign = Hospital::Assign.create_assign(@current_busho_id,@month,single)
-    redirect_to :action => :show_assign,:mult => "20",:no => "0000"
-
+      #ret=Hospital::Assign.delay(:attempts => 1).create_assign(@current_busho_id,@month,2)
+      ret=Hospital::Assign.create_assign(@current_busho_id,@month,SingleSolution)
+      
+      redirect_to :action => :show_assign,:mult => "20",:no => "0000"
   end
 
 
@@ -123,6 +125,7 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
 
   def error_disp
     @error_days,@error_nurces = Hospital::Assign.new(@current_busho_id,@month).error_check
+    render :layout => "hospital_error_disp"
     
   end
 end

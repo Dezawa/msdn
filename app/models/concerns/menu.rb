@@ -32,8 +32,13 @@ class Menu < ActionView::Base
     @label  = arg_label
     @option = data # || { }
     @buttonlabel =  "CSV登録" #if @buttonlabel.blank? 
+=======
+    @buttonlabel = "CSVで登録"
       #@action= arg_action
   end
+
+  def  buttonlabel;  @buttonlabel || "CSVで登録" ;end
+
 #  end
 #  hash_initializer *Attr_names
 
@@ -72,6 +77,7 @@ class Menu < ActionView::Base
                        else enable_csv_upload
                        end
     size = (@option[:size] rescue 30)
+<<<<<<< HEAD:app/models/concerns/menu.rb
     tag_id = "upload_#{model}_#{action}"
     @buttonlabel ||= "CSVで登録"
     #safe_join( [view.form_tag( "/#{model}/#{csv_upload_action}",
@@ -80,6 +86,14 @@ class Menu < ActionView::Base
                "\n <td><input name='commit' type='submit' value='#{@buttonlabel}' />\n".html_safe ,
                 " <input size=#{size} name='csvfile' type='file' id='#{tag_id}'></td></form>".html_safe
               ])
+=======
+    view.form_tag( "/#{model}/#{csv_upload_action}", :multipart => true,:method => :post) +
+      " <td><input name='commit' type='submit' value='#{buttonlabel}' />\n"+
+      " <input size=#{size} name='csvfile' type='file'></td></form>"
+    #"<form action='/#{model}/#{csv_upload_action}' enctype='multipart/form-data' method='post'>\n" + 
+    #      " <td><input name='commit' type='submit' value='CSVで登録' />\n"+
+    #      " <input size=30 name='csvfile' type='file'></td></form>"
+>>>>>>> HospitalPower:lib/menu.rb
   end
 
   def csv_dwonload_link(view)

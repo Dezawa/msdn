@@ -1,0 +1,5 @@
+"id","name"," offset_x"," offset_y "," stat_offset_x "," stat_offset_y"," stat_font"," stat_point","landscape","stat_name_list","stat_reg_list"
+1,"123倉庫"," 20"," 5"," 5"," 10","1","0","false"," 1A 1B 2 3 2-2F","^1A ^1B ^2[CD] ^3 ^2E"
+2,"456倉庫"," 10"," 10"," 10"," 7","1","0","false"," 4 5 6 5-2F","^4 ^5[JIK] ^6 ^5[LMN]"
+3,"総合倉庫"," 25"," 25"," 60"," 60","1","0","1"," 0A 0B 0C 0D 0E 野積み","^0A ^0B ^0C ^0D ^0E ^7"
+4,"AP跡"," 25"," 25"," 60"," 60","1","0","false"," 0J 0K 0L","^0J ^0K ^0L"

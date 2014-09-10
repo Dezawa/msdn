@@ -3,7 +3,7 @@
 require 'test_helper'
 require 'hospital/kinmu'
 class Hospital::MonthlyTest < ActiveSupport::TestCase
-  fixtures :hospital_monthlies,:hospital_kinmucodes
+  fixtures :hospital_monthlies,:hospital_kinmucodes, :hospital_roles
   fixtures :nurces, :hospital_defines
   def setup
     @monthlies = Hospital::Monthly.all

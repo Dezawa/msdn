@@ -46,7 +46,7 @@ class Hospital::Monthly < ActiveRecord::Base
   end
 
   def days2shift
-    @shift = @days.map{|knm| knm.shift ? knm.shift : "_"}.join
+    @shift ||= days.map{|knm| knm.shift ? knm.shift : "_"}.join
   end
   def day2shift
     @shift ||= days.map{|id| 
@@ -63,12 +63,13 @@ class Hospital::Monthly < ActiveRecord::Base
       
     (0..lastday).each{|day|
       knm = @shift[day,1]
-      current_kinmucode = days[day].kinmucode
+      #current_kinmucode = days[day].kinmucode
       next if days[day].want && days[day].want>0
-      if id = Hospital::Kinmucode.from_0123(knm,kinmukubun_id)
+      if kinmucode_id = Hospital::Kinmucode.from_0123(knm,kinmukubun_id)
         #next if Hospital::Kinmucode.from_0123(knm,kinmukubun_id).
         #  include?(current_kinmucode.id)
-        days[day].kinmucode_id = id
+        days[day].kinmucode_id = kinmucode_id
+        #logger.debug("Shift=#{knm},kinmucode_id=#{kinmucode_id},CODE=#{days[day].kinmucode.code}")
           #Hospital::Kinmucode.from_0123(knm,kinmukubun_id)
       else
         days[day].kinmucode_id = nil
@@ -94,7 +95,6 @@ class Hospital::Monthly < ActiveRecord::Base
   def kinmucode(day)
     kinmucode_id = days[day].kinmucode_id
     return "&nbsp;" unless kinmucode_id && (kinmucode_id%1000)>0
-    #Hospital::Kinmucode.find(kinmucode_id%1000).code rescue nil
     Hospital::Kinmucode.k_code(kinmucode_id%1000).code rescue nil
   end
 

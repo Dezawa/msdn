@@ -10,7 +10,24 @@
  <%- } -%>
 </tr>
 </table>
-<% end %>
+
+<% if @AssosiationLabels %>
+<p>
+<table border=1><tr><td colspan=4>
+<%= add_edit_buttoms(:assosiation,:add_action => :add_assosiation,
+                     :edit_action => :edit_assosiation,
+                     :id => @model.id) %></td></tr>
+<%= label_line_comm 2,@AssosiationLabels %>
+<% @assosiations.each do |obj|  -%>
+  <tr id='<%= obj.id %>'><% @AssosiationLabels.each{|html_cell| 
+        next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
+  <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
+<%= delete_connection_if_accepted(obj) %>
+  </tr>
+<%- end %>
+</table>
+<%- end %>
 <br />
 <hr>
 <%= raw @PostMessage %>
+<%- if @image_source %> <img src='<%= @image_source %>'><% end %>

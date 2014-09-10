@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 opt1:
     url: /ubeboard/top
     id: "1"
@@ -140,4 +141,98 @@ opt12:
       5YCJ5bqr566h55CG
 
     order: "1000"
+=======
+---
+one:
+  id: '1'
+  label: 生産計画
+  url: /ubeboard/top
+  order: '2'
+  authorized: 生産計画利用
+  comment: !!null 
+No2:
+  id: '2'
+  label: 記名切り替えメンテ
+  url: /ube_named_changes
+  order: '0'
+  authorized: 生産計画メンテ
+  comment: !!null 
+No3:
+  id: '3'
+  label: ユーザメンテ
+  url: /users
+  order: '80'
+  authorized: ユーザメンテ
+  comment: !!null 
+No4:
+  id: '4'
+  label: オプションメンテ
+  url: /user_options
+  order: '85'
+  authorized: オプションメンテ
+  comment: !!null 
+No5:
+  id: '5'
+  label: 宇部病院LiPS
+  url: /lips/ube_hospital
+  order: '1'
+  authorized: 宇部病院LiPS
+  comment: !!null 
+No6:
+  id: '6'
+  label: 生産計画一覧
+  url: /ube_skd
+  order: '50'
+  authorized: !!null 
+  comment: !!null 
+No7:
+  id: '7'
+  label: 複式簿記試用
+  url: !!null 
+  order: '0'
+  authorized: 複式簿記試用
+  comment: 複式簿記試用
+No8:
+  id: '8'
+  label: 複式簿記
+  url: /book_keeping
+  order: '90'
+  authorized: 複式簿記利用
+  comment: !!null 
+No9:
+  id: '9'
+  label: LiPS
+  url: !!null 
+  order: '0'
+  authorized: LiPS会員
+  comment: 会員LiPS利用権
+No10:
+  id: '10'
+  label: 複式簿記メンテ
+  url: !!null 
+  order: '0'
+  authorized: 複式簿記メンテ
+  comment: 複式簿記 科目編集
+No11:
+  id: '11'
+  label: 勤務割付
+  url: /hospital_nurces
+  order: '1000'
+  authorized: 勤務割付
+  comment: 勤務割付
+No12:
+  id: '12'
+  label: 倉庫管理
+  url: /ubr/main
+  order: '1000'
+  authorized: UBR
+  comment: 倉庫管理
+No13:
+  id: '13'
+  label: 倉庫管理メンテ
+  url: /hospital_nurces
+  order: '0'
+  authorized: UBRメンテ
+  comment: 倉庫管理メンテ
+>>>>>>> HospitalPower
 

@@ -21,49 +21,56 @@
 #  nenkyuu"
 require 'pp'
 class Hospital::Kinmucode < ActiveRecord::Base
+# <<<<<<< HEAD
+#   extend CsvIo
+#   self.table_name  = 'hospital_kinmucodes'
+
+#   validate :validate_one_day_is_one_day ,:validate_day_or_night_time_is_one_day ,
+#            :validate_am_pm_is_harf_day ,:validate_nenkyuu_is_one_or_harf_day
+#   def validate_one_day_is_one_day
+#     unless sum( nenkyuu ,am,pm,night,midnight,am2,pm2, night2,midnight2) == 1.0 ||
+#         /拘/ =~ code  || name == "二交代" && /夜|明/ =~ code 
+#       errors.add(:am,"ID=#{id}:一日の合計が1でない") 
+#     end
+#   end
+
+#   def validate_day_or_night_time_is_one_day
+#     unless [0.0, 0.5, 1.0].include? sum( am,pm,am2,pm2)
+#       errors.add(:am,"ID=#{id}:日勤の合計が0,0.5,1でない") 
+#     end    
+#     [night,midnight,night2,midnight2].each{|night|
+#       unless [0.0, 1.0].include? sum( night )
+#         errors.add(:am,"ID=#{id}:夜勤が0.0,1.0でない")
+#       end
+#     }  
+#   end
+
+#   def validate_am_pm_is_harf_day
+#     unless [0.0,0.5].include? sum( am,am2)
+#       errors.add(:am,"ID=#{id}:AM勤が0,0.5でない")
+#     end
+#     unless [0.0,0.5].include? sum( pm,pm2)
+#       errors.add(:am,"ID=#{id}:PM勤が0,0.5でない")
+#     end
+#   end
+
+#   def validate_nenkyuu_is_one_or_harf_day
+#     unless nenkyuu.nil?  || nenkyuu == 0.0 || nenkyuu == 0.5 || nenkyuu == 1.0
+#       errors.add(:am,"ID=#{id}:休みが0,0.5,1.0でない")
+#     end
+#   end
+
+#   def sum(*args)
+#     args.inject(0){|sum,v| sum + (v ? v : 0)}
+#   end
+
+
+# =======
   extend CsvIo
-  self.table_name  = 'hospital_kinmucodes'
-
-  validate :validate_one_day_is_one_day ,:validate_day_or_night_time_is_one_day ,
-           :validate_am_pm_is_harf_day ,:validate_nenkyuu_is_one_or_harf_day
-  def validate_one_day_is_one_day
-    unless sum( nenkyuu ,am,pm,night,midnight,am2,pm2, night2,midnight2) == 1.0 ||
-        /拘/ =~ code  || name == "二交代" && /夜|明/ =~ code 
-      errors.add(:am,"ID=#{id}:一日の合計が1でない") 
-    end
-  end
-
-  def validate_day_or_night_time_is_one_day
-    unless [0.0, 0.5, 1.0].include? sum( am,pm,am2,pm2)
-      errors.add(:am,"ID=#{id}:日勤の合計が0,0.5,1でない") 
-    end    
-    [night,midnight,night2,midnight2].each{|night|
-      unless [0.0, 1.0].include? sum( night )
-        errors.add(:am,"ID=#{id}:夜勤が0.0,1.0でない")
-      end
-    }  
-  end
-
-  def validate_am_pm_is_harf_day
-    unless [0.0,0.5].include? sum( am,am2)
-      errors.add(:am,"ID=#{id}:AM勤が0,0.5でない")
-    end
-    unless [0.0,0.5].include? sum( pm,pm2)
-      errors.add(:am,"ID=#{id}:PM勤が0,0.5でない")
-    end
-  end
-
-  def validate_nenkyuu_is_one_or_harf_day
-    unless nenkyuu.nil?  || nenkyuu == 0.0 || nenkyuu == 0.5 || nenkyuu == 1.0
-      errors.add(:am,"ID=#{id}:休みが0,0.5,1.0でない")
-    end
-  end
-
-  def sum(*args)
-    args.inject(0){|sum,v| sum + (v ? v : 0)}
-  end
-
-
+  include Hospital::Const
+  set_table_name 'hospital_kinmucodes'
+  #belongs_to :kinmukubun,:class_name => "Hospital::inmukubun"
+#>>>>>>> HospitalPower
   @@From_0123 = nil
 
   CodeSym = { 
@@ -85,13 +92,16 @@ class Hospital::Kinmucode < ActiveRecord::Base
     @@Code[sym] ||= self.find_by(code: CodeSym[sym]).id rescue SymVal[sym]
   end
 
-  Kubun=  Hash[*[:nikkin,:sankoutai,:part,:touseki,:l_kin,:gairai,:kyoutuu].
-    zip([1,2,3,4,5,6,7]).flatten]
+
+  Kubun=  { }
+  KK=Hash[:nikkin,"日勤",:sankoutai,"三交代",:part,"パート",:touseki,"透析",
+                   :l_kin,"L勤",:gairai,"外来",:kyoutuu,"共通"].
+    each_pair{ |kinmu,name|  Kubun[kinmu] = (k=Hospital::Role.find_by_name(name)) ? k.id : nil }
 
 #Hospital::Kinmucode::From0123, To0123 の見直し
 #  例えば出張は1日n勤務だが病棟の勤務人数集計ではゼロ。これに対応する
 #  shiftの表記が　十進の数字だったがこれを16進数の数字に変える
-  @@from123 = Hash.new{ |h,k| h[k]= Hash.new{ |h,k| h[k]=nil}}
+  @@from123 = Hash.new{ |h,k| h[k]= Hash.new{ |hh,kk| hh[kk]=nil}}
   ToFrom0123 = 
    {  
   # [nenky,am, pm, night,mid,  am2, pm2,nig2,midnight2]
@@ -113,9 +123,18 @@ class Hospital::Kinmucode < ActiveRecord::Base
                                   
   From0123 = ToFrom0123.invert
 
-  @@KCode = { }
+  @@KCode = Hash[*self.all.map{ |kc| [kc.id,kc]}.flatten]
   def self.k_code(id)
     @@KCode[id] ||= self.find(id)
+  end
+
+  @@Code = Hash[*@@KCode.to_a.map{ |id,kcode| [id,kcode.code]}.flatten]
+  def self.id2code(id)
+    @@Code[id]
+  end
+
+  def self.sanchoku
+    @@sanchoku ||= Hospital::Role.find_by_name("三交代").id
   end
 
 
@@ -130,44 +149,32 @@ class Hospital::Kinmucode < ActiveRecord::Base
   #  ただし、3直の 2→L2、 3→L3、二直の 2→夜, 0→明 は入れ替える
   #  これらは      L       M             N      O に置き換えられているはず
   def self.from_0123(shift,kinmukubun_id)
-    #return @@from123[shift][kinmukubun_id] if  @@from123[shift][kinmukubun_id]
-
-    @@from123[shift][kinmukubun_id] ||=
-      case shift
+    sft_str = shift.to_s
+    @@from123[sft_str][kinmukubun_id] ||=
+      case sft_str
       when "2","3" ; return shift.to_i
       when "0"     ; return code(:Koukyu)
       when "L","M" ; 
-        return Hospital::Kinmucode.
-          find_by(code: {"L"=>"L2","M"=>"L3"}[shift],kinmukubun_id: 2).id
+        return Hospital::Kinmucode.find_by_code_and_kinmukubun_id({"L"=>"L2","M"=>"L3"}[sft_str],sanchoku).id
       when "N","O" ; 
-        code = {"N"=>"夜","O"=>"明"}[shift]
+        code = {"N"=>"夜","O"=>"明"}[sft_str]
         #puts code
         return Hospital::Kinmucode.find_by(code: code).id
       when "1","5"
-        value = From0123[shift] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        logger.debug("Kinmucode shift=#{shift} kinmukubun_id = #{kinmukubun_id}")
-        Hospital::Kinmucode.where( ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
-                                    " and nenkyuu=? and am=? and pm=? and "+
-                                    "night=? and midnight=? and am2=? and "+
-                                    "pm2=? and night2=? and midnight2=? ",
-                                    kinmukubun_id,*value]
-                                )[0].id
+        Kubun[:kyoutuu] ||= (k=Hospital::Role.find_by_name("共通")) ? k.id : nil 
+        value = From0123[sft_str] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
+                                                " and nenkyuu=? and am=? and pm=? and "+
+                                                "night=? and midnight=? and am2=? and "+
+                                                "pm2=? and night2=? and midnight2=? ",
+                                                kinmukubun_id,*value]
+                                ).sort_by{ |k| k.id }[0].id
+
       else ; nil
       end
 
     #Hospital::Kinmucode.all(:conditions => [""])
   end
-
-  def self.from_0123_old(shift,kinmukubun_id)
-    { Kubun[:nikkin]   => { "0" => Hospital::Kinmucode.code(:Koukyu), "1" => 30, "2" => 2 , "3" => 3 ,"5" => 33},
-      Kubun[:sankoutai]=> { "0" => Hospital::Kinmucode.code(:Koukyu), "1" =>  1, "2" => 2 , "3" => 3 ,"5" => 33},
-      Kubun[:part]     => { "0" => Hospital::Kinmucode.code(:Koukyu), "1" => 46},
-      Kubun[:touseki]  => { "0" => Hospital::Kinmucode.code(:Koukyu), "1" => 51},
-      Kubun[:l_kin]    => { "0" => Hospital::Kinmucode.code(:Koukyu), "1" => 53},
-      Kubun[:gairai]   => { "0" => Hospital::Kinmucode.code(:Koukyu), "1" => 61}
-    }[kinmukubun_id][shift]
-     # from0123[kinmukubun_id][shift]
-    end
 
   # def am ; main_daytime > 5 ? 1 : 0 ;end
   def self.code_for_hope(shift)
@@ -176,16 +183,17 @@ class Hospital::Kinmucode < ActiveRecord::Base
     @code_for_hope[shift] ||=
       (case shift
        when  Kubun[:nikkin] #日勤
-         self.where( [sql,%w(0 D N),Kubun[:kyoutuu]])+
-           self.where( [sql,%w(4□ 管),Kubun[:nikkin]])+
-           self.where( [sql,%w(1 2 3),Kubun[:sankoutai]])+
-           self.where( [sql,%w(S A),Kubun[:kyoutuu]])+
-           self.where( ["kinmukubun_id = ?",Kubun[:nikkin]])
+         self.code_nikkin  + #all(:conditions => [sql,%w(0 D N),Kubun[:kyoutuu]])+
+           self.code_holyday  + #self.all(:conditions => [sql,%w(4□ 管),Kubun[:nikkin]])+
+           self.code_sanchoku + #all(:conditions => [sql,%w(1 2 3),Kubun[:sankoutai]])+
+           self.code_holydaye_other + # all(:conditions => [sql,%w(S A),Kubun[:kyoutuu]])+
+           self.code_nikkin_all       #all(:conditions => ["kinmukubun_id = ?",Kubun[:nikkin]])
        when Kubun[:sankoutai]
-         self.where( [sql,%w(0 D N),Kubun[:kyoutuu]])+
-           self.where( [sql,%w(1 2 3),Kubun[:sankoutai]])+
-           self.where( [sql,%w(S A),Kubun[:kyoutuu]])+
-           self.where( ["kinmukubun_id = ?",Kubun[:kyoutuu]])
+         self.code_holyday  + # self.all(:conditions => [sql,%w(0 D N),Kubun[:kyoutuu]])+
+           self.code_sanchoku + #self.all(:conditions => [sql,%w(1 2 3),Kubun[:sankoutai]])+
+           self.code_holydaye_other + 
+           code_sanchoku_other #+ # all(:conditions => [sql,%w(S A),Kubun[:kyoutuu]])+
+           #self.code_kyoutuu_other    #all(:conditions => ["kinmukubun_id = ?",Kubun[:kyoutuu]])
        when Kubun[:part]
          self.where( [sql,%w(0 D N),Kubun[:kyoutuu]])+
            self.where( ["kinmukubun_id = ?",3])+
@@ -197,6 +205,71 @@ class Hospital::Kinmucode < ActiveRecord::Base
        end
        ).uniq.map{|kinmucode| [ kinmucode.code,kinmucode.id]}
   end
+    Sql="code in (?) and kinmukubun_id = ?"
+  def self.code_holyday
+    self.all(:conditions => [Sql,%w(0 D N),Kubun[:kyoutuu]])
+  end
+  def self.code_holydaye_other
+    self.all(:conditions => [Sql,%w(S A),Kubun[:kyoutuu]])
+  end
+  def self.code_nikkin
+    self.all(:conditions => [Sql,%w(4□ 管),Kubun[:nikkin]])
+  end
+  def self.code_nikkin_all
+    self.all(:conditions => ["kinmukubun_id = ?",Kubun[:nikkin]])
+  end
+  def self.code_sanchoku
+    self.all(:conditions => [Sql,%w(1 2 3),Kubun[:sankoutai]])
+  end
+  def self.code_sanchoku_other
+    self.all(:conditions => ["kinmukubun_id = ?",Kubun[:sankoutai]])
+  end
+  def self.code_kyoutuu_other
+    self.all(:conditions => ["kinmukubun_id = ?",Kubun[:kyoutuu]])
+  end
+  def self.code_kyoutuu
+    self.all(:conditions => [Sql,%w(S A),Kubun[:kyoutuu]])
+  end
 
-  def daytime ; (am||0.0)+(pm||0.0) ;end
+#<<<<<<< HEAD
+#  def daytime ; (am||0.0)+(pm||0.0) ;end
+#=======
+
+  @@shift1 ={ }
+  @@shift2={ }
+  @@shift3={ }
+  def self.shift1(id)
+    return @@shift1[id] if  @@shift1[id] 
+    kcode=self.find(id)
+    @@shift1[id] = [:am,:pm,:am2,:pm2].inject(0){|s,sym| s +  (kcode[sym] ? kcode[sym] : 0)}
+  end
+
+  def self.shift2(id)
+    return @@shift2[id] if  @@shift2[id] 
+     @@shift2[id] ||= (kcode=self.find(id)).night + kcode.night2 
+  end
+
+  def self.shift3(id)
+    return @@shift3[id] if  @@shift3[id] 
+     @@shift3[id] ||= (kcode=self.find(id)).midnight + kcode.midnight2 
+  end
+
+  def self.daytime(id)
+    return @@shift1[id] if  @@shift1[id] 
+    kcode=self.find(id)
+    @@shift1[id] = [:am,:pm,:am2,:pm2].inject(0){|s,sym| s +  (kcode[sym] ? kcode[sym] : 0)}
+  end
+
+  def self.night(id)
+     @@shift2[id] ||= (kcode=self.find(id)).night + kcode.night2 
+  end
+
+  def self.midnight(id)
+     @@shift3[id] ||= (kcode=self.find(id)).midnight + kcode.midnight2 
+  end
+  
+#>>>>>>> HospitalPower
 end
+__END__
+Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= 14) and nenkyuu=? and am=? and pm=? and night=? and midnight=? and am2=? and  pm2=? and night2=? and midnight2=? ", kinmukubun_id,*value])
+                                ).sort_by{ |k| k.id }[0].id

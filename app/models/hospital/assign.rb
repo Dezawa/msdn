@@ -28,7 +28,8 @@ LogPuts,LogDebug,LogInfo = 1,2,4
 # 高速化準備作業
 #  #assign_month の下部構造を見る
 # 
-#  assign_month
+#  assign_month_mult
+#   assign_mult
 #    + assign_days_by_re_entrant
 #    |  + assign_days_by_re_entrant123(day)
 #    |  |  + short_role(day,3,true)   # この日のこのshiftの看護師の不足role
@@ -128,11 +129,14 @@ LogPuts,LogDebug,LogInfo = 1,2,4
 #     Hospital::Assign
 class Hospital::Assign
   include Hospital::WhichPatern
+  include Hospital::Const
+  include Hospital::NurceCombination
   delegate :logger, :to=> "ActiveRecord::Base"
   #delegate :breakpoint, :to=>"ActiveRecord::Base"
-  attr_accessor :nurces,:needs,:count_role_shift,:nurce_assignd,:need_patern,:error,:roles
+  attr_accessor :nurces,:kangoshi,:Kangoshi,:needs,:count_role_shift,:nurce_assignd,:need_patern,:error,:roles
   attr_accessor :restore_count, :entrant_count, :loop_count, :shortcut
   attr_accessor :exit_confition,:month
+  attr_accessor :night_mode, :avoid_list
 
   attr_accessor  :koutai3, :shifts_int, :shifts, :shifts123, :shiftsmx, :night, :shifts_night
   attr_accessor  :busho_id, :lastday,  :needs,  :count_role_shift,    :basename
@@ -157,14 +161,20 @@ class Hospital::Assign
     #end
   end
 
-  def initialize(arg_busho_id=nil,arg_month=nil)
+#<<<<<<< HEAD
+#  def initialize(arg_busho_id=nil,arg_month=nil)
+# =======
+   def initialize(arg_busho_id,arg_month)
+     $HP_DEF = Hospital::Define.create
+     @Kangoshi = Hospital::Role.find_by_name("看護師").id
+# >>>>>>> HospitalPower
     @koutai3 = Hospital::Define.koutai3?
-    @shifts_int= @koutai3 ? [0,1,2,3] : [0,1,2]
-    @shifts = ("0"..(@koutai3 ? "3" : "2" )).to_a
-    @shifts123 = ("1"..(@koutai3 ? "3" : "2" )).to_a
-    @shiftsmx = @koutai3 ? "3" : "2" 
-    @night  = @koutai3 ? ["2","3"] : ["2"]
-    @shifts_night = { true =>  @night, false => ["1"]}
+    @shifts_int= @koutai3 ? Shift0123 : Shift0123[0..-2]
+    @shifts = @koutai3    ? Sshift0123 : Sshift0123[0..-2]
+    @shifts123 = @koutai3 ? Sshift123  : Sshift123[0..-2]
+    @shiftsmx = @shifts123[-1] #  Sshift2 or Sshift3
+    @night  = @shifts123[1..-1] # [Sshift2] or [Sshift2,Sshift3]
+    @shifts_night = { true =>  @night, false => [Sshift1], nil => [Sshift1]}
     #dbgout("FOR_DEBUG(#{__LINE__}) init @night=#{@night},@koutai3:#{@koutai3} @shifts#{@shifts}")
 
     @month = (arg_month||Time.now.beginning_of_month.next_month).to_date
@@ -172,14 +182,26 @@ class Hospital::Assign
     #if arg_busho_id
       @lastday=@month.end_of_month.day
       @nurces = Hospital::Nurce.by_busho(@busho_id)
+      @kangoshi = @nurces.select{|nurce| nurce.shokushu_id == @Kangoshi }
       @needs  = needs_all_days
       @count_role_shift = count_role_shift     # [[[[role,shift],[role,shift],,],[day  ],[day]],[nurce],[nurce] ]
       #@nurces.each{|nurce| nurce.monthly(@month).day2shift}
-      @HospitalRolecount = Hospital::Role.count
-      @RoleShift = (1..@HospitalRolecount).to_a.product(%w(1 2 3))
-    #end
-    @basename = File.join( Rails.root,"tmp","hospital",
-                          "Shift_%02d_%02d_"%[@busho_id,@month.month])
+# <<<<<<< HEAD
+#       @HospitalRolecount = Hospital::Role.count
+#       @RoleShift = (1..@HospitalRolecount).to_a.product(%w(1 2 3))
+#     #end
+#     @basename = File.join( Rails.root,"tmp","hospital",
+#                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
+#=======
+      @HospitalRolecount = Hospital::Need.roles.size #Hospital::Role.count
+      @RoleShift = #(1..@HospitalRolecount).to_a.product(@shifts123)
+                   Hospital::Need.roles.product(@shifts123)
+    end
+    @basename = File.join( RAILS_ROOT,"tmp","hospital",
+                          "Shift_%02d_%02d_"%[@busho_id,@month.month]) if @month
+
+    @avoid_list = Hospital::AvoidCombination.all.map{ |ab| [[ab.nurce1_id,ab.nurce2_id],ab.weight]}
+#>>>>>>> HospitalPower
     clear_stat
   end
 
@@ -189,11 +211,16 @@ class Hospital::Assign
     @restore_count = @entrant_count = @loop_count = 0
 
     #  shift毎の、評価回数、失敗数、失敗原因
+    @count_back  = Hash.new{|h,k| h[k] = 0 }
     @count_eval  = Hash.new{|h,k| h[k] = 0 }
     @count_fail  = Hash.new{|h,k| h[k] = 0 }
     @count_cause = Hash.new{|h,k| h[k] = Hash.new{|h,k| h[k] = 0 } }
+    @missing_roles= Hash.new{|h,k| h[k] = 0 }
   end
 
+  def missing_roles(sft_str,m_roles)
+    m_roles.each{ |role_id|  @missing_roles[[role_id,sft_str]] += 1 }
+  end
 
   def nurce_by_id(id)
     case id
@@ -210,8 +237,8 @@ class Hospital::Assign
       (1..@lastday).each{|day|
         nurce.set_shift(day,"_") if nurce.monthly.days[day].want.nil? || nurce.monthly.days[day].want<1
       }
-      nurce.shifts.gsub!(/L/,"2")
-      nurce.shifts.gsub!(/M/,"3")
+      nurce.shifts.gsub!(/L/,Sshift2)
+      nurce.shifts.gsub!(/M/,Sshift3)
     #dbgout("Nurce#clear_assign nurce=#{ nurce.id} shifts =#{ nurce.shifts} ") 
     }
     
@@ -227,16 +254,6 @@ class Hospital::Assign
     self
   end
 
-  # 主任の1クールを割り付ける。一般の割付に先立って呼ぶ。
-  def assign1cool_to_shunin
-    day = 1
-    shunins = @nurces.select{|nurce| nurce.shokui_id == 2 }.
-      sort_by{|nurce| nurce.shift2 - nurce.shift3}.
-      each{|nurce| 
-      day,patern = nurce.assign_1_cool(day)
-      day += patern.size if patern
-    }
-  end
 
   #######################################################################
   # 一番深くまで割り付けた時の状態を保存する
@@ -250,8 +267,8 @@ class Hospital::Assign
     logger.info("HOSPITAL ASSIGN START ON "+Time.now.to_s)
     basename = File.join( Rails.root,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
-    File.unlink(*Dir.glob(basename+"*"))
-    dbgout("HOSPITAL ASSIGN Delete #{basename} by assign_month")
+    File.unlink(*Dir.glob(@basename+"*"))
+    dbgout("HOSPITAL ASSIGN Delete #{@basename} by assign_month")
 
     assign_mult(1)
     self
@@ -267,57 +284,58 @@ class Hospital::Assign
     unlink_mults("assign_month_mul")
     dbgout("HOSPITAL ASSIGN MULT START ON "+Time.now.to_s)
     logger.info("HOSPITAL ASSIGN MULT IS STARTED ON "+Time.now.to_s)
-    assign_mult(all)
-    logger.info("HOSPITAL ASSIGN MULT IS FINISHED ON "+Time.now.to_s)
+    begin
+      assign_mult(all)
+      logger.info("HOSPITAL ASSIGN MULT IS FINISHED ON "+Time.now.to_s)
+    rescue TimeoutError
+      logger.info("HOSPITAL FINISHED BY TIMED OUT Finaly================================")
+      restore_shift(nurces,1,@longest[1])
+      @fine = Time.now;log_stat(:head => "=== Timed Out ===")
+      save
+    end      
     self
   end 
 
-  # 複数解を求めるルーチン
+  # 複数解を求めるルーチ*ン
   # 3つのケースがある
-  #  1 解を一つだけ求める
+  #  1 解を一つだけ求める                                          
   #  2 複数求めるが、最初の解は求めない。これは別のルーチンで求める
-  #  3 複数解求める。最初の解も求める。これは save する。
+  #  3 複数解求める。最初の解も求める。これは save する。           
   # single :: false,nil  case 2
   #        :: 2          case 3
-  #        :: 1          case 1
-  def assign_mult(single = false,day=1)
-    basename = File.join( Rails.root,"tmp","hospital",
-                          "Shift_%02d_%02d_"%[@busho_id,@month.month])
+# <<<<<<< HEAD
+#   #        :: 1          case 1
+#   def assign_mult(single = false,day=1)
+#     basename = File.join( Rails.root,"tmp","hospital",
+#                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
+# =======
+  #        :: 1          case 1           
+#>>>>>>> HospitalPower
 
-    @start_mult = Time.now
-    @limit_mult = @start_mult + Hospital::Const::TimeoutMult
-    count = -1
-    @night_mode = true 
-    sft_str = "2"
-    combinations,need_nurces,short_roles = ready_for_day_reentrant(day)
-    #ncm = nCm(combinations[sft_str].size,need_nurces[sft_str].size)
-    shifts_short_role = save_shift(nurces,day)
+  def assign_mult(single = SecondAndLater,day=1)
+    set_instance_valiables_for_assign_loop
+    ncm,combinations,need_nurces,short_roles= size_of_combinations_of_first_day(day)
+
+    #### Loop counter
     try = 0
-    #sleep Hospital::Const::Sleep
-    ncm = [combinations["2"].size,1].max *  [combinations["3"].size,1].max
+    @count = -1
+    count_max = combinations[Sshift2].size * combinations[Sshift3].size
 
     ######## LOOP
-    count_max = 0
-    nurce_combination_shift23(combinations,need_nurces,short_roles,day){ |c| count_max += 1}
+    sft_str = Sshift2
     nurce_combination_shift23(combinations,need_nurces,short_roles,day){|nurce_combinations|
-          dbgout("single/count/数  single && count < 0 => #{ single}/#{count}/#{count_max}/#{ single && count < 0}")
+      dbgout("single/count/数  single && count < 0 => #{ single}/#{@count}/#{count_max}/#{ single && @count < 0}")
 
-      if !single && count < 0 # case 2 でかつ最初の解(の可能性)
-        count += 1
+      if !single && @count < 0 # case 2 でかつ最初の解(の可能性)
+        @count += 1
         next
       end
 
       dbgout("HP ASSIGN #{day}日entry-1")
-    dbgout("assign_mult")
       dbgout dump("  HP ASSIGN ")
 
-      unless nurce_combinations
-        assign_log(day,sft_str,nil,__LINE__, @msg)
-        return false
-      end
       # set limit for this turn
       @limit_time = Time.now + Hospital::Const::Timeout
-      @start = Time.now
       dbgout("HP ASSIGN (#{__LINE__})#{day}:#{sft_str} Try #{try += 1} of #{ncm}")
       @night_mode = true
       
@@ -325,126 +343,112 @@ class Hospital::Assign
       combinations,need_nurces,short_roles = ready_for_day_reentrant(day)
 
       begin 
-        sft_str = "2"
-        if assign_day_reentrant(day,nurce_combinations,need_nurces,sft_str)
-          @night_mode = false
-          tight = assign_tight_daies_first
-          dbgout("HP ASSIGN (#{__LINE__})return from assign_tight_daies_first with #{tight}")
-          if tight && assign_by_re_entrant(day)
-            count += 1
-            dbgout("HP ASSIGN (#{__LINE__})count up to #{count}")
+# <<<<<<< HEAD
+#         sft_str = "2"
+#         if assign_day_reentrant(day,nurce_combinations,need_nurces,sft_str)
+#           @night_mode = false
+#           tight = assign_tight_daies_first
+#           dbgout("HP ASSIGN (#{__LINE__})return from assign_tight_daies_first with #{tight}")
+#           if tight && assign_by_re_entrant(day)
+#             count += 1
+#             dbgout("HP ASSIGN (#{__LINE__})count up to #{count}")
             
-            @fine = Time.now ; log_stat((single ? "once" : "mult"),"") ; clear_stat
+#             @fine = Time.now ; log_stat((single ? "once" : "mult"),"") ; clear_stat
             
-            #if count == 0
-            dbgout("HP ASSIGN (#{__LINE__})output to file #{ basename + "%04d"%count}")
-            open( basename + "%04d"%count ,"w"){ |fp| fp.puts dump }
-            dbgout("HP ASSIGN (#{__LINE__})output done")
-            #end
+#             #if count == 0
+#             dbgout("HP ASSIGN (#{__LINE__})output to file #{ basename + "%04d"%count}")
+#             open( basename + "%04d"%count ,"w"){ |fp| fp.puts dump }
+#             dbgout("HP ASSIGN (#{__LINE__})output done")
+#             #end
 
-            #case 3の最初の解 と case 1 の場合は saveする
-            # このとき cout==0のはず
-            dbgout("HP ASSIGN count = #{count} single =#{single} ")
-            if count == 0
-              save
-              dbgout("HP ASSIGN return single is #{single} #{single == 1}")
-              return true if single == 1
-            end
-          end
+#             #case 3の最初の解 と case 1 の場合は saveする
+#             # このとき cout==0のはず
+#             dbgout("HP ASSIGN count = #{count} single =#{single} ")
+#             if count == 0
+#               save
+#               dbgout("HP ASSIGN return single is #{single} #{single == 1}")
+#               return true if single == 1
+#             end
+#           end
+# =======
+        if assign_day_reentrant(day,nurce_combinations,need_nurces,Sshift2) &&
+            assign_shift1(day)
+
+          log_stat_and_save_result
+          return true #if single == SingleSolution
+#>>>>>>> HospitalPower
         end
       rescue TimeoutError
         logger.info("HOSPITAL FINISHED BY TIMED OUT ==================================================")
       end
-      
-      break if @limit_mult < Time.now
+#<<<<<<< HEAD
+#      
+#      break if @limit_mult < Time.now
+#=======
+      raise TimeoutError if @limit_mult < Time.now
+#>>>>>>> HospitalPower
 
       dbgout("HOSPITAL AS NEXT 次候補 ")
-      #dbgout("clear_assign")
       clear_assign
-      dbgout("clear_assign end")
-      day = 1
-      #restore_shift(nurces,day,shifts_short_role)
     }
-    open( basename + "FINE" ,"w"){ |fp| fp.puts "ASSIGN_MULT IS FINISHED" }
+    open( @basename + "FINE" ,"w"){ |fp| fp.puts "ASSIGN_MULT IS FINISHED" }
   end
 
-  #再帰で割り付ける。アルゴリズム開発の過程の名残りで、不要に１段深い呼び出しになってしまった
-  def assign_days_by_re_entrant(day=1)
-
-    @limit_time ||= Time.now + Hospital::Const::Timeout
-    
-    #begin
-    if false
-      @night_mode = true 
-      assign_by_re_entrant(day)
-      @night_mode = false
-      assign_tight_daies_first
-      assign_by_re_entrant(day)
-    else
-      assign_first_night(1)
-    end
-    #rescue TimeoutError
-    #  logger.info("HOSPITAL FINISHED BY TIMED OUT ==================================================")
-    #end
-    restore_shift(@nurces,day,@longest[1]) if @longest
-    dbgout("HP(#{__LINE__}) longest = #{longest[0]}")
-    self
+  def assign_shift1(day)
+    @night_mode = false
+    tight = assign_tight_daies_first
+    dbgout("HP ASSIGN (#{__LINE__})return from assign_tight_daies_first with #{tight}")
+    tight && assign_shift1_by_re_entrant(day)
   end
 
-  def assign_by_re_entrant(day)
-    #@day = day
-    return true     if day > @lastday 
-    raise TimeoutError,"timed out"  if @limit_time < Time.now
-
-    ### Begin  New Day ###########
-    dbgout("HP ASSIGN #{day}日entry")
-    dbgout("assign_by_re_entrant")
-    dbgout dump("  HP ASSIGN ")
-    combinations ,need_nurces, short_roles = ready_for_day_reentrant(day)
-    return false unless combinations
-
-    sft_str = @night_mode ? "2" : "1"
-    
-    ncm = nCm(combinations[sft_str].size,need_nurces[sft_str].size)
-    comb ,need =  combinations[sft_str].size,need_nurces[sft_str].size
-    try = 0 
-    nurce_combination_shift23(combinations,need_nurces,short_roles,day){|nurce_combinations| 
-      unless nurce_combinations
-        assign_log(day,sft_str,nil,__LINE__, @msg)
-        return false
-      end
-      #return false if @night_mode && not_enough_for_shift1(nurce_combinations,need_nurces,short_roles,day)
-
-      dbgout("HP AASIGN #{day}:#{sft_str} Try #{try += 1} of #{ncm} need #{comb}C#{need}")
-      return true if assign_day_reentrant(day,nurce_combinations,need_nurces,sft_str)
-    }
-    # 全組み合わせを調べてうまく行かないときは、前の日に戻る
-    #     restore_shift(comb_nurces,day,shifts_short_role,shift)
-    assign_log(day,sft_str,nil,__LINE__,nil,"BACK: hk全候補終了")
-    false
+  def log_stat_and_save_result
+          @fine = Time.now ; log_stat( ) 
+          #if count == 0
+          dbgout("HP ASSIGN (#{__LINE__})output to file #{ @basename + "%04d"%@count}")
+          open( @basename + "%04d"%@count ,"w"){ |fp| fp.puts dump }
+          dbgout("HP ASSIGN (#{__LINE__})output done")
+          #end
+          save
   end
 
-  def ready_for_day_reentrant(day)
-    as_nurces_selected,need_nurces, short_roles = selected_nurces_need_nurces_short_roles_of_(day)
-    return false unless as_nurces_selected
-    ##########################
-    # 各シフトの、看護師の組み合わせ の組み合わせ
-    # 先頭の nil は indexの位置合わせのためのdumy。
-    #(0)combinations = [nil]+[1,2,3].map{|shift|   #(1)
-    combinations = { }
-    if @night_mode
-      @night.each{|sft_str|     #(1)
-        combinations[sft_str] = 
-        nurce_combination_by_tightness(as_nurces_selected[sft_str][0..SelectedMax],
-                                       need_nurces[sft_str],short_roles[sft_str],sft_str)
-      }
-      #end
-    else 
-      combinations["1"] = as_nurces_selected["1"].sort_by{|n| n.cost("1",tight_roles("1"))}
-    end
-    log_combination day,combinations
-    [combinations ,need_nurces, short_roles]
+  def set_instance_valiables_for_assign_loop
+    @basename = File.join( RAILS_ROOT,"tmp","hospital",
+                          "Shift_%02d_%02d_"%[@busho_id,@month.month])
+    @start = @start_mult = Time.now
+    @limit_mult = @start_mult + Hospital::Const::TimeoutMult
   end
+
+#<<<< <<< HEAD
+#   def ready_for_day_reentrant(day)
+#     as_nurces_selected,need_nurces, short_roles = selected_nurces_need_nurces_short_roles_of_(day)
+#     return false unless as_nurces_selected
+#     ##########################
+#     # 各シフトの、看護師の組み合わせ の組み合わせ
+#     # 先頭の nil は indexの位置合わせのためのdumy。
+#     #(0)combinations = [nil]+[1,2,3].map{|shift|   #(1)
+#     combinations = { }
+#     if @night_mode
+#       @night.each{|sft_str|     #(1)
+#         combinations[sft_str] = 
+#         nurce_combination_by_tightness(as_nurces_selected[sft_str][0..SelectedMax],
+#                                        need_nurces[sft_str],short_roles[sft_str],sft_str)
+#       }
+#       #end
+#     else 
+#       combinations["1"] = as_nurces_selected["1"].sort_by{|n| n.cost("1",tight_roles("1"))}
+#     end
+#     log_combination day,combinations
+#     [combinations ,need_nurces, short_roles]
+# =======
+  def size_of_combinations_of_first_day(day=1)
+    @night_mode = true 
+    combinations,need_nurces,short_roles = ready_for_day_reentrant(day)
+    shifts_short_role = save_shift(nurces,day)
+    [[combinations[Sshift2].size,1].max *  [combinations[Sshift3].size,1].max,
+     combinations,need_nurces,short_roles]
+#>>>>>>> HospitalPower
+  end
+
 
   def assign_day_reentrant(day,nurce_combinations,need_nurces,sft_str)
     ################## RE_ENTRANT START ###################
@@ -464,77 +468,113 @@ class Hospital::Assign
     else      ; raise "HP #{day}:#{shift} ここにはこないはず assign_daytime_by_re_entrant123"
     end
   end
+
   # shift分の再帰
-  def try_assign_shift(nurce_combinations,sft_str,day,long_patern)
-      # 現状保存
-      shifts_short_role = save_shift(nurce_combinations[sft_str],day)
-      if nurce_combinations[sft_str] == true
-        assign_log(day,sft_str,nil,__LINE__,nil,"既に埋まっている")
-        return :done
-      else
-        @count_eval[sft_str] += 1
-        # この長い割付が可能か
-        assigned = assign_test_patern(nurce_combinations[sft_str],day,sft_str,long_patern)
-        dbgout("  #{__LINE__} nurce_combinations[sft_str] #{nurce_list(nurce_combinations[sft_str])} patern=#{long_patern.join(',')} is #{assigned ? assigned.map{|a| a.first}.join(',') : false}")
-        # この長い割付はだめなので、現状復帰して次の長い割付へ
-        unless assigned
-          #@count_fail[sft_str] += 1  
-          restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
-          return :next
-        else # 可能なので割り付ける
-          return !!assign_patern(nurce_combinations[sft_str],day,sft_str,assigned)
-        end
-      end
-  end
+# <<<<<<< HEAD
+#   def try_assign_shift(nurce_combinations,sft_str,day,long_patern)
+#       # 現状保存
+#       shifts_short_role = save_shift(nurce_combinations[sft_str],day)
+#       if nurce_combinations[sft_str] == true
+#         assign_log(day,sft_str,nil,__LINE__,nil,"既に埋まっている")
+#         return :done
+#       else
+#         @count_eval[sft_str] += 1
+#         # この長い割付が可能か
+#         assigned = assign_test_patern(nurce_combinations[sft_str],day,sft_str,long_patern)
+#         dbgout("  #{__LINE__} nurce_combinations[sft_str] #{nurce_list(nurce_combinations[sft_str])} patern=#{long_patern.join(',')} is #{assigned ? assigned.map{|a| a.first}.join(',') : false}")
+#         # この長い割付はだめなので、現状復帰して次の長い割付へ
+#         unless assigned
+#           #@count_fail[sft_str] += 1  
+#           restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
+#           return :next
+#         else # 可能なので割り付ける
+#           return !!assign_patern(nurce_combinations[sft_str],day,sft_str,assigned)
+#         end
+#       end
+#   end
 
-  def reentrant_next(sft_str,day,nurce_combinations,need_nurces)
-    case [sft_str,@koutai3]
-    when ["1",true],["1",false] #夜モードの時はありえない
-      return assign_by_re_entrant(day+1)
+#   def reentrant_next(sft_str,day,nurce_combinations,need_nurces)
+#     case [sft_str,@koutai3]
+#     when ["1",true],["1",false] #夜モードの時はありえない
+#       return assign_by_re_entrant(day+1)
 
-    when ["2",true]
-      if nurce_combinations["3"].class == Array
-        logger.debug("====combination of shift 3 "+
-                     "#{nurce_combinations["3"].map(&:id).join(',')}") 
-      end
-      return assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"3")
+#     when ["2",true]
+#       if nurce_combinations["3"].class == Array
+#         logger.debug("====combination of shift 3 "+
+#                      "#{nurce_combinations["3"].map(&:id).join(',')}") 
+#       end
+#       return assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"3")
       
-    when ["3",true],["2",false]
-      ret = if @night_mode 
-              assign_by_re_entrant(day+1)
-            else
-              logger.debug("====combination of shift 1 #{nurce_combinations["1"].join(',')}")
-              assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"1")
-            end
-      return ret
-    end
-  end
+#     when ["3",true],["2",false]
+#       ret = if @night_mode 
+#               assign_by_re_entrant(day+1)
+#             else
+#               logger.debug("====combination of shift 1 #{nurce_combinations["1"].join(',')}")
+#               assign_shift_by_reentrant(nurce_combinations,need_nurces,day,"1")
+#             end
+#       return ret
+#     end
+#   end
 
-  def assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,single=false)
+#   def assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,single=false)
+#     raise TimeoutError,"timed out"  if @limit_time < Time.now
+#     @entrant_count += 1
+#     # 長い割付が可能なら割り付ける
+#     dbgout("FOR_DEBUG(#{__LINE__}): shift=#{sft_str} need_nurces[sft_str] #{need_nurces[sft_str]} Hospital::Nurce::LongPatern[@koutai3]['2'].size #{Hospital::Nurce::LongPatern[@koutai3]['2'].size} ")
+#     long_plan_combination(need_nurces[sft_str],Hospital::Nurce::LongPatern[@koutai3][sft_str].size).
+#       each{|long_patern|
+#       @loop_count += 1
+
+#       ret = try_assign_shift(nurce_combinations,sft_str,day,long_patern)
+#       case ret
+#       when :next ; next
+# =======
+  def assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,single=SecondAndLater)
     raise TimeoutError,"timed out"  if @limit_time < Time.now
     @entrant_count += 1
     # 長い割付が可能なら割り付ける
-    dbgout("FOR_DEBUG(#{__LINE__}): shift=#{sft_str} need_nurces[sft_str] #{need_nurces[sft_str]} Hospital::Nurce::LongPatern[@koutai3]['2'].size #{Hospital::Nurce::LongPatern[@koutai3]['2'].size} ")
-    long_plan_combination(need_nurces[sft_str],Hospital::Nurce::LongPatern[@koutai3][sft_str].size).
-      each{|long_patern|
+    dbgout("FOR_DEBUG(#{__LINE__}): shift=#{sft_str} need_nurces[sft_str] #{need_nurces[sft_str]} Hospital::Nurce::LongPatern[@koutai3][Sshift2].size #{Hospital::Nurce::LongPatern[@koutai3][Sshift2].size} ")
+    long_plan_combination(need_nurces_shift(day,sft_str),Hospital::Nurce::LongPatern[@koutai3][sft_str].size).
+      each{|idx_list_of_long_patern|  # [0,2]
       @loop_count += 1
 
-      ret = try_assign_shift(nurce_combinations,sft_str,day,long_patern)
-      case ret
-      when :next ; next
+      # 現状保存
+      shifts_short_role = save_shift(nurce_combinations[sft_str],day)
+
+      case assign_patern(nurce_combinations[sft_str],day,sft_str,idx_list_of_long_patern)
+      when :cannot_assign_this_patern
+          restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
+          next
+#>>>>>>> HospitalPower
       when false # 長い割付の「割り付け時チェック」で失敗。次の長い割付へ
         @count_fail[sft_str] += 1
         restore_shift(nurce_combinations[sft_str],day,shifts_short_role)
         next # long_patern
         
-      when true ,:done # 成功(または既に満たされていた)時は次のshiftへ再帰
-        assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,long_patern,"SUCCESS")
-        @longest = [day*10+10-sft_str.to_i,save_shift(@nurces,day)] if day*10+10-sft_str.to_i > longest[0]
-        #dbgout("FOR_DEBUG(#{__LINE__}) [sft_str,@koutai3] #{[sft_str,@koutai3].join}")
-
+      else  # 成功(または既に満たされていた)時は次のshiftへ再帰
+        assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,idx_list_of_long_patern,"SUCCESS")
         return true if single
 
-        ret =  reentrant_next(sft_str,day,nurce_combinations,need_nurces)
+#<<<<<<< HEAD
+#        ret =  reentrant_next(sft_str,day,nurce_combinations,need_nurces)
+#=======
+        #     31日のtshif3より 1日のshift1の方が大きくなるようにする
+        #     shift * 100  100,200,300
+        new_longest = 1000 + day - sft_str.to_i * 100
+        @longest = [new_longest,save_shift(@nurces,day)] if new_longest > longest[0]
+
+        case [sft_str,@koutai3]
+        when [Sshift2,true]
+          logger.debug("====combination of shift 3 #{nurce_combinations["3"].map(&:id).join(',')}") if nurce_combinations[Shift3].class == Array
+          ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,Sshift3)
+
+        when [Sshift3,true],[Sshift2,false]
+          ret  =  assign_night_by_re_entrant(day+1)
+        when [Sshift1,true],[Sshift1,false]
+          ret  =  assign_shift1_by_re_entrant(day+1)
+        end
+
+#>>>>>>> HospitalPower
         case ret
         when true; 
           dbgout("    (#{__LINE__})HP #{day}:#{sft_str}。TRUE これから後は全部OK。割付終了")
@@ -547,7 +587,124 @@ class Hospital::Assign
       end
     }
     assign_log(day,sft_str,nurce_combinations[sft_str],__LINE__,nil,"FALSE")
+    @count_back[sft_str] += 1
     return false
+  end
+
+
+  # 看護師の勤務制限は満たしていても、2日目以降の日々の制限は確認していない。
+  # 長い勤務を割り当てたときに、二日目以降に重大な支障が有るか否かを確認する。
+  # [day] Integer 割付の最初の日付。
+  # [sft_str]  1,2,3。割り付けるsft_str
+  # [list_of_long_patern_and_dayly_check]   #assigned: [ [LongPatern,daily_checks],[LongPatern,daily_checks],[] ]
+  #                       『Hospital::Nurce::LongPatern[sft_str][patern_番号]』
+  def assign_patern(nurces,day,sft_str,idx_list_of_long_patern)
+    return :done if nurces == true
+    @count_eval[sft_str] += 1
+    unless list_of_long_patern = assign_patern_if_possible(nurces,day,sft_str,idx_list_of_long_patern)
+      return :cannot_assign_this_patern
+    end
+    long_check_later_days(day,merged_patern(list_of_long_patern),sft_str) &&
+      avoid_check(nurces,sft_str,day,list_of_long_patern)
+  end
+
+  def assign_patern_if_possible(nurces,day,sft_str,idx_list_of_long_patern)
+    # この長い割付が可能か                                                # [0,2]
+    list_of_long_patern = 
+      assign_test_patern(nurces,day,sft_str,idx_list_of_long_patern)
+    return false unless list_of_long_patern
+    (0..nurces.size-1).each{|idx|
+      nurce_set_patern(nurces[idx],day,list_of_long_patern[idx].patern)
+    }
+    list_of_long_patern
+  end
+
+  def log_newday_entrant(day)
+    dbgout("HP ASSIGN #{day}日entry")
+    dbgout("assign_by_re_entrant")
+    dbgout dump("  HP ASSIGN ")
+  end
+
+  def assign_night_by_re_entrant(day)
+    #@day = day
+    return true     if day > @lastday 
+    raise TimeoutError,"timed out"  if @limit_time < Time.now
+
+    ### Begin  New Day ###########
+    log_newday_entrant(day)
+    combinations ,need_nurces, short_roles = ready_for_day_reentrant(day)
+    return false unless combinations
+    
+    ncm = nCm(combinations[Sshift2].size,need_nurces_shift(day,Sshift2).size)
+    comb ,need =  combinations[Sshift2].size,need_nurces_shift(day,Sshift2).size
+    try = 0 
+    nurce_combination_shift23(combinations,need_nurces,short_roles,day){|nurce_combinations| 
+      unless nurce_combinations
+        assign_log(day,Sshift2,nil,__LINE__, @msg)
+        return false
+      end
+      #return false if @night_mode && not_enough_for_shift1(nurce_combinations,need_nurces,short_roles,day)
+
+      dbgout("HP AASIGN #{day}:#{Sshift2} Try #{try += 1} of #{ncm} need #{comb}C#{need}")
+      return true if assign_day_reentrant(day,nurce_combinations,need_nurces,Sshift2)
+    }
+    # 全組み合わせを調べてうまく行かないときは、前の日に戻る
+    #     restore_shift(comb_nurces,day,shifts_short_role,shift)
+    assign_log(day,Sshift2,nil,__LINE__,nil,"BACK: hk全候補終了")
+    false
+  end
+
+
+  def assign_shift1_by_re_entrant(day)
+    #@day = day
+    return true     if day > @lastday 
+    raise TimeoutError,"timed out"  if @limit_time < Time.now
+
+    ### Begin  New Day ###########
+    log_newday_entrant(day)
+    combinations ,need_nurces, short_roles = ready_for_day_reentrant(day)
+    return false unless combinations
+
+    ncm = nCm(combinations[Sshift1].size,need_nurces_shift(day,Sshift1).size)
+    comb ,need =  combinations[Sshift1].size,need_nurces_shift(day,Sshift1).size
+    try = 0 
+    nurce_combination_shift1(combinations,need_nurces,short_roles,day){|nurce_combinations| 
+      unless nurce_combinations
+        assign_log(day,Sshift1,nil,__LINE__, @msg)
+        return false
+      end
+      #return false if @night_mode && not_enough_for_shift1(nurce_combinations,need_nurces,short_roles,day)
+
+      dbgout("HP AASIGN #{day}:#{Sshift1} Try #{try += 1} of #{ncm} need #{comb}C#{need}")
+      return true if assign_day_reentrant(day,nurce_combinations,need_nurces,Sshift1)
+    }
+    # 全組み合わせを調べてうまく行かないときは、前の日に戻る
+    #     restore_shift(comb_nurces,day,shifts_short_role,shift)
+    assign_log(day,Sshift1,nil,__LINE__,nil,"BACK: hk全候補終了")
+    false
+  end
+
+  def ready_for_day_reentrant(day)
+    as_nurces_selected,need_nurces, short_roles = need_nurces_roles(day)
+    return false unless as_nurces_selected
+    ##########################
+    # 各シフトの、看護師の組み合わせ の組み合わせ
+    # 先頭の nil は indexの位置合わせのためのdumy。
+    #(0)combinations = [nil]+[1,2,3].map{|shift|   #(1)
+    combinations = { }
+    if @night_mode
+      @limit = limit_of_nurce_candidate(Sshift2,day)
+      @night.each{|sft_str|     #(1)
+        combinations[sft_str] = 
+        nurce_combination_by_tightness(as_nurces_selected[sft_str][0,@limit||8],
+                                       need_nurces_shift(day,sft_str),short_roles[sft_str],sft_str
+                                       )#[0,@limit||6]
+      }
+    else 
+      combinations["1"] = as_nurces_selected["1"].sort_by{|n| n.cost("1",tight_roles("1"))}
+    end
+    log_combination __LINE__,day,combinations
+    [combinations ,need_nurces, short_roles]
   end
 
   def assign_single_day(day,sft_str)
@@ -556,9 +713,9 @@ class Hospital::Assign
     dbgout dump("  HP ASSIGN ")
     combinations,need_nurces,short_roles = ready_for_day_reentrant(day)
     return false unless combinations
-    ncm = nCm(combinations[sft_str].size,need_nurces[sft_str].size)
+    ncm = nCm(combinations[sft_str].size,need_nurces_shift(day,sft_str).size)
     try = 0 
-    nurce_combination_shift23(combinations,need_nurces,short_roles,day){|nurce_combinations|
+    nurce_combination_shift1(combinations,need_nurces,short_roles,day){|nurce_combinations|
       dbgout("HP AASIGN #{day}:#{sft_str} Try #{try += 1} of #{ncm}")
       ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,true)
       dbgout("HP AASIGN MOST TIGHT_DAY #{day}日 結果#{ ret}")
@@ -573,7 +730,7 @@ class Hospital::Assign
     dbgout("HP AASIGN TIGHT_DAY FIRST")
     tight_daies = (1..@lastday).
       map{|day| 
-      [assinable_nurces(day,"1",[[2,"1"]]).size-short_role_shift[day][[2,"1"]].first,day] }.
+      [assinable_nurces(day,Sshift1,[[@Kangoshi,Sshift1]]).size-short_role_shift[day][[@Kangoshi,Sshift1]].first,day] }.
       sort_by{ |c,day| c }
 
     most_tight_daies = tight_daies.map{ |c,day| "#{day}:#{c} " if c<4 }.compact.join(',')
@@ -595,7 +752,7 @@ class Hospital::Assign
       end
     }
     dbgout("HP AASIGN TIGHT_DAY FIRST exit ")
-    @longest =  [0,0]
+    #@longest =  [0,0]
     ret
   end
 
@@ -606,8 +763,8 @@ class Hospital::Assign
     for_night = (combination2 + combination3).uniq
     dbgout("HP ASSIGN not_enough_for_shift1 #{day}日 need for_1 #{nurce_list(for_1)} ")
     dbgout("HP ASSIGN not_enough_for_shift1 #{day}日 need for_night #{nurce_list( for_night)} ")
-    dbgout("HP 6ASSIGN not_enough_for_shift1 need #{need_nurces['1']} but #{(for_1 - for_night).size} ")
-    if (for_1 - for_night).size < need_nurces["1"]
+    dbgout("HP 6ASSIGN not_enough_for_shift1 need #{need_nurces_shift(day,'1')} but #{(for_1 - for_night).size} ")
+    if (for_1 - for_night).size < need_nurces_shift(day,'1')
       true
     else ;false
     end
@@ -624,13 +781,13 @@ class Hospital::Assign
 
   end
 
-  def log_combination(day,combinations)
+  def log_combination(line,day,combinations)
     if  @night_mode
       @night.each{|sft_str| comb=combinations[sft_str]
-        dbgout("HP ASSIGN(#{__LINE__}) #{day}:#{sft_str} tight:#{tight_roles(sft_str)} ["+
+        dbgout("HP ASSIGN(#{line}) #{day}:#{sft_str} tight:#{tight_roles(sft_str)} ["+
                comb.map{|nurces| 
                  "[" + 
-                 nurces.map{|nurce| [nurce.id,nurce.cost(sft_str,tight_roles(sft_str))].join(':') }.join(",") +
+                 nurces.map{|nurce| "%d:%d"%[nurce.id,nurce.cost(:night_total,tight_roles(sft_str))] }.join(", ") +
                  "]" }.join(",") +
                "]"
                )
@@ -662,15 +819,30 @@ class Hospital::Assign
     nurces.each{ |nurce| nurce.refresh }
     role_remain true
     margin_of_role
-    role_used true
     roles_required
     short_role_shift true
     count_role_shift true
   end
 
-  def selected_nurces_need_nurces_short_roles_of_(day)
+#<<<<<<< HEAD
+#  def selected_nurces_need_nurces_short_roles_of_(day)
+#=======
+  def need_nurces_shift(day,sft_str)
+    short_role_shift_of(day)[[@Kangoshi,sft_str]][0]
+  end
+
+  def need_nurces_roles(day)
+    if @night_mode
+      need_nurces_roles_night(day)
+    else 
+      need_nurces_roles_day(day)
+    end
+  end
+
+  def need_nurces_roles_night(day)
+#>>>>>>> HospitalPower
     # この日のこのshiftの看護師の必要数と不足role
-    short_role(day,3,true)
+    short_role(day,Sshift3,true)
     # 看護師の必要数,不足role
     short_role_shift_of_day = short_role_shift_of(day)
     need_nurces = { }   # 看護師の必要数
@@ -679,19 +851,50 @@ class Hospital::Assign
     ## tryal
     #(@night_mode ? @shifts123 : @shifts_night[@night_mode]).each{ |sft_str|
     @shifts_night[@night_mode].each{ |sft_str|
-      need_nurces[sft_str] = short_role_shift_of_day[[2,sft_str]][0]
+      need_nurces[sft_str] = short_role_shift_of_day[[@Kangoshi,sft_str]][0]
       short_roles[sft_str] = short_role(day,sft_str)
+    }
+    @shifts_night[@night_mode].each{ |sft_str|
       as_nurces_selected[sft_str] = 
-      if (need_nurces[sft_str]==0) 
-        []
-      else
-        assinable_nurce_list = assinable_nurces(day,sft_str,short_roles[sft_str])
-        assinable_nurces_by_cost_size_limited(assinable_nurce_list,sft_str, need_nurces, short_roles)
-      end
+# <<<<<<< HEAD
+#       if (need_nurces[sft_str]==0) 
+#         []
+#       else
+#         assinable_nurce_list = assinable_nurces(day,sft_str,short_roles[sft_str])
+#         assinable_nurces_by_cost_size_limited(assinable_nurce_list,sft_str, need_nurces, short_roles)
+#       end
+# =======
+      (need_nurces_shift(day,sft_str)==0) ? [] :
+      assinable_nurces_by_cost_size_limited(sft_str, day, short_roles[sft_str])
+#>>>>>>> HospitalPower
     }
     @shifts_night[@night_mode].each{|sft_str| next unless
-      entry_log(day,sft_str,__LINE__,need_nurces[sft_str],short_roles[sft_str],as_nurces_selected[sft_str])
+      entry_log(day,sft_str,__LINE__,need_nurces_shift(day,sft_str),short_roles[sft_str],as_nurces_selected[sft_str])
     }
+    if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
+      [as_nurces_selected,need_nurces, short_roles]
+    else 
+      false
+    end
+  end
+  def need_nurces_roles_day(day)
+    # この日のこのshiftの看護師の必要数と不足role
+    short_role(day,Sshift3,true)
+    # 看護師の必要数,不足role
+    short_role_shift_of_day = short_role_shift_of(day)
+    need_nurces = { }   # 看護師の必要数
+    short_roles = { }   # 不足role
+    as_nurces_selected = { }   # アサイン可能看護師リスト
+    ## tryal
+    #(@night_mode ? @shifts123 : @shifts_night[@night_mode]).each{ |sft_str|
+      need_nurces[Sshift1] = short_role_shift_of_day[[@Kangoshi,Sshift1]][0]
+      short_roles[Sshift1] = short_role(day,Sshift1)
+    
+      as_nurces_selected[Sshift1] = 
+      (need_nurces[Sshift1]==0) ? [] :
+      assinable_nurces_by_cost_size_limited(Sshift1, day, short_roles[Sshift1])
+
+      entry_log(day,Sshift1,__LINE__,need_nurces_shift(day,Sshift1),short_roles[Sshift1],as_nurces_selected[Sshift1])
     if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
       [as_nurces_selected,need_nurces, short_roles]
     else 
@@ -705,112 +908,80 @@ class Hospital::Assign
   # shift2,3の場合はshift2+3の5割り増し、shift1の場合はshift1の5割り増し
   #ただし必要ロールがそろう様にするために持っているロールで分ける。
   # これが必要なのは割りあて可能な人数が「何人か」より多い場合
-  # assinable_nurces :: 割り当て可能なnurceの配列
-  # sft_str          :: shift "1","2","3"
-  # need_nurces      :: {"1" => 不足看護師数, "2" => , "3" => }
-  # short_roles      :: このshiftに不足しているroleのidの配列 {"1" => [1,2,5],"2"=>, "3"=>}
-  def assinable_nurces_by_cost_size_limited(assinable_nurces,sft_str,need_nurces,short_roles )
-    limit = case sft_str
-            when "2","3"   ; [((need_nurces["2"] + (need_nurces["3"] || 0))*2).ceil,6].max
-            when "1"     ; (need_nurces["1"] * 1.5).ceil
-            end # of case    
-   return assinable_nurces.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str))} if assinable_nurces.size <= limit
-    ## なんで層別する？=> 単純にcostで並べて上位いくつかを採ると、必要なロールを持つ人が全員落ちる異がある
-    nurces = assinable_nurces.
-      group_by{ |nurce|       nurce.role_ids & short_roles[sft_str]
-    }.to_a.  # 持ってるroleで層別し
+# <<<<<<< HEAD
+#   # assinable_nurces :: 割り当て可能なnurceの配列
+#   # sft_str          :: shift "1","2","3"
+#   # need_nurces      :: {"1" => 不足看護師数, "2" => , "3" => }
+#   # short_roles      :: このshiftに不足しているroleのidの配列 {"1" => [1,2,5],"2"=>, "3"=>}
+#   def assinable_nurces_by_cost_size_limited(assinable_nurces,sft_str,need_nurces,short_roles )
+#     limit = case sft_str
+#             when "2","3"   ; [((need_nurces["2"] + (need_nurces["3"] || 0))*2).ceil,6].max
+#             when "1"     ; (need_nurces["1"] * 1.5).ceil
+#             end # of case    
+#    return assinable_nurces.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str))} if assinable_nurces.size <= limit
+#     ## なんで層別する？=> 単純にcostで並べて上位いくつかを採ると、必要なロールを持つ人が全員落ちる異がある
+#     nurces = assinable_nurces.
+#       group_by{ |nurce|       nurce.role_ids & short_roles[sft_str]
+#     }.to_a.  # 持ってるroleで層別し
+# =======
+  def assinable_nurces_by_cost_size_limited(sft_str,day,short_roles_this_shift )
+    as_nurce = assinable_nurces(day,sft_str,short_roles_this_shift)
+    @limit = limit_of_nurce_candidate(sft_str,day)
+    if as_nurce.size <= @limit
+      as_nurce.sort_by{|nurce| nurce.cost(@night_mode ? :night_total : Sshift1,tight_roles(sft_str))} 
+    else
+      array_merge(gather_by_each_group_of_role(as_nurce,sft_str,short_roles_this_shift))[0,@limit]
+    end
+  end
+
+  def gather_by_each_group_of_role(as_nurce,sft_str,short_role_of_this_shift)
+    nurces_group_by = as_nurce.group_by{ |nurce| (nurce.role_ids & short_role_of_this_shift).sort}
+    logger.debug("GATHER_BY_EACH_GROUP_OF_ROLE shift=#{sft_str}:as_nurce = #{as_nurce.map(&:id).join(',')}")
+    nurces =  nurces_group_by.to_a.  # 持ってるroleで層別し
+      sort_by{ |roles,nurce_list|  roles_cost(roles,tight_roles(sft_str))}.
+#>>>>>>> HospitalPower
       map{ |roles,nurce_list|                                # 各々の層をcostで並べる
-      nurce_list.sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str)) 
+      nurce_list.sort_by{|nurce| nurce.cost(@night_mode ? :night_total : Sshift1,tight_roles(sft_str)) 
       }
     }
-    array_merge(nurces)[0,limit].                              # 各層costの低い方から選ぶ
-      sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str))} # 全体をcostで並べばおす
+#<<<<<<< HEAD
+#    array_merge(nurces)[0,limit].                              # 各層costの低い方から選ぶ
+#      sort_by{|nurce| nurce.cost(sft_str,tight_roles(sft_str))} # 全体をcostで並べばおす
+#=======
+    logger.debug("GATHER_BY_EACH_GROUP_OF_ROLE [#{nurces.map{|ns| ns.map(&:id).join(',')}.join('],[')}]")
+    nurces
+>>>>>>> HospitalPower
   end # of case
+
+  def limit_of_nurce_candidate(sft_str,day)
+    case sft_str
+    when Sshift2,Sshift3 ; limit_of_nurce_candidate_night(day)
+    when Sshift1         ; limit_of_nurce_candidate_day(day)
+    end # of case    
+ end
+
+  def limit_of_nurce_candidate_night(day)
+    [((need_nurces_shift(day,Sshift2) + (need_nurces_shift(day,Sshift3) || 0)) * Factor_of_safety_NurceCandidateList).ceil,
+     LimitOfNurceCandidateList].max
+  end
+
+  def  limit_of_nurce_candidate_day(day)
+    [ (need_nurces_shift(day,Sshift1) * 1.2).ceil ,need_nurces_shift(day,Sshift1)+1].max
+  end
 
   def array_merge(aryary)
     return [] if aryary==[]
+    return aryary[0] if aryary.size==1
     maxsize = aryary.map{|ary| ary.size}.max
     merged = aryary[0]+[nil]*(maxsize-aryary[0].size)
     aryary[1..-1].inject(merged){|merg,ary| merg.zip(ary)}.flatten.compact
   end
 
-  # shift1,2,3各々の看護師の組み合わせのproductを一つずつ block に渡す
-  # 渡す前に可能性を評価して可能性無いものはパスする
-  #   ＊すなわち＊　長割りでなければ、この日の割付は必ず成功する組み合わせが返る
-  #   調べる可能性
-  #     shift1,2,3で同じ看護師が選ばれているもの
-  #     必要roleを満たせない看護師の組み合わせ(combinationsが既にそうなっている)
-  # shift1,2,3各々の組み合わせ群は role残り数による評価順に並んでいる
-  # 
-  # 実装
-  #  productを作ってしまうと巨大な配列が、再帰毎に作られてしまう。それを避けるため
-  #  eachループで順次作ってblockを呼んでいる。
-  #  shoft23の組み合わせに於いては、組み合わせでの順番最適化を図るケースとそうではないケースを検討
-  #   図らない場合 combination_combination_for_123
-  #   図る場合     combination_combination_tightness
-  #     shift2と3の低コストTop3のproductを作って最適化した後shift1とeachで組み合わせる。
-  #      Top3同士以外はloopで行う
-  def nurce_combination_shift23(combinations,need_nurces,short_roles,day,&block)
-    @msg = nil
-    if @night_mode
-      dbgout("FOR_DEBUG(#{__LINE__})case #{need_nurces["2"]} [#{short_roles["2"]}] #{need_nurces["3"]} [#{short_roles["3"]}] #{@koutai3} ")
-      case [need_nurces["2"] == 0 && short_roles["2"] ==[],
-            need_nurces["3"] == 0 && short_roles["3"] ==[] || !@koutai3 ]
-      when [true,true]  # shift2,3共に既に足りている
-        @msg =  "ALLREDY filled for 2,3 " 
-        block.call( { "2" => true,"3" => true })
-        
-      when [true,false] # shift2は既に足りている
-        #nurce_combination_by_tightness(as_nurce["3"],need_nurces["3"],short_roles["3"],3)
-        if combinations["3"].size==0 
-          @msg =  "(#{__LINE__})NO Abaiable combination set for shift 3" 
-          block.call false
-        end
-        combinations["3"].each{|cmb3|
-          #next if not_enough_for_shift1(combinations["1"],[],cmb3,need_nurces,short_roles,day)
-          block.call({"2" => true,"3" => cmb3 })
-        }
-        
-      when [false,true]  # shift3は既に足りている
-        if combinations["2"].size==0 
-          @msg =  "(#{__LINE__})NO Abaiable combination set for shift 2" 
-          block.call false
-        end
-        combinations["2"].each{|cmb2| 
-          #next if not_enough_for_shift1(combinations["1"],cmb2,[],need_nurces,short_roles,day)
-          block.call({"3" => true,"2" => cmb2 })
-        }
-        
-      when [false,false] #shift2,3共に足りない
-        if combinations["2"].size==0 && short_roles["2"].size > 0 
-          @msg = "combination 2 is empity"
-          return false
-        elsif  combinations["3"].size==0 && short_roles["3"].size > 0 
-          @msg = "combination 3 is empity"
-          block.call false
-          #logger.debug("==== [false,false]")
-        end
-        # 組み合わせ順の最適化を行わない
-        combinations["3"].each{|cmb3|
-          combinations["2"].each{|cmb2|
-            next unless (cmb3 | cmb2).size == cmb3.size+cmb2.size
-            #next if not_enough_for_shift1(combinations["1"],cmb2,cmb3,need_nurces,short_roles,day)
-            block.call({"2" => cmb2,"3" => cmb3 })
-          }
-        }
-      end
-    else #daytime
-      combinations["1"].combination(need_nurces["1"]).each{|cmb1|
-        block.call({ "1" => cmb1})
-      }
-    end
-  end
 
   # 再帰が失敗して戻るときに、元にもどすための状況保存
   # 保存するもの
   #   看護師の状況 Hospital::Nurceに任せる  nurces_save
   #   一月分の各日・shiftのroleの不足状況   short_role_shift_dup
-  #   消費したroleの数                      role_used_dup
   #   まだ使えるroleの数                    role_remain_dup
   #
   # 看護師は初め全nurceを保存したが、該当するshiftで変更の有るnurceだけにした。速度、メモリー消費
@@ -822,13 +993,11 @@ class Hospital::Assign
       srs=Hash.new
       short_role_shift[d].each_pair{|key,ary| srs[key] = ary.dup}
     }
-    role_used_dup = role_used.dup
     role_remain_dup = role_remain.dup
-    [ nurces_save,   count_role_shift[day].dup,  short_role_shift_dup ,
-      role_used_dup, role_remain_dup]
+    [ nurces_save,   count_role_shift[day].dup,  short_role_shift_dup, role_remain_dup]
   end
 
-  def restore_shift(nurces,day,shifts_short_role,sft_str="3")
+  def restore_shift(nurces,day,shifts_short_role,sft_str=Sshift3)
     return if nurces == true
     @restore_count += 1
 
@@ -839,8 +1008,7 @@ class Hospital::Assign
       short_role_shift[day+d] = srs 
     }
     
-    role_used = shifts_short_role[3]
-    role_remain = shifts_short_role[4]
+    role_remain = shifts_short_role[3]
   end
 
   # 評価する看護師組み合わせはその日の分は制限をみたしているが、
@@ -851,40 +1019,55 @@ class Hospital::Assign
   # 元々は3日以上の割付パターンについて行う予定であったが、プログラムの
   # 簡潔化のために、1日の割付もここで行うことにした。
   # [long_patern]  『Hospital::Nurce::LongPatern[shift]』の何番目を試すのか、を
-  #                 看護師分用意した配列。要素はInteger
-  def assign_test_patern(nurce_list,day,sft_str,long_patern)
+  #                 看護師分用意した配列。要素はInteger [0,2]
+  def  assign_test_patern(nurce_list,day,sft_str,idx_set_of_long_patern)
+    #[ LongPatern,LongPatern]
     paterns = (0..nurce_list.size-1).map{|idx|
-      patern,daily_checks = 
-      nurce_list[idx].long_check(day,sft_str,
-                                 Hospital::Nurce::LongPatern[@koutai3][sft_str][long_patern[idx]])
-      if patern
-        [patern ,daily_checks]
+      long_patern,errorlist =  
+      nurce_list[idx].
+      long_check(day,sft_str,
+                 Hospital::Nurce::LongPatern[@koutai3][sft_str][idx_set_of_long_patern[idx]])
+      if long_patern
+        long_patern # ,daily_checks]
       else
         # このとき、daily_checkは[item,正規表現の配列
-        daily_checks.each{|item,reg| @count_cause[item][sft_str]+=1 }
+        errorlist.each{|item,reg| @count_cause[item][sft_str]+=1 }
+pp ["errorlist",errorlist]
         return false
       end
     }
+    #return paterns if avoid_check(nurce_list,sft_str,day,paterns)
+    #false
   end
   
-  # 看護師の勤務制限は満たしていても、2日目以降の日々の制限は確認していない。
-  # 長い勤務を割り当てたときに、二日目以降に重大な支障が有るか否かを確認する。
-  # [day] Integer 割付の最初の日付。
-  # [shift]  1,2,3。割り付けるshift
-  # [assigned_patern]  『Hospital::Nurce::LongPatern[shift][patern_番号]』
-  def assign_patern(nurces,day,shift,assigned_patern)
-    (0..nurces.size-1).each{|idx|
-      nurce_set_patern(nurces[idx],day,assigned_patern[idx].first)
+  # 禁忌な組み合わせがあるか調べる     [ [LongPatern,LongPatern],daily_checks],[] ]
+  def avoid_check(nurces,sft_str,first_day,list_of_long_patern)
+    return true if sft_str == "1"
+    last_day = first_day+list_of_long_patern.map{ |long_patern| long_patern.patern.size}.max-1
+logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avoid_list=#{@avoid_list.flatten.join(',')}")
+    @shifts_night.each{ |sft_str|
+      (first_day..last_day).each{ |day| 
+        nurce_ids = nurce_ids_of_the_day_shift(nurces,day,sft_str)
+        logger.debug("#### AVOID_CHECK        nurce_ids=#{nurce_ids==[]} SIZE=#{@avoid_list.map{ |al,weight| ( nurce_ids & al)==al }}")
+        return false if @avoid_list.map{ |al,weight| al unless (nurce_ids & al).size == al.size }.compact.size > 0 
+      }
     }
-    long_check_later_days(day,merged_patern(assigned_patern),shift)
+    true
+  end
+
+  def nurce_ids_of_the_day_shift(nurces,day,sft_str)
+    nurces.map{ |nurce| nurce.id if nurce.shifts[day,1] == sft_str}.compact
   end
 
   # long_patenの配列から2日目以降のチェック指示部分を抜きだし、
   # 同じ内容のものは一つにまとめる。チェックの重複防止
-  # [assigned_patern] 看護師各々に割り当てた long_patenの配列
-  def merged_patern(assigned_patern)
+  # [list_of_long_patern_and_dayly_check] 看護師各々に割り当てた long_patenの配列
+  #                  [ [LongPatern,daily_checks],[LongPatern,daily_checks],[] ]
+  def merged_patern(list_of_long_patern)
     @shifts_int.map{|shift| 
-      assigned_patern.inject([]){|ary,a_p| ary + a_p[1][shift]}.uniq 
+      list_of_long_patern.inject([]){|ary,long_patern|  
+        ary + long_patern.target_days[shift]
+      }.uniq 
     }
   end
 
@@ -907,7 +1090,7 @@ class Hospital::Assign
         when -1 ; return false
         when 0
           case sft_str
-          when "2","3"
+          when Sshift2,Sshift3
             s_r = short_role(day+d,sft_str).size ==0 ? "なし" :  short_role(day+d,sft_str).join
             dbgout("長割後日チェック(#{__LINE__}) (#{ day}+#{d}):#{sft_str} ロール不足#{ s_r }")
             return false if short_role(day+d,sft_str).size >0
@@ -919,8 +1102,8 @@ class Hospital::Assign
     unless shift_str == "1"
       dbgout("長割後日チェック(#{__LINE__}) (#{ day})への割付で日勤要員不足ありや #{assinable_nurces(day,"1",short_role(day,'1')).size }")
       dbgout("長割後日チェック(#{__LINE__}) (#{ day-1})への割付で日勤要員不足ありや #{assinable_nurces(day-1,"1",short_role(day-1,'1')).size }")
-      if short_role_shift[day][[2,"1"]][0] > assinable_nurces(day,"1",short_role(day,"1")).size ||
-          short_role_shift[day-1][[2,"1"]][0] > assinable_nurces(day-1,"1",short_role(day-1,"1")).size 
+      if short_role_shift[day][[@Kangoshi,Sshift1]][0] > assinable_nurces(day,Sshift1,short_role(day,Sshift1)).size ||
+          short_role_shift[day-1][[@Kangoshi,Sshift1]][0] > assinable_nurces(day-1,Sshift1,short_role(day-1,Sshift1)).size 
         dbgout("長割後日チェック(#{__LINE__}) (#{ day})への割付で日勤要員不足")
         return false
       end
@@ -934,8 +1117,8 @@ class Hospital::Assign
   def too_many?(day,sft_str)
     #指定日のシフトは人の余裕あるか
     case sft_str
-    when "0","2","3" ;    short_role_shift[day][[2,sft_str]][1] <=> 0
-    when "1"         ;    
+    when Sshift0,Sshift2,Sshift3 ;    short_role_shift[day][[@Kangoshi,sft_str]][1] <=> 0
+    when Sshift1         ;    
     end
   end
 
@@ -947,15 +1130,45 @@ class Hospital::Assign
 
     combinations = nurces.combination(need_nurces).select{|combination| 
       # role不足
-      (need_roles - (need_roles & roles_of(combination))).size <= 0
-    }.sort_by{|nurces| cost_of_nurce_combination(nurces,sft_str,tight_roles(sft_str))}
-    combinations[0..SelectedMax] #(2)
-    #combinations #(2)Dで削除
+      roles_enough?(combination,need_roles) #(need_roles - (need_roles & roles_of(combination))).size <= 0
+    }.sort_by{|nurces| cost_of_nurce_combination_with_avoid(nurces,sft_str,tight_roles(sft_str))}
+    if combinations.size == 0
+      missing_roles(sft_str,need_roles - roles_of(nurces))      
+    end
+    combinations #(2)Dで削除
+  end
+ 
+  def roles_enough?(nurces,need_roles) 
+    (need_roles - (need_roles & roles_of(nurces))).size <= 0
   end
 
+  def roles_cost(roles,tight)
+    tight.inject(0){ |cost,role| cost * 2 + (roles.include?(role) ? 1 : 0 )}
+  end
   # 看護師群のcostの総計
   def cost_of_nurce_combination(nurces,sft_str,tight)
-    nurces.inject(2.0){|cost,nurce| cost + nurce.cost(sft_str,tight) }
+    nurces.inject(2.0){|cost,nurce| cost + nurce.cost(@night_mode ? :night_total : Sshift1,tight) }*
+      AvoidWeight[[nurces_have_avoid_combination?(nurces),AvoidWeight.size-1].min]
+  end
+
+  def cost_of_nurce_combination_with_avoid(nurces,sft_str,tight)
+   cost_of_nurce_combination(nurces,sft_str,tight)*
+      AvoidWeight[[nurces_have_avoid_combination?(nurces),AvoidWeight.size-1].min]
+  end
+
+  def cost_of_nurce_combination_of_combination(comb2,comb3)
+    if comb3.nil?
+      comb2,comb3 = comb2
+    end 
+    cost_of_nurce_combination(comb2,Sshift2,tight_roles(Sshift2)) +
+      (comb3 ? cost_of_nurce_combination(comb3,Sshift3,tight_roles(Sshift3)) : 0) 
+  end
+
+  def nurces_have_avoid_combination?(nurces)
+    nurce_ids = nurces.map(&:id)
+    @avoid_list.inject(0){ |cst,comb_weight| 
+      cst + (((comb_weight[0] & nurce_ids)==comb_weight[0]) ? comb_weight[1] : 0)
+    }
   end
 
   # 現時点で逼迫しているroleのTop3のrole_idを返す
@@ -977,6 +1190,9 @@ class Hospital::Assign
   # その日割付まだされておらず、かつそのshiftを割り付けても勤務制約を越えず
   # 足りないroleを少なくとも一つ持っている
   def assinable_nurces(day,sft_str,short_roles,reculc=false)
+    logger.debug("ASSINABLE_NURCES check_at_assign of id 11,17,20 "+
+                 "#{nurce_by_id([11,17,20]).map{ |nurce| nurce.check_at_assign(day,sft_str)}.join(',')}"
+                 ) if day==1 && @busho_id == 3 
     nurce_not_assigned(day).
       select{|nurce| !nurce.check_at_assign(day,sft_str) && 
       nurce.has_assignable_roles_atleast_one(sft_str,short_roles.map{|r,mi_max| r })
@@ -997,6 +1213,7 @@ class Hospital::Assign
   # そこで、パターンの組み合わせをメモ化することにした。
   # [number_of_nurce] 看護師の人数
   # [number_of_plan]  LongPaternの数
+  # 戻り値            [ [0,0,0],[0,0,1],,,,[1,1,1] ]
   def long_plan_combination(number_of_nurce,number_of_plan)
     @long_plan_combination ||= {}
     return @long_plan_combination[[number_of_nurce,number_of_plan]] if @long_plan_combination[[number_of_nurce,number_of_plan]]
@@ -1026,12 +1243,12 @@ class Hospital::Assign
   # 
   def nurce_set_shift(nurce,day,shift_str)
     #logger.info("HOSPITAL::ASSIGN(#{__LINE__})#割付=#{day},#{shift_str} #{nurce.id} #{nurce.roles.map{|id,nm| id}}")
+    #puts ("HOSPITAL::ASSIGN(#{__LINE__})#割付=#{day},#{shift_str} nurce #{nurce.id} [#{nurce.roles.map{|id,nm| id}.join(',')}]")
     nurce.set_shift(day,shift_str)
     count_role_shift[day] = count_role_shift_of(day)
     short_role_shift[day] = short_role_shift_of(day)
-    nurce.roles.each{|role_id,name| 
-      #role_used[[role_id,shift_str.to_i]] += 1 
-      role_remain[[role_id,shift_str.to_i]] -= 1
+    nurce.role_ids.each{|role_id,name| 
+      role_remain[[role_id,shift_str]] -= 1
       #      margin_of_role[[role_id,shift_str.to_i]] -= 1
     }
     shift_str
@@ -1042,43 +1259,55 @@ class Hospital::Assign
   # [ [role,日準深]=>[min,max],, ,,,]
   def needs_all_days(reculc = false)
     return @needs_all_days if @needs_all_days && !reculc
-    @needs_all_days= (0..@lastday).map{|day|
-      date = @month+(day-1).day
-      #what_day = (date.wday%6 == 0 || Holyday.find_by_day(date)) ? 1 : 0
-      #need_patern[what_day]
-      need_patern[(date.wday%6 == 0 || Holyday.holyday?(date)) ? 1 : 0]
-    }
-    day=0
-    date = @month+(day-1).day
-    what_day = (date.wday%6 == 0 || Holyday.holyday?(date)) ? 1 : 0
-    need_patern[what_day]
-    #dbgout("FOR_DBG(#{__LINE__}) needs_all_days what_day = #{what_day} #{need_patern[what_day]}")
-    dbgout("FOR_DBG(#{__LINE__}) needs_all_days[0] #{@needs_all_days[0].to_a.join(',')}")
-    @needs_all_days
+    return @needs_all_days = Hospital::Need.needs_all_days(@month,@busho_id)
   end
 
   # 平日か土日祝かで勤務必要数が変わる。
   # それを返す。
   # 戻り値 [ [ [資格,sft_str]=>[最低数、最大数], []=>[], []=>[] ],[ 土日の分] ]
   def need_patern
-    #dbgout("FOR_DEBUG(#{__LINE__}) @night=#{@night}")
-    @need_patern ||=[2,3].map{|what_day|  # 1:毎日  2:平日、  3:土日休
-      nd = Hash.new
-      Hospital::Need.of_datetype_for_busho(@month,what_day,@busho_id).
-      each{|need|            #shift_idとすべきであった
-        nd[[need.role_id,need.kinmucode_id.to_s]] = [need.minimun||0 ,need.maximum||need.minimun]
-      }
-      #看護師の休みの上限＝＝これ以上休まれると人数が足りない を求める
-      nd[[2,"0"]] = [0,
-                     @nurces.select{|nurce| nurce.shokushu_id == 1}.size -  # 看護師の人数
-                     @shifts[1..-1].                                         # 全shiftの
-                     inject(0){|s,shift| s + (nd[[2,shift]] || [0]).first } ]  # 看護師必要人数合計
-      #dbgout("FOR_DEBUG(#{__LINE__}) 看護師の休みの上限:#{nd[[2,0]]}")
-      nd
-    }
+# <<<<<<< HEAD
+#     #dbgout("FOR_DEBUG(#{__LINE__}) @night=#{@night}")
+#     @need_patern ||=[2,3].map{|what_day|  # 1:毎日  2:平日、  3:土日休
+#       nd = Hash.new
+#       Hospital::Need.of_datetype_for_busho(@month,what_day,@busho_id).
+#       each{|need|            #shift_idとすべきであった
+#         nd[[need.role_id,need.kinmucode_id.to_s]] = [need.minimun||0 ,need.maximum||need.minimun]
+#       }
+#       #看護師の休みの上限＝＝これ以上休まれると人数が足りない を求める
+#       nd[[2,"0"]] = [0,
+#                      @nurces.select{|nurce| nurce.shokushu_id == 1}.size -  # 看護師の人数
+#                      @shifts[1..-1].                                         # 全shiftの
+#                      inject(0){|s,shift| s + (nd[[2,shift]] || [0]).first } ]  # 看護師必要人数合計
+#       #dbgout("FOR_DEBUG(#{__LINE__}) 看護師の休みの上限:#{nd[[2,0]]}")
+#       nd
+#     }
 
+#   end
+
+# =======
+    return @need_patern if @need_patern 
+    @need_patern = Hospital::Need.need_patern(@busho_id)
   end
 
+  # 指定日に割り当て不足な [role,shift] の数
+  def short_role_shift_of(day)
+    s_r = Hash.new{|h,k| h[k]=[0,0]}
+    rs=count_role_shift
+    begin
+      needs_all_days[day].keys.each{|need_patern|  #need_patern ===> [role,sft_str]
+        s_r[need_patern][0] = needs_all_days[day][need_patern][0] - rs[day][need_patern]
+        s_r[need_patern][1] = needs_all_days[day][need_patern][1] - rs[day][need_patern]
+      }
+    rescue
+#pp need_patern
+      dbgout("needs_all_days day:(#{__LINE__})#{day} need_patern=#{need_patern}")
+      raise
+    end
+    s_r
+  end
+
+#>>>>>>> HospitalPower
   def set_shifts_by_file(path)
     File.read(path).each_line{ |line|
       id,shift = line.split
@@ -1119,8 +1348,10 @@ class Hospital::Assign
     return @role_remain if @role_remain && !recalc
     @role_remain = Hash.new{|h,k| h[k]=0}
     @nurces.each{|nurce| 
-      nurce.role_remain.each_pair{|role_shift,remain|
-        @role_remain[role_shift] += remain
+      nurce.role_ids.each{ |role_id|
+        nurce.shift_remain.keys.each{ |sft_str|
+          @role_remain[[role_id,sft_str]] += nurce.shift_remain(recalc)[sft_str]
+        }
       }
     }
     @role_remain
@@ -1137,19 +1368,6 @@ class Hospital::Assign
     }
     @margin_of_role
   end
-
-
-  def role_used(recalc=false)
-    return @role_used if @role_used && !recalc
-    @role_used = Hash.new{|h,k| h[k]=0}
-    @nurces.each{|nurce| 
-      nurce.role_used.each_pair{|role_shift,used|
-        @role_used[role_shift] += used
-      }
-    }
-    @role_used
-  end
-
 
   def roles_required
     return @roles_required  if @roles_required 
@@ -1241,12 +1459,11 @@ class Hospital::Assign
     #@short_role[day]
     #logger.debug("short_role_shift(reculc)[day].to_a #{short_role_shift(reculc)[day].to_a.join(',')}")
     short_role_shift(reculc)[day].to_a.map{|role_shift,min_max| 
-      role_shift.first if role_shift.last == sft_str && min_max.first>0}.compact.sort
+      role_shift.first if min_max.first>0 && role_shift.last == sft_str}.compact.sort
   end
-  def short?(day,sft_str,role)
-
-    short_role_shift[day].to_a.map{|role_shift,min_max| 
-      role_shift.first if role_shift.last == sft_str && min_max.first>0}.compact
+  def short?(day,sft_str)
+    short_role_shift_of(day).to_a.map{|role_shift,min_max| 
+      role_shift.first if role_shift.last == sft_str && min_max.first>0}.compact.size > 0
   end
 
   def short_role_name(day,shift)
@@ -1290,9 +1507,9 @@ class Hospital::Assign
     (1..@lastday).map{|day| error_day(day) }.compact
   end
   def error_day(day)
-    ret = (1..3).map{|shift| 
+    ret = Sshift123.map{|shift| 
       srn = short_role_name(day,shift)
-      "#{day}日 #{['','日勤','準夜','深夜'][shift]}:#{srn.join(',')} " if srn.size > 0
+      "#{day}日 #{['','日勤','準夜','深夜'][shift.to_i]}:#{srn.join(',')} " if srn.size > 0
     }.compact
     ret.size > 0 ? ret : nil
   end
@@ -1319,24 +1536,37 @@ class Hospital::Assign
     end
   end
 
+  def leader_need ; Hospital::Limit.need_roles(@busho_id,@month)[[$HP_DEF.leader,:night_total]] ;end
+  def leader_arrow; Hospital::Limit.arrowable_roles(@busho_id,@month)[[$HP_DEF.leader,:night_total]] ;end
+  def kangoshi_need;Hospital::Limit.need_roles(@busho_id,@month)[[$HP_DEF.kangoshi,:kinmu_total]]    ;end
+  def kangoshi_arrow;Hospital::Limit.arrowable_roles(@busho_id,@month)[[$HP_DEF.kangoshi,:kinmu_total]];end
 
-  def log_stat(m="once",head="HOSPITAL ASSIGN ")
-    msg = "FINISHED Ver #{ID.split[2]} #{m}:#{Hospital::Busho.find(@busho_id).name} "+
-      "#{@month.month}月 繰り返し %3d回, 評価%4d回 %5.1f秒 ON "%[@entrant_count,@loop_count,@fine-@start]+
-      Time.now.strftime("%Y-%m-%d %H:%M:%S")
-    msgstat0 = "#{head} STAT shift  評価 失敗" + @count_cause.keys.map{ |k| "%8s"%k}.join(" ") +"\n"
+
+
+
+  def log_stat(opt ={ })
+    head = opt.delete(:head) || ""
+    msg = "FINISHED #{Hospital::Busho.find(@busho_id).name} #{@month.strftime('%Y/%m')}月" +
+      "   shift分再帰 %3d回, 評価%4d回 %5.1f秒 ON "%[@entrant_count,@loop_count,@fine-@start]+
+      Time.now.strftime("%Y-%m-%d %H:%M:%S")+"\n"+
+      " [実数/必要数]：リーダー #{leader_arrow}/#{leader_need}人日、"+
+      "看護師 #{kangoshi_arrow}/#{kangoshi_need}人日" 
+    msgstat0 = "#{head} STAT shift  評価 失敗 戻り" + @count_cause.keys.map{ |k| "%8s"%k}.join(" ") +"\n"
     msgstat1 = 
-      @shifts123.map{|sft_str| shift = sft_str.to_i
-      "       %s    %4d %4d"%[sft_str,@count_eval[shift],@count_fail[shift]] +
-      @count_cause.keys.map{ |k| "%9d"%@count_cause[k][shift]}.join
+      @shifts123.map{|sft_str|
+      "       %s    %4d %4d %4d"%[sft_str,@count_eval[sft_str],@count_fail[sft_str],@count_back[sft_str]] +
+      @count_cause.keys.map{ |k| "%9d"%@count_cause[k][sft_str]}.join
 
     }
+    msgmissing = @missing_roles.size == 0 ? "" :
+      "\n   不足Role "+@missing_roles.to_a.
+      map{ |id_shift,count| "  [%s] %d回"%[id_shift.join("-"),count]}.join(",") 
     # msgstat += @count_cause.keys.map{ |k| "%9d"%@count_cause[k][shift]}.join
 
     dbgout("#{head} #{msg}")
-    dbgout(head+msgstat0+head+msgstat1.join("\n#{head}"))
+    dbgout(head+msgstat0+head+msgstat1.join("\n#{head}\n")+@count_fail.to_s + msgmissing)
     
-    logout_stat "#{msg}\n" +msgstat0+msgstat1.join("\n")
+    logout_stat "#{msg}\n" +msgstat0+msgstat1.join("\n") + msgmissing
     
   end
 
@@ -1402,5 +1632,16 @@ def dbgout(msg,sw=(LogPuts|LogInfo))
   end
 
 end
+
 __END__
-Hospital::Assign.new(1,Date.new(2013,2,1))
+reculc=false
+assign = Hospital::Assign.new(1,Date.new(2013,2,1))
+assign. short_role(day,sft_str) # 1211
+assign.    short_role_shift(reculc)[day] #1166
+assign.      count_role_shift[day]
+assign.      short_role_shift_of(day)  #1067
+assign.         needs_all_days[day]
+assign.short_role_shift[day] # 1216 ここに 0=>[0, 0],
+assign.short_role_shift_of(day)       #1169 ここにはない
+assign.short_role_shift(reculc)[day].to_a.map{|role_shift,min_max| 
+      role_shift.first if min_max.first>0 && role_shift.last == sft_str}

@@ -1,0 +1,1094 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="shortcut icon" href="http://image.excite.co.jp/jp/favicon/lep.ico" />
+<link rel="apple-touch-icon" href="http://image.excite.co.jp/jp/appleIcon/web/weather/apple-touch-icon.png" />
+<title>群馬県前橋市駒形町 ピンポイント天気 | エキサイト天気</title>
+<meta name="description" content="群馬県前橋市駒形町 ピンポイント天気。今日・明日・週間予報と各種生活指数。アメダス実況や概況も。" />
+<meta name="keywords" content="群馬県前橋市駒形町,スポット,ポイント,ピンポイント,1時間,3時間,警報・注意報,アメダス,天気,天気予報,天気概況,週間天気概況,C週間天気,世界,気象庁,今日,明日" />
+<meta name="application-name" content="エキサイト天気" />
+<meta name="msapplication-starturl" content="http://weather.excite.co.jp/" />
+<meta name="msapplication-task"content="name=天気図;action-uri=http://weather.excite.co.jp/img/;icon-uri=http://image.excite.co.jp/jp/favicon/lep.ico" />
+<meta name="msapplication-task"content="name=警報・注意報;action-uri=http://weather.excite.co.jp/disaster/;icon-uri=http://image.excite.co.jp/jp/favicon/lep.ico" />
+<meta name="msapplication-task"content="name=地震情報;action-uri=http://weather.excite.co.jp/quake/;icon-uri=http://image.excite.co.jp/jp/favicon/lep.ico" />
+<meta name="msapplication-task"content="name=台風情報;action-uri=http://weather.excite.co.jp/typh/;icon-uri=http://image.excite.co.jp/jp/favicon/lep.ico" />
+<meta name="msapplication-task"content="name=世界の天気;action-uri=http://weather.excite.co.jp/world/;icon-uri=http://image.excite.co.jp/jp/favicon/lep.ico" />
+<meta name="msapplication-task"content="name=週間天気;action-uri=http://weather.excite.co.jp/weekly/;icon-uri=http://image.excite.co.jp/jp/favicon/lep.ico" />
+<meta http-equiv="content-style-type" content="text/css" />
+<meta http-equiv="content-script-type" content="text/javascript" />
+<link rel="stylesheet" href="//image.excite.co.jp/jp/share/css/exmodPC.css" type="text/css" media="screen,print" />
+<link rel="stylesheet" href="//image.excite.co.jp/jp/weather/css/weather_2011.css?004" type="text/css" media="screen,print" />
+<link rel="stylesheet" href="//image.excite.co.jp/jp/weather/css/20110308.css?004" type="text/css" media="screen,print" />
+<link rel="stylesheet" href="//image.excite.co.jp/jp/weather/css/weather_bn2011.css?004" type="text/css" media="screen,print" />
+<link rel="stylesheet" href="//image.excite.co.jp/jp/weather/css/my_hair.css?004" type="text/css" media="screen,print" />
+<script src="//image.excite.co.jp/jp/js/extabnavi07.js" type="text/javascript"></script>
+<link rel="stylesheet" href="//image.excite.co.jp/jp/weather/css/ydn.css" type="text/css" media="all">
+<script type="text/javascript" src="//image.excite.co.jp/jp/ydn/pc/jsflat.min.js"></script>
+<script type="text/javascript" src="//image.excite.co.jp/jp/ydn/js/jquery-1.10.2.min.js"></script>
+<meta name="verify-v1" content="E6m2/JdTcAsWbl/Rs6LcHA+4NG2iKwN6s5MPvITMN+M=" />
+<link rel="alternate" media="handheld" type="text/html" href="http://weather.mobile.excite.co.jp/spot/zp-3792122/" />
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/topojson.v0.min.js"></script>
+</head>
+<body>
+<div id="wrapper">
+<!--  header -->
+<div id="exHeader">
+<div id="exHeaderTop">
+<ul id="exGlovalLink">
+<li><a href="http://www.excite.co.jp">トップ</a></li>
+<li><a href="http://www.excite.co.jp/News/">ニュース</a></li>
+<li><a href="http://www.excite.co.jp/transfer/">乗換</a></li>
+<li><a href="http://www.excite.co.jp/map/">地図</a></li>
+<li><a href="http://www.excite.co.jp/mail/">メール</a></li>
+<li><a href="http://www.excite.co.jp/sitemap/">サービス一覧</a></li>
+<li class="jumpLink01"><a href="http://media.excite.co.jp/jump/link01/">おすすめ</a></li>
+</ul>
+<div id="exHeaderSrc">
+<form action="http://www.excite.co.jp/search.gw" name="searchForm" method="get">
+<input name="search" type="text" id="exHeaderSearchWord" onfocus="if (this.value == 'ウェブ検索') this.value = ''; this.style.color = '#222222';" onblur="if (this.value == '') this.value = 'ウェブ検索'; this.style.color = '#222222';" value="ウェブ検索" />
+<input type="hidden" name="target" value="combined" />
+<input type="hidden" name="look" value="excite_jp" />
+<input type="hidden" name="sstype" value="SS_weather" />
+<input type="hidden" name="charset" value="utf8" />
+<button type="submit" id="exHeaderSbm">エキサイト検索</button>
+</form>
+</div>
+</div>
+<div id="exHeaderInner">
+<div id="exSiteID">
+<ul id="exLogo">
+<li id="logoExcite"><a href="http://www.excite.co.jp/"><img src="http://image.excite.co.jp/jp/share/images/logo_excite.gif" width="72" height="30" alt="エキサイト" /></a></li>
+<li id="logoSub"><a href="/"><img src="http://image.excite.co.jp/jp/share/images/logo/logo_weather.gif" alt="天気" /></a></li>
+</ul>
+</div>
+<ul id="exControl" class="hList">
+<li><a href="http://weather.excite.co.jp/">天気トップ</a></li>
+<li class="home"><a href="http://www.excite.co.jp/">エキサイト</a></li>
+</ul>
+</div>
+</div>
+<!--  header -->
+<div class="ad728">
+<!-- EXCITE.WEATHER-728X90 -->
+<script type="text/javascript"><!--//<![CDATA[
+window.excitead_request = {};
+window.excitead_request.site = "EXCITE.WEATHER";
+window.excitead_request.area = "BANNER";
+window.excitead_request.size = "468X60";
+window.excitead_request.char = "UTF8";
+window.excitead_request.auid = "124205";
+//]]>--></script>
+<script type="text/javascript" src="http://image.excite.co.jp/jp/ox/ad.js"></script>
+<!-- EXCITE.WEATHER-728X90 -->
+</div>
+<div id="nav">
+<ul id="genreNav" class="tabs">
+<li><a href="/">天気 トップ</a></li>
+<li><a href="/area/">天気予報</a></li>
+<li class="cr"><a href="/spot/">ピンポイント天気</a></li>
+<li><a href="/img/">天気図</a></li>
+<li><a href="/disaster/">警報・注意報</a></li>
+<li><a href="/quake/">地震情報</a></li>
+<li><a href="/typh/">台風情報</a></li>
+<li><a href="/world/">世界の天気</a></li>
+<li><a href="/weekly/">週間天気</a></li>
+</ul>
+</div>
+<div id="wrapperInner">
+<div id="toEXTOP"><a href="http://www.excite.co.jp/" onclick="javascript:_gaq.push(['_trackPageview', '/btn/toEXTOP']);">← エキサイトトップ</a></div>
+<style type="text/css">
+<!--
+#wrapperInner{ position: relative;}
+#toEXTOP{ display: block; position: absolute; left: -46px; top: 0px; center; display: none;}
+#toEXTOP a{ display: block; width: 34px; height: 156px; text-indent: -9999px; overflow: hidden;
+background: url(//image.excite.co.jp/jp/news201006/btn_toEXTOP.gif) no-repeat;}
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(function(){
+    $('#toEXTOP').fadeIn();
+    $(window).scroll(function () {
+		var ScrTop = $(document).scrollTop();
+		$('#toEXTOP').css({
+		  'top' : ScrTop ,
+		  'display' : 'none'
+		  });
+    $('#toEXTOP').fadeIn('fast');
+	});
+});
+-->
+</script>
+<div id="container">
+<div id="contents" class="">
+<div class="breadcrumbs">
+<ul class="hList">
+<li><a href="/">天気トップ</a></li>
+<li><a href="/spot/">ピンポイント天気</a></li>
+<li><a href="/spot/city/pr-10/">群馬県</a></li>
+<li><a href="/spot/town/jc-10201/">前橋市</a></li>
+<li class="last">駒形町</li>
+</ul>
+</div>
+<script type="text/javascript">
+    $().ready(function () {
+        var ckim = new ExciteYDNJsFlat.Ydn({
+                    'source_id': 'excite_jp_ct_ckim',
+                    'im_type' : 'ckim',
+                    'type':'',
+                    'display': {'ex_ydn_ckim': 1}
+                }
+        );
+        ckim.load();
+    });
+</script>
+<div id="ex_ydn_ckim" class="ex_ydn_ckim"></div>
+<div class="clear"></div>
+<h2 class="spot">
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td>群馬県前橋市駒形町の天気</td>
+<td width="124">
+<a href="http://mylink.excite.co.jp/click/?url=http%3A%2F%2Fweather.excite.co.jp%2Fspot%2Fzp-3792122%2F&title=%E7%BE%A4%E9%A6%AC%E7%9C%8C%E5%89%8D%E6%A9%8B%E5%B8%82%E9%A7%92%E5%BD%A2%E7%94%BA%20%E3%83%94%E3%83%B3%E3%83%9D%E3%82%A4%E3%83%B3%E3%83%88%E5%A4%A9%E6%B0%97" target="_blank"><img src="http://mylink.excite.co.jp/img/button/btn124x23-4.gif" width="124" height="23" border="0" /></a>
+</td>
+<td width="110" align="right">
+<form  action="/spot/my/" method="post" name="form" id="form" class="spot_add">
+<input name="_qf__form" type="hidden" value="" />
+<input name="_token" type="hidden" value="0893b56e3cfe159" />
+<input name="type" type="hidden" value="add" />
+<input name="my_weather_id" type="hidden" value="3792122" />
+<input type="submit" value="My 天気に設定" style="width:100px;"/>
+</form>
+</td>
+</tr>
+</table>
+</h2>
+<div class="alert_info">気象に関する警報・注意報が発表されています&nbsp;<a href="#alert">▽</a></div>
+<div class="spot_ref_time">7月27日 12時00分更新</div>
+<div class="title-spot"><p>今日の天気 &nbsp;7月27日（<span class="holiday_sun">日</span>）</p></div>
+<table class="table-spot">
+<tr>
+<th class="ti">予報時刻</th>
+<td class="ti">0:00</td>
+<td class="ti">3:00</td>
+<td class="ti">6:00</td>
+<td class="ti">9:00</td>
+<td class="ti">12:00</td>
+<td class="target">15:00</td>
+<td class="ti">18:00</td>
+<td class="ti">21:00</td>
+</tr>
+<tr>
+<th>天気</th>
+<td>
+<img src="http://image.excite.co.jp/jp/1pt.gif" border="0" width="50" height="50"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/1pt.gif" border="0" width="50" height="50"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/1pt.gif" border="0" width="50" height="50"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/1pt.gif" border="0" width="50" height="50"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/1pt.gif" border="0" width="50" height="50"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/weather/telop/m/100.png" alt="晴" title="晴" width="50" height="50" border="0"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/weather/telop/m/100.png" alt="晴" title="晴" width="50" height="50" border="0"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/weather/telop/m/100.png" alt="晴" title="晴" width="50" height="50" border="0"/>
+</td>
+</tr>
+<tr>
+<th>気温</th>
+<td>--℃</td>
+<td>--℃</td>
+<td>--℃</td>
+<td>--℃</td>
+<td>--℃</td>
+<td>34℃</td>
+<td>31℃</td>
+<td>28℃</td>
+</tr>
+<tr>
+<th>降水量</th>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>--</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<th>湿度</th>
+<td>--%</td>
+<td>--%</td>
+<td>--%</td>
+<td>--%</td>
+<td>--%</td>
+<td>48%</td>
+<td>56%</td>
+<td>64%</td>
+</tr>
+<tr>
+<th>風向き<br>風速</th>
+<td>--<br>--m</td>
+<td>--<br>--m</td>
+<td>--<br>--m</td>
+<td>--<br>--m</td>
+<td>--<br>--m</td>
+<td>北北西<br>5m</td>
+<td>北北西<br>5m</td>
+<td>北西<br>3m</td>
+</tr>
+</table>
+<div class="title-spot"><p>明日の天気 &nbsp;7月28日（<span class="">月</span>）</p></div>
+<table class="table-spot">
+<tr>
+<th class="ti">予報時刻</th>
+<td class="ti">0:00</td>
+<td class="ti">3:00</td>
+<td class="ti">6:00</td>
+<td class="ti">9:00</td>
+<td class="ti">12:00</td>
+<td class="ti">15:00</td>
+<td class="ti">18:00</td>
+<td class="ti">21:00</td>
+</tr>
+<tr>
+<th>天気</th>
+<td>
+<img src="http://image.excite.co.jp/jp/weather/telop/m/100.png" alt="晴" title="晴" width="50" height="50" border="0"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/weather/telop/m/100.png" alt="晴" title="晴" width="50" height="50" border="0"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/weather/telop/m/100.png" alt="晴" title="晴" width="50" height="50" border="0"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/weather/telop/m/100.png" alt="晴" title="晴" width="50" height="50" border="0"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/weather/telop/m/100.png" alt="晴" title="晴" width="50" height="50" border="0"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/weather/telop/m/100.png" alt="晴" title="晴" width="50" height="50" border="0"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/weather/telop/m/100.png" alt="晴" title="晴" width="50" height="50" border="0"/>
+</td>
+<td>
+<img src="http://image.excite.co.jp/jp/weather/telop/m/100.png" alt="晴" title="晴" width="50" height="50" border="0"/>
+</td>
+</tr>
+<tr>
+<th>気温</th>
+<td>25℃</td>
+<td>23℃</td>
+<td>22℃</td>
+<td>27℃</td>
+<td>31℃</td>
+<td>32℃</td>
+<td>29℃</td>
+<td>25℃</td>
+</tr>
+<tr>
+<th>降水量</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<th>湿度</th>
+<td>68%</td>
+<td>74%</td>
+<td>78%</td>
+<td>56%</td>
+<td>40%</td>
+<td>36%</td>
+<td>58%</td>
+<td>76%</td>
+</tr>
+<tr>
+<th>風向き<br>風速</th>
+<td>北西<br>4m</td>
+<td>北西<br>3m</td>
+<td>北西<br>2m</td>
+<td>北西<br>2m</td>
+<td>南東<br>2m</td>
+<td>南東<br>3m</td>
+<td>東南東<br>2m</td>
+<td>北北西<br>2m</td>
+</tr>
+</table>
+<br clear="all" />
+<script type="text/javascript">
+    $().ready(function () {
+        var exYdn = new ExciteYDNJsFlat.Ydn({
+                    'source_id': 'excite_jp_weather_ctxt',
+                    'size': 3,
+                    'type': '',
+                    'display': {'ex_ydn1': 3},
+                    'view_order': {'site':'siteHost','desc':'description'}
+                }
+        );
+        exYdn.load();
+    });
+</script>
+<div id="ex_ydn1" class="ex_ydn_text_pc_weather"></div>
+<style type="text/css">
+<!--
+.popularKeywords{ font-size: 108%; line-height: 2; border: solid 1px #ccc; }
+.popularKeywords h2 { background: url(http://image.excite.co.jp/jp/news201006/icon_hs.gif) no-repeat left; padding-left: 20px;}
+.popularKeywords .inner{ padding: 5px 10px !important; font-weight: bold; overflow: hidden; height: 1%; overflow: hidden}
+.popularKeywords a{ color:blue}
+.popularKeywords a:visited{ color: purple}
+#popular_keywords_main ol{ float: left; width: 32%; margin: 0 0 10px}
+#popular_keywords_main li{ list-style: outside decimal; margin: 0 0 0 40px; line-height: 1.8}
+-->
+</style>
+<div id="popular_keywords_main" class="popularKeywords box01">
+<div class="hgroup"><h2>スポンサードサーチ</h2></div>
+<script src="http://hs.excite.co.jp/weather/?sn=xwe"></script>
+<script type="text/javascript" language="JavaScript">
+<!--
+var apiMax = 30;
+var printMax = 24;
+var perColumn = 8;
+var kwsList = new Array();
+var i, kws;
+var tag = '';
+for ( i = 1; i < apiMax; i++ ){
+    kws = '';
+    eval('if ( typeof(EXKW'+i+') != "undefined" ) kws = EXKW'+i+';');
+    if ( kws.indexOf('></a>') == -1){
+        kwsList.push(kws);
+    }
+}
+tag += '<div class="inner">';
+tag += '<ol start="1">';
+for ( i = 0; i < kwsList.length; i++ ){
+    if(i == printMax){
+        break;
+    }
+    if (i % perColumn == 0) {
+        if (i > 1) {
+            tag += '</ol><ol start="' + parseInt(i+1) + '">';
+        }
+    }
+    tag += '<li>' + kwsList[i] + '</li>';
+
+}
+tag += '</ol>';
+tag += '</div>';
+document.write(tag);
+for ( i = 1; i <= printMax; i++ ){
+    eval('if ( typeof(EXKW'+i+') != "undefined" ) EXKW'+i+' ="";')
+}
+//-->
+</script>
+</div>
+<a name="alert"></a>
+<h2 class="chh2">警報・注意報</h2>
+<div class="infotx">
+<div class="area_ref_time">7月27日 14時03分更新</div>
+<div class="alert_watch_list">
+<div class="alert_title">注意報</div>
+<div class="alert_line">
+・群馬県南部 前橋・桐生地域&nbsp;
+<span class="alert_watch">雷</span>
+</div>
+<div class="alert_line">
+・群馬県南部 伊勢崎・太田地域&nbsp;
+<span class="alert_watch">雷</span>
+</div>
+<div class="alert_line">
+・群馬県南部 高崎・藤岡地域&nbsp;
+<span class="alert_watch">雷</span>
+</div>
+</div>
+</div>
+<h2 class="chh2">週間天気</h2>
+<div class="infotx">
+<span><a href="/area/ar-4210/">群馬県南部(前橋)</a>の週間天気</span>
+<div class="area_ref_time">7月27日 11時00分更新</div>
+<table class="table-week">
+<tr>
+<th>7月29日(<span class="">火</span>)</th>
+<th>7月30日(<span class="">水</span>)</th>
+<th>7月31日(<span class="">木</span>)</th>
+<th>8月1日(<span class="">金</span>)</th>
+<th>8月2日(<span class="holiday_sat">土</span>)</th>
+</tr>
+<tr>
+<td><img src="http://image.excite.co.jp/jp/weather/telop/m/101.png" alt="晴時々曇" title="晴時々曇" width="50" height="50" border="0"/></td>
+<td><img src="http://image.excite.co.jp/jp/weather/telop/m/101.png" alt="晴時々曇" title="晴時々曇" width="50" height="50" border="0"/></td>
+<td><img src="http://image.excite.co.jp/jp/weather/telop/m/111.png" alt="晴のち曇" title="晴のち曇" width="50" height="50" border="0"/></td>
+<td><img src="http://image.excite.co.jp/jp/weather/telop/m/203.png" alt="曇一時雨" title="曇一時雨" width="50" height="50" border="0"/></td>
+<td><img src="http://image.excite.co.jp/jp/weather/telop/m/201.png" alt="曇時々晴" title="曇時々晴" width="50" height="50" border="0"/></td>
+</tr>
+<tr>
+<td>晴れ時々くもり</td>
+<td>晴れ時々くもり</td>
+<td>晴れ後くもり</td>
+<td>くもり一時雨</td>
+<td>くもり時々晴れ</td>
+</tr>
+<tr>
+<td><span class="tm">21℃</span>/<span class="tx">32℃</span></td>
+<td><span class="tm">22℃</span>/<span class="tx">33℃</span></td>
+<td><span class="tm">23℃</span>/<span class="tx">32℃</span></td>
+<td><span class="tm">24℃</span>/<span class="tx">31℃</span></td>
+<td><span class="tm">24℃</span>/<span class="tx">34℃</span></td>
+</tr>
+<tr>
+<td>降水確率 10％</td>
+<td>降水確率 30％</td>
+<td>降水確率 40％</td>
+<td>降水確率 50％</td>
+<td>降水確率 30％</td>
+</tr>
+</table>
+</div>
+<div id="doubleRectangle">
+<style tyle="text/css">
+#doubleRectangle {
+width: 610px;
+height: 250px;
+margin: 20px auto;
+text-align: center;
+clear: both;
+}
+</style>
+<ul><li style="margin-right: 10px;float:left; border:0 !important;">
+<script type="text/javascript"><!--//<![CDATA[
+                    window.excitead_request = {};
+                    window.excitead_request.site = "EXCITE.WEATHER";
+                    window.excitead_request.area = "IMAGE";
+                    window.excitead_request.size = "960X240";
+                    window.excitead_request.char = "UTF8";
+                    //]]>--></script>
+<script type="text/javascript" src="http://image.excite.co.jp/jp/ox/ad.js"></script>
+</li>
+<li style="float:left; border:0 !important;">
+<script type="text/javascript"><!--//<![CDATA[
+                    window.excitead_request = {};
+                    window.excitead_request.site = "EXCITE.WEATHER";
+                    window.excitead_request.area = "IMAGE.2";
+                    window.excitead_request.size = "960X240";
+                    window.excitead_request.char = "UTF8";
+                    //]]>--></script>
+<script type="text/javascript" src="http://image.excite.co.jp/jp/ox/ad.js"></script>
+</li>
+</ul>
+</div>
+<h2 class="chh2">アメダス実況</h2>
+<div class="infotx">
+<span>群馬&nbsp;前橋市昭和町　前橋地方気象台</span>
+<div class="area_ref_time">7月27日 15時00分更新</div>
+<table class="table-ame">
+<tr>
+<th>&nbsp;</th>
+<th width="16%">気温</th>
+<th width="16%">降水量</th>
+<th width="16%">風向</th>
+<th width="16%">風速</th>
+<th width="16%">日照時間</th>
+<th width="16%">積雪</th>
+</tr>
+<tr>
+<th>&nbsp;</th>
+<td>31.3℃</td>
+<td>0mm</td>
+<td>北北西</td>
+<td>5.7m/s</td>
+<td>57分</td>
+<td>欠測</td>
+</tr>
+<tr>
+<th nowrap="nowrap">観測地</th>
+<td>前橋</td>
+<td>前橋</td>
+<td>前橋</td>
+<td>前橋</td>
+<td>前橋</td>
+<td>前橋</td>
+</tr>
+</table>
+</div>
+<h2 class="chh2">生活指数</h2>
+<div class="infotx">
+<div class="area_ref_life_time">7月27日 6時00分更新</div>
+<table class="table-index">
+<tr>
+<th width="11%">洗濯</th>
+<th width="11%">星空</th>
+<th width="11%">素肌乾燥</th>
+<th width="11%">掛け布団</th>
+<th width="11%">重ね着</th>
+<th width="11%">ビール</th>
+<th width="11%">熱中症予防</th>
+<th width="11%">紫外線</th>
+<th width="11%">ヘアスタイル</th>
+</tr>
+<tr>
+<td>
+<a href="/spot/zp-3792122/week/cloth_dried/">
+<img src="http://image.excite.co.jp/jp/weather/index/m/cloth_dried/1.png" alt="室内に干すか、乾燥機がお勧め" title="室内に干すか、乾燥機がお勧め" width="50" height="50" border="0"/>
+</a>
+<br>
+<div class="comment">室内に干すか、乾燥機がお勧め</div>
+</td>
+<td>
+<a href="/spot/zp-3792122/week/starry_sky/">
+<img src="http://image.excite.co.jp/jp/weather/index/m/starry_sky/4.png" alt="空一杯の星空が広がるかも？" title="空一杯の星空が広がるかも？" width="50" height="50" border="0"/>
+</a>
+<br>
+<div class="comment">空一杯の星空が広がるかも？</div>
+</td>
+<td>
+<a href="/spot/zp-3792122/week/skin_dried/">
+<img src="http://image.excite.co.jp/jp/weather/index/m/skin_dried/1.png" alt="肌しっとり。脂性の人はニキビ注意" title="肌しっとり。脂性の人はニキビ注意" width="50" height="50" border="0"/>
+</a>
+<br>
+<div class="comment">肌しっとり。脂性の人はニキビ注意</div>
+</td>
+<td>
+<a href="/spot/zp-3792122/week/quilt/">
+<img src="http://image.excite.co.jp/jp/weather/index/m/quilt/1.png" alt="布団をけとばしてしまうかも" title="布団をけとばしてしまうかも" width="50" height="50" border="0"/>
+</a>
+<br>
+<div class="comment">布団をけとばしてしまうかも</div>
+</td>
+<td>
+<a href="/spot/zp-3792122/week/cloth_layering/">
+<img src="http://image.excite.co.jp/jp/weather/index/m/cloth_layering/1.png" alt="半袖で出かけても大丈夫そう" title="半袖で出かけても大丈夫そう" width="50" height="50" border="0"/>
+</a>
+<br>
+<div class="comment">半袖で出かけても大丈夫そう</div>
+</td>
+<td>
+<a href="/spot/zp-3792122/week/beer/">
+<img src="http://image.excite.co.jp/jp/weather/index/m/beer/4.png" alt="冷やしたビールで猛暑をのりきれ！" title="冷やしたビールで猛暑をのりきれ！" width="50" height="50" border="0"/>
+</a>
+<br>
+<div class="comment">冷やしたビールで猛暑をのりきれ！</div>
+</td>
+<td>
+<a href="/spot/zp-3792122/week/wbgt/">
+<img src="http://image.excite.co.jp/jp/weather/index/m/wbgt/3.png" alt="熱中症の危険が高いので負担の大きい運動は避けよう" title="熱中症の危険が高いので負担の大きい運動は避けよう" width="50" height="50" border="0"/>
+</a>
+<br>
+<div class="comment">熱中症の危険が高いので負担の大きい運動は避けよう</div>
+</td>
+<td>
+<a href="/spot/zp-3792122/week/uv/">
+<img src="http://image.excite.co.jp/jp/weather/index/m/uv/2.png" alt="やや強い" title="やや強い" width="50" height="50" border="0"/>
+</a>
+<br>
+<div class="comment">やや強い</div>
+</td>
+<td>
+<a href="/spot/zp-3792122/week/hair_style/">
+<img src="http://image.excite.co.jp/jp/weather/index/m/hair_style/1.png" alt="髪しっとり。まとめ髪でクセを防止。" title="髪しっとり。まとめ髪でクセを防止。" width="50" height="50" border="0"/>
+</a>
+<br>
+<div class="comment">髪しっとり。まとめ髪でクセを防止。</div>
+</td>
+</tr>
+</table>
+<div style="width:100%;">
+<div style="float:left;">
+<span style="font-size:11px;">※生活指数ごとに見たい場合はアイコンをクリックしてください。</span>
+</div>
+<div style="float:right;">
+<a href="/spot/zp-3792122/week/" style="text-align:right;">１週間分見る</a>
+</div>
+</div>
+<div class=clear></div>
+</div>
+<div class="keyword">
+<div class="linkKeywords">
+<ul class="hList">
+<li><a href="http://www.excite.co.jp/relocate3/?co=jp/xwe/Weather/etop;http://www.excite.co.jp/">エキサイトトップ</a></li>
+<li><a href="http://www.excite.co.jp/relocate3/?co=jp/xwe/Weather/weathertop;http://weather.excite.co.jp/">天気トップ</a></li>
+</ul>
+</div>
+</div>
+<!--tab切り替え-->
+<div class="tab_navi">
+<ul id="tab_navi_1">
+<li class="tab_navi_select"><span onClick="javascript:urchinTracker('/click/spot/digest');">天気概況</span></li>
+<li><span onClick="javascript:urchinTracker('/click/spot/weekly_digest');">週間天気概況</span></li>
+</ul></div>
+<div id="tab_navi_1_1_body">
+<div class="tabinfo">
+<span>7月27日 10時42分更新</span>
+</div>
+<div class="area_link"><span><strong>南部・北部(前橋地方気象台)</strong></span></div>
+<div class="tab_body">
+<div class="infotx">
+<div class="alert_tx">群馬県では、２７日昼前から２７日夜のはじめ頃まで竜巻などの激しい突風や急な強い雨、落雷に注意してください。</div><br>　北海道付近の低気圧からのびる寒冷前線が本州を南下しています。<br />
+　現在、関東甲信地方は、おおむね晴れていますが、長野県を中心に雨の降っている所があります。<br />
+　今日は、太平洋高気圧に覆われますが、寒冷前線が昼過ぎに通過する見込みです。　このため、群馬県は、晴れ時々曇りで、昼前から夜のはじめ頃にかけて、雨や雷雨となる所があるでしょう。　なお、群馬県では高温が予想されます。熱中症など健康管理に注意してください。　　明日は、高気圧におおわれる見込みです。　このため、群馬県は晴れで、朝晩は曇りとなるでしょう。
+</div>
+</div></div>
+<div id="tab_navi_1_2_body">
+<div class="tabinfo">
+<span>7月27日 10時30分更新</span>
+</div>
+<div class="area_link"><span><strong>関東甲信地方(前橋地方気象台)</strong></span></div>
+<div class="tab_body">
+<div class="infotx">
+太平洋高気圧に覆われて晴れる日が多い見込みですが、期間の中頃には上<br />
+空の寒気や湿った気流の影響で雨の降る日があるでしょう。<br />
+　最高気温・最低気温ともに、期間の前半は平年並か平年より低く、後半は<br />
+平年並か平年より高い見込みです。<br />
+　降水量は、平年並でしょう。
+</div>
+</div></div>
+<script type="text/javascript">
+var exTabVavi = new exTabNavi({
+id: 'tab_navi_1',
+active: 0,
+activeclass: 'tab_navi_select'
+});
+</script>
+<!--tab切り替え終了-->
+<h2 class="chh2"><div class="chh2l"><a href="/area/pr-10/">群馬県の天気</a></div></h2>
+<div class="areatx">
+<ul>
+<li><b><a href="/area/ar-4210/">群馬県南部(前橋)</a></b></li>
+<li><a href="/area/ar-4220/">群馬県北部(みなかみ)</a></li>
+</ul>
+</div>
+<br clear="all" />
+<div>【ぐるなび】<a href="http://r.gnavi.co.jp/area/aream3061/">前橋</a>でオススメのグルメ情報/<a href="http://r.gnavi.co.jp/area/aream3061/yakiniku/rs/">焼肉</a>-<a href="http://r.gnavi.co.jp/area/aream3061/french/rs/">フレンチ</a>-<a href="http://r.gnavi.co.jp/area/aream3061/italian/rs/">イタリアン</a></div>
+<br clear="all" />
+<style type="text/css">
+<!--
+#rakutenMW h3 {
+background: url("http://image.excite.co.jp/jp/news201006/icon_cart.gif") no-repeat scroll 0 7px transparent;
+text-indent: 27px;
+}
+#rakutenMW .inner {
+overflow: hidden;
+padding: 5px 0 !important;
+text-align: center;
+width: 100%;
+}
+#rakuten-contents {
+border-style: none solid solid;
+color: #AAAAAA;
+font-size: 14px;
+font-weight: bold;
+line-height: 1.8em;
+white-space: nowrap;
+}
+#rakuten-contents .inner {
+text-align: center;
+}
+-->
+</style>
+<div class="box01" id="rakuten-contents">
+<div class="hgroup"><h3>注目の商品</h3></div>
+<div class="inner">
+<!-- Rakuten Widget FROM HERE -->
+<script type="text/javascript">
+        rakuten_design="slide";rakuten_affiliateId="0e56b7ba.e04dd894.0e56b7bb.71cbd3c3";rakuten_items="ranking";rakuten_genreId=0;rakuten_size="600x200";rakuten_target="_blank";rakuten_theme="gray";rakuten_border="off";rakuten_auto_mode="off";rakuten_genre_title="off";rakuten_recommend="on";rakuten_ver="20100708";rakuten_pointbackId="_RTmtlk20010251";
+        </script>
+<script type="text/javascript" src="http://xml.affiliate.rakuten.co.jp/widget/js/rakuten_widget.js"></script>
+<!-- Rakuten Widget TO HERE -->
+</div>
+<div style="margin:10px auto;">
+<ul class="hList">
+<li style="margin:0 10px;"><a href="http://shopping.excite.co.jp/ranking/">クリスタイルガイザー最安値をチェック</a></li>
+<li style="margin:0 10px;"><a href="http://shopping.excite.co.jp/genre/100940/">まだまだ人気☆スカルプＤ</a></li>
+<li style="margin:0 10px;"><a href="http://shopping.excite.co.jp/ranking/301981/">今ねらい目の腕時計</a></li>
+</ul>
+</div>
+</div>
+</div>
+<!--contents div end-->
+</div>
+<!--container div end-->
+<div id="sidebar">
+<div class="extra300x250">
+<!-- EXCITE.WEATHER-300X250 -->
+<script type="text/javascript"><!--//<![CDATA[
+window.excitead_request = {};
+window.excitead_request.site = "EXCITE.WEATHER";
+window.excitead_request.area = "IMAGE.2";
+window.excitead_request.size = "300x250";
+window.excitead_request.char = "UTF8";
+window.excitead_request.auid = "124229";
+//]]>--></script>
+<script type="text/javascript" src="http://image.excite.co.jp/jp/ox/ad.js"></script>
+<!-- EXCITE.WEATHER-300X250 -->
+</div>
+<div class="side-border">
+<span class="side-corner-top"><span class="side-corner-left"></span></span>
+<div class="side-body">
+<div class="side-title"><a href="/spot/my/">My天気</a></div>
+<div class="side-unit">
+My天気を設定すると1件目を天気トップに表示できます<br />
+<a href="/spot/">ピンポイント天気を検索</a>してMy天気を設定しましょう<br />
+<form  action="/spot/" method="post" name="myWeatherForm" id="myWeatherForm">
+<input name="_qf__myWeatherForm" type="hidden" value="" />
+<input name="_token" type="hidden" value="0893b56e3cfe159" />
+<input size="25" name="keyword" type="text" />
+<input name="submit" type="submit" value="　検索　"><br />
+</form>
+</div>
+</div>
+<span class="side-corner-bottom"><span class="side-corner-left"></span></span>
+</div>
+<div class="relate_link">
+<div class="relate_title">関連サービス</div>
+<div class="relate_tile">
+<ul>
+<li><a href="http://www.excite.co.jp/map/">地図</a><br />
+　-　<a href="http://www.excite.co.jp/map/search/?mode=zipcode&search=3792122">この地域の地図</a></li>
+<li><a href="http://www.excite.co.jp/transfer/">乗り換え案内</a><br />
+<font color="#999999">　-　この地域の駅はありません</font>
+</li>
+<li><a href="http://www.excite.co.jp/postcode/">郵便番号検索</a><br />
+　-　<a href="http://www.excite.co.jp/postcode/list/3792122.html">この地域のリンク集</a></li>
+<li>付近の施設の天気<br />
+<font color="#999999">　-　見つかりませんでした
+</li>
+</ul>
+</div>
+</div>
+<div class="extra300x250">
+<!-- EXCITE.UNV-300X250 -->
+<script type="text/javascript"><!--//<![CDATA[
+window.excitead_request = {};
+window.excitead_request.site = "EXCITE.UNV";
+window.excitead_request.area = "IMAGE.2";
+window.excitead_request.size = "300X250";
+window.excitead_request.char = "UTF8";
+//]]>--></script>
+<script type="text/javascript" src="http://image.excite.co.jp/jp/ox/ad.js"></script>
+<!-- EXCITE.UNV-300X250 -->
+</div>
+<style type="text/css">
+<!--
+.relate_tile.bousai li {display: inline-block; width: 42%;}
+-->
+</style>
+<div class="relate_link">
+<div class="relate_title">防災情報</div>
+<div class="relate_tile bousai">
+<ul>
+<li><a href="/disaster/">警報・注意報</a></li>
+<li><a href="/quake/">地震情報</a></li>
+<li><a href="/tsunami/">津波情報</a></li>
+<li><a href="/typh/">台風情報</a></li>
+</ul>
+</div>
+</div>
+<div class="side_img">
+<div class="img_title">過去24時間の地震</div>
+<div class="img_tile">
+<a href="/quake/map/" style="text-decoration: none;">
+<div class="quakes24"></div>
+</a>
+</div>
+</div>
+<style>
+.quake {
+fill-opacity: 0.5;
+stroke-width: 1;
+stroke-opacity: 0.7;
+}
+</style>
+<script>
+var quakeMap = function(){
+    var w = 240;
+    var h = 180;
+    var now = new Date();
+
+    // SVG要素(土台)
+    var svg = d3.select(".quakes24")
+          .append("svg")
+          .attr("width", w)
+          .attr("height", h)
+          .style("position", "relative")
+          .style("opacity", 0)
+          .style("overflow", "hidden")
+          .style("background-color", "#ffffff");
+
+    // メルカトル図法に設定
+    var projection = d3.geo.mercator()
+        .center([135, 35.5])
+        .translate([w/2, h/2])
+        .scale(370);
+
+    // 日本地図データ読み込み
+    d3.json("/json/japan.json", function(json) {
+        var japan = topojson.object(json, json.objects.japan).geometries;
+        // 日本地図プロット
+        plotJapan(japan);
+
+        d3.json("/json/quakes24h.json", function(json) {
+            // 地震プロット
+            var quakes = json;
+            plotQuake(quakes);
+
+            plotTitle(quakes);
+
+            // フェードイン
+            svg.transition()
+            .duration(500)
+            .style("opacity", 1);
+        });
+    });
+
+    // 日本地図
+    var plotJapan = function(japan) {
+        var path = d3.geo.path()
+            .projection(projection);
+
+        svg.selectAll("path")
+        .data(japan)
+        .enter()
+        .append("path")
+        .attr("d", path)
+        .style("fill", function(d){
+            if (d.properties.geonunit == 'Japan') {
+                return "#2ca02c";
+            } else {
+                return "#867d3f";
+            }
+        });
+    };
+
+    // 地震
+    var plotQuake = function(quakes) {
+        svg.selectAll(".quake")
+        .data(quakes)
+        .enter()
+        .append("circle")
+        .attr("class", function(d, i){
+            if (i == quakes.length - 1) {
+                return "quake last";
+            } else {
+                return "quake";
+            }
+        })
+        .attr("transform", function(d) {
+           return "translate(" + projection([d.lng, d.lat]) + ")";
+        })
+        .attr("r", function(d) {
+            if (d.hidden) {
+                return 0;
+            } else {
+                return magnitudeRadius(d.magnitude);
+            }
+        })
+        .style("fill", function(d) {
+            return depthColor(d.depth);
+        })
+        .style("stroke", function(d) {
+            return depthColor(d.depth);
+        })
+    };
+
+    var plotTitle = function(quakes) {
+        var countQuake = quakes.length;
+
+        svg.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 120)
+        .attr("height", 30)
+        .style("fill", "#000000")
+        .style("fill-opacity", 0.5);
+
+        svg.append("text")
+        .text("地震観測回数: " + countQuake + "回")
+        .attr("class", "countQuake")
+        .attr("transform", "translate(7, 20)")
+        .attr("font-size", "12px")
+        .style("fill", "#ffffff");
+    };
+
+    var magnitudeRadius = function(magnitude) {
+        var alpha = 1.2;
+        return magnitude * alpha;
+    };
+
+    var depthColor = function(depth) {
+        if (depth >= 250) {
+            depth = 250;
+        }
+        return "hsl(" + depth + ",100%,50%)";
+    };
+};
+quakeMap();
+</script>
+<div class="side_img">
+<div class="img_title">気象レーダー</div>
+<div class="img_tile">
+<a href="/img/mesh/"><img src="http://image.excite.co.jp/feed/weather/mesh/mesh_s.jpg" width="240" border="0"></a>
+</div>
+</div>
+<div class="side_img">
+<div class="img_title">衛星画像</div>
+<div class="img_tile"><a href="/img/satellite/"><img src="http://image.excite.co.jp/feed/weather/satellite/satellite_s.jpg" width="240" border="0"></a>
+</div>
+</div>
+<div class="mobile_site">
+<span class="title">モバイルサイト</span><br>
+<img class="qrcode" align="left" src="http://image.excite.co.jp/jp/weather/mobile/qr_58x58.gif" width="58" height="58" />
+<div class="desc">
+<img class="icon" src="http://image.excite.co.jp/jp/mobile/carrier/icon_imode.gif" width="15" height="17" border="0" />
+<img class="icon" src="http://image.excite.co.jp/jp/mobile/carrier/icon_ezweb.gif" width="15" height="17" border="0" />
+<img class="icon" src="http://image.excite.co.jp/jp/mobile/carrier/icon_softbank_y2.gif" width="15" height="17" border="0" />
+<img class="icon" src="http://image.excite.co.jp/jp/mobile/carrier/icon_willcom.gif" width="30" height="17" border="0" />
+<br>
+エキサイト天気に携帯でアクセス<br>
+<a href="mailto:?body=http%3A%2F%2Fweather.mobile.excite.co.jp%2F">URLを携帯に送る</a>
+</div>
+<div class="clear"></div>
+</div>
+</div>
+<!--sidebar div end-->    
+</div>
+<div id="exUnderNav">
+<ul class="hList">
+<li><a href="/">天気 トップ</a></li>
+<li><a href="/spot/">ピンポイント天気</a></li>
+<li><a href="/area/">全国の天気</a></li>
+<li><a href="/world/">世界の天気</a></li>
+<li><a href="/img/">天気図</a></li>
+<li><a href="/weekly/">週間天気</a></li>
+<li class="last"><a href="/disaster/">防災情報</a></li>        </ul>
+</div>
+<div id="exFooter">
+<div id="exFooterInner">
+<div id="exFooterContents">
+<p class="adText" id="footer_pr_text">
+<style type="text/css">
+<!--
+.adText{ background: none; padding: 0 0 5px 0;  text-align: left;}
+.adText a{padding:0 0 5px 40px;background: url(http://image.excite.co.jp/jp/news201006/icon_pr.gif) no-repeat 0 0;}
+// -->
+</style>
+<!-- EXCITE.UNV-TEXT_FOOTER -->
+<script type="text/javascript"><!--//<![CDATA[
+window.excitead_request = {};
+window.excitead_request.site = "EXCITE.UNV";
+window.excitead_request.area = "TEXT.FOOTER";
+window.excitead_request.size = "TEXT";
+window.excitead_request.char = "UTF8";
+//]]>--></script>
+<script type="text/javascript" src="http://image.excite.co.jp/jp/ox/ad.js"></script>
+<!-- EXCITE.UNV-TEXT_FOOTER -->
+</p>
+<script type="text/javascript" charset="utf-8" src="http://image.excite.co.jp/feed/news/js/excite_news_top.js"></script>
+<script type="text/javascript" charset="utf-8" src="http://image.excite.co.jp/feed/news/js/exblog_ranking.js"></script>
+<div class="exFooterLink">
+<span class="linkGroup">ユーザーサポート</span>
+<ul>
+<li><a href="http://help.excite.co.jp/">ヘルプ</a></li>
+<li><a href="http://www.excite.co.jp/help/support">お問い合わせ</a></li>
+<li><a href="http://www.excite.co.jp/sitemap/">サイトマップ</a></li>
+<li><a href="http://www.excite.co.jp/help/protection/">個人情報保護</a></li>
+<li class="last"><a href="http://www.excite.co.jp/help/info?hp=5">免責事項</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="jumpLink02"><a href="http://media.excite.co.jp/jump/link02/">おすすめ</a></div>
+<div class="exMediaLink">
+<span class="linkGroup">関連サービス：</span>
+<ul>
+<li><a href="http://www.excite.co.jp/News/" title="ニュース">ニュース</a></li>
+<li><a href="http://www.excite.co.jp/transfer/" title="乗換">乗換</a></li>
+<li><a href="http://www.excite.co.jp/map/" title="地図">地図</a></li>
+<li><a href="http://www.excite.co.jp/mail/" title="メール">メール</a></li>
+<li class="last"><a href="http://www.exblog.jp/" title="エキサイトブログ">ブログ</a></li>
+</ul>
+</div>
+<ul class="exMediaLink">
+<li><a href="http://www.excite.co.jp/News/" title="ニュース">ニュース</a></li>
+<li><a href="http://weather.excite.co.jp/" title="天気">天気</a></li>
+<li><a href="http://www.excite.co.jp/world/" title="翻訳">翻訳</a></li>
+<li><a href="http://www.exblog.jp/" title="ブログ">ブログ</a></li>
+<li><a href="http://fortune.woman.excite.co.jp/" title="占い">占い</a></li>
+<li><a href="http://d.excite.co.jp/" title="電話占い">電話占い</a></li>
+<li><a href="http://friends.excite.co.jp/friends/" title="フレンズ">フレンズ</a></li>
+<li><a href="http://wedding.excite.co.jp/" title="婚活">婚活</a></li>
+<li><a href="http://realestate.excite.co.jp/" title="不動産">不動産</a></li>
+<li><a href="http://www.excite.co.jp/seimei/" title="生命保険">生命保険</a></li>
+<li><a href="http://shopping.excite.co.jp/" title="ショッピング">ショッピング</a></li>
+<li><a href="http://erecipe.woman.excite.co.jp/" title="レシピ">レシピ</a></li>
+<li><a href="http://www.excite.co.jp/music/" title="音楽">音楽</a></li>
+<li><a href="http://coupon.excite.co.jp/" title="クーポン">クーポン</a></li>
+<li class="last"><a href="http://www.excite.co.jp/category/" title="カテゴリ">カテゴリ</a></li><br />
+<li><a href="http://www.excite.co.jp/" title="エキサイト">エキサイト</a></li>
+<li><a href="http://woman.excite.co.jp/" title="ウーマンエキサイト">ウーマンエキサイト</a></li>
+<li class="last"><a href="http://bb.excite.co.jp/" title="最安プロバイダ">最安プロバイダ</a></li>
+</ul>
+<div id="exFooterSrc">
+<form action="http://www.excite.co.jp/search.gw" name="searchForm" method="get">
+<input name="search" type="text" id="exFooterSearchWord" onfocus="if (this.value == 'ウェブ検索') this.value = ''; this.style.color = '#222222';" onblur="if (this.value == '') this.value = 'ウェブ検索'; this.style.color = '#222222';" value="ウェブ検索" />
+<input type="hidden" name="target" value="combined" />
+<input type="hidden" name="look" value="excite_jp" />
+<input type="hidden" name="sstype" value="SS_weather" />
+<input type="hidden" name="charset" value="utf8" />
+<button type="submit" id="exFooterSbm">エキサイト検索</button>
+</form>
+</div>
+<div id="copyright">
+<address>Copyright &copy; 2014 <a href="http://n-tenki.jp/sp/">日本気象協会</a>. All Rights Reserved.</address>
+<address id="exciteCopyRight">Copyright &copy; 1997-2014 Excite Japan Co., Ltd. All Rights Reserved.</address>
+</div>
+</div>
+</div>
+<script src="http://rep.excite.co.jp/urchin.js" type="text/javascript"></script>
+<script type="text/javascript">
+urchinTracker();
+</script>
+<script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://" : "http://");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "stats.g.doubleclick.net/dc.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+  var pageTracker = _gat._getTracker("UA-400370-16");
+  pageTracker._initData();
+  pageTracker._trackPageview();
+</script>
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-47366848-1', 'auto', {'name':'exall', 'allowLinker':true});
+  ga('exall.require', 'displayfeatures');
+  ga('exall.send', 'pageview');
+  ga('require', 'linker');
+  ga('linker:autoLink', ['exblog.jp']);
+</script>
+<script language="JavaScript" type="text/javascript" src="//image.excite.co.jp/jp/ad/bsb.js" charset="UTF-8"></script>
+</body>
+</html>
