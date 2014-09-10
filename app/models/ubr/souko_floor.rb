@@ -7,7 +7,7 @@ module Ubr
   class SoukoFloor < ActiveRecord::Base
     extend CsvIo
     include Ubr::Const
-    set_table_name :ubr_souko_floors
+    self.table_name = "ubr_souko_floors"
 
     has_one    :souko_floor_souko_plan,:class_name => "Ubr::SoukoFloorSoukoPlan",:dependent => :destroy
     has_one    :souko_plan,:class_name => "Ubr::SoukoPlan", :through => :souko_floor_souko_plan

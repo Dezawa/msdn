@@ -17,7 +17,7 @@ module Ubr
   #   floor         : このページに出力する SoukoFloorの配列
   class SoukoFloorSoukoPlan  < ActiveRecord::Base
     extend CsvIo
-    set_table_name :ubr_souko_floor_souko_plans
+    self.table_name = "ubr_souko_floor_souko_plans"
 
     belongs_to :souko_floor,:class_name => "Ubr::SoukoFloor"
     belongs_to :souko_plan,:class_name => "Ubr::SoukoPlan"

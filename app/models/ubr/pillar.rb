@@ -22,7 +22,7 @@ module Ubr
   class Pillar < ActiveRecord::Base
     extend CsvIo
     include Ubr::Const
-    set_table_name :ubr_pillars
+    self.table_name = "ubr_pillars"
     belongs_to  :souko_floor,:class_name => "Ubr::SoukoFloor"
 
     def kazu ; [kazu_x,kazu_y]  ; end
