@@ -189,7 +189,7 @@ end
   def csv_up_buttom
     url = "/#{@Domain}/csv_upload"
     form_tag(url,:multipart => true,:method => :post)+
-      submit_tag("CSVで登録")+file_field(@Domain, :csvfile)+"</form>"
+      submit_tag("CSVで登録")+file_field(@Domain, :csvfile)+"</form>".html_safe
   end
 
   def edit_bottom(arg={ })
