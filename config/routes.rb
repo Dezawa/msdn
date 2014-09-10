@@ -58,17 +58,25 @@ Rails.application.routes.draw do
   root :to => "top#msdn"
   devise_for :users
 
-  get '/login' => 'devise/sessions#new'
-
-
   resources :user_options,:users
 
-  %w(user_options users).
+  
+  get    '/users/edit' =>            'users#edit'
+  post   '/users'  =>                'users#update' , as: :user_create
+  patch  '/users'  =>                'users#update'
+  put    '/users'  =>                'users#update'
+  delete '/users'  =>                'users#destroy'
+
+  
+  %w(user_options users ubr/main).
     each{|controller| 
-    %w(add_on_table edit_on_table update_on_table csv_out).
+    %w(add_on_table edit_on_table update_on_table csv_out csv_upload edit new).
     each{|action|
       post "#{controller}/#{action}" => "#{controller}##{action}"
     }}
     
   get  '/ubr/main' =>  'ubr/main#index'
+  %w(occupy_pdf reculc show_pdf).each{ |act| 
+    get  "/ubr/main/#{act}" =>  "ubr/main##{act}"
+  }
  end

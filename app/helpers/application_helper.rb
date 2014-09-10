@@ -58,6 +58,13 @@ module ApplicationHelper
   #          [Array] => [Symbol,permission] permission による。OKなら　Symbolがアクション。
   # [csv_down url]  csvダウンロードのURL
   #
+  TABLE =  "<table>".html_safe
+  TR = "<tr>".html_safe
+  TD = "<td>".html_safe
+  TABLEend =  "</table>".html_safe
+  TRend    = "</tr>".html_safe
+  TDend    = "</td>".html_safe
+  
   def raw(str);str;end
 
   def help(url_name) # LiPS#cvsupdate_form => LiPS.html#cvsupdate_form
@@ -107,13 +114,14 @@ module ApplicationHelper
   end
 
   def links_table(menus)
-    td="<td width=\"90\" align=\"center\" bgcolor=\"#c0f0f0\">"
-    "<tr>" + td +
-    menus.map{|menu| 
+    td="<td width=\"90\" align=\"center\" bgcolor=\"#c0f0f0\">".html_safe
+    tdtd = safe_join([TDend,TD])
+    table_body = menus.map{|menu| 
       next if menu.disable && !controller.send(menu.disable)
-      "<font size=1>"+
+      "<font size=1>" +
       link_to_unless_current(menu.label,{:controller => menu.model,:action => menu.action}.merge(menu.option||{}))
-    }.compact.join("</td>" + td )+"</td></tr>"
+    }.join(tdtd).html_safe
+    safe_join [TR , td ,table_body,TDend , TRend ] 
   end
 
   def action_buttom_table(actionbuttoms=nil)
