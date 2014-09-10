@@ -119,7 +119,10 @@ module ApplicationHelper
     table_body = menus.map{|menu| 
       next if menu.disable && !controller.send(menu.disable)
       "<font size=1>" +
-      link_to_unless_current(menu.label,{:controller => menu.model,:action => menu.action}.merge(menu.option||{}))
+      link_to_unless_current(menu.label,
+                             { :controller => menu.model, :action => menu.action}.
+                             merge( menu.option || {} )
+                             )
     }.join(tdtd).html_safe
     safe_join [TR , td ,table_body,TDend , TRend ] 
   end
