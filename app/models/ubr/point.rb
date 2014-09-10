@@ -27,6 +27,7 @@ class Ubr::Point
          ]
 
   def initialize(waku_waku,date_of_file)
+    return unless waku_waku # Unit TEST
     today = Time.local(*(/(\d{4})(\d\d)(\d\d)/.match(date_of_file).to_a)[1,3])
     # [ 10以上、5以上、1以上(全数)]
     vacants_list = SoukoSort. #[/^[1-6][A-Y]|^0[A-GJ]/,/^[1-6][A-Y]/,/^0[A-GJ]/].
