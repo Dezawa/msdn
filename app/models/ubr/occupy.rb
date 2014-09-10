@@ -1,15 +1,11 @@
 #!/usr/bin/ruby
 # -*- coding: utf-8 -*-
 require 'pp'
-#require 'postscript'
+require 'postscript'
 
 module Ubr
   @dir= File.dirname(__FILE__)
-  if Rails
     $LOAD_PATH << @dir
-  else
-    $LOAD_PATH << File.join(File.dirname(__FILE__),"../System") << "~/lib/ruby"
-  end
 
   # 通路置きも表示する
   # 
