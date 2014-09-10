@@ -386,7 +386,7 @@ end
     label_line_comcom(0,nil)
   end
   def label_line_comm(size,labels)
-    "<tr>"+label_line_comcom(size,labels)
+    TR+label_line_comcom(size,labels)
   end
   def label_line_comcom(size,labels)
     labels ||= @labels
@@ -398,7 +398,7 @@ end
           "<td><nobr>#{label.label}</nobr>" 
         end +  help(label.help) + "</td>"
       end
-    }.compact.join
+    }.compact.join.html_safe
   end
 
   def label_multi_lines(ary_of_list)
@@ -449,7 +449,7 @@ end
        }
      end
    }
-   return row
+   return row.html_safe
   end
 
   def delete_if_accepted(obj)
@@ -480,12 +480,11 @@ end
       when 2; "<td>　</td><td>　</td></tr>"
       when 1; "<td>　</td></tr>"
       else  ; "</tr>"
-      end
-    html.html_safe
+      end.html_safe
   end
 
   def label_line(size=2,labels=nil)
-    label_line_comm(size,labels) + "</tr>"
+    label_line_comm(size,labels) + TRend
   end
 
   def deletable
