@@ -1,39 +1,4 @@
 # -*- coding: utf-8 -*-
-# アプリメイン画面などで、メニュー一覧を出すときの、
-# メニューアイテム
-# arg_label :: ラベル。これに modelのactionへのリンクが付く
-# arg_model :: model
-# option
-#   :disable :: nil ：trueのとき、このメニューは出力しない
-#                      :: 　　　Symbolの場合は、controller#symbolの実行結果
-#   :action  :: :index：このメニューのリンク先。
-#   :enable_csv_upload :: nil ：CSVでのデータ更新(通常は総とっかえ)が可能か
-#                      :: 　　　Procの場合は、controller#symbolの実行結果
-#   :csv_upload_action :: nil ：CSVでのデータ更新する場合の action
-#   :csv_download_url  :: nil ：CSVでデータを取得する時の url または action
-#   :comm              :: nil ：メニューのコメント。実装していない
-#
-# メニュー一覧の外観はいまオプションなし。
-class Menu < ActionView::Base
-  Attr_names = [:disable,:model,:label,:action,
-                :enable_csv_upload,:csv_upload_action,:buttonlabel,
-                :csv_download_url,:comment,:help]
-  attr_accessor *Attr_names
-  attr_accessor :controller,:option
-
-#  def self.hash_initializer(*attr_names)
-
-  def initialize(arg_label,arg_model,args={})
-    data = {:action => :index}.merge(args)
-    Attr_names.each do | attr_name|
-      instance_variable_set "@#{attr_name}",data.delete(attr_name)
-    end
-    @model  = arg_model
-    @label  = arg_label
-    @option = data # || { }
-    @buttonlabel =  "CSV登録" #if @buttonlabel.blank? 
-=======
-    @buttonlabel = "CSVで登録"
       #@action= arg_action
   end
 
