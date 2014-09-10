@@ -68,7 +68,7 @@ Rails.application.routes.draw do
   delete '/users'  =>                'users#destroy'
 
   
-  %w(user_options users ubr/main).
+  %w(user_options users ).
     each{|controller| 
     %w(add_on_table edit_on_table update_on_table csv_out csv_upload edit new).
     each{|action|
@@ -76,6 +76,13 @@ Rails.application.routes.draw do
     }}
     
   get  '/ubr/main' =>  'ubr/main#index'
+  %w(main waku waku_block souko_plan souko_floor wall pillar).each{ 
+    |controller|  
+    %w(index add_on_table edit_on_table update_on_table csv_out csv_upload edit ).
+    each{ |action| get "/ubr/#{controller}/#{action}" => "ubr/#{controller}##{action}" 
+    }
+  }
+
   %w(occupy_pdf reculc show_pdf).each{ |act| 
     get  "/ubr/main/#{act}" =>  "ubr/main##{act}"
   }
