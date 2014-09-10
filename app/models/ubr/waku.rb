@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -
 require 'pp'
 require 'csv'
-#require 'postscript'
+require 'postscript'
 #require 'ubr/const'
 module Ubr
 class Waku < ActiveRecord::Base
