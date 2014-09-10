@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Ubeboard::HolydayController < ApplicationController
+class Ubeboard::HolydayController < CommonController #ApplicationController
   include Actions
   #hepler  Ubeboard::HolydayHelper
   before_action :authenticate_user! 

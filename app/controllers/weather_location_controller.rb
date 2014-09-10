@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'nkf'
 require 'csv'
-class WeatherLocationController < ApplicationController
+class WeatherLocationController < CommonController #ApplicationController
   before_filter :set_instanse_variable
   def set_instanse_variable
     super

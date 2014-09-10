@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class LipsController < ApplicationController
+class LipsController < CommonController #ApplicationController
   include Actions
   include LipsHelper
   include CsvIo

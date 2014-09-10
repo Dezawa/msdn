@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'tempfile'
 #
-class Ubeboard::SkdController < ApplicationController
+class Ubeboard::SkdController < CommonController #ApplicationController
   include Actions
   before_action :authenticate_user! 
   #before_filter :login_required

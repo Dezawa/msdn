@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # 複式簿記
 
-class Book::Controller <  ApplicationController
+class Book::Controller <  CommonController #ApplicationController
   include Actions
   before_action :authenticate_user! 
   before_action {|ctrl| ctrl.set_permit %w(複式簿記試用 複式簿記利用 複式簿記メンテ)}

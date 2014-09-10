@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # TopPage
-class Ubeboard::TopController < ApplicationController
+class Ubeboard::TopController < CommonController #ApplicationController
   include Actions
   before_action :authenticate_user! 
   #before_filter :login_required

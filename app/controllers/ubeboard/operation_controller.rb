@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Ubeboard::OperationController < ApplicationController
+class Ubeboard::OperationController < CommonController #ApplicationController
   include Actions
   before_action :authenticate_user! 
   #before_filter :login_required

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Ubeboard::NamedChangesController < ApplicationController
+class Ubeboard::NamedChangesController < CommonController #ApplicationController
   include Actions
   before_action :authenticate_user! 
   #before_filter :login_required

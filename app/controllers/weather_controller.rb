@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class WeatherController < ApplicationController
+class WeatherController < CommonController #ApplicationController
   before_filter :set_instanse_variable
   
   #Viewにて表示すべき項目の定義。

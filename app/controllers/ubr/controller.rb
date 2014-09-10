@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Ubr::Controller < ApplicationController
+class Ubr::Controller < CommonController #ApplicationController
   before_filter {|ctrl| ctrl.set_permit %w(UBR UBRメンテ UBRメンテ)}
   before_filter :set_instanse_variable
    Links = [MenuCsv.new("SCM在庫更新" ,"ubr/main"   ,:enable_csv_upload=> true,:size => 40,:buttonlabel=>"CSV/Excelで登録") ,

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Ubeboard::MeigaraShortnameController < ApplicationController
+class Ubeboard::MeigaraShortnameController < CommonController #ApplicationController
   include Actions
   #before_filter :login_required
   before_action :authenticate_user! 

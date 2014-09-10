@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class  Power::MonthController < ApplicationController
+class  Power::MonthController < CommonController #ApplicationController
   include Power::GraphMonthly
   before_filter :set_instanse_variable
 
