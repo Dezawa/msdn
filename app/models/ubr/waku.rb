@@ -7,10 +7,7 @@ require 'csv'
 module Ubr
 class Waku < ActiveRecord::Base
   extend CsvIo
-  case RAILS_GEM_VERSION
-  when /^2/ ;set_table_name 'ubr_wakus'
-  when /^[34]/ ; self.tabele_name =  'ubr_wakus'
-  end
+  self.table_name =  'ubr_wakus'
   delegate :logger, :to=>"ActiveRecord::Base"
 
   Direction = { "↑"=>Pos[0,-1],"↓" =>Pos[0,1], "→" => Pos[1,0],"←" => Pos[-1,0]}
