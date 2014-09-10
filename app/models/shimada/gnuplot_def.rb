@@ -6,7 +6,7 @@ module Shimada::GnuplotDef
     # extend  Shimada::GnuplotDef::ClassMethod
 
     def average_out(power,method,time_ofset)
-      open(RAILS_ROOT+"/tmp/shimada/data/shimada_power_diff_ave","w"){ |f|
+      open(Rails.root+"tmp/shimada/data/shimada_power_diff_ave","w"){ |f|
         f.puts "時刻 平均"
         power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+time_ofset,h ) if h } 
         f.puts

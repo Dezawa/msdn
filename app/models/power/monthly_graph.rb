@@ -42,7 +42,7 @@ module  Power::MonthlyGraph
         ("02".."24").each_with_index{ |hr,idx| f.printf "'' %.3f\n",values[idx+1] }
       }
       def_file = def_file_by_days_hour(path,opt)
-      `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
+      `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`
     end
 
     def graph_by_hour(objects,opt={ })
@@ -53,7 +53,7 @@ module  Power::MonthlyGraph
         ("01".."24").each_with_index{ |hr,idx| f.printf "%s %.3f\n",hr,values[idx] }
       }
       def_file = def_file_by_hour(path,opt)
-      `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
+      `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`
     end
 
   end

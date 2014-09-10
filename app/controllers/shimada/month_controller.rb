@@ -133,7 +133,7 @@ class Shimada::MonthController <  Shimada::Controller
 
   def show_gif
     graph_file = (params[:graph_file].blank? ? "power" : params[:graph_file])
-    send_file RAILS_ROOT+"/tmp/shimada/giffiles/#{graph_file}.gif", :type => 'image/gif', :disposition => 'inline'
+    send_file Rails.root+"tmp/shimada/giffiles/#{graph_file}.gif", :type => 'image/gif', :disposition => 'inline'
   end
 
 end

@@ -17,11 +17,11 @@ module  Power::Scatter
     opt[:fitting_line] = objects.first.class.send(opt[:fitting],opt) if opt[:fitting]
     logger.debug("TEMP_VS_POWER: line = #{opt[:fitting_line]}")
     def_file = def_file_scatter(path,opt)
-    `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
+    `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`
   end
 
   def  def_file_scatter(path,opt={ })
-    deffile = ( opt[:def_dir] || RAILS_ROOT+"/tmp/graph")+"/"+(opt[:def_file] || "graph.def" )
+    deffile = ( opt[:def_dir] || Rails.root+"tmp/graph")+"/"+(opt[:def_file] || "graph.def" )
     #graph_dir,graph_file,title,set_key,xrange,tics,grid = dif_opts(opt)
     open(deffile,"w"){ |f|
       preunble = DefScatter% dif_opts(opt)
@@ -36,7 +36,7 @@ module  Power::Scatter
   end
 
   def dif_opts(opt)
-    [ opt[:graph_dir]  || RAILS_ROOT+"/tmp/graph/jpeg",
+    [ opt[:graph_dir]  || Rails.root+"tmp/graph/jpeg",
       opt[:graph_file] || "graph",
       opt[:title]      || "",
       opt[:set_key]    || "set key outside  autotitle columnheader samplen 1 width 0",

@@ -14,7 +14,7 @@ StatFont = [[Postscript::Gothic,1.4],[Postscript::Bold,1.8],[Postscript::Gothic,
 
 module Ubr::Const
 
-  SCM_stock_stat_FILEBASE = File.join(RAILS_ROOT,"tmp","ubr","SCM_stock_stat")
+  SCM_stock_stat_FILEBASE = File.join(Rails.root,"tmp","ubr","SCM_stock_stat")
 
   @dir= File.dirname(__FILE__)
     $LOAD_PATH << @dir

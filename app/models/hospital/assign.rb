@@ -197,7 +197,7 @@ class Hospital::Assign
       @RoleShift = #(1..@HospitalRolecount).to_a.product(@shifts123)
                    Hospital::Need.roles.product(@shifts123)
     end
-    @basename = File.join( RAILS_ROOT,"tmp","hospital",
+    @basename = File.join( Rails.root,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month]) if @month
 
     @avoid_list = Hospital::AvoidCombination.all.map{ |ab| [[ab.nurce1_id,ab.nurce2_id],ab.weight]}
@@ -412,7 +412,7 @@ class Hospital::Assign
   end
 
   def set_instance_valiables_for_assign_loop
-    @basename = File.join( RAILS_ROOT,"tmp","hospital",
+    @basename = File.join( Rails.root,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
     @start = @start_mult = Time.now
     @limit_mult = @start_mult + Hospital::Const::TimeoutMult

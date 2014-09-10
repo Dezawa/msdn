@@ -38,7 +38,7 @@ class Shimada::FactoryController <  Shimada::Controller
 
 
   def today
-    path = RAILS_ROOT+"/app/models/shimada/update_mysql.rb"
+    path = Rails.root+"app/models/shimada/update_mysql.rb"
     
     today_graph    
   end
@@ -109,7 +109,7 @@ class Shimada::FactoryController <  Shimada::Controller
 
   def show_gif
     graph_file = (params[:graph_file].blank? ? "tomorrow" : params[:graph_file])+"_#{@factory_id}"
-    send_file RAILS_ROOT+"/tmp/shimada/giffiles/#{graph_file}.gif", :type => 'image/gif', :disposition => 'inline'
+    send_file Rails.root+"tmp/shimada/giffiles/#{graph_file}.gif", :type => 'image/gif', :disposition => 'inline'
   end
 
 end

@@ -249,7 +249,7 @@ class Shimada::Power < ActiveRecord::Base
     self.all(:conditions => "date is not null").each{ |pw| pw.lines;pw.shape_is}
   end
 
-  def self.rm_gif ;    File.delete(*Dir.glob(RAILS_ROOT+"/tmp/shimada/giffiles/*.gif")) ;end
+  def self.rm_gif ;    File.delete(*Dir.glob(Rails.root+"tmp/shimada/giffiles/*.gif")) ;end
 
   def self.average_diff(factory_id)
     return @@average_diff if @@average_diff

@@ -625,7 +625,7 @@ module Ubeboard::Function
     end
 
     ################################################################################
-    def doc_out(rep_from,rep_to,pdf_file = RAILS_ROOT+"/public/tmp/doc_out.pdf",weekly=true)
+    def doc_out(rep_from,rep_to,pdf_file = Rails.root+"public/tmp/doc_out.pdf",weekly=true)
       @scale = 1.0
       @pdf = Postscript.new(:paper => "A3l", :macros => :all ,:y0_is_up => false)
       #@pdf.add_macroMacro

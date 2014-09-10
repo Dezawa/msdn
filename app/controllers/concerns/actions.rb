@@ -327,7 +327,7 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
 
   def show_img
     graph_file = (params[:graph_file].blank? ? "image.jpeg" : params[:graph_file])
-    send_file( RAILS_ROOT+"/tmp/img/#{graph_file}",
+    send_file( Rails.root+"tmp/img/#{graph_file}",
                :type => image(graph_file), :disposition => 'inline' )
   end
   def graph

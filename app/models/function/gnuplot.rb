@@ -29,8 +29,8 @@ module Gnuplot
   # 出力される画像fileは  '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'
   def gnuplot_(data_list,opt)
     opt = { :terminal => "jpeg",:size => "600,400" ,
-      :graph_file => "image", :graph_file_dir => RAILS_ROOT+"/tmp",
-      :define_file => RAILS_ROOT+"/tmp/gnuplot/graph.def",
+      :graph_file => "image", :graph_file_dir => Rails.root+"tmp",
+      :define_file => Rails.root+"tmp/gnuplot/graph.def",
       :base_path   =>  "tmp/gnuplot/data"
     }.merge opt
 
@@ -39,7 +39,7 @@ module Gnuplot
       data.each{ |datum| f.printf opt[:column_format],*datum}
     }
     def_file = output_gnuplot_define(path,opt)
-    `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
+    `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`
   end
 
   def output_gnuplot_define(path,opt)
@@ -97,7 +97,7 @@ set title '#{opt[:title]}"
     path = []
     keys = opt[:keys] || grouped_data_ary.map{ |ary| ary.first}.sort
     keys.each_with_index{ |k,idx|
-      path << "#{RAILS_ROOT}/#{base_path}.data"
+      path << Rails.root+"#{base_path}.data"
       open(path.last,"w"){ |f|
         f.puts opt[:column_labels].join(" ") if opt[:column_labels]
         yield f,k,grouped_data_ary[idx][1]

@@ -15,10 +15,10 @@ class Weather < ActiveRecord::Base
   class << self
     def temp_vaper_graph(weather_location,opt={ })
       path = output_plot_data(weather_location,opt)
-      opt = {:def_file => RAILS_ROOT+"/tmp/weather_temp_vaper.def",
+      opt = {:def_file => Rails.root+"tmp/weather_temp_vaper.def",
         :location => WeatherLocation.find_by_location(weather_location) }.merge(opt)
       graph_file = output_def_file(path,opt)
-      `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{opt[:def_file]})`
+      `(cd #{Rails.root};/usr/local/bin/gnuplot #{opt[:def_file]})`
       graph_file+".jpeg"
     end
 
@@ -27,7 +27,7 @@ class Weather < ActiveRecord::Base
       self.all(:conditions => ["location = ?" , weather_location]).
         group_by{ |w| w.month.year}.
         each{ |year,weathers|
-        path << RAILS_ROOT+"/tmp/weather_temp_vaper#{year}"
+        path << Rails.root+"/tmp/weather_temp_vaper#{year}"
         open( path.last,"w"){ |f|
           f.puts "温度 #{year}"
           weathers.each{ |w| 

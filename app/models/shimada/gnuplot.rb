@@ -12,7 +12,7 @@ module Shimada::Gnuplot
           [ Shimada::Power::TimeOffset+1,"[#{Shimada::Power::TimeOffset+1}:#{Shimada::Power::TimeOffset+25}]"]
         else ;  [1,"[1:24]"]
         end
-      @def_file = RAILS_ROOT+"/tmp/shimada/data/power.def"
+      @def_file = Rails.root+"tmp/shimada/data/power.def"
       @graph_file = opt.delete(:graph_file) ||  "power"
       @size = opt[:graph_size] || "600,400"
 
@@ -26,7 +26,7 @@ module Shimada::Gnuplot
       keys ||= ary_powres.keys.sort
       keys.each_with_index{ |k,idx|
         #ary_powres.each_with_index{ |month_powers,idx|
-        path << RAILS_ROOT+"/tmp/shimada/data/shimada_power_temp%d"%idx
+        path << Rails.root+"tmp/shimada/data/shimada_power_temp%d"%idx
         open(path.last,"w"){ |f|
           #f.puts "時刻 #{month_powers.first}"
           f.puts "時刻 #{k}"
@@ -62,7 +62,7 @@ module Shimada::Gnuplot
       path = output_path
       group_by = ( @opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
       output_def_file(path, group_by)
-      `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{@def_file})`
+      `(cd #{Rails.root};/usr/local/bin/gnuplot #{@def_file})`
     end
 
     def output_def_file(path, group_by)
@@ -99,7 +99,7 @@ set grid #ytics
     def initialize(factory_id,powers,method,opt)
       super
       @Def = Def
-      @std_data_file = RAILS_ROOT+"/tmp/shimada/data/"+@graph_file
+      @std_data_file = Rails.root+"tmp/shimada/data/"+@graph_file
     end
 
     def fitting_poly(power,offset)
@@ -257,7 +257,7 @@ set grid #ytics
       group_by = ( @opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
 @f.puts group_by
       output_def_file(path, group_by)
-      `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{@def_file})`
+      `(cd #{Rails.root};/usr/local/bin/gnuplot #{@def_file})`
     end
   end
 
@@ -484,7 +484,7 @@ set xtics 1,1
       powers_by_year = @powers.group_by{ |m,p_array| m.year }
       path = []
       powers_by_year.each{ |year,powers|
-        path << RAILS_ROOT+"/tmp/shimada/data/shimada_power_by_month_#{year}"
+        path << Rails.root+"tmp/shimada/data/shimada_power_by_month_#{year}"
         open(path.last,"w"){ |f|
           f.print "月 #{year}\n"
           powers.each{ |month,average| f.printf("%s %.1f\n",month.month,average)}
@@ -513,7 +513,7 @@ plot '%s'   using 1:2 with boxes
       @Def = Def
     end
     def output_path
-      path =  [ RAILS_ROOT+"/tmp/shimada/data/shimada_histgram"]
+      path =  [ Rails.root+"tmp/shimada/data/shimada_histgram"]
       open(path.first,"w"){ |f| 
         f.print "オフセット i頻度\n"
         (@opt[:min] .. @opt[:max]).step(@opt[:step]).

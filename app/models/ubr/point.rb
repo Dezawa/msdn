@@ -233,7 +233,7 @@ class Ubr::Point
 
   def self.remake
     File.rename(Ubr::Lot::SCMFILE,Ubr::Lot::SCMFILE+"save")
-    Dir.glob(File.join(RAILS_ROOT,"tmp","ubr","save","*.csv")).sort.each{ |csvpath|
+    Dir.glob(File.join(Rails.root,"tmp","ubr","save","*.csv")).sort.each{ |csvpath|
       puts csvpath
       open(Ubr::Lot::SCMFILE,"w"){ |fp| fp.write(File.read(csvpath))}
       @waku_waku     = Ubr::Waku.waku(true) #load_from_master

@@ -35,7 +35,7 @@ module  Power::GraphAllMonth # controller
 
   def show_jpeg
     graph_file = (params[:graph_file].blank? ? "graph" : params[:graph_file])
-    send_file RAILS_ROOT+"/tmp/graph/jpeg/#{graph_file}.gif", :type => 'image/jpeg', :disposition => 'inline'
+    send_file Rails.root+"tmp/graph/jpeg/#{graph_file}.gif", :type => 'image/jpeg', :disposition => 'inline'
   end
 end
 

@@ -70,7 +70,7 @@ class Ubr::SoukoPlanController <  Ubr::Controller
   def show_plan
     plan = @Model.find(params[:id])
     plan.show
-    send_file RAILS_ROOT+"/tmp/ubr/Plan%d.gif"%params[:id],
+    send_file Rails.root+"tmp/ubr/Plan%d.gif"%params[:id],
     :type => 'image/pdf', :disposition => 'inline'
   end
 end

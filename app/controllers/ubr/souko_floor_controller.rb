@@ -56,7 +56,7 @@ class Ubr::SoukoFloorController <  Ubr::Controller
   def show_floor
     floor = @Model.find(params[:id])
     floor.show
-    send_file RAILS_ROOT+"/tmp/ubr/Floor%d.gif"%params[:id], :type => 'image/pdf', :disposition => 'inline'
+    send_file Rails.root+"tmp/ubr/Floor%d.gif"%params[:id], :type => 'image/pdf', :disposition => 'inline'
   end
 
   def delete_bind_from(id,bind_id)

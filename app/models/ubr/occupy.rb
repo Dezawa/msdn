@@ -69,7 +69,7 @@ module Ubr
 
       date_of_file = /201\d{5}/.match(@page.date)[0]
       Ubr::Point.new(@waku_waku ,date_of_file ).save
-      `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot app/models/ubr/point_to_gif.def)`
+      `(cd #{Rails.root};/usr/local/bin/gnuplot app/models/ubr/point_to_gif.def)`
     end
 
     def initialize(args={ :macros => [:rectangre,:centering,:right], 

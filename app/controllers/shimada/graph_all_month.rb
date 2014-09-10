@@ -111,7 +111,7 @@ module Shimada::GraphAllMonth
     graph_file = opt[:graph_file] ? opt[:graph_file].sub(/\+/,"p") : ""
     opt.merge!(:graph_file => "all_month#{graph_file}_#{method}_#{@factory_id}" ) 
     @graph_file =  opt[:graph_file]
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{opt[:graph_file]}.gif") == true
+    unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{opt[:graph_file]}.gif") == true
       #months = Shimada::Month.all
       if params[@Domain][:powers]
         @power=Shimada::Power.send(params[@Domain][:powers].to_sym)
@@ -132,7 +132,7 @@ module Shimada::GraphAllMonth
     opt = { :graph_file => @graph_file }
 
     @TYTLE = "標準電力消費 #{line}稼働"
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+    unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
       @power = Shimada::Power.all(:conditions => ["line = ?",line])
       Shimada::Power.gnuplot(@factory_id,@power,:standerd,opt.merge(:title => @TYTLE ))
     end
@@ -142,7 +142,7 @@ module Shimada::GraphAllMonth
 
   def graph_all_month_patern(method,title,shapes,opt={ })
     @graph_file ||=  "all_month_patern_" + ( shapes || "unsorted")+"_#{@factory_id}"
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+    unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
       line_shape = ( if   shapes ; Shimada::Power::Paterns[shapes]
                      else Shimada::Power::Un_sorted
                      end ).map{ |ls| ls.split("",2)}
@@ -175,7 +175,7 @@ module Shimada::GraphAllMonth
   end
   def graph_all_month_deform(method,title,deform_lbl)
     @graph_file =  "all_month_patern_" + deform_lbl +"_#{@factory_id}"
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+    unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
       deform = Shimada::Power::Deforms[deform_lbl]
       conditions = 
         case deform
@@ -203,7 +203,7 @@ module Shimada::GraphAllMonth
       Shimada::Month.all.each{ |month| graph_temp_(month)}
     else
       @graph_file =  "all_month_vs_vaper_#{method}" + (line ? line : "")+"_#{@factory_id}"
-      unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+      unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
         conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
         @power = Shimada::Power.power_all(@factory_id,conditions)
         @TYTLE = "蒸気量-#{method == 'powers' ? '未補正' : ''}消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
@@ -222,7 +222,7 @@ module Shimada::GraphAllMonth
       Shimada::Month.all.each{ |month| graph_temp_(month)}
     else
       @graph_file =  "all_month_vs_temp" + (line ? "_"+line : "")+"_#{@factory_id}"
-      unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+      unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
         conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
         @power = Shimada::Power.power_all(@factory_id,conditions)
         @TYTLE = "温度-消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
@@ -242,7 +242,7 @@ module Shimada::GraphAllMonth
         method = params[@Domain][:method]
         label,ext = label_extension_by(method)
       @graph_file =  "all_month_vs_bugs_#{ext}"+"_#{@factory_id}"
-      unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+      unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
         #conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
         @power =  Shimada::Power.all(:conditions => "hukurosu is not null")
         logger.debug("GRAPH_ALL_MONTH_BUGS moethod=#{method}")
@@ -260,7 +260,7 @@ module Shimada::GraphAllMonth
     offset = params[@Domain][:offset]
     method = params[@Domain][:method].to_sym
     @graph_file =  "all_month_by_offset_#{offset}#{method}"+"_#{@factory_id}"
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+    unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
       @power = Shimada::Power.by_offset(offset,method)
       @TYTLE = "消費電力 オフセット #{%w(低 中 高)[offset.to_i]} "
 logger.debug("##### GRAPH_ALL_MONTH_OFFSET:method=#{method},offset=#{offset},@power.eize=#{@power.size}")
@@ -271,7 +271,7 @@ logger.debug("##### GRAPH_ALL_MONTH_OFFSET:method=#{method},offset=#{offset},@po
 
   def graph_all_month_bugs_offset
     @graph_file =  "all_month_vs_bugs_offset"+"_#{@factory_id}"
-    unless File.exist?(RAILS_ROOT+"/tmp/shimada/giffiles/#{@graph_file}.gif") == true
+    unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
       #conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
       @power = Shimada::Power.all(:conditions => "hukurosu > 0.0  and date < '2014-7-1'")
       @TYTLE = "袋数-消費電力 オフセット 全月度 "

@@ -39,7 +39,7 @@ module Ubr
       page.new_page. line_width(0.05).scale_unit(:m,page.shukushaku).nl
       page.souko_kouzou(self,[5,5])
       page.waku_kakidasi(self,[5,5],false)
-      page.to_gif(RAILS_ROOT+"/tmp/ubr/Floor%d"%id)
+      page.to_gif(Rails.root+"tmp/ubr/Floor%d"%id)
     end
   
     def wall_dump

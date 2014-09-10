@@ -68,7 +68,7 @@ set ytics 0,100,800",
       path = opt[:keys].map{ |key| output_plot_day_hour_data(objects,opt,key) }
 
       def_file = def_file_by_days_hour(path,opt.merge(:min => min,:max => max))
-      `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
+      `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`
     end
 
     Hours = { :night => (0 .. 4) , :day => (8..15)}
@@ -76,7 +76,7 @@ set ytics 0,100,800",
       line,timezone = KeyValues[key]
       first_day = objects.first.date
 logger.debug("OUTPUT_PLOT_DAY_HOUR_DATA : opt = #{opt.to_a.flatten.join(', ')}")
-      path = RAILS_ROOT+"/tmp/graph/data/graphdata_#{line}#{timezone}"
+      path = Rails.root+"tmp/graph/data/graphdata_#{line}#{timezone}"
       objes = objects.select{ |pw| pw.line == line}
       open(path,"w"){ |f|
         f.puts "日 #{key}"
@@ -108,7 +108,7 @@ logger.debug("OUTPUT_PLOT_DAY_HOUR_DATA : opt = #{opt.to_a.flatten.join(', ')}")
 
     def  def_file_by_days_hour(path,opt={ })
       opt.merge!( :point_size => 0.5,:point_type => [7,7,7,7,5,5,6,6,6,6])
-      deffile = ( opt[:def_dir] || RAILS_ROOT+"/tmp/graph")+"/"+(opt[:def_file] || "graph.def" )
+      deffile = ( opt[:def_dir] || Rails.root+"tmp/graph")+"/"+(opt[:def_file] || "graph.def" )
       graph_dir,graph_file,title,set_key,xrange,tics = dif_opts(opt)
           range,fmt = opt[:min].year == opt[:max].year ? [[1,11,21],'%m/%d'] : [[1],'%Y/%m/%d']
       open(deffile,"w"){ |f|

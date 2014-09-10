@@ -50,7 +50,7 @@ module Ubr
           page.souko_kouzou(floor)            
         }
       }
-      page.to_gif(RAILS_ROOT+"/tmp/ubr/Plan%d"%id)
+      page.to_gif(Rails.root+"tmp/ubr/Plan%d"%id)
     end
 
     def dinitialize(args={ })

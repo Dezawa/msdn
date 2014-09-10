@@ -8,11 +8,11 @@ module  Power::Graph
       ("01".."24").each_with_index{ |hr,idx| f.printf "%s %.3f\n",hr,values[idx] }
     }
     def_file = def_file_by_hour(path,opt)
-    `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{def_file})`
+    `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`
   end
 
   def  def_file_by_hour(path,opt={ })
-    deffile = ( opt[:def_dir] || RAILS_ROOT+"/tmp/graph")+"/"+(opt[:def_file] || "graph.def" )
+    deffile = ( opt[:def_dir] || Rails.root+"tmp/graph")+"/"+(opt[:def_file] || "graph.def" )
     graph_dir,graph_file,title,set_key,xrange,tics = dif_opts(opt)
     open(deffile,"w"){ |f|
       preunble = DefByHour% dif_opts(opt)
@@ -26,7 +26,7 @@ module  Power::Graph
   end
 
   def dif_opts(opt)
-    [ opt[:graph_dir]  || RAILS_ROOT+"/tmp/graph/jpeg",
+    [ opt[:graph_dir]  || Rails.root+"tmp/graph/jpeg",
       opt[:graph_file] || "graph",
       opt[:title]      || "",
       opt[:set_key]    || "",
@@ -67,7 +67,7 @@ module  Power::Graph
              end
 #logger.debug("OUTPUT_PLOT_DATA:keys = #{keys.join(',')}")
       keys.each_with_index{ |k,idx|
-        path << RAILS_ROOT+"/tmp/graph/data/graphdata_%02d"%idx
+        path << Rails.root+"tmp/graph/data/graphdata_%02d"%idx
         open(path.last,"w"){ |f|
           f.puts( opt[:data_file_labels] || "時刻 #{k}" )
           objs[k].each{ |obj|

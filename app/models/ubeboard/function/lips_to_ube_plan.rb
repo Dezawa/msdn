@@ -23,7 +23,7 @@ module Ubeboard::Function::LipsToUbePlan
   def make_plans_from_lips(lips)
 
     if lips.class == String
-      infp = open(RAILS_ROOT+"/public"+lips) rescue infp = open(lips)
+      infp = open(Rails.root+"public"+lips) rescue infp = open(lips)
     elsif  lips.class == File or
         lips.class == ActionDispatch::Http::UploadedFile #ActionController::UploadedStringIO 
       infp = lips

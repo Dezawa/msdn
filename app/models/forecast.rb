@@ -233,8 +233,8 @@ class Forecast < ActiveRecord::Base
   def differrence_via_real_graph(location = :maebashi)
     weather_location = WeatherLocation.find_by_location(location)
     differ = differrence_via_real(location)
-    deffile = RAILS_ROOT+"/tmp/shimada/forecast-real.def"
-    open(RAILS_ROOT+"/tmp/shimada/forecast-real","w"){ |f|
+    deffile = Rails.root+"tmp/shimada/forecast-real.def"
+    open(Rails.root+"tmp/shimada/forecast-real","w"){ |f|
       f.puts "No 日時 気温 当日予報誤差 前日予報誤差 蒸気圧 当日予報誤差 前日予報誤差" 
       i=0.0
       differ.each{ |h,t,dt0,dt1,v,dv0,dv1|
@@ -253,15 +253,15 @@ class Forecast < ActiveRecord::Base
     }
 logger.debug("DIFFERRENCE_VIA_REAL_GRAPH: location=#{location} zp =#{WeatherLocation.find_by_location(location).forecast_code}")
     open(deffile,"w"){ |f|
-      f.puts Def%[RAILS_ROOT,
+      f.puts Def%[Rails.root,
                   WeatherLocation.find_by_location(location).name,
                   differ.first.first.strftime("%Y/%m/%d"),
                   differ.last.first.strftime("%Y/%m/%d"),differ.size/8-0.125,
-                  RAILS_ROOT,RAILS_ROOT,RAILS_ROOT
+                  Rails.root,Rails.root,Rails.root
                  ]
     }
     @graph_file = "forecast-real.gif"
-    `(cd #{RAILS_ROOT};/usr/local/bin/gnuplot #{deffile})`
+    `(cd #{Rails.root};/usr/local/bin/gnuplot #{deffile})`
   end
 
   end # of class method
