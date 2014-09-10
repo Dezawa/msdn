@@ -79,10 +79,10 @@ Rails.application.routes.draw do
   ubr = %w(main waku waku_block souko_plan souko_floor wall pillar)
     ubr.each{ 
     |controller|  
-    %w(index add_on_table edit_on_table update_on_table csv_out csv_upload edit ).
+    %w(index add_on_table edit_on_table update_on_table csv_out csv_upload ).
     each{ |action| post "/ubr/#{controller}/#{action}" => "ubr/#{controller}##{action}" 
     }
-    %w(index ).each{ |action| get "/ubr/#{controller}/#{action}" => "ubr/#{controller}##{action}" 
+    %w(index edit ).each{ |action| get "/ubr/#{controller}/#{action}" => "ubr/#{controller}##{action}" 
     }
   }
 
@@ -90,5 +90,7 @@ Rails.application.routes.draw do
     get  "/ubr/main/#{act}" =>  "ubr/main##{act}"
   }
 
-  resources *ubr.map{|c| "ubr_#{c}"}
+  ubr.each{ |ctrl|
+    resources "ubr_#{ctrl}" , controller: "ubr/#{ctrl}"
+  }
  end
