@@ -5,7 +5,8 @@ dezawa:
   name: 出沢
   subdomain: aliadne.net
   username: dezawa
-  encrypted_password: $2a$10$hY.yCFZ3RxSbPQgy8gzN0.NTvIL3LTIIyoyjzaCJSE76s.krf92By
+  salt:                      356a192b7913b04c54574d18c28d46e6395428ab # SHA1('0')
+  crypted_password:          5d110a078c494f7abc467685383b37b11f2db1ed # 'monkey'
   sign_in_count: 4
   current_sign_in_at: 2013-12-01 11:56:53.000000000 Z
   last_sign_in_at: 2013-12-01 11:53:46.000000000 Z
@@ -26,7 +27,8 @@ quentin:
   name: quentin
   subdomain: aliadne.net
   username: quentin
-  encrypted_password: $2a$10$hJ0EXdKUZOJypIDLcsjUjulgIZ2LhLzEABW.vBtshnA99woLw4VgS
+  salt:                      356a192b7913b04c54574d18c28d46e6395428ab # SHA1('0')
+  crypted_password:          5d110a078c494f7abc467685383b37b11f2db1ed # 'monkey'
   sign_in_count: 2
   current_sign_in_at: 2013-12-01 11:58:23.000000000 Z
   last_sign_in_at: 2013-12-01 11:58:23.000000000 Z
@@ -47,7 +49,8 @@ aaron:
   subdomain: aliadne.net
   username: aaron
   name: A Aron
-  encrypted_password: $2a$10$hY.yCFZ3RxSbPQgy8gzN0.NTvIL3LTIIyoyjzaCJSE76s.krf92By
+  salt:                      356a192b7913b04c54574d18c28d46e6395428ab # SHA1('0')
+  crypted_password:          5d110a078c494f7abc467685383b37b11f2db1ed # 'monkey'
   sign_in_count: 4
   current_sign_in_at: 2013-12-01 11:56:53.000000000 Z
   last_sign_in_at: 2013-12-01 11:53:46.000000000 Z
@@ -69,7 +72,8 @@ old_password_holder:
   subdomain: aliadne.net
   username: old_password_holder
   name: old_password_holder
-  encrypted_password: $2a$10$hJ0EXdKUZOJypIDLcsjUjulgIZ2LhLzEABW.vBtshnA99woLw4VgS
+  salt:                      356a192b7913b04c54574d18c28d46e6395428ab # SHA1('0')
+  crypted_password:          5d110a078c494f7abc467685383b37b11f2db1ed # 'monkey'
   sign_in_count: 1
   current_sign_in_at: 2013-12-01 11:58:23.000000000 Z
   last_sign_in_at: 2013-12-01 11:58:23.000000000 Z
@@ -90,7 +94,8 @@ guest:
   name: guest
   subdomain: aliadne.net
   username: guest
-  encrypted_password: $2a$10$IiDa85Qz/KZnnywbNKO4QuyyhP9jNicEdpmviYUXsP1hDctrMZbGa
+  salt:                      356a192b7913b04c54574d18c28d46e6395428ab # SHA1('0')
+  crypted_password:          5d110a078c494f7abc467685383b37b11f2db1ed # 'monkey'
   sign_in_count: 4
   current_sign_in_at: 2013-12-01 11:56:53.000000000 Z
   last_sign_in_at: 2013-12-01 11:53:46.000000000 Z
@@ -111,7 +116,8 @@ ubeboard:
   name: ubeboard
   subdomain: aliadne.net
   username: ubeboard
-  encrypted_password: $2a$10$hY.yCFZ3RxSbPQgy8gzN0.NTvIL3LTIIyoyjzaCJSE76s.krf92By
+  salt:                      356a192b7913b04c54574d18c28d46e6395428ab # SHA1('0')
+  crypted_password:          5d110a078c494f7abc467685383b37b11f2db1ed # 'monkey'
   sign_in_count: 4
   current_sign_in_at: 2013-12-01 11:56:53.000000000 Z
   last_sign_in_at: 2013-12-01 11:53:46.000000000 Z
@@ -132,7 +138,8 @@ testuser:
   name: testuser
   subdomain: aliadne.net
   username: testuser
-  encrypted_password: $2a$10$hY.yCFZ3RxSbPQgy8gzN0.NTvIL3LTIIyoyjzaCJSE76s.krf92By
+  salt:                      356a192b7913b04c54574d18c28d46e6395428ab # SHA1('0')
+  crypted_password:          5d110a078c494f7abc467685383b37b11f2db1ed # 'monkey'
   sign_in_count: 4
   current_sign_in_at: 2013-12-01 11:56:53.000000000 Z
   last_sign_in_at: 2013-12-01 11:53:46.000000000 Z
