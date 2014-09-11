@@ -4,7 +4,7 @@ module ExcelToCsv
     # Excel(mgic no 208 207 17 224 -> xsl,80 75 3 -> xlsx) のときは、CSVへの変換を行う
     # 物理ファイルでないとできないので、書き出す。
     infile = case file
-             when ActionController::UploadedStringIO
+             when false #ActionDispatch::Http::UploadedFile #ActionController::UploadedStringIO
                # Temp ファイルに書き出す
                tempfile = Tempfile.new("result_update")
                while result=file.read 
@@ -13,7 +13,8 @@ module ExcelToCsv
                end
                tempfile.rewind
                tempfile
-             when File,ActionController::UploadedTempfile,ActionDispatch::Http::UploadedFile # #
+             when File,  ActionDispatch::Http::UploadedFile ,
+               ActionDispatch::Http::UploadedFile # #
                logger.debug("ExcelToCsv:original_filename #{file.original_filename}")
                file
              when String
