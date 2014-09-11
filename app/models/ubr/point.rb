@@ -132,7 +132,6 @@ class Ubr::Point
     Extension.each{ |extension|
       path = Ubr::Const::SCM_stock_stat_FILEBASE+"_#{extension}.stat"
       lines = File.exist?(path) ? File.read(path).split(/[\n\r]+/).map{ |l| l.split} : []
-
       header = lines.shift if lines[0] && /201\d{5}/ !~ lines[0][0]
       if samedate = lines.index{ |l| l[0] == @point[extension][0]}
         lines[samedate] = @point[extension].flatten
@@ -182,6 +181,7 @@ class Ubr::Point
   # 四半期  先年度               2013/4 ～
   # 年度    先々年度以前
   def self.make_average(extension,label,orig)
+    orig.shift
     orig.each{ |row| row[0] = Time.parse(row[0]).to_date}
     @today     = orig[-1][0]
 
