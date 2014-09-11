@@ -30,7 +30,7 @@ class Ubr::WakuBlockController <  Ubr::Controller
     @TableEdit  =  [[:add_buttom,:dmy,:dmy],[:form,:edit_on_table,"編集"],
                     [:form,:csv_out,"CSVダウンロード"],
                     [:csv_up_buttom,:dmy,:dmy]] 
-    @FindOption ={:order => "souko,content,max"}
+    @FindOrder =  "souko,content,max"
     @CSVatrs = Labels.map{|lbl| lbl.symbol}
     @CSVlabels= Labels.map{|lbl| lbl.symbol}
     super
@@ -39,6 +39,7 @@ class Ubr::WakuBlockController <  Ubr::Controller
   def index
     if params[:prefix]
       @FindOption = {:conditions => "name like '#{params[:prefix]}%'" } #,params[:prefix] ]    }
+      @FindWhere = "name like '#{params[:prefix]}%'" 
     end
     super
   end

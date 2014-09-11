@@ -159,7 +159,7 @@ module SkdFreelist
     from_to = Skd::PlanTimes[real_ope]
     opt = from_to ? { from_to[0] => start,from_to[1]   => stop} : {} 
     lot_no = pro_id_2_lot_no(pro_id)
-    plan = Plan.find_or_create_by_ube_product_id(0)
+    plan = Plan.find_or_create_by(ube_product_id: 0)
     plan.update_attributes( opt.merge(:skd_id     => id,
                                        :product_id => pro_id,
                                        :lot_no         => lot_no,

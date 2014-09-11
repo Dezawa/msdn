@@ -3,7 +3,7 @@
 <div align=right>UserName:<%= @login %></font></div>
 <%= t(:message).html_safe %>
 <font size=2>
-  <%= error_messages_for(@lips) -%>
+  <%= @lips.errors.full_messages.join(' ') -%>
 <div align=right><table>
   <tr><td><%= cvsupdate_form %></td></tr>
   <tr><td><%= change_disp_form %></td></tr>
@@ -21,5 +21,6 @@
 <font size = 2>　最大化/最小化<%= help "LiPS#maxmin" %>
   <%= radio_button(:lips,:minmax,"maximize") %>最大
   <%= radio_button(:lips,:minmax,"minimize") %>最小
+
 <!-- ############### 一覧 ################  -->
 <%= vertical_or_landscape %>

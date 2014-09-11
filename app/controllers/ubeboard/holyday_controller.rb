@@ -57,7 +57,7 @@ p @models
       month = @month0 
       #id=1
       while month <= @month9 ;
-        unless @Model.find_by_month(month.strftime("%Y/%m"))
+        unless @Model.find_by(month: month.strftime("%Y/%m"))
           @new_model = @Model.new(:month=>month.strftime("%Y/%m")) ;month=month.next_month
           #lastday = @new_model.month.getlocal.end_of_month.day
           lastday = month.end_of_month.day

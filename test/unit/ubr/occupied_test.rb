@@ -8,10 +8,10 @@ class Ubr::OccupiedTest < ActiveSupport::TestCase
   fixtures :ubr_wakus
   # Replace this with your real tests.
   def setup
+    Ubr::Lot
     @Waku    = Ubr::Waku.waku true #load_from_master
     @waku    = @Waku[Waku]
-    @Lotlist = Ubr::LotList.
-      lotlist(true,:file => File.join(RAILS_ROOT,"test/testdata/SCMstocklist.csv"))
+    @Lotlist = Ubr::LotList.lotlist(true,:file => File.join(Rails.root,"test/testdata/SCMstocklist.csv"))
     @segments = @waku.lot_list( WithPull)
     ["出荷","引き合い",""].each_with_index{ |pull,idx| @segments[idx].pull = pull}
   end

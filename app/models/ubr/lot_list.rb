@@ -12,13 +12,13 @@ module Ubr
 #           ]
 #SegAttrs = [:lot,:weight,:waku,:paret,:comment_urb,:comment_qa,:cause,:pull,:order,:direction]
 
-#  Names = ("等級 品目コード 品目名称 ロット№ 個数 数量 単位 置場 ﾊﾟﾚｯﾄ 包装日 "+
-#           "端数区分 物流注記 品質注記 降級原因 引当 受注№ 指図№").split
-#  Attrs = [:grade,:meigara_code,:meigara,:lot_no,:count,:weight,:unit,:waku,:paret,
-#           :packed_date,:hasuukubun,:comment_urb,:comment_qa,:cause,:pull,:order,:direction
-#          ]
+  # Names = ("等級 品目コード 品目名称 ロット№ 個数 数量 単位 置場 パレット 包装日 "+
+  #          "端数区分 物流注記 品質注記 降級原因 引当 受注№ 指図№").split
+  # Attrs = [:grade,:meigara_code,:meigara,:lot_no,:count,:weight,:unit,:waku,:paret,
+  #          :packed_date,:hasuukubun,:comment_urb,:comment_qa,:cause,:pull,:order,:direction
+  #         ]
 #Converter = [:str,:str,:str,:str,:int,:int,:str,:str,:str,:str,:str,:str]
-
+#
 #  Name2Attr = Hash[*Names.zip(Attrs).flatten]
 
 class LotList
@@ -45,9 +45,8 @@ class LotList
     lines = lines.sub(/ロット[^,\t]*/,"ロット№").sub(/ﾊﾟﾚｯﾄ[^,\t]*/,"パレット").split(/[\n\r]+/)
 #    logger.debug("Occupy:lines #{lines.first}")
     csvrows = lines.map{ |line| line.split(/[\t,]/)} #CSV.parse
-    lbl2idx,indexes = serchLabelLine(csvrows,Names)
-    
-    columns = Attrs.dup
+    lbl2idx,indexes = serchLabelLine(csvrows,Ubr::Names)
+    columns = Ubr::Attrs.dup
     csvrows.each{|row|      next unless row[1]
       attrs = Hash[*columns.zip(indexes.map{|idx| row[idx]}).flatten]
 

@@ -312,8 +312,8 @@ logger.debug("GRAPH_ALMIGHTY:args=#{args.flatten.join(',')}")
       if month=args.delete("month")
         the_month = Time.local(*month[1].split(/[-\/]/)).beginning_of_month
         if month[0] == "=" 
-          args["month_id"] = ["=",Shimada::Month.find_by_month(the_month).id]
-          "month_id = #{Shimada::Month.find_by_month(the_month).id}"
+          args["month_id"] = ["=",Shimada::Month.find_by(month: the_month).id]
+          "month_id = #{Shimada::Month.find_by(month: the_month).id}"
         else
           month_id = Shimada::Month.all(:conditions => [ "month #{month[0]} ? ",the_month ] ).map(&:id)
           "month_id in (#{month_id.join(',')})"

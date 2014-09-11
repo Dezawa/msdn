@@ -31,6 +31,7 @@ class Ubr::WallController <  Ubr::Controller
     @Domain= @Model.name.underscore
     @SortBy    = :souko_floor_id
     @FindOption = { :order => "souko_floor_id"}
+    @FindOrder = "souko_floor_id"
     #@Show = true
     @Delete = @editor
     @Edit =   @editor

@@ -11,15 +11,16 @@ module LipsHelper
     "<td #{clr}#{spn}><font size = #{size}>#{nobr}" 
   end
   def clmn_label(str,opt = {})
-    logger.debug("CLMN_LABEL: #{str.class} #{str}")
+    logger.debug("CLMN_LABEL: I18n.locale #{ I18n.locale} #{str.class} #{str}")
     option = {:size => 2 ,:span =>1}.merge(opt)
     color = option.delete(:color)
     opt_help  = option.delete(:help)
     size  = option.delete(:size)
     span = option.delete(:span)
-    td_color_size(size,span,color,opt)+str+
+    (td_color_size(size,span,color,opt)+ str+
       (opt_help ? help("LiPS##{opt_help}") : "" ) +
       "</td>"
+     ).html_safe
   end 
 
   def text_fiels(item,range,null_if_zero=true,option=[])
@@ -134,8 +135,11 @@ module LipsHelper
   def landscape
     html = "<br>\n<table border=1 cellspacing=0>
   <tr>".html_safe
-    html.safe_concat(clmn_label(t(:pro_name),:span =>5,:help =>:pro_name) + text_fiels(:proname,(1..@promax),true,"size=5"))
+    # 製品名行
+    html.safe_concat(clmn_label(t(:pro_name),:span =>5,:help =>:pro_name) )
+    html.safe_concat text_fiels(:proname,(1..@promax),true,"size=5")
     html.safe_concat("</tr>\n   <tr>")
+    # 利益行
     html.safe_concat(clmn_label(t(:profit),:color =>"#D0FFFF",:help => :profit) )
     html.safe_concat("<td  bgcolor=#D0FFFF colspan=2>" +   blank_if_zero(:profit) +"</td>")
     html.safe_concat(clmn_label(t(:pro_gain),:span => 2,:size => 1, :help => :pro_gain ))
@@ -149,6 +153,7 @@ module LipsHelper
       html.safe_concat td_color_size(2,1,"#D0FFFF") + blank_if_zero(@lips.pro[pro]) 
     }
     html.safe_concat "</tr>\n  <tr>"
+    # 工程行
     html.safe_concat clmn_label(t(:operation)+"",:help => :operation) + 
       clmn_label(t(:runtime),:size => 1,:help =>:runtime ) + clmn_label("≦≧",:help => :min_max) 
     html.safe_concat "<td bgcolor=#D0FFFF><font size = 2><nobr>実稼働</nobr>"
@@ -201,18 +206,26 @@ module LipsHelper
       html.safe_concat "<td bgcolor=#D0FFFF><font size = 2>" << val.to_s << "</td>"
     }
     html.safe_concat "</tr>\n<tr>"
+    # 製品名行
     html.safe_concat clmn_label(t(:pro_name),:help =>:pro_name ) + clmn_label(t(:pro_gain),:help => :pro_gain )
     html.safe_concat clmn_label(t(:min),:help => :min_mass) <<
       clmn_label(t(:max),:help => :max_mass) << clmn_label(t(:number))
-    html.safe_concat  clmn_label(t(:coment),:span =>@opemax,:help => :comment) +"</tr>\n"
+    html.safe_concat clmn_label(t(:coment),:span =>@opemax,:help => :comment)
+    html.safe_concat "</tr>\n"
+    # データ開始
     (1..@promax).each{|pro| 
-      html.safe_concat "  <tr><td><font size = 2>" << text_field_for_array(:proname,pro,false,"size=5")<< "</td>"
+      html.safe_concat "  <tr><td><font size = 2>" << 
+      text_field_for_array(:proname,pro,false,"size=5")<< 
+      "</td>"
       [:gain,:min,:max].each{|sym| 
-        html.safe_concat "<td><font size = 2>" << text_field_for_array(sym,pro,false,"size=5")<< "</td>"
+        html.safe_concat "<td><font size = 2>" << 
+        text_field_for_array(sym,pro,false,"size=5")<< 
+        "</td>"
       }
       html.safe_concat td_color_size(2,"#D0FFFF") << blank_if_zero(@lips.pro[pro])
       (1..@opemax).each{|ope|
-        html.safe_concat "<td><font size = 2>" << text_field_for_warray(:rate,pro,ope,true,"size=5") << "</td>"
+        html.safe_concat "<td><font size = 2>" << 
+        text_field_for_warray(:rate,pro,ope,true,"size=5") << "</td>"
       }
       html.safe_concat "</tr>\n"
     }

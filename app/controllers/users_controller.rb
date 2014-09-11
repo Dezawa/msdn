@@ -94,7 +94,7 @@ class UsersController < CommonController
 
   def update
     @params = params
-    @user = User.find(params[:id],:include => :user_options)
+    @user = User.find(params[:id])#.include( :user_options)
     #@user[:valtype] = @user[:lips_size_pro].class
     @user_option_ids = params[:user_options] ?
     params[:user_options].map{|id,ok_ng| id if ok_ng == "1" }.compact : []

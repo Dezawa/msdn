@@ -45,7 +45,7 @@ class Shimada::FactoryController <  Shimada::Controller
   def update_today
     line = params[:power][:line]  
     @today= Time.now.to_date
-    @power = Shimada::Power.find_by_date(@today) 
+    @power = Shimada::Power.find_by(date: @today) 
     @power.update_attribute(:line,line)  
     redirect_to :action => :today
   end
@@ -53,8 +53,8 @@ class Shimada::FactoryController <  Shimada::Controller
   def today_graph
     factory = @Model.find @factory_id #params[:id]
     @today= Time.now.to_date
-    @power = Shimada::Power.find_or_create_by_date(@today)
-    month = Shimada::Month.find_or_create_by_month(@today.beginning_of_month)
+    @power = Shimada::Power.find_or_create_by(date: @today)
+    month = Shimada::Month.find_or_create_by(month: @today.beginning_of_month)
     @power.month = month;@power.save
     @power.update_attribute(:line,3)  unless @power.line
     @power.today_graph @factory_id
@@ -65,7 +65,7 @@ class Shimada::FactoryController <  Shimada::Controller
 
     ############  Demo用 ####################
     if hr = @power.powers.index(nil)
-      dmypw = Shimada::Power.find_or_create_by_date(@today.last_year).powers
+      dmypw = Shimada::Power.find_or_create_by(date: @today.last_year).powers
       if hr < 2
         (0..1).each{ |h| @power.update_attribute( "hour%02d"%(h+1) , dmypw[h])}
         hr = 3
@@ -79,7 +79,7 @@ class Shimada::FactoryController <  Shimada::Controller
 
   def clear_today
     @today= Time.now.to_date
-    ( pw = Shimada::Power.find_by_date(@today) ) && pw.delete 
+    ( pw = Shimada::Power.find_by(date: @today)  ) && pw.delete 
     redirect_to :action => :today 
   end
 

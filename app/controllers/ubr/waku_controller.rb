@@ -32,6 +32,7 @@ class Ubr::WakuController <  Ubr::Controller
     @CSVlabels= Labels.map{|lbl| lbl.label}
     @Select = session[@Domain + "_select"] || "1A"
     @FindOption = {:conditions => ["name like ?",@Select] } #,params[:prefix] ]    }
+    @FindWhere = ["name like ?",@Select]  #,params[:prefix] ]    }
     super
   end
 
@@ -41,6 +42,7 @@ class Ubr::WakuController <  Ubr::Controller
     select += "%" unless select =~ /%$/
     @Select = session[@Domain + "_select"] = select      
     @FindOption = {:conditions => ["name like ?",@Select] } #,params[:prefix] ]    }
+    @FindWhere =  ["name like ?",@Select]  #,params[:prefix] ]    }
     super
   end
 end

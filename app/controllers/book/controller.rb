@@ -9,8 +9,15 @@ class Book::Controller <  CommonController #ApplicationController
   before_action(:except => :error) {|ctrl|  ctrl.require_allowed "/book/keeping/error" }
  
   def set_instanse_variable
-    logger.debug "BookCtrl SET_INSTANSE_VARIABLE "
-    @year = session["BK_year"] || Time.now.beginning_of_year
+    logger.debug "BookCtrl SET_INSTANSE_VARIABLE session['BK_year'] #{session['BK_year'].class} #{session['BK_year']}"
+    @year = 
+      case session["BK_year"]
+      when Year ; session["BK_year"]
+      when Time ; Year.new(session["BK_year"])
+      when String ; Year.new(Time.parse(session["BK_year"]))
+      else        ; Time.now.beginning_of_year
+      end
+    session["BK_year"] = @year.year
     @arrowed = []
     if current_user
       myself = Book::Permission.create_myself(current_user)      if @editor
@@ -23,14 +30,14 @@ class Book::Controller <  CommonController #ApplicationController
     logger.debug "BookCtrl SET_INSTANSE_VARIABLE : "+
       "@arrowed.first=#{@arrowed.first.login}/#{@arrowed.first.owner}, "+
       "session[:book_keeping_owner] =#{session[:book_keeping_owner].login}/#{session[:book_keeping_owner].owner}. "+
-      "YEAR = #{session[:book_keeping_year]}"
+      "YEAR = #{session["BK_year"]}"
     @owner = (session[:book_keeping_owner] ? session[:book_keeping_owner] : @arrowed.first) ||
       Book::Permission.create_nobody #owner
 #    session[:BK_owner] ||= @owner 
 #   logger.debug "BookCtrl SET_INSTANSE_VARIABLE : "+
 #      "@arrowed.first=#{@arrowed.first.login}/#{@arrowed.first.owner}, "+
 #      "session[:BK_owner] =#{session[:BK_owner].login}/#{session[:BK_owner].owner}. "+
-#      "YEAR = #{session[:BK_year]}"
+#      "YEAR = #{session["BK_year"]}"
 
     logger.debug "BookCtrl SET_INSTANSE_VARIABLE : @owner = #{@owner.login} #{@owner.owner}"
 
@@ -133,6 +140,4 @@ class Book::Controller <  CommonController #ApplicationController
     end
     #nder :partial => "menu_list" 
   end
-
-
 end

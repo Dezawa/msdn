@@ -166,7 +166,7 @@ class Hospital::Assign
 # =======
    def initialize(arg_busho_id,arg_month)
      $HP_DEF = Hospital::Define.create
-     @Kangoshi = Hospital::Role.find_by_name("看護師").id
+     @Kangoshi = Hospital::Role.find_by(name: "看護師").id
 # >>>>>>> HospitalPower
     @koutai3 = Hospital::Define.koutai3?
     @shifts_int= @koutai3 ? Shift0123 : Shift0123[0..-2]

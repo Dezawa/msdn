@@ -6,7 +6,7 @@ class Power::UbeHospital::Month < ActiveRecord::Base
   include Statistics
   extend  Power::Graph
   extend Power::Scatter
-  set_table_name 'power_ube_hospital_months'
+  self.table_name= 'power_ube_hospital_months'
   has_many :powers ,:class_name =>  "Power::UbeHospital::Power" ,
   :dependent => :delete_all
   @@ave10hour = { }
@@ -17,7 +17,7 @@ class Power::UbeHospital::Month < ActiveRecord::Base
     def ave10hour(year_month)
       @@ave10hour[year_month] ||=
         if true
-          rev10s = Power::UbeHospital::Month.find_by_month(year_month).powers.map(&:rev10)
+          rev10s = Power::UbeHospital::Month.find_by(month: year_month).powers.map(&:rev10)
           tmp_ave = rev10s.average
           rev10s.group_by{ |rev| rev >= tmp_ave}. # {true => [,,,],false => [,,,]}
             map{ |k,revs| revs.average}.          # [ ave1,ave 2]

@@ -77,6 +77,8 @@ class Book::MainController < Book::Controller
     #@Links=BookKeepingController::Labels
     @FindOption = ["owner = ? and date >= ? and date <= ?",
                      @owner.owner, @year_beginning,@year_end]
+    @FindWhere = ["owner = ? and date >= ? and date <= ?",
+                     @owner.owner, @year_beginning,@year_end]
     @FindOrder  =   "no"
     
     @TableEdit = 

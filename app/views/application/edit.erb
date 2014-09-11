@@ -1,11 +1,11 @@
 <h3><%= @TYTLE %> 編集 <%= @TYTLE_post_edit %></h3>
-<% form_for(@model) do |f| %>
+<%= form_for(@model) do |f| %>
 <%= hidden_field_tag "page",@page %>
-  <%= @model.errors %>
+  <%= @model.errors.full_messages.join(" ") %>
   <%= f.submit '更新' %>
 <table border=1><%= @TableHeader ? send(@TableHeader) : label_line %>
 <% id = @model.id -%>
-<%= "<tr id='pro_#{id}'>" %><% @labels.each{|html_cell| -%>
+<tr id='pro_<%= id %>'><% @labels.each{|html_cell| -%>
 <%- if  html_cell.class==HtmlHidden -%>
    <%= html_cell.edit_field(@Domain,@model,controller).html_safe -%>
      <%- else -%>

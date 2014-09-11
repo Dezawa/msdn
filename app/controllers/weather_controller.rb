@@ -42,9 +42,9 @@ class WeatherController < CommonController #ApplicationController
             ]
     @Show = false
     @Delete = true
-    @models = Weather.all(:conditions => ["location = ?",@weather_location],
-                          :select => "distinct month,location",
-                          :order => "location,month")
+    @models = Weather.where( ["location = ?",@weather_location]).
+      select( "distinct month,location").
+      order("location,month")
     session[:c_band] = nil
   end
 

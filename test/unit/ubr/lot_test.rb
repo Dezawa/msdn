@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # -*- coding: utf-8 -*-
 require 'test_helper'
-
+Ubr::Lot
 class Ubr::LotTest < ActiveSupport::TestCase
   fixtures :ubr_wakus
   # Replace this with your real tests.
   def setup
       @Waku    = Ubr::Waku.all#waku(true) #load_from_master
-      @lotlist = Ubr::LotList.lotlist(true,:file => File.join(RAILS_ROOT,"test","testdata","SCMstocklist.csv")).list
+      @lotlist = Ubr::LotList.lotlist(true,:file => File.join(Rails.root,"test","testdata","SCMstocklist.csv")).list
   end
   ids = 
       [ ["G123DC700V------F7","630314","1","-"],

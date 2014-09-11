@@ -1,45 +1,121 @@
 ---
-id1:
+obj1:
   id: 1
-
-    5YmN5qmL
-  excite_zip: zp-3792122
-  forecast_code: 3/13/4210/10201
-  id: "1"
+  name: "前橋"
   location: maebashi
-  name: !binary |
-  weather_block: "47624"
-  weather_prec: "42"
-id2:
+  weather_block: '47624'
+  forecast_code: 3/13/4210/10201
+  excite_zip: zp-3792122
+  weather_prec: 42
+obj2:
   id: 2
-
-    6YOh5bGx
-  excite_zip: zp-9691203
-  forecast_code: 2/10/3610/7203
-  id: "2"
+  name: "郡山"
   location: kouriyama
-  name: !binary |
   weather_block: 0299
-  weather_prec: "36"
-id3:
+  forecast_code: 2/10/3610/7203
+  excite_zip: zp-9691203
+  weather_prec: 36
+obj3:
   id: 3
-
-    5bqc5Lit
-  excite_zip: zp-1960021
-  forecast_code: 3/16/4410/13207
-  id: "3"
+  name: "府中"
   location: fuchu
-  name: !binary |
-  weather_block: "1133"
-  weather_prec: "44"
-id4:
+  weather_block: '1133'
+  forecast_code: 3/16/4410/13207
+  excite_zip: zp-1960021
+  weather_prec: 44
+obj4:
   id: 4
-
-    5Y2X6Laz5p+E
-  excite_zip: zp-2500126
-  forecast_code: 3/17/4620/14217
-  id: "4"
+  name: "南足柄"
   location: minamiashigara
-  name: !binary |
-  weather_block: "1008"
-  weather_prec: "46"
+  weather_block: '1008'
+  forecast_code: 3/17/4620/14217
+  excite_zip: zp-2500126
+  weather_prec: 46
+obj5:
+  id: 5
+  name: "岐阜"
+  location: gifu
+  weather_block: '47632'
+  forecast_code: 5/24/5210/21201
+  weather_prec: 52
+obj6:
+  id: 6
+  name: "古川"
+  location: furukawa
+  weather_block: '0247'
+  forecast_code: 2/7/3410/4215
+  weather_prec: 34
+obj7:
+  id: 7
+  name: "柏"
+  location: kashiwa
+  weather_block: '1236'
+  forecast_code: 3/15/4510/12217
+  weather_prec: 45
+obj8:
+  id: 8
+  name: "松戸"
+  location: mashudo
+  forecast_code: 3/15/4510/12207
+obj9:
+  id: 9
+  name: "近江八幡"
+  location: oumihachiman
+  weather_block: 0584
+  forecast_code: 6/28/6010/25204
+  weather_prec: 60
+obj10:
+  id: 10
+  name: "熊谷"
+  location: kumagaya
+  weather_block: '47626'
+  forecast_code: 3/14/4320/11202
+  weather_prec: 43
+obj11:
+  id: 11
+  name: "深谷"
+  location: fukaya
+  forecast_code: 3/14/4320/11218
+obj12:
+  id: 12
+  name: "姫路"
+  location: himeji
+  weather_block: '47769'
+  forecast_code: 6/31/6310/28201_2
+  weather_prec: 63
+obj13:
+  id: 13
+  name: "宍粟"
+  location: shiguri
+  forecast_code: 6/31/6310/28227
+obj14:
+  id: 14
+  name: "昭島"
+  location: akishima
+  forecast_code: 3/16/4410/13207
+obj15:
+  id: 15
+  name: "越谷"
+  location: koshigaya
+  weather_block: '0364'
+  forecast_code: 3/14/4310/11222
+  weather_prec: 43
+obj16:
+  id: 16
+  name: "八潮"
+  location: yashio
+  forecast_code: 3/14/4310/11234
+obj17:
+  id: 17
+  name: "宇部"
+  location: ube
+  weather_block: 0778
+  forecast_code: 7/38/8110/35202
+  weather_prec: 81
+obj18:
+  id: 18
+  name: "下関"
+  location: shimonoseki
+  weather_block: '47762'
+  forecast_code: 7/38/8110/35201
+  weather_prec: 81

@@ -64,8 +64,9 @@ class Ubeboard::ChangeTime < ActiveRecord::Base
       else
         ope_from    = row[0]
         pro_names.each_with_index{|ope_to,idx|
-          Ubeboard::ChangeTime.find_or_create_by_ope_name_and_ope_from_and_ope_to(
-                opename,ope_from,ope_to).update_attribute(:change_time , row[idx+1] )
+          Ubeboard::ChangeTime.
+          find_or_create_by(ope_name: opename,ope_from: ope_from ,ope_to: ope_to).
+          update_attribute(:change_time , row[idx+1] )
         }
 
       end

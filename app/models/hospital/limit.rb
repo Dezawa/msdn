@@ -79,5 +79,4 @@ class Hospital::Limit < ActiveRecord::Base
     needs = needs_all.merge(nobe_suu).merge(shift_role_nobe)
   end
 
->>>>>>> HospitalPower
 end

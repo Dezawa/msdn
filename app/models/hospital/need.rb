@@ -50,13 +50,8 @@ logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sor
     self.all(:conditions => ["minimun>0 and busho_id = ? and daytype in (1,?)",busho_id,what_day(date)])
   end
 
-<<<<<<< HEAD
   def self.of_datetype_for_busho(month,what_day,busho_id)
     self.where( ["busho_id = ? and daytype in (1,?)",busho_id,what_day])
-=======
-  def self.of_datetype_for_busho(what_day,busho_id)
-    self.all(:conditions => ["minimun>0 and busho_id = ? and daytype in (1,?)",busho_id,what_day])
->>>>>>> HospitalPower
   end
 
   def self.what_day(day)
@@ -105,14 +100,14 @@ logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sor
         @@combination2 ||= make_combination2
   end
 
-<<<<<<< HEAD
+#<<<<<<< HEAD
   def self.roles
     @@roles ||= self.where(["minimun>0"]).pluck(:role_id).uniq.sort
 
   end 
 
-=======
->>>>>>> HospitalPower
+#=======
+#>>>>>>> HospitalPower
   def self.make_combination
     comb = []
     roles.combination(3).to_a.each{|c0,c1,c2| 

@@ -16,7 +16,7 @@ class Weather < ActiveRecord::Base
     def temp_vaper_graph(weather_location,opt={ })
       path = output_plot_data(weather_location,opt)
       opt = {:def_file => Rails.root+"tmp/weather_temp_vaper.def",
-        :location => WeatherLocation.find_by_location(weather_location) }.merge(opt)
+        :location => WeatherLocation.find_by(location: weather_location) }.merge(opt)
       graph_file = output_def_file(path,opt)
       `(cd #{Rails.root};/usr/local/bin/gnuplot #{opt[:def_file]})`
       graph_file+".jpeg"
@@ -24,7 +24,7 @@ class Weather < ActiveRecord::Base
 
     def output_plot_data(weather_location,opt={ })
       path = []
-      self.all(:conditions => ["location = ?" , weather_location]).
+      self.where( ["location = ?" , weather_location]).
         group_by{ |w| w.month.year}.
         each{ |year,weathers|
         path << Rails.root+"/tmp/weather_temp_vaper#{year}"
@@ -94,7 +94,7 @@ set xlabel "気温/℃"
     end
 
     def find_or_feach(location,day)
-      weather = find_by_location_and_month_and_date(location.to_s,day.beginning_of_month,day)
+      weather = find_by(location: location.to_s,month: day.beginning_of_month ,date: day)
       return weather if weather
       fetch(location,day)
     end
@@ -132,7 +132,7 @@ logger.debug("HOURS_DATA_OF: url =#{url}")
     end
 
     def hours_data_of(block,y,m,d)
-      location = WeatherLocation.find_by_location(block)
+      location = WeatherLocation.find_by(location: block)
       content =  get_data(location,y,m,d)
       lines = content.split(/[\n\r]+/)  
       while ( line = lines.shift) && /tablefix[12]/ !~ line ;end

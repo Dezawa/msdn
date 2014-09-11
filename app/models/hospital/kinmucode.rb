@@ -68,7 +68,7 @@ class Hospital::Kinmucode < ActiveRecord::Base
 # =======
   extend CsvIo
   include Hospital::Const
-  set_table_name 'hospital_kinmucodes'
+  self.table_name = 'hospital_kinmucodes'
   #belongs_to :kinmukubun,:class_name => "Hospital::inmukubun"
 #>>>>>>> HospitalPower
   @@From_0123 = nil
@@ -96,7 +96,7 @@ class Hospital::Kinmucode < ActiveRecord::Base
   Kubun=  { }
   KK=Hash[:nikkin,"日勤",:sankoutai,"三交代",:part,"パート",:touseki,"透析",
                    :l_kin,"L勤",:gairai,"外来",:kyoutuu,"共通"].
-    each_pair{ |kinmu,name|  Kubun[kinmu] = (k=Hospital::Role.find_by_name(name)) ? k.id : nil }
+    each_pair{ |kinmu,name|  Kubun[kinmu] = (k=Hospital::Role.find_by(name: name)) ? k.id : nil }
 
 #Hospital::Kinmucode::From0123, To0123 の見直し
 #  例えば出張は1日n勤務だが病棟の勤務人数集計ではゼロ。これに対応する
@@ -134,7 +134,7 @@ class Hospital::Kinmucode < ActiveRecord::Base
   end
 
   def self.sanchoku
-    @@sanchoku ||= Hospital::Role.find_by_name("三交代").id
+    @@sanchoku ||= Hospital::Role.find_by(name: "三交代").id
   end
 
 
@@ -155,13 +155,13 @@ class Hospital::Kinmucode < ActiveRecord::Base
       when "2","3" ; return shift.to_i
       when "0"     ; return code(:Koukyu)
       when "L","M" ; 
-        return Hospital::Kinmucode.find_by_code_and_kinmukubun_id({"L"=>"L2","M"=>"L3"}[sft_str],sanchoku).id
+        return Hospital::Kinmucode.find_by(code: {"L"=>"L2","M"=>"L3"}[sft_str], kinmukubun_id: sanchoku).id
       when "N","O" ; 
         code = {"N"=>"夜","O"=>"明"}[sft_str]
         #puts code
         return Hospital::Kinmucode.find_by(code: code).id
       when "1","5"
-        Kubun[:kyoutuu] ||= (k=Hospital::Role.find_by_name("共通")) ? k.id : nil 
+        Kubun[:kyoutuu] ||= (k=Hospital::Role.find_by(name: "共通")) ? k.id : nil 
         value = From0123[sft_str] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
                                                 " and nenkyuu=? and am=? and pm=? and "+

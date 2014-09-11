@@ -1,6 +1,6 @@
 <%#  -*- coding: utf-8 -*- %>
 <h3><%= @TYTLE %> 作成</h3>
-<%= error_messages_for @model %>
+ <%= @model.errors.full_messages.join %>
 <%=    form_tag(:action => :create)+submit_tag('作成') %>
 <table border=1>
 <% id = @model.id -%>

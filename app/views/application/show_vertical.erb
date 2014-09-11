@@ -1,7 +1,7 @@
 <h3><%= @TYTLE %> </h3>
 <% form_for(@model) do |f| %>
 <%= hidden_field_tag "page",@page %>
-  <%= error_messages_for @model  %>
+  <%= @model errors.messages  %>
   <%= f.submit '更新' %>
 <table border=1><%= label_line_option %>
 <% id = @model.id -%>

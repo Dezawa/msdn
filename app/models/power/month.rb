@@ -28,11 +28,11 @@ module Power::Month
       skip_untile_first_data_line(lines)
       month_data = read_month_data(lines)
 
-      month = self.find_or_create_by_month(year_month)
+      month = self.find_or_create(month: year_month)
       powers = days.map{ |day| 
         day_data = month_data.shift
         next unless day_data && day_data.first.to_f > 0
-        power = self.power_model.find_or_create_by_date( day)
+        power = self.power_model.find_or_create_by(date:  day)
         power.update_by_day_data(day_data)
         power
         }.compact

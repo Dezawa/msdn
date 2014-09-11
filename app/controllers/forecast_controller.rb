@@ -33,6 +33,8 @@ class ForecastController < CommonController # ApplicationController
     @TableHeaderDouble = [3,[8,"気温"],[8,"蒸気圧"],[8,"湿度"],[8,"天気"]]
     @FindOption = { :conditions => ["location = ?", @weather_location],
       :order => "date"}
+    @FindWhere =  ["location = ?", @weather_location]
+    @FindOrder = "date"
   end
 
   def change_location

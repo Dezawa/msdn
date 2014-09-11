@@ -77,8 +77,6 @@ Items =
   # 夜間急性期看護補助体制 看護職員夜間配置,看護補助 夜勤時間帯(16時間)
   def hospital_static(arg={ })
     args = {
-      #:night_stop => Hospital::Kinmucode.find_by_code(3).finish.split(/[^\d]+/)
-      #:night_from => Hospital::Kinmucode.find_by_code(2).start.split(/[^\d]+/),
      :hospital_ward_num => Hospital::Busho.count
     }.merge(arg)
 #pp args

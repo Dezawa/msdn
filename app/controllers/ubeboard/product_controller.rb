@@ -47,7 +47,7 @@ require 'csv'
   end
 
   def destroy
-    if Ubeboard::Plan.find_by_ube_product_id(params[:id])
+    if Ubeboard::Plan.find_by(ube_product_id: params[:id])
       flash[:message] = "この製品は使われているので削除できません"
       redirect_to :action => :index 
     else

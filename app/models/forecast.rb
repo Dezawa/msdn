@@ -43,7 +43,8 @@ class Forecast < ActiveRecord::Base
       return nil unless  day == today || day == today + 1
 
       announce,today,tomorrow,todays,tomorrows = forecast(location)
-      today_forecast = self.find_or_create_by_location_and_date_and_announce(location.to_s,today,announce )
+      today_forecast = self.
+        find_or_create_by(location: location.to_s,date: today, announce: announce )
       weather_temperature_humidity = to_hash(todays)
       #weather,temperature,humidity = todays
       #w = Hash[*Weathers.zip(weather).flatten]
@@ -54,7 +55,8 @@ class Forecast < ActiveRecord::Base
       today_forecast.vaper
       today_forecast.save
 
-      tomorrow_forecast = self.find_or_create_by_location_and_date_and_announce(location.to_s,tomorrow,announce )
+      tomorrow_forecast = self.
+        find_or_create_by(location: location.to_s,date: tomorrow, announce: announce )
       weather_temperature_humidity = to_hash(tomorrows)
       args = { :announce_day => announce.to_date,:month => day.beginning_of_month }.merge(weather_temperature_humidity)
       tomorrow_forecast.update_attributes( args )
@@ -81,9 +83,9 @@ class Forecast < ActiveRecord::Base
       announce ||= day
       day = day.to_date
       announce = Time.now.beginning_of_hour
-      forecast = find_by_location_and_month_and_date(location.to_s,
-                                                                  day.beginning_of_month,
-                                                                  day)
+      forecast = find_by(location: location.to_s, 
+                         month: day.beginning_of_month,  date: day)
+                                                                  
       forecast.vaper if forecast && !forecast.vaper03
       return forecast if forecast
 #      return nil      if announce_day != Time.now.to_date # 本日のアナウンスしか採れない
@@ -112,7 +114,7 @@ class Forecast < ActiveRecord::Base
     def forecast_html(zp)
       zp = zp.to_s
       #url = URLForecast%ZP[zp].first
-      url = URLForecast%WeatherLocation.find_by_location(zp).forecast_code
+      url = URLForecast%WeatherLocation.find_by(location: zp).forecast_code
       open("js.js","w"){ |fp| fp.write JS%url}
       content = `#{PhantomJS} js.js`.split("<")
     end
@@ -200,12 +202,12 @@ class Forecast < ActiveRecord::Base
   end
 
   def differrence_via_real(location = "maebashi" )
-    weather_location = WeatherLocation.find_by_location(location)
+    weather_location = WeatherLocation.find_by(location: location)
     dates = Forecast.all(:conditions => ["location = ?",location]).
     map(&:date).uniq
     weathers = dates.map{ |date|
-      today    = Forecast.find_by_date_and_announce_day(date,date)
-      tomorrow = Forecast.find_by_date_and_announce_day(date,date-1)
+      today    = Forecast.find_by(date: date ,announce_day: date)
+      tomorrow = Forecast.find_by(date: date ,announce_day: date-1)
       real     = Weather.find_or_feach(location,date)
       [today,tomorrow,real]
     }
@@ -231,7 +233,7 @@ class Forecast < ActiveRecord::Base
   end
 
   def differrence_via_real_graph(location = :maebashi)
-    weather_location = WeatherLocation.find_by_location(location)
+    weather_location = WeatherLocation.find_by(location: location)
     differ = differrence_via_real(location)
     deffile = Rails.root+"tmp/shimada/forecast-real.def"
     open(Rails.root+"tmp/shimada/forecast-real","w"){ |f|
@@ -251,10 +253,10 @@ class Forecast < ActiveRecord::Base
         f.puts
       }
     }
-logger.debug("DIFFERRENCE_VIA_REAL_GRAPH: location=#{location} zp =#{WeatherLocation.find_by_location(location).forecast_code}")
+logger.debug("DIFFERRENCE_VIA_REAL_GRAPH: location=#{location} zp =#{WeatherLocation.find_by(location: location).forecast_code}")
     open(deffile,"w"){ |f|
       f.puts Def%[Rails.root,
-                  WeatherLocation.find_by_location(location).name,
+                  WeatherLocation.find_by(location: location).name,
                   differ.first.first.strftime("%Y/%m/%d"),
                   differ.last.first.strftime("%Y/%m/%d"),differ.size/8-0.125,
                   Rails.root,Rails.root,Rails.root
@@ -314,9 +316,9 @@ __END__
 
 dates = Forecast.all.map(&:date).uniq
 weathers = dates.map{ |date|
-  today    = Forecast.find_by_date_and_announce_day(date,date)
-  tomorrow = Forecast.find_by_date_and_announce_day(date,date-1)
-  real     = Weather.find_by_date(date)
+  today    = Forecast.find_by(date: date,announce_day: date)
+  tomorrow = Forecast.find_by(date: date,announce_day: date-1)
+  real     = Weather.find_by(date: date)
   [today,tomorrow,real]
 };1
 i=1

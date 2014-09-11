@@ -171,7 +171,7 @@ map{|id,pws| pws.map{|pw| pw.revise_by_vaper[14]}.standard_devitation.round(1)}
 class Shimada::Month < ActiveRecord::Base
   extend ExcelToCsv
   
-  set_table_name 'shimada_months'
+  self.table_name= 'shimada_months'
   has_many :shimada_powers ,:class_name =>  "Shimada::Power" ,:dependent => :delete_all
   belongs_to :shimada_factory     ,:class_name => "Shimada::Factory"
 
@@ -201,8 +201,8 @@ class Shimada::Month < ActiveRecord::Base
       days = days[0,lastday].map{ |d| Date.new(year,*d.split("/").map(&:to_i))}
       skip_untile_first_data_line(lines)
       
-      month = self.find_or_create_by_month(days.first)
-      powers = days.map{ |day| Shimada::Power.find_or_create_by_date( day) }
+      month = self.find_or_create_by(month: days.first)
+      powers = days.map{ |day| Shimada::Power.find_or_create_by(date:  day) }
       set_power(powers,lines)
       month.shimada_powers = powers
     end

@@ -14,3 +14,9 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
+$(function(){
+$('#year_year').change(function(){
+var year_year = $("#year_year").val();
+$.post("keeping/year_change?year=" + year_year);
+});
+});

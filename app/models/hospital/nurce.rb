@@ -214,7 +214,7 @@ class Hospital::Nurce < ActiveRecord::Base
 #=======
     @month = month if month
     @monthly = Hospital::Monthly.
-      find_or_create_by_nurce_id_and_month(id,month)
+      find_or_create_by(nurce_id: id,month: month)
 #>>>>>>> HospitalPower
     @monthly.nurce=self
     @lastday=@month.end_of_month.day
@@ -428,7 +428,7 @@ class Hospital::Nurce < ActiveRecord::Base
   end
 
   def role?(rolename)
-    roles[hospital_roles.find_by_name(rolename).id]
+    roles[hospital_roles.find_by(name: rolename).id]
   end
 
   def role_id?(role_id);role_ids.include?(role_id) #.to_i);

@@ -29,14 +29,12 @@ class Waku < ActiveRecord::Base
     ["→","S"] => :VS, ["←","S"] => :VS
   }
 
-  attr_accessor  :enable,:kawa_suu,:direction,:aria,:angle
+  attr_accessor  :enable,:kawa_suu,:direction,:aria#,:angle
   
   attr_writer :lot_list,:pos_xy
 
-  def after_find
-    @lot_list = []
-    @angle = %w(→ ←).include?(direct_to) ? 0 : 270
-  end
+  def angle ;  @angle ||= %w(→ ←).include?(direct_to) ? 0 : 270 ;end
+
 
   def self.waku(reload=false)
     if !$Waku || reload
@@ -160,6 +158,7 @@ class Waku < ActiveRecord::Base
   # without_pull には、WithoutPull、WithPull、OnlyExport が来る
   ######## Ube::Lotとの関連
   def lot_list(without_pull = WithPull)
+    @lot_list ||= []
     return @lot_list unless without_pull
     @lot_list.select{|seg| 
       case without_pull

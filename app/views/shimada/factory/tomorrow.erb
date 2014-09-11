@@ -4,9 +4,10 @@
 <%= submit_tag ("稼働パターン") %> <%= text_field(:power,:line,:size => 3) %>
 </form>
 気候予報 <%= @forecast.announce.strftime("%Y/%m/%d %H:00予報") %>
-<table border=1><tr><td>時刻</td><%= [3,6,9,12,15,18,21,24].map{|h| "<td>#{h}</td>"} %></tr>
-<tr><td>気温</td><%= @temp.map{|t| "<td>%.1f</td>"%t} %></tr>
-<tr><td>湿度</td><%= @humi.map{|t| "<td>%d</td>"%t} %></tr>
-<tr><td>蒸気圧</td><%=@forecast.vaper.map{|t| "<td>%.1f</td>"%t} %></tr>
+<table border=1><tr><td>時刻</td>
+<%= safe_join [3,6,9,12,15,18,21,24].map{|h| "<td>#{h}</td>".html_safe} %></tr>
+<tr><td>気温</td><%= safe_join @temp.map{|t| ("<td>%.1f</td>"%t).html_safe} %></tr>
+<tr><td>湿度</td><%= safe_join @humi.map{|t| ("<td>%d</td>"%t).html_safe} %></tr>
+<tr><td>蒸気圧</td><%=safe_join @forecast.vaper.map{|t| ("<td>%.1f</td>"%t).html_safe} %></tr>
 </table>
 <img src='/shimada/factory/show_gif?graph_file=tomorrow'>

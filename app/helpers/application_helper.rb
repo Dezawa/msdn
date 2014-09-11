@@ -70,8 +70,9 @@ module ApplicationHelper
   def help(url_name) # LiPS#cvsupdate_form => LiPS.html#cvsupdate_form
     return "" if url_name.blank?
     url,name = url_name.split("#")
-    "<a href='/Help/#{url}.html" + (name ? "##{name}" : "") +
+    ("<a href='/Help/#{url}.html" + (name ? "##{name}" : "") +
       "'><img src='/images/help.png' width=10 height=12 ></a>"
+     ).html_safe
   end
 
   def memu_line

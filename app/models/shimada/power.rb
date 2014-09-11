@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 require "tempfile"
-
+require 'statistics'
 class Shimada::Power < ActiveRecord::Base
-  set_table_name 'shimada_powers'
+  self.table_name= 'shimada_powers'
   belongs_to :month     ,:class_name => "Shimada::Month"
   belongs_to :db_weather,:class_name => "Weather" 
   belongs_to :shimada_factory     ,:class_name => "Shimada::Factory"
@@ -204,7 +204,7 @@ class Shimada::Power < ActiveRecord::Base
     Shimada::Power::BugsFit[
                             case method.to_s
                             when /revise_by_temp/ ; "revise_by_temp"
-                            when /revise_by_month/: "revise_by_month"
+                            when /revise_by_month/; "revise_by_month"
                             end
                            ]
   end
@@ -259,7 +259,7 @@ class Shimada::Power < ActiveRecord::Base
   end
 
   def self.create_average_diff(factory_id)
-    ave_power = Shimada::Power.find_or_create_by_date_and_line(nil,nil)
+    ave_power = Shimada::Power.find_or_create_by(date: nil ,line: nil)
     all_powers = Shimada::Power.power_all(factory_id)
     diffs = all_powers.inject([0]*24){ |s,v|
 logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
@@ -279,7 +279,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     return nil unless (1..4).include?(line)
     patern = "稼働#{line}"
 
-    average_line = Shimada::Power.find_or_create_by_date_and_line(nil,line)
+    average_line = Shimada::Power.find_or_create_by(date: nil,line: line)
     
     powers = self.by_patern(factory_id,patern).
       select{ |pw| 
@@ -310,7 +310,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     return nil unless (1..4).include?(line)
     patern = "稼働#{line}"
 
-    average_line = Shimada::Power.find_or_create_by_date_and_line(nil,line)
+    average_line = Shimada::Power.find_or_create_by(date: nil, line: line)
     
     powers = self.by_patern(factory_id,patern).
       select{ |pw| 
@@ -428,7 +428,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def offset_3(method,last=23)
     return [] if ( values = send(method) ).size < TimeOffset
     if date 
-      values[TimeOffset..last] + (( pw = self.class.find_by_date(date.tomorrow)) ? pw.send(method)[0..TimeOffset] : [])
+      values[TimeOffset..last] + (( pw = self.class.find_by(date: date.tomorrow)) ? pw.send(method)[0..TimeOffset] : [])
     else
       values[TimeOffset..last] + values[0..TimeOffset]
     end
