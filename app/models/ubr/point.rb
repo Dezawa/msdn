@@ -9,7 +9,7 @@
 #    DBいるか？ date 総在庫量(製品、原料、再処理、長期) 通路置き 数、総量、穴数 半分以上空き枠
 #    ここでDB作っちゃうならWakuこそDBかなぁ
 class Ubr::Point
-
+  include Ubr::Const
   @dir= File.dirname(__FILE__)
   if /www/ =~ @dir
     $LOAD_PATH << @dir
