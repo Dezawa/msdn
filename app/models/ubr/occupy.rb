@@ -80,8 +80,8 @@ module Ubr
     end
 
     def to_gif(filepath)
-      open(filepath+".ps","w"){ |fp| fp.puts self.to_s}
-      `/usr/bin/convert #{filepath+'.ps'} #{filepath+'.gif'}`
+      open(filepath.to_s + ".ps","w"){ |fp| fp.puts self.to_s}
+      `/usr/bin/convert #{filepath}.ps #{filepath}.gif`
     end
 
     def pages_out
