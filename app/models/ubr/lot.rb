@@ -65,13 +65,13 @@ class Lot
     @segments = [segment = LotSegment.new(self,wt,wk,@paret,@comment_urb,@comment_qa,
            @count,@cause,@pull,@order,@direction)]
     #@segments = [segment = LotSegment.new(self,wt,wk,SegAttrs.map{ |attr| self.send(attr)})]
-    begin
-      wk.add segment 
-    rescue
-      $WAKUMISSING ||= []
-      $WAKUMISSING.push(w).uniq!
-      #pp [w,lot_no,"Waku missing"]
-    end
+    #begin
+      wk.add segment
+    #rescue
+    #  $WAKUMISSING ||= []
+    #  $WAKUMISSING.push(w).uniq!
+    #  #pp [w,lot_no,"Waku missing"]
+    #end
   end
 
   def add(segment) 

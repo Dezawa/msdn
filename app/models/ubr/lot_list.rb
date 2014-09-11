@@ -39,7 +39,7 @@ class LotList
 
   def load(file,option = {:headers => :first_row})
     $WAKUMISSING = nil
-    # UBRのexcelで来る № がうまくa変換できないので、その対策
+    # UBRのexcelで来る № がうまく変換できないので、その対策
     lines = NKF.nkf("-w",File.read(file))
     lines.gsub!(/"/,"")
     lines = lines.sub(/ロット[^,\t]*/,"ロット№").sub(/ﾊﾟﾚｯﾄ[^,\t]*/,"パレット").split(/[\n\r]+/)

@@ -176,9 +176,9 @@ class Waku < ActiveRecord::Base
     without_pull ? lot_list.select{ |seg| !seg.pull? && /Z$/ !~ name }.size == 0 :
       lot_list.select{ |seg| /Z$/ !~ name }.size == 0
   end
-  def add(lot_segment);    @lot_list << lot_segment
+  def add(lot_segment);    lot_list << lot_segment
   end
-  def remove(lot_segment);    @lot_list.delete(lot_segment) ;  end
+  def remove(lot_segment);    lot_list.delete(lot_segment) ;  end
 
   def weight(without_pull = WithPull)
     lot_list(without_pull).inject(0){|wt,segment| wt + segment.weight }
