@@ -89,23 +89,14 @@ Rails.application.routes.draw do
   
   get  '/ubr/main' =>  'ubr/main#index'
   ubr = %w(main waku waku_block souko_plan souko_floor wall pillar)
-    ubr.each{ 
-    |controller|  
-    %w(index add_on_table edit_on_table update_on_table csv_out csv_upload
-       add_assosiation edit_assosiation).
-    each{ |action| post "/ubr/#{controller}/#{action}" => "ubr/#{controller}##{action}" 
-    }
-    %w(index edit ).each{ |action| get "/ubr/#{controller}/#{action}" => "ubr/#{controller}##{action}" 
-    }
-  }
-
-  %w(occupy_pdf reculc show_pdf ).each{ |act| 
-    get  "/ubr/main/#{act}" =>  "ubr/main##{act}"
-  }
-
   ubr.each{ |ctrl|
     resources "ubr_#{ctrl}" , controller: "ubr/#{ctrl}"
+    set_post( "ubr/#{ctrl}",edit_table )
+    set_post( "ubr/#{ctrl}",%w(add_assosiation edit_assosiation))
   }
+  set_get("ubr/main",%w(occupy_pdf reculc show_pdf ))
+  #set_get("ubr/souko_plan",%w(show_plan))
+  get "/ubr/souko_plan/show_plan/:id" => "ubr/souko_plan#show_plan"
 
   get    '/users/edit' =>            'users#edit'
   get    '/book/keeping' => 'book/keeping#index'
