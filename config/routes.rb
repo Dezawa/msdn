@@ -97,6 +97,7 @@ Rails.application.routes.draw do
   set_get("ubr/main",%w(occupy_pdf reculc show_pdf ))
   #set_get("ubr/souko_plan",%w(show_plan))
   get "/ubr/souko_plan/show_plan/:id" => "ubr/souko_plan#show_plan"
+  get "/ubr/souko_floor/show_floor/:id" => "ubr/souko_floor#show_floor"
 
   get    '/users/edit' =>            'users#edit'
   get    '/book/keeping' => 'book/keeping#index'
