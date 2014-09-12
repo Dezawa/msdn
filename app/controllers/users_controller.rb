@@ -65,16 +65,16 @@ class UsersController < CommonController
 
   def show
     @user = User.find(params[:id]) #,:include=> :user_options)
-    @arrowed_options = @user.user_options.map(&:id)
+    have_user_option
   end
   def edit
     @user = User.find(params[:id])
-    @arrowed_options = @user.user_options.map(&:id)
+    have_user_option
   end
   def new
     flash[:return_to] = request.env["HTTP_REFERER"]
     @user = User.new
-    @arrowed_options = @user.user_options.map(&:id)
+    have_user_option
   end
  
   def create
@@ -88,6 +88,8 @@ class UsersController < CommonController
     else
       flash[:error]  = "We couldn't set up that account, sorry.  Please try again, or contact an admin (link is above)."
     @arrowed_options = @user.user_options.map(&:id) || []
+    @have_option = @options.
+      map{ |option| HaveUserOption.new(option,@arrowed_options.include?(option.id))}
       render :action => 'new'
     end
   end #of create
@@ -116,5 +118,25 @@ class UsersController < CommonController
 
   end
 
-
+  def have_user_option
+    @arrowed_options = @user.user_options.map(&:id)
+    @have_option = @options.
+      map{ |option| HaveUserOption.new(option,@arrowed_options.include?(option.id))}
+  end
 end # of class users_cont
+
+class HaveUserOption
+  attr_accessor :have
+  attr_reader  :option
+  def initialize(option,have)
+    @option = option
+    @have   = have
+  end
+
+  def labels ; [ "有効", "無効"] ; end
+  def values ; [  1 , 0 ] ; end
+  def value ; @have  ; end
+  def id    ; @option.id ; end
+
+end
+

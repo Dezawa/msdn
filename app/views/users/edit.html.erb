@@ -13,12 +13,9 @@
 </table></td>
 <td>
 <table border=1><tr><td colspan=2>オプション　　　　　　　　　　　　 </td></tr>
-<% @options.each{|opt| -%> <tr><td><%= opt.label %></td><td>
- <!--!%= radioBottom_pair_if_sain(:user_options,opt.id,[0,1],%w(無効 有効), @arrowed_options.include?(opt.id)) %-->
- <%= ("<input type='radio' id=user_options_ok_#{opt.id}' name='user_options[#{opt.id}]' value='1'" +
-  (@arrowed_options.include?(opt.id) ? "checked" : "" )).html_safe %>>有効
- <%= ("<input type='radio' id=user_options_ok_#{opt.id}' name='user_options[#{opt.id}]' value='1'" +
-  (@arrowed_options.include?(opt.id) ? "" : "checked" )).html_safe %>>無効
+<% @have_option.each{|have| -%> <tr><td><%= have.option.label %></td><td>
+ <%= radio_button(:have,:value,have.values[0],id: "user_options_#{have.option.id}",name:"user_options[#{have.option.id}]",checked: have.value )%><%= have.labels[0]%>
+ <%= radio_button(:have,:value,have.values[1],id: "user_options_#{have.option.id}",name:"user_options[#{have.option.id}]",checked: !have.value)%><%= have.labels[1]%>
 </td></tr><%-  } -%>
 </table>
 </td></tr></table>
