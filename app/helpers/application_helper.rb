@@ -593,52 +593,18 @@ end
     }.join
   end
 
+  #LiPSでのみ使用。使うの禁止
   def radioBottom(domain,method,values,value=nil,option=nil)
-    #             :lips ,:vertical ,[["ver","縦"],["land","横"]]
-    # => <input type="radio" id="post_category_rails" name="post[category]" value="rails" checked="checked" />
-    #    <input type="radio" id="post_category_java" name="post[category]" value="java" />
     dom = domain.to_s ; meth = method.to_s
     values.map{|val|  checked = val[0] == value ? "checked" : ""
       "<input type=\"radio\" id=\"#{dom}_#{meth}\" name=\"#{dom}[#{meth}]\" value=\"#{val[0]}\" #{checked} />#{val[1]}"
     }.join("\n")
   end
   
-  def my_select(object, method, choices, options = {}, html_options = {}) 
-    id = options.delete(:index) ;     id = id ? "[#{id}]" : ""
-    value = options.delete(:value)
-    #logger.debug("my_select in: #{value}")
-    cc = (choices[0].class == Array) ? choices : (choices.map{|c| [c]} + [[value]]).uniq
-    #logger.debug("my_select cc : #{cc.join('/')}")
-
-    include_blank = options.delete(:include_blank) ? "<option value=''></option>\n" : ""
-    "<select id='#{object}#{id}_#{method}' name='#{object}#{id}[#{method}]'>\n" + include_blank +
-      cc.map{|choice| lbl=choice[0];val=choice[-1];selected = (val==value ? " selected='selected'" : "" )
-      "<option value='#{val}'#{selected}>#{lbl}</option>\n"
-    }.join+"</select>\n"
-  end
-
-  def my_check_box(obj,model,sym,option={} ) # option :id,:index,:value
-    #<input type="checkbox" value="1" />
-    #<input name="model[id][sym][index]" type="hidden" value="val" />
-    checked = obj[sym] ? "checked" : ""
-    id = option[:id] ; index=option[:index]
-    # => <input name="post[validated]" type="hidden" value="0" />
-    #    <input type="checkbox" id="post_validated" name="post[validated]" value="1" />
-
-    if id
-      "<input type='checkbox' name='#{model}[#{id}][#{sym}]' value='1' #{checked}>\n"+
-      "<input type='hidden' name='#{model}[#{id}][#{sym}]' value='0' >"
-    else
-      "<input type='checkbox' name='#{model}[#{sym}]' value='1' #{checked}>\n"+
-      "<input type='hidden' name='#{model}[#{sym}]' value='0'>"
-    end
-  end
 
   def name(*arg)
     arg[0]+arg[1..-1].map{|a| "[#{a}]"}.join
   end
-
-  
 
   def error_messages(errors)
     return "" if errors.size == 0
