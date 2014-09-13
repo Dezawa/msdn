@@ -9,7 +9,7 @@ class WeatherController < CommonController #ApplicationController
             HtmlDate.new(:date         ,"年月日",  :tform => "%Y/%m/%d", :ro => true, :size => 7 ),
             ] 
   #Temperature = Weather::Temperature.map{ |h| HtmlNum.new(h, h.sub(/hour/,""),:ro => true,:size => 2 ) }
-  TempVaper = [HtmlText.new("気温<br>蒸気圧","")] + 
+  TempVaper = [HtmlText.new("気温<br>蒸気圧".html_safe,"")] + 
     ("01".."24").map{ |h| HtmlText.new("tempvaper#{h}".to_sym, h,:ro => true,:size => 2 ) }
   Temperature = [HtmlText.new("気温","")] + 
     ("01".."24").map{ |h| HtmlText.new("hour#{h}".to_sym, h,:ro => true,:size => 2 ) }
@@ -46,6 +46,14 @@ class WeatherController < CommonController #ApplicationController
       select( "distinct month,location").
       order("location,month")
     session[:c_band] = nil
+  end
+
+  def show
+    if /[^\d]/ =~ params[:id]
+      send(params[:id].to_sym)
+    else
+      super
+    end
   end
 
   def temp_vaper
@@ -129,27 +137,24 @@ logger.debug("CBAND_REF:session  [:c_band]=#{session[:c_band]}")
   end
 
   def temperatuer
-    @models = Weather.
-      all(:conditions => ["location = ? and month = ?", params[:location],params[:month]],
-          :order => "date")
+    @models = Weather.where(["location = ? and month = ?", params[:location],params[:month]]).
+      order("date")
     @labels = Labels + ( WeatherLocation.with_vaper?(@weather_location) ? TempVaper : Temperature)
     @TYTLE = "気温 "
     render  :file => 'application/index',:layout => 'application'
   end
 
   def vaper
-    @models = Weather.
-      all(:conditions => ["location = ? and month = ?", params[:location],params[:month]],
-          :order => "date")
+    @models = Weather.where( ["location = ? and month = ?", params[:location],params[:month]]).
+          order("date")
     @labels = Labels + Vaper
     @TYTLE = "蒸気圧 "
     render  :file => 'application/index',:layout => 'application'
   end
 
   def humidity
-    @models = Weather.
-      all(:conditions => ["location = ? and month = ?", params[:location],params[:month]],
-          :order => "date")
+    @models = Weather.where( ["location = ? and month = ?", params[:location],params[:month]]).
+          order("date")
     @labels = Labels + Humidity
     @TYTLE = "湿度 "
     render  :file => 'application/index',:layout => 'application'
