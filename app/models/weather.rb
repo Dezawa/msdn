@@ -165,7 +165,7 @@ logger.debug("HOURS_DATA_OF: url =#{url}")
   def vapers      ;   Vaper.map{ |t| self[t]} ; end
   def max_temp ; temperatures.max ; end
   ("01".."24").each_with_index{ |h,idx| define_method("tempvaper#{h}".to_sym){
-      "%2.1f<br>%2.1f"%[Temperature[idx],Vaper[idx]].map{ |t| self[t]}
+      ("%2.1f<br>%2.1f"%[Temperature[idx],Vaper[idx]].map{ |t| self[t]}).html_safe
     }}
 end
 __END__
