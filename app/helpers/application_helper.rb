@@ -269,13 +269,14 @@ end
   end
 
   def form_buttom(action,label,opt ={ },htmlopt={ })
+    opt ||={ }
     hidden = opt.delete(:hidden) if opt.class==Hash
     hidden_value = opt.delete(:hidden_value) if opt.class==Hash
 
     form_notclose = opt.delete(:form_notclose) if opt.class==Hash
     from_notclose = form_notclose ? "" : "</form>".html_safe
     case action
-    when Symbol  ; form_tag(action ,opt)
+    when Symbol  ; form_tag({ :action => action} ,opt)
     when String  ; form_tag(action ,opt)
     end + 
       (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
@@ -457,7 +458,7 @@ end
 
   def delete_if_accepted(obj)
     if deletable
-      "<td>" + link_to('削除',obj , :confirm => 'Are you sure?', :method => :delete) + "</td>"
+      "<td>" + link_to('削除',obj , "data-confirm" => 'Are you sure?', :method => :delete) + "</td>"
     else
       ""
     end.html_safe
