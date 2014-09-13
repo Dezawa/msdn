@@ -20,8 +20,8 @@ class UsersController < CommonController
              HtmlText.new(:name         ,"氏名",          :size => 20),
              HtmlText.new(:username     ,"ユーザ名",          :size => 20),
              HtmlText.new(:email         ,"メール",            :size => 20),
-             HtmlPasswd.new(:password    ,"パスワード",        :size => 20),
-             HtmlPasswd.new(:password_confirmation,"確認パスワード",:size => 20),
+             #HtmlPasswd.new(:password    ,"パスワード",        :size => 20),
+             #HtmlPasswd.new(:password_confirmation,"確認パスワード",:size => 20),
              HtmlRadio.new(:lipscsvio    ,"LiPS CSV IO option",
                             :correction => [["可",true],["不可",false]] ),
              HtmlRadio.new(:lipssizeoption    ,"size変更",
@@ -37,7 +37,7 @@ class UsersController < CommonController
     @options   = UserOption.all.sort{|a,b| (a.order <=> b.order)*1000 + (a.label <=> b.label)}
    @TYTLE = "ユーザ"
    @labels=Labels0
-   @TableEdit = [[:form,:new,"新規登録",:method => :get]]
+   #@TableEdit = [[:form,:sign_up,"新規登録",{ :method => :get}]]
    @tmplate  = true
    @Show = true
    @Edit = true
@@ -45,6 +45,10 @@ class UsersController < CommonController
    @Domain= @Model.name.underscore
   end
 
+  def index
+    @page = params[:page] || 1 
+    find_and
+  end
 
   def change_password
     flash[:return_to] = request.env["HTTP_REFERER"]
