@@ -37,7 +37,7 @@ class UsersController < CommonController
     @options   = UserOption.all.sort{|a,b| (a.order <=> b.order)*1000 + (a.label <=> b.label)}
    @TYTLE = "ユーザ"
    @labels=Labels0
-   #@TableEdit = [[:form,:sign_up,"新規登録",{ :method => :get}]]
+   @TableEdit = [[:form,"/users/sign_in","新規登録",{ :method => :get}]]
    @tmplate  = true
    @Show = true
    @Edit = true

@@ -274,8 +274,10 @@ end
 
     form_notclose = opt.delete(:form_notclose) if opt.class==Hash
     from_notclose = form_notclose ? "" : "</form>".html_safe
-
-    form_tag({ :action => action})+ 
+    case action
+    when Symbol  ; form_tag(action ,opt)
+    when String  ; form_tag(action ,opt)
+    end + 
       (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
        else;"";end
        )+
@@ -723,7 +725,14 @@ try{
            [["LiPS(無償版)","/lips/free"],["LiPS(会員版)","/lips/member"]],
            [["パスワード変更","/login"],["ログアウト","/logout"]]
           ]
-
+  def error_messages_for a_r
+    return "" unless a_r.errors.any? 
+    ( "<ul>"+
+      a_r.errors.full_messages.map do |msg| %>
+      "<li>#{msg}</li>"
+      end +"</ul>"
+      ).html_safe
+  end
 end
 
 __END__

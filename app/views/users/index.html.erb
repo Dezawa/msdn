@@ -1,24 +1,30 @@
-<h1>Listing lips</h1>
-
-<table border=1><tr><% @Labels.each_with_index{|lbl,i| %>
-<% next unless @Listable[i] %><TD><%= @HelpMsg[i] %></td>
-<% } %></tr>
-<% @users.each do |user| %>
-  <tr><% @Labels.each_with_index{|lbl,i| %>
-    <% next unless @Listable[i] %>
-<td><%= val = case @InputType[i]
-    when :bool     ; user[lbl] ? "可" : "否"
-    when :password ; next
-    else           ; user[lbl]
-    end %></td>
-<% } %>
-    <td><%= link_to 'Show', user %></td>
-    <td><%= link_to 'Edit', edit_user_path(user) %></td>
-    <td><%= link_to '削除', user, data: { confirm: 'Are you sure?' }, :method => :delete %></td>
-  </tr>
+<h3><%= @TYTLE  %> 一覧 <%= @TYTLE_post %></h3>
+<%= flash[:message] %>
+<%= @errors.call if @errors -%>
+<%= form_for :user, :url => "/users/sign_up" ,:method => :get do |f| %>
+ <%= submit_tag("新規登録") %>
 <% end %>
+<%= action_buttom_table %>
+<%= will_page = pagenation @models %>
+<%= select_box if @Select%>
+  <table border=1 id="IndexTable"><%= @TableHeader ? send(@TableHeader) : label_line_option %>
+<% @models.each do |obj|  -%>
+  <tr id='<%= obj.id %>'><% @labels.each{|html_cell| 
+        next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
+  <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
+  <% if @Show %>
+    <td><%= link_to '表示', obj %></td>
+  <% end %>
+  <% if @Edit %>
+    <td><%= link_to 'Edit', :action => :edit ,:page => @page,:id => obj.id %>
+    </td>
+  <% end %>
+  <%= delete_if_accepted obj %>
+  </tr>
+<% end -%>
 </table>
-
 <br />
-
-<%= link_to 'New user', new_user_path %>
+<%= send(@AfterIndex,:show) if @AfterIndex %>
+<%= @AfterIndexHtml %>
+<%= on_cell_edit() if @on_cell_edit%>
+<token name ='<%= form_authenticity_token %>'></token>
