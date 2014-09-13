@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 # restful-authentication の User に幾つか追加した。
 # 追加したcolumn
 # lipscsvio  :: LiPS の CSV 入出力が許されるか否か
@@ -16,7 +15,7 @@ class User < ActiveRecord::Base
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable, 
-         :encryptable, :encryptor => :restful_authentication_sha1 
+         :encryptable, :encryptor => :restful_authentication_sha1
 
   has_and_belongs_to_many :user_options
 
@@ -34,13 +33,15 @@ class User < ActiveRecord::Base
   validates_length_of       :password, :within => 7..40, :if => :password_required?
   validates_confirmation_of :password,                   :if => :password_required?
   
+  def self.add_keys_for_parmit 
+    [ :email, :name ]
+  end
 
   # HACK HACK HACK -- how to do attr_accessible from here?
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
   #attr_accessible :login, :email, :name, :password, :password_confirmation,
   #:lipscsvio ,:lipssizeoption ,:lipssizepro ,:lipssizeope ,:lipslabelcode ,:lipsoptlink
-
 
 
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
@@ -62,6 +63,8 @@ class User < ActiveRecord::Base
   def login ; username ;end
   def encrypted_password ;  crypted_password ;end
   def password_salt      ;  salt ;end
+  def password_salt=(pswd_salt) ; self.salt = pswd_salt ;end
+  def encrypted_password=(pass) ;self.crypted_password=pass ;end
 
   def login=(value)
     write_attribute :username, (value ? value.downcase : nil)
@@ -75,4 +78,25 @@ class User < ActiveRecord::Base
     user_options.map(&:authorized).include?(option_name)
   end
   
+end
+
+module Devise
+  module Strategies
+    # Default strategy for signing in a user, based on their email and password in the database.
+    class DatabaseAuthenticatable < Authenticatable
+delegate :logger, :to=>"ActiveRecord::Base"
+      def authenticate!
+        resource  = valid_password? && mapping.to.find_for_database_authentication(authentication_hash)
+        encrypted = false
+logger.debug("DatabaseAuthenticatable: #{resource}")
+        if validate(resource){ encrypted = true; resource.valid_password?(password) }
+          resource.after_database_authentication
+          success!(resource)
+        end
+
+        mapping.to.new.password = password if !encrypted && Devise.paranoid
+        fail(:not_found_in_database) unless resource
+      end
+    end
+  end
 end
