@@ -66,16 +66,10 @@ Rails.application.routes.draw do
   devise_for :users
 
   resources :user_options,:users
-  
-  get    '/users/edit' =>            'users#edit'
-  post   '/users'  =>                'users#update' , as: :user_create
-  patch  '/users'  =>                'users#update'
-  put    '/users'  =>                'users#update'
-  delete '/users'  =>                'users#destroy'
-
+  get "/users/sign_in" => "devise/sessions#new"
   %w(user_options users ).
     each{|controller| 
-    %w(add_on_table edit_on_table update_on_table csv_out csv_upload edit new).
+    %w(add_on_table edit_on_table update_on_table csv_out csv_upload).
     each{|action|
       post "#{controller}/#{action}" => "#{controller}##{action}"
     }}
