@@ -293,7 +293,7 @@ module LipsHelper
   def to_ube_product
       clmn_label = "製造計画立案へ"
       if @prefix && @csvfile && (file=File.exist?(@prefix+@csvfile)) 
-        link_to(clmn_label,"/ube_skd/lips_load?csvfile=#{@csvfile}")
+        link_to(clmn_label,"/ubeboard/skd/lips_load?csvfile=#{@csvfile}")
       else
         clmn_label
       end
