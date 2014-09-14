@@ -88,7 +88,7 @@ class Lips #< ActiveRecord::Base
   # filebase  計算用のファイルのbasename
   # csvfile　 結果CSVファイルのファイル名
   def calc(prefix,filebase,csvfile)
-    filepath ="/tmp/"+filebase
+    filepath ="tmp/"+filebase
     @promaxclass = @promax.class
     ## 利益、最小、最大
     items = (1..@promax).map{|p| 
@@ -313,6 +313,8 @@ class Lips #< ActiveRecord::Base
     ver = b1=="Ver1.00" ? 0 : (b1=="Ver1.10" ? 1 : -1)
     @vertical = "vertical"
     f =rows.shift
+open("lipslog","w"){ |f| f.puts t(:operation)
+    f.puts I18n.locale }
     idx = f.index{|s| s == t(:operation) }
     f = f[idx+1..-1]
     idx = f.index{|v| v.nil? or v == "" }

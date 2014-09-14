@@ -50,7 +50,8 @@ class LipsController < CommonController #ApplicationController
   end
 
   def csv_upload
-    @title = "線形計画法"
+   I18n.locale = @permit ? :default : :guest 
+     @title = "線形計画法"
     param =HashWithIndifferentAccess.new
     @user  = current_user ? current_user : User.find_by_login("guest")
     param[:promax]=current_user.lipssizepro
@@ -81,7 +82,7 @@ protected
   def set_filename
     user = @user ? @user.login : "guest" 
     @filebase ="#{user}-#{Time.now.to_i.to_s(16)}"
-    @csvfile = "/lips/tmp/#{@filebase}.csv"
-    @prefix = Rails.root+"/public"
+    @csvfile = "lips/tmp/#{@filebase}.csv"
+    @prefix = Rails.root+"public"
   end
 end

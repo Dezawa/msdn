@@ -61,11 +61,13 @@ Rails.application.routes.draw do
   def set_post(ctrl,acts)
     acts.each{ |act| post "/#{ctrl}/#{act}" => "#{ctrl}##{act}" }
   end
-  edit_table = %w(add_on_table edit_on_table update_on_table csv_out csv_upload)
+
+  EditTable = %w(add_on_table edit_on_table update_on_table csv_out csv_upload csv_download)
 
   root :to => "top#msdn"
   devise_for :users
 
+  ################## -ユーザ管理
   resources :user_options,:users
   get "/users/sign_in" => "devise/sessions#new"
   %w(user_options users ).
@@ -75,20 +77,25 @@ Rails.application.routes.draw do
       post "#{controller}/#{action}" => "#{controller}##{action}"
     }}
     
+  ########### LiPS
+  set_get("lips",%w( member calc))
+  set_post("lips",%w(change_form calc)+EditTable)
+
+  
   ########### 天候関連
   resources :weather,:forecast,:weather_location
   set_get(:forecast,%w( fetch error_graph show_img show_gif show_jpeg))
   set_get(:weather,%w( temperatuer humidity show_img))
   set_post(:forecast,%w(change_location))
   set_post(:weather,%w(change_location get_data temp_vaper weather_location cband))
-  set_post(:weather_location,%w(change_location)+edit_table)
+  set_post(:weather_location,%w(change_location)+EditTable)
   
   ########### UBR 
   get  '/ubr/main' =>  'ubr/main#index'
   ubr = %w(main waku waku_block souko_plan souko_floor wall pillar)
   ubr.each{ |ctrl|
     resources "ubr_#{ctrl}" , controller: "ubr/#{ctrl}"
-    set_post( "ubr/#{ctrl}",edit_table )
+    set_post( "ubr/#{ctrl}",EditTable )
     set_post( "ubr/#{ctrl}",%w(add_assosiation edit_assosiation))
   }
   set_get("ubr/main",%w(occupy_pdf reculc show_pdf ))
@@ -106,7 +113,7 @@ Rails.application.routes.draw do
   }
   book.each{ |ctrl|
     controller = "book/#{ctrl}"
-    set_post(controller,edit_table+%w(add_assosiation edit_assosiation owner_change_win))
+    set_post(controller,EditTable+%w(add_assosiation edit_assosiation owner_change_win))
     #
   }
   set_post("book/keeping",%w(year_change))
@@ -115,16 +122,14 @@ Rails.application.routes.draw do
   set_get("book/main",%w( book_make  make_new_year csv_out_print sort_by_tytle))
   set_get("book/kamoku",%w(edit_on_table_all_column))
 
+  ############ しまだ
   get "/shimada/factory" => "shimada/factory#index"
   get "/shimada/factory/today/:id" => "shimada/factory#today"
   controller="shimada/factory"
-  set_post(controller,edit_table)
+  set_post(controller,EditTable)
   set_get(controller,%w(today update_today clear_today))
 
   get "/power/ube_hospital/month" => "power/ube_hospital/month#index" 
-
-  set_get("lips",%w( member calc))
-  set_post("lips",%w(change_form))
 
   ##### Ubeboard
   ubeboard = %w(top skd maintain holyday product operation plan change_times
@@ -132,8 +137,8 @@ Rails.application.routes.draw do
   get "/ubeboard/top" => "ubeboard/top#top"
   ubeboard.each{ |ctrl|
     resources "ubeboard_#{ctrl}" , controller: "ubeboard/#{ctrl}"
-    set_get("ubeboard/#{ctrl}" ,edit_table)
-    set_post("ubeboard/#{ctrl}" ,edit_table)
+    set_get("ubeboard/#{ctrl}" ,EditTable)
+    set_post("ubeboard/#{ctrl}" ,EditTable)
   }
   set_get("ubeboard/top",%w(calc))
   set_get("ubeboard/skd",%w(lips_load))
