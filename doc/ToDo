@@ -1,9 +1,14 @@
 シビア
-削除が確認無で進んでしまう
-
+済 1. 削除が確認無で進んでしまう 565d9f5f9e1f6931b028fb24f03995032194213a
+済 2. error_messages_forがなくなった 対策。  
+済 3. weather/temperature が id="temp" に解釈されて表示できない b3af21bdab67c8355ba8ff2ed7519009b5dfd1ad
+       
 route足りない
- [POST] "/book/main/renumber"
-
+済 1.  [POST] "/book/main/renumber"
+済 [POST] "/forecast/fetch"
+済 [POST] "/forecast/error_graph"
 
 そのうち
-勘定科目一覧で課目のソートがエラー
+1. 勘定科目一覧で課目のソートがエラー
+2. ユーザ登録すると logoutしてしまう
+済 3. weather actionボタンが動きおかしい b6cb43e25b7ac90d0225f1bcd6952fffa8ffd3f5

@@ -97,6 +97,8 @@ Rails.application.routes.draw do
   get "/ubr/souko_floor/show_floor/:id" => "ubr/souko_floor#show_floor"
 
   get    '/users/edit' =>            'users#edit'
+
+  ################ 複式簿記
   get    '/book/keeping' => 'book/keeping#index'
   book = %w(main keeping kamoku permission)
   book.each{ |ctrl|
@@ -109,7 +111,8 @@ Rails.application.routes.draw do
   }
   set_post("book/keeping",%w(year_change))
   set_get("book/keeping",%w(taishaku csv_taishaku motocho book_make help csv_motocho owner_change owner_change_win))
-  set_get("book/main",%w( book_make renumber make_new_year csv_out_print sort_by_tytle))
+  set_post("book/main",%w(renumber))
+  set_get("book/main",%w( book_make  make_new_year csv_out_print sort_by_tytle))
   set_get("book/kamoku",%w(edit_on_table_all_column))
 
   get "/shimada/factory" => "shimada/factory#index"
