@@ -58,6 +58,7 @@ class WeatherController < CommonController #ApplicationController
 
   def temp_vaper
     @graph_file = Weather.temp_vaper_graph(@weather_location)
+    @graph_format = :jpeg
     render  :file => 'application/graph',:layout => 'application'
   end
 
@@ -86,11 +87,9 @@ class WeatherController < CommonController #ApplicationController
                        end
       now = Time.at(Time.parse(now).to_i/300*300)
       next_date_time  = from_date_time #[ now, from_date_time ].max
-      session[:c_band] = [from_date_time,end_date_time,next_date_time]
-logger.debug("CBAND:session if params [:c_band]=#{session[:c_band]}")
+      session[:c_band] =YAML.dump( [from_date_time,end_date_time,next_date_time])
       c_band_ref
     else
-logger.debug("CBAND:session unless params [:c_band]=#{session[:c_band]}")
       return c_band_ref if session[:c_band]
       end_date_time  =Time.at(Time.now.to_i/300*300)
       @end_date_time  = end_date_time.strftime("%Y-%m-%d-%H:%M")
@@ -100,17 +99,15 @@ logger.debug("CBAND:session unless params [:c_band]=#{session[:c_band]}")
   end
   
   def c_band_ref
-logger.debug("CBAND_REF:session  [:c_band]=#{session[:c_band]}")
-    from_date_time,end_date_time,next_date_time = session[:c_band] 
-    logger.debug("CBAND_REF: from_date_time=#{from_date_time},end_date_time=#{end_date_time},next_date_time=#{next_date_time} ")
-    session[:c_band] = from_date_time,end_date_time,next_date_time+5.minute
+    from_date_time,end_date_time,next_date_time = YAML.load session[:c_band] 
+    session[:c_band] = YAML.dump([from_date_time,end_date_time,next_date_time+5.minute])
     @img_url = "http://www.river.go.jp/img/11/0083/#{next_date_time.strftime('%Y%m%d')}/#{next_date_time.strftime('%H%M')}00.png"
     @interbal = 1
     @now          = next_date_time.strftime("%Y-%m-%d-%H:%M")
     @end_date_time = end_date_time.strftime("%Y-%m-%d-%H:%M")
     @from_date_time = from_date_time.strftime("%Y-%m-%d-%H:%M")
     if next_date_time < end_date_time
-      render :layout => 'refresh'
+      render :layout => 'refresh',:action => :cband
     else
       session[:c_band] = nil
     end

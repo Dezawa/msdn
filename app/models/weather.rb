@@ -19,7 +19,7 @@ class Weather < ActiveRecord::Base
         :location => WeatherLocation.find_by(location: weather_location) }.merge(opt)
       graph_file = output_def_file(path,opt)
       `(cd #{Rails.root};/usr/local/bin/gnuplot #{opt[:def_file]})`
-      graph_file+".jpeg"
+      graph_file
     end
 
     def output_plot_data(weather_location,opt={ })
