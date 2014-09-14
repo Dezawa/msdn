@@ -1,3 +1,3 @@
 <h3><%= @TYTLE %></h3>
 
-<img src='show_img?graph_file=<%=@graph_file%>'>
+<img src='<%= url_for(action: :show_img,graph_format: @graph_format ,graph_file: @graph_file, graph_dir: @graph_dir) %>'>
