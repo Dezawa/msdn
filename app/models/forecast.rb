@@ -1,8 +1,30 @@
 # -*- coding: utf-8 -*-
 require 'pp'
 class Forecast < ActiveRecord::Base
- extend Shimada::ForecastReal
+ #extend Shimada::ForecastReal
+  Def =
+"#ause -1
+set term jpeg  size 1000,600 enhanced font '/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10'
+set output '%s/%s.jpeg'  
+ 
+set title '%s地方 %s～%s の気温・水蒸気量と予報の誤差'
+set key outside autotitle columnheader samplen 2 width -10
 
+#unset key
+set x2range [0:%f]
+#set xtics 1,1 
+set x2tics 1
+set xtics  rotate by -90
+set  grid noxtics x2tics ytics
+
+plot '%s/tmp/shimada/forecast-real'  using 3:xticlabel(2)  with line lc 1, \
+     '' using 4   with line lc 1 lw 2,\
+     '' using 5  with line lc 4,\
+      '' using 6   with line lc 3, \
+      '' using 7   with line lc 3 lw 2,\
+      '' using 8  with line lc 2 
+
+"
     ZP   = { "maebashi" => %w(3/13/4210/10201 前橋), 
              "minamiashigara" => %w(3/17/4620/14217 南足柄) }
 
@@ -92,7 +114,6 @@ class Forecast < ActiveRecord::Base
        fetch(location,day)
     end
 
-
     def forecast(zp)
      lines=forecast_html(zp) #File.read("maebashi_forecast").split("\n")
   #    lines=File.read("maebashi_forecast").split("\n")
@@ -176,95 +197,95 @@ class Forecast < ActiveRecord::Base
       }
     end
 
-  def temperature24(location,date)
-    date=date.to_date
-    fore = self.find_or_fetch(location,date)# || self.find_or_fetch(location,date,date-1)
-    expand(fore.temperature)
-  end
-  def vaper24(location,date)
-    date=date.to_date
-    fore = self.find_or_fetch(location,date) || self.find_or_fetch(location,date,date-1)
-    expand(fore.vaper)
-  end
+    def temperature24(location,date)
+      date=date.to_date
+      fore = self.find_or_fetch(location,date)# || self.find_or_fetch(location,date,date-1)
+      expand(fore.temperature)
+    end
+    def vaper24(location,date)
+      date=date.to_date
+      forecast.rb = self.find_or_fetch(location,date) || self.find_or_fetch(location,date,date-1)
+      expand(fore.vaper)
+    end
 
-  def expand(ary)
-    ret = ary.map{ |t| [0,0,t]}.flatten
-    # 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4
-    # 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t
-    (2..20).step(3).each{ |h| 
-      ret[h+1] = (ret[h]*2 + ret[h+3])/3.0 
-      ret[h+2] = (ret[h]   + ret[h+3] * 2)/3.0 
-    }
-    slope = (ret[5]-ret[2])/3.0
-    ret[0] = ret[2] - 2*slope
-    ret[1] = ret[2] - slope
-    ret
-  end
-
-  def differrence_via_real(location = "maebashi" )
-    weather_location = WeatherLocation.find_by(location: location)
-    dates = Forecast.all(:conditions => ["location = ?",location]).
-    map(&:date).uniq
-    weathers = dates.map{ |date|
-      today    = Forecast.find_by(date: date ,announce_day: date)
-      tomorrow = Forecast.find_by(date: date ,announce_day: date-1)
-      real     = Weather.find_or_feach(location,date)
-      [today,tomorrow,real]
-    }
-
-    differ = []
-    weathers.map{ |k,a,r|
-      next unless r
-      [3,6,9,12,15,18,21,24].each_with_index{ |h,idx|
-        diff = []
-        diff << ( r.date.to_time + h.hour)
-        diff << (r ? r.temperatures[h-1] : nil )
-        diff << (k ? (k.temperature[idx]-r.temperatures[h-1])  : nil)
-        diff << (a ? (a.temperature[idx]-r.temperatures[h-1])  : nil)
-        if /^47/ =~ weather_location.weather_block
-          diff << (r ? r.vapers[h-1] :  nil)
-          diff << (k  ? (k.vaper[idx]-r.vapers[h-1])  : nil )
-          diff << (a  ? (a.vaper[idx]-r.vapers[h-1])  : nil)
-        end
-        differ << diff
+    def expand(ary)
+      ret = ary.map{ |t| [0,0,t]}.flatten
+      # 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4
+      # 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t
+      (2..20).step(3).each{ |h| 
+        ret[h+1] = (ret[h]*2 + ret[h+3])/3.0 
+        ret[h+2] = (ret[h]   + ret[h+3] * 2)/3.0 
       }
-    }
-    differ
-  end
+      slope = (ret[5]-ret[2])/3.0
+      ret[0] = ret[2] - 2*slope
+      ret[1] = ret[2] - slope
+      ret
+    end
 
-  def differrence_via_real_graph(location = :maebashi)
-    weather_location = WeatherLocation.find_by(location: location)
-    differ = differrence_via_real(location)
-    deffile = Rails.root+"tmp/shimada/forecast-real.def"
-    open(Rails.root+"tmp/shimada/forecast-real","w"){ |f|
-      f.puts "No 日時 気温 当日予報誤差 前日予報誤差 蒸気圧 当日予報誤差 前日予報誤差" 
-      i=0.0
-      differ.each{ |h,t,dt0,dt1,v,dv0,dv1|
+    def differrence_via_real(location = "maebashi" )
+      weather_location = WeatherLocation.find_by(location: location)
+      dates = Forecast.where(  ["location = ?",location]).
+        pluck(:date).uniq
+      weathers = dates.map{ |date|
+        today    = Forecast.find_by(date: date ,announce_day: date)
+        tomorrow = Forecast.find_by(date: date ,announce_day: date-1)
+        real     = Weather.find_or_feach(location,date)
+        [today,tomorrow,real]
+      }
+
+      differ = []
+      weathers.map{ |k,a,r|
+        next unless r
+        [3,6,9,12,15,18,21,24].each_with_index{ |h,idx|
+          diff = []
+          diff << ( r.date.to_time + h.hour)
+          diff << (r ? r.temperatures[h-1] : nil )
+          diff << (k ? (k.temperature[idx]-r.temperatures[h-1])  : nil)
+          diff << (a ? (a.temperature[idx]-r.temperatures[h-1])  : nil)
+          if /^47/ =~ weather_location.weather_block
+            diff << (r ? r.vapers[h-1] :  nil)
+            diff << (k  ? (k.vaper[idx]-r.vapers[h-1])  : nil )
+            diff << (a  ? (a.vaper[idx]-r.vapers[h-1])  : nil)
+          end
+          differ << diff
+        }
+      }
+      differ
+    end
+
+    def differrence_via_real_graph(location = :maebashi,graph_file = "graph")
+      weather_location = WeatherLocation.find_by(location: location)
+      differ = differrence_via_real(location)
+      deffile = Rails.root+"tmp/shimada/forecast-real.def"
+      open(Rails.root+"tmp/shimada/forecast-real","w"){ |f|
+        f.puts "No 日時 気温 当日予報誤差 前日予報誤差 蒸気圧 当日予報誤差 前日予報誤差" 
+        i=0.0
+        differ.each{ |h,t,dt0,dt1,v,dv0,dv1|
           f.print  i 
           i += 1/8.0
 
-        f.print h.hour == 3 ?  h.strftime(" \"%Y-%m-%d %H:00\"") : " \"\""
-        f.print t   ? " %.1f "%t    : " -- "
-        f.print dt0 ? " %.1f "%dt0  : " -- "
-        f.print dt1 ? " %.1f "%dt1  : " -- "
-        f.print v   ? " %.1f "%v    : " -- "
-        f.print dv0 ? " %.1f "%dv0  : " -- "
-        f.print dv1 ? " %.1f "%dv1  : " -- "
-        f.puts
+          f.print h.hour == 3 ?  h.strftime(" \"%Y-%m-%d %H:00\"") : " \"\""
+          f.print t   ? " %.1f "%t    : " -- "
+          f.print dt0 ? " %.1f "%dt0  : " -- "
+          f.print dt1 ? " %.1f "%dt1  : " -- "
+          f.print v   ? " %.1f "%v    : " -- "
+          f.print dv0 ? " %.1f "%dv0  : " -- "
+          f.print dv1 ? " %.1f "%dv1  : " -- "
+          f.puts
+        }
       }
-    }
-logger.debug("DIFFERRENCE_VIA_REAL_GRAPH: location=#{location} zp =#{WeatherLocation.find_by(location: location).forecast_code}")
-    open(deffile,"w"){ |f|
-      f.puts Def%[Rails.root,
-                  WeatherLocation.find_by(location: location).name,
-                  differ.first.first.strftime("%Y/%m/%d"),
-                  differ.last.first.strftime("%Y/%m/%d"),differ.size/8-0.125,
-                  Rails.root,Rails.root,Rails.root
-                 ]
-    }
-    @graph_file = "forecast-real.gif"
-    `(cd #{Rails.root};/usr/local/bin/gnuplot #{deffile})`
-  end
+      logger.debug("DIFFERRENCE_VIA_REAL_GRAPH: location=#{location} zp =#{WeatherLocation.find_by(location: location).forecast_code}")
+      open(deffile,"w"){ |f|
+        f.puts Def%[Rails.root+"tmp/img",graph_file,
+                    WeatherLocation.find_by(location: location).name,
+                    differ.first.first.strftime("%Y/%m/%d"),
+                    differ.last.first.strftime("%Y/%m/%d"),differ.size/8-0.125,
+                    Rails.root,Rails.root,Rails.root
+                   ]
+      }
+      `(cd #{Rails.root};/usr/local/bin/gnuplot #{deffile})`
+      [graph_file,"jpeg"]
+    end
 
   end # of class method
 

@@ -27,7 +27,7 @@ class ForecastController < CommonController # ApplicationController
     @TableEdit = #[[:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}]]
     [ [:select_and_action,:change_location,"地域変更",
        {:correction => correction ,:selected => @weather_location }],
-      [:form,:fetch,"取り込み"] ,[:form,:error_graph,"予報誤差"]
+      [:form,:fetch,"取り込み",method: :get] ,[:form,:error_graph,"予報誤差",method: :get]
     ]
     @Domain= @Model.name.underscore
     @TableHeaderDouble = [3,[8,"気温"],[8,"蒸気圧"],[8,"湿度"],[8,"天気"]]
@@ -35,6 +35,14 @@ class ForecastController < CommonController # ApplicationController
       :order => "date"}
     @FindWhere =  ["location = ?", @weather_location]
     @FindOrder = "date"
+  end
+
+  def show
+    if /[^\d]/ =~ params[:id]
+      send(params[:id])
+    else
+      super
+    end
   end
 
   def change_location
@@ -45,9 +53,9 @@ class ForecastController < CommonController # ApplicationController
 
   def error_graph
     location = @weather_location
-    @Model.differrence_via_real_graph location 
-    @graph_file  = "forecast-real"
-    render :layout => "hospital_error_disp"
+    @Model.differrence_via_real_graph location , @graph_file  = "forecast-real"
+    @graph_format = :jpeg
+    render :action => :error_graph,:layout => "hospital_error_disp"
   end
 
   def fetch

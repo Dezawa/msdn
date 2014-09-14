@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 Rails.application.routes.draw do
 # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
@@ -74,13 +75,15 @@ Rails.application.routes.draw do
       post "#{controller}/#{action}" => "#{controller}##{action}"
     }}
     
+  ########### 天候関連
   resources :weather,:forecast,:weather_location
-  set_get(:forecast,%w( fetch error_graph))
+  set_get(:forecast,%w( fetch error_graph show_img show_gif show_jpeg))
   set_get(:weather,%w( temperatuer humidity))
   set_post(:forecast,%w(change_location))
   set_post(:weather,%w(change_location get_data temp_vaper weather_location cband))
   set_post(:weather_location,%w(change_location)+edit_table)
   
+  ########### UBR 
   get  '/ubr/main' =>  'ubr/main#index'
   ubr = %w(main waku waku_block souko_plan souko_floor wall pillar)
   ubr.each{ |ctrl|
