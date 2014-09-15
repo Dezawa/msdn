@@ -18,7 +18,7 @@
 #     抄造の切り替え、保守は割り付けできる。外注する。
 # 3.  抄造の保守、切り替えの割付を止めるには休転 UbeMaintain にその期間を登録する。
 class Ube::Holyday < ActiveRecord::Base
-  self.table_name = 'ube_holydays'
+  #self.table_name = 'ube_holydays'
 
   Fields =  [:shozow,:shozoe,:dryo,:dryn,:kakou]
 

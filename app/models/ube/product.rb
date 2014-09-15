@@ -11,7 +11,7 @@
 class Ube::Product < ActiveRecord::Base
  # extend ApplicationHelper
   extend CsvIo
-  self.table_name = 'ube_products'
+  #self.table_name = 'ube_products'
 require 'nkf'
 require 'csv'
   #validates_presence_of :proname ,:shozo ,:dry,:lot_size,:ope_condition,:defect_rate

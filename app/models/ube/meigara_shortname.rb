@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class Ube::MeigaraShortname < ActiveRecord::Base
   extend CsvIo
-  self.table_name = 'ube_meigara_shortnames'
+  #self.table_name = 'ube_meigara_shortnames'
   belongs_to   :ube_meigara ,:class_name => Ube::Meigara
 
   def self.meigara(short)

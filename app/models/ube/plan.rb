@@ -33,7 +33,7 @@
 class Ube::Plan < ActiveRecord::Base
   extend Ube::Function::LipsToUbePlan
   extend CsvIo
-  self.table_name = 'ube_plans'
+  #self.table_name = 'ube_plans'
   belongs_to   :ube_product,:class_name => "Ube::Product"
   #belongs_to   :ube_skd
   has_and_belongs_to_many  :ube_skd

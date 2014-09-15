@@ -27,7 +27,7 @@
 #Ube::ChangeTime に登録されており、それを参照しているので不要であった。
 class Ube::Operation < ActiveRecord::Base
   extend CsvIo
-  self.table_name = 'ube_operations'
+  #self.table_name = 'ube_operations'
   #attr_accessible :id ,:ope_name ,:west ,:east ,:old ,:new ,:kakou
 
   # DB column名のリスト

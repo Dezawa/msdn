@@ -18,7 +18,9 @@ require 'nkf'
 # 専用に入力の仕組みを用意している。Ube::ChangeTime.csv_upload
 class Ube::ChangeTime < ActiveRecord::Base
   extend CsvIo
-  self.table_name = 'ube_change_times'
+  #:w
+:n
+#self.table_name = 'ube_change_times'
   # ==CSVからのデータ置き換え
   # 追加、修正はできない。全置き換えとなる。
   #

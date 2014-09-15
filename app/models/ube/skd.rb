@@ -61,7 +61,7 @@ class Ube::Skd < ActiveRecord::Base
 
 
 
-  self.table_name = 'ube_skds'
+  #self.table_name = 'ube_skds'
   delegate :logger, :to=>"ActiveRecord::Base"
 
   
