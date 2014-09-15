@@ -204,7 +204,7 @@ plot '%s/tmp/shimada/forecast-real'  using 3:xticlabel(2)  with line lc 1, \
     end
     def vaper24(location,date)
       date=date.to_date
-      forecast.rb = self.find_or_fetch(location,date) || self.find_or_fetch(location,date,date-1)
+      fore = self.find_or_fetch(location,date) || self.find_or_fetch(location,date,date-1)
       expand(fore.vaper)
     end
 
