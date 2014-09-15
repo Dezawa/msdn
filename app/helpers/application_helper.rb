@@ -373,7 +373,7 @@ end
   end
 
   def select_box
-    form_tag(:action => :index) +
+    form_tag({ :action => :index},method: :get) +
       text_field(@Domain,:select_box,:value => @Select) +
       submit_tag("検索")
   end
