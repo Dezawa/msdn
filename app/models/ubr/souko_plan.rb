@@ -18,7 +18,7 @@ module Ubr
   # このページに表示する倉庫群は 結合Table SoukoFloorSoukoPlan で定義する
   class SoukoPlan  < ActiveRecord::Base
     extend CsvIo
-    self.table_name = "ubr_souko_plans"
+    #self.table_name = "ubr_souko_plans"
 
     has_many :souko_floor_souko_plans,:class_name => "Ubr::SoukoFloorSoukoPlan",:dependent => :destroy
     has_many :souko_floors,:class_name => "Ubr::SoukoFloor", :through => :souko_floor_souko_plans

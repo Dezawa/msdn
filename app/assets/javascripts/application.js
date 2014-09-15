@@ -16,7 +16,7 @@
 //= require_tree .
 $(function(){
 $('#year_year').change(function(){
-var year_year = $("#year_year").val();
-$.post("keeping/year_change?year=" + year_year);
+var the_year = $("#year_year").val();
+$.get("keeping/year_change?year=" + the_year);
 });
 });

@@ -10,7 +10,7 @@ class Shimada::Power < ActiveRecord::Base
   include Shimada::GnuplotDef
   include Statistics
   include Shimada::Patern
-  extend  Function::Gnuplot
+  extend  ::Gnuplot
 
   attr_accessor :shape_is, :na, :f4_peaks, :f3_solve, :f2_solve, :differences
 

@@ -6,7 +6,7 @@ class Power::UbeHospital::Month < ActiveRecord::Base
   include Statistics
   extend  Power::Graph
   extend Power::Scatter
-  self.table_name= 'power_ube_hospital_months'
+  #self.table_name= 'power_ube_hospital_months'
   has_many :powers ,:class_name =>  "Power::UbeHospital::Power" ,
   :dependent => :delete_all
   @@ave10hour = { }

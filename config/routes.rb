@@ -68,7 +68,7 @@ Rails.application.routes.draw do
   end
 
   EditTable = %w(add_on_table edit_on_table update_on_table csv_out csv_upload csv_download)
-
+ 
   root :to => "top#msdn"
   devise_for :users
 
@@ -103,15 +103,18 @@ Rails.application.routes.draw do
   get "/ubr/souko_floor/show_floor/:id" => "ubr/souko_floor#show_floor"
 
   ################ 複式簿記
-  book = %w(main keeping kamoku permission)
+  set_get("book/main",%w( book_make  make_new_year csv_out_print sort_by_tytle))
+  book = %w(main kamoku permission)
   book.each{ |model|
+    set_post("book/#{model}",EditTable)
+    set_get("book/#{model}",EditTable)
     set_resources("book",model) 
-    set_post(model,EditTable+%w(add_assosiation edit_assosiation owner_change_win))
+    set_post("book/#{model}",%w(add_assosiation edit_assosiation owner_change_win))
   }
+  get "/book/keeping" => "book/keeping#index"
   set_post("book/keeping",%w(year_change))
   set_get("book/keeping",%w(taishaku csv_taishaku motocho book_make help csv_motocho owner_change owner_change_win))
   set_post("book/main",%w(renumber))
-  set_get("book/main",%w( book_make  make_new_year csv_out_print sort_by_tytle))
   set_get("book/kamoku",%w(edit_on_table_all_column))
 
   ############ しまだ
@@ -121,25 +124,28 @@ Rails.application.routes.draw do
   %w(today tomorrow).each{ |day|
     get "/shimada/factory/:id/#{day}" => "shimada/factory##{day}"
   }
-    get "/shimada/month/:id/index" => "shimada/month/index"
+    get "/shimada/month/:id/index" => "shimada/month#index"
   controller="shimada/factory"
   set_post(controller,EditTable)
   set_get(controller,%w(today update_today clear_today update_tomorrow))
 
   ######### 熱管理
-  resources "power_ube_hospital_month" ,path:  "/power/ube_hospital/month",
-             controller: "/power/ube_hospital/month"
+  resources "power_ube_hospital_month" ,path:  "/power/ube_hospital/month" , controller: "power/ube_hospital/month"
+  set_post( "power/ube_hospital/month",EditTable)
 
-  ##### Ubeboard
-  ubeboard = %w(top skd maintain holyday product operation plan change_times
+  ##### Ube
+  ube = %w( skd maintain holyday product operation plan change_times
                  meigara meigara_shortname named_changes  constant )
-  ubeboard.each{  |model|
-    set_resources("shimada",model) 
-    set_get("ubeboard/#{model}" ,EditTable)
-    set_post("ubeboard/#{model}" ,EditTable)
+  ube.each{  |model|
+    set_get("ube/#{model}" ,EditTable)
+    set_post("ube/#{model}" ,EditTable)
+    set_resources("ube",model) 
   }
-  get "/ubeboard/top" => "ubeboard/top#top"
-  set_get("ubeboard/top",%w(calc))
-  set_get("ubeboard/skd",%w(lips_load))
+
+    set_get("ube/top" ,EditTable)
+    set_post("ube/top" ,EditTable)
+  get "/ube/top" => "ube/top#top"
+  set_get("ube/top",%w(calc))
+  set_get("ube/skd",%w(lips_load))
 end
 

@@ -9,7 +9,7 @@ class HtmlProname < HtmlSelect
   end
   def edit(domain,obj,controller,opt)
     return disp(obj) unless obj.ube_product && !obj.ube_product.hozen
-     @choices= Ubeboard::Product.products
+     @choices= Ube::Product.products
     super 
   end
 end

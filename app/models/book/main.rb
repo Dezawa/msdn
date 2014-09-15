@@ -8,7 +8,7 @@
 # また、それらを印刷用CSVに書き出すclassメソッドがある。
 class Book::Main < ActiveRecord::Base
   extend CsvIo
-  self.table_name = 'book_mains'
+
   before_validation      :no_check
    validates_presence_of :no,:date ,:message=> "は必須項目です"
    validates_presence_of :karikata ,:message=> "借方勘定科目は必須項目です"

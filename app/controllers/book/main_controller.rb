@@ -84,7 +84,7 @@ class Book::MainController < Book::Controller
     @TableEdit = 
       unless editable ; false
       else
-        base = [[:form,:new,"新伝票"],[:form,:renumber,"整列"],[:form,:edit_on_table,"編集"]]
+        base = [[:form,:new,"新伝票",method: :get],[:form,:renumber,"整列"],[:form,:edit_on_table,"編集"]]
         base.push([:form,:make_new_year,"新年度初期化"]) if kaisizandaka_count == 0
         base
       end

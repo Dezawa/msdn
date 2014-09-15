@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 class Book::Permission < ActiveRecord::Base
-  self.table_name = 'book_permissions'
+  #self.table_name = 'book_permissions'
   belongs_to     :user
   EDIT = 2
   SHOW = 1

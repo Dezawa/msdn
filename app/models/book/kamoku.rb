@@ -5,7 +5,7 @@ require 'pp'
 #
 class Book::Kamoku < ActiveRecord::Base
   extend CsvIo
-  self.table_name = 'book_kamokus'
+  #self.table_name = 'book_kamokus'
   attr_accessor   :no,:book_id,:book
 
    validates_presence_of :code ,:message=> "分類は必須項目です"

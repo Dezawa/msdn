@@ -11,7 +11,7 @@ class HtmlMeigara < HtmlSelect
     return "　" unless obj.ube_product && !obj.hozen?
     opt[:value] = obj.meigara
     opt[:include_blank]=true
-     @choices= Ubeboard::Meigara.meigaras[obj.ube_product.ope_condition]<<obj.meigara
+     @choices= Ube::Meigara.meigaras[obj.ube_product.ope_condition]<<obj.meigara
      @choices =  @choices.uniq
     super #select( domain,:meigara,choices(obj),opt)
   end

@@ -1,6 +1,6 @@
 class Ubr::WakuBlock < ActiveRecord::Base
   extend CsvIo
-  self.table_name =  'ubr_waku_blocks'
+  #self.table_name =  'ubr_waku_blocks'
   delegate :logger, :to=>"ActiveRecord::Base"
 
     #has_one    :souko_plan_waku_blocks,:class_name => "Ubr::SoukoFloorWakuBlock",:dependent => :destroy

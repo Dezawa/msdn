@@ -7,7 +7,7 @@ require 'postscript'
 module Ubr
 class Waku < ActiveRecord::Base
   extend CsvIo
-  self.table_name =  'ubr_wakus'
+  #self.table_name =  'ubr_wakus'
   delegate :logger, :to=>"ActiveRecord::Base"
 
   Direction = { "↑"=>Pos[0,-1],"↓" =>Pos[0,1], "→" => Pos[1,0],"←" => Pos[-1,0]}

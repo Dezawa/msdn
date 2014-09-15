@@ -618,7 +618,7 @@ end
       count += 1
       #end
     } 
-    fullmsg+"</table></div>\n"
+    (fullmsg+"</table></div>\n").html_safe
   end
 
   def disp_errors(objects)

@@ -57,7 +57,7 @@ class Shimada::FactoryController <  Shimada::Controller
     month = Shimada::Month.find_or_create_by(month: @today.beginning_of_month)
     @power.month = month;@power.save
     @power.update_attribute(:line,3)  unless @power.line
-    @power.today_graph @factory_id
+    @power.today_graph factory.name #@factory_id
     @forecast = forecast = Forecast.find_or_fetch(factory.forecast_location,@today)
     @temp = forecast.temperature
     @humi = forecast.humidity
