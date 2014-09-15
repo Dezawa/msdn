@@ -26,7 +26,7 @@ class Ubr::WallController <  Ubr::Controller
     @Model = Ubr::Wall
     #@ThroughTable = Ubr::SoukoFloorSoukoPlan
     #@assosiation = :souko_floor_souko_plans
-    @TYTLE = "UBR：倉庫柱管理"
+    @TYTLE = "UBR：倉庫壁管理"
     @Links = Links
     @Domain= @Model.name.underscore
     @SortBy    = :souko_floor_id
