@@ -55,11 +55,16 @@ Rails.application.routes.draw do
   #     resources :products
   #   end
  
-  def set_get(ctrl,acts)
-    acts.each{ |act| get "/#{ctrl}/#{act}" => "#{ctrl}##{act}" }
+  def set_get(model,acts)
+    acts.each{ |act| get "/#{model}/#{act}" => "#{model}##{act}" }
   end
-  def set_post(ctrl,acts)
-    acts.each{ |act| post "/#{ctrl}/#{act}" => "#{ctrl}##{act}" }
+  def set_post(model,acts)
+    acts.each{ |act| post "/#{model}/#{act}" => "#{model}##{act}" }
+  end
+  def set_resources(module_name,model)
+    resources "#{module_name}_#{model}",
+    path: "#{module_name}/#{model}", 
+    controller: "#{module_name}/#{model}"
   end
 
   EditTable = %w(add_on_table edit_on_table update_on_table csv_out csv_upload csv_download)
@@ -70,12 +75,7 @@ Rails.application.routes.draw do
   ################## -ユーザ管理
   resources :user_options,:users
   get "/users/sign_in" => "devise/sessions#new"
-  %w(user_options users ).
-    each{|controller| 
-    %w(add_on_table edit_on_table update_on_table csv_out csv_upload).
-    each{|action|
-      post "#{controller}/#{action}" => "#{controller}##{action}"
-    }}
+  %w(user_options users ).each{|controller| set_post(controller,EditTable)    }
     
   ########### LiPS
   set_get("lips",%w( member calc csv_download))
@@ -91,30 +91,22 @@ Rails.application.routes.draw do
   set_post(:weather_location,%w(change_location)+EditTable)
   
   ########### UBR 
-  get  '/ubr/main' =>  'ubr/main#index'
   ubr = %w(main waku waku_block souko_plan souko_floor wall pillar)
-  ubr.each{ |ctrl|
-    resources "ubr_#{ctrl}" , controller: "ubr/#{ctrl}"
-    set_post( "ubr/#{ctrl}",EditTable )
-    set_post( "ubr/#{ctrl}",%w(add_assosiation edit_assosiation))
+
+  ubr.each{ |model|
+    set_resources("ubr",model) 
+    set_post( "ubr/#{model}",EditTable )
+    set_post( "ubr/#{model}",%w(add_assosiation edit_assosiation))
   }
   set_get("ubr/main",%w(occupy_pdf reculc show_pdf ))
-  #set_get("ubr/souko_plan",%w(show_plan))
   get "/ubr/souko_plan/show_plan/:id" => "ubr/souko_plan#show_plan"
   get "/ubr/souko_floor/show_floor/:id" => "ubr/souko_floor#show_floor"
 
-  get    '/users/edit' =>            'users#edit'
-
   ################ 複式簿記
-  get    '/book/keeping' => 'book/keeping#index'
   book = %w(main keeping kamoku permission)
-  book.each{ |ctrl|
-    resources "book_#{ctrl}" , controller: "book/#{ctrl}"
-  }
-  book.each{ |ctrl|
-    controller = "book/#{ctrl}"
-    set_post(controller,EditTable+%w(add_assosiation edit_assosiation owner_change_win))
-    #
+  book.each{ |model|
+    set_resources("book",model) 
+    set_post(model,EditTable+%w(add_assosiation edit_assosiation owner_change_win))
   }
   set_post("book/keeping",%w(year_change))
   set_get("book/keeping",%w(taishaku csv_taishaku motocho book_make help csv_motocho owner_change owner_change_win))
@@ -123,23 +115,30 @@ Rails.application.routes.draw do
   set_get("book/kamoku",%w(edit_on_table_all_column))
 
   ############ しまだ
-  get "/shimada/factory" => "shimada/factory#index"
-  get "/shimada/factory/today/:id" => "shimada/factory#today"
+  %w(month power factory).each{  |model|
+    set_resources("shimada",model) 
+  }
+  %w(today tomorrow).each{ |day|
+    get "/shimada/factory/:id/#{day}" => "shimada/factory##{day}"
+  }
+    get "/shimada/month/:id/index" => "shimada/month/index"
   controller="shimada/factory"
   set_post(controller,EditTable)
-  set_get(controller,%w(today update_today clear_today))
+  set_get(controller,%w(today update_today clear_today update_tomorrow))
 
-  get "/power/ube_hospital/month" => "power/ube_hospital/month#index" 
+  ######### 熱管理
+  resources "power_ube_hospital_month" ,path:  "/power/ube_hospital/month",
+             controller: "/power/ube_hospital/month"
 
   ##### Ubeboard
   ubeboard = %w(top skd maintain holyday product operation plan change_times
                  meigara meigara_shortname named_changes  constant )
-  get "/ubeboard/top" => "ubeboard/top#top"
-  ubeboard.each{ |ctrl|
-    resources "ubeboard_#{ctrl}" , controller: "ubeboard/#{ctrl}"
-    set_get("ubeboard/#{ctrl}" ,EditTable)
-    set_post("ubeboard/#{ctrl}" ,EditTable)
+  ubeboard.each{  |model|
+    set_resources("shimada",model) 
+    set_get("ubeboard/#{model}" ,EditTable)
+    set_post("ubeboard/#{model}" ,EditTable)
   }
+  get "/ubeboard/top" => "ubeboard/top#top"
   set_get("ubeboard/top",%w(calc))
   set_get("ubeboard/skd",%w(lips_load))
 end
