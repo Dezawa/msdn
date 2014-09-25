@@ -11,10 +11,11 @@ class Power::UbeHospital::MonthController  <   Power::MonthController
 
   def index
     @Show = true
-    @labels =   eval( Labels_for_month_index) <<
+    @labels =   #eval( Labels_for_month_index) <<
+      Labels_for_month_index <<
       HtmlLink.new(:id,"",
                    :link => {:url => "month/monthly_scatter", :link_label => "温度補正対蒸気",
-                     :option => "vaper-power" }.merge(POPUP))
+                   :key => :id,:key_val => :id,  :option => "vaper-power" }.merge(POPUP))
     @action_buttoms = 
       #[
        [ 5,

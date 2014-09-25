@@ -396,7 +396,7 @@ end
     labels ||= @labels
     labels.map{|label| 
       unless label.class == HtmlHidden || label.class == HtmlPasswd || label.field_disable(controller)
-        if label.link
+        if false #label.link
           "<td><nobr><a href='#{label.link}'>#{label.label}</a></nobr>" 
         else
           "<td><nobr>#{label.label}</nobr>" 
