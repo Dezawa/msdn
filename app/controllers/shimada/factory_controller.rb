@@ -9,10 +9,15 @@ class Shimada::FactoryController <  Shimada::Controller
      #all.map{|wl| [wl.name,wl.location]}),
      HtmlSelect.new(:forecast_location,"予報",:correction => WeatherLocation.name_location),
      #all.map{|wl| [wl.name,wl.location]}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/today",:link_label => "本日実績", :htmloption =>PopupToday}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/tomorrow",:link_label => "明日予報"}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/index",:link_label => "過去実績"}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/analyze",:link_label => "分析"})
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/today",:key => :id, :key_val => :id,
+                    :link_label => "本日実績", :htmloption =>PopupToday}),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/tomorrow",:key => :id, :key_val => :id,
+                    :link_label => "明日予報"}),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/power",:key => :id, :key_val => :id,
+                    :link_label => "過去実績"}),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/analyze",:key => :id, :key_val => :id,
+                    :link_label => "分析"})
+     #HtmlLink.new(:id,"",:link => { :url => shimada_month_analyze_index_path,:link_label => "分析"})
     ]
   def set_instanse_variable
     super
