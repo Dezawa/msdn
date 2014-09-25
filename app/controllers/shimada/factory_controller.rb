@@ -9,6 +9,7 @@ class Shimada::FactoryController <  Shimada::Controller
      #all.map{|wl| [wl.name,wl.location]}),
      HtmlSelect.new(:forecast_location,"予報",:correction => WeatherLocation.name_location),
      #all.map{|wl| [wl.name,wl.location]}),
+     HtmlNum.new(:power_model_id,"パワーモデル",size: 2),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/today",:key => :id, :key_val => :id,
                     :link_label => "本日実績", :htmloption =>PopupToday}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/tomorrow",:key => :id, :key_val => :id,
@@ -31,13 +32,13 @@ class Shimada::FactoryController <  Shimada::Controller
     @Show = @Delete = @Edir = true
   end
   def add_on_table
-    @labels =  Labels[0,3]
+    @labels =  Labels[0,4]
     super
   end
 
 
   def edit_on_table
-    @labels =  Labels[0,3]
+    @labels =  Labels[0,4]
     super
   end
 
