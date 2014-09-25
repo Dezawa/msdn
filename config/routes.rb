@@ -92,15 +92,15 @@ Rails.application.routes.draw do
   
   ########### UBR 
   ubr = %w(main waku waku_block souko_plan souko_floor wall pillar)
+  set_get("ubr/main",%w(occupy_pdf reculc show_pdf ))
+  get "/ubr/souko_plan/show_plan/:id" => "ubr/souko_plan#show_plan"
+  get "/ubr/souko_floor/show_floor/:id" => "ubr/souko_floor#show_floor"
 
   ubr.each{ |model|
     set_resources("ubr",model) 
     set_post( "ubr/#{model}",EditTable )
     set_post( "ubr/#{model}",%w(add_assosiation edit_assosiation))
   }
-  set_get("ubr/main",%w(occupy_pdf reculc show_pdf ))
-  get "/ubr/souko_plan/show_plan/:id" => "ubr/souko_plan#show_plan"
-  get "/ubr/souko_floor/show_floor/:id" => "ubr/souko_floor#show_floor"
 
   ################ 複式簿記
   set_get("book/main",%w( book_make  make_new_year csv_out_print sort_by_tytle))
@@ -118,18 +118,31 @@ Rails.application.routes.draw do
   set_get("book/kamoku",%w(edit_on_table_all_column))
 
   ############ しまだ
+  %w( analyze power factory reset_reevice_and_ave reculc_all reculc_shapes rm_gif standerd
+    graph graph_month graph_month_temp graph_month_bugs show_analyze).each{ |act|
+   get  "/shimada/month/#{act}" =>  "shimada/month##{act}"
+  }
+#       graph_month_bugs show_analyze difference_3 difference_ave
+#analyze power factory reset_reevice_and_ave reculc_all reculc_shapes rm_gif standerd
+   %w( 
+               ).each{ |act|
+    get "/shimada/month/:id/#{act}" => "shimada/month##{act}"
+  }
+  %w(today tomorrow).each{ |day|
+    get "/shimada/factory/#{day}" => "shimada/factory##{day}"
+  }
+  set_post("shimada/month",EditTable)
   %w(month power factory).each{  |model|
     set_resources("shimada",model) 
   }
-  %w(today tomorrow).each{ |day|
-    get "/shimada/factory/:id/#{day}" => "shimada/factory##{day}"
-  }
-    get "/shimada/month/:id/index" => "shimada/month#index"
   controller="shimada/factory"
   set_post(controller,EditTable)
   set_get(controller,%w(today update_today clear_today update_tomorrow))
-
   ######### 熱管理
+  %w(monthly_graph monthly_scatter ).
+    each{ |act|
+    get  "/power/ube_hospital/month/#{act}" =>  "power/ube_hospital/month##{act}"
+  }
   resources "power_ube_hospital_month" ,path:  "/power/ube_hospital/month" , controller: "power/ube_hospital/month"
   set_post( "power/ube_hospital/month",EditTable)
 
