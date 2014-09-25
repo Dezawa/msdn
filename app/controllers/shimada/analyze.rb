@@ -105,32 +105,32 @@ module Shimada::Analyze
        } 
     ]
 
-  SGRPH="/shimada/month/graph_month?method="
+  SGRPH="/shimada/month/graph_month"
   Popup = %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"! 
   # メイン画面での各月のリンクボタン
   POPUP = {:htmloption => Popup}
-
+  AllMLink = { :url => SGRPH ,:key => :id, :key_val => :id, :htmloption => Popup}
   AllMonthLabels = 
     [#HtmlCeckForSelect.new(:id,""),
      HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
-     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}powers_3", :link_label => "グラフ"}.merge(POPUP)),
-     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}normalized",:link_label => "正規化"}.merge(POPUP)),
-     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}revise_by_temp_3", :link_label => "温度補正"}.merge(POPUP)),
-     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}revise_by_vaper_3",:link_label => "蒸気補正"}.merge(POPUP)),
-     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}revise_by_month_3",:link_label => "月度補正"}.merge(POPUP)),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_temp", :link_label => "対温度"}.merge(POPUP)), 
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_bugs", :link_label => "対袋数"}.merge(POPUP)),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/graph_month_bugs",:method => :revise_by_month_sum,  :link_label => "対袋数月度補正"}.merge(POPUP)),
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働数"   , :url => "#{SGRPH}_line_all"   }.merge(POPUP)),
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働変化別",:url => "#{SGRPH}_month_lines_types" }.merge(POPUP)), 
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働F",:url => "#{SGRPH}_shape_all_F"  }.merge(POPUP)), 
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働D",:url => "#{SGRPH}_shape_all_D"  }.merge(POPUP)), 
-     #HtmlLink.new(:id,"",:link => { :link_label => "稼働O",:url => "#{SGRPH}_shape_all_O"  }.merge(POPUP)), 
-     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}difference_3", :link_label => "差分"}.merge(POPUP)),
-     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}difference_ave", :link_label => "差分平均"}.merge(POPUP)),
-     #HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month_diffdiff", :link_label => "二階差"}.merge(POPUP)),
-     #HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}_month_ave", :link_label => "平均化"}.merge(POPUP)),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/show_analyze",:link_label => "月度一覧表示" })
+     HtmlLink.new(:id,"",:link => {method: "powers_3", :link_label => "グラフ"}.merge(AllMLink)),
+     HtmlLink.new(:id,"",:link => {method: "normalized",:link_label => "正規化"}.merge(AllMLink)),
+     HtmlLink.new(:id,"",:link => {method: "revise_by_temp_3", :link_label => "温度補正"}.merge(AllMLink)),
+     HtmlLink.new(:id,"",:link => {method: "revise_by_vaper_3",:link_label => "蒸気補正"}.merge(AllMLink)),
+     HtmlLink.new(:id,"",:link => AllMLink.merge({:method=> "revise_by_month_3",:link_label => "月度補正"})),
+     HtmlLink.new(:id,"",:link => AllMLink.merge({ :url => "/shimada/month/graph_month_temp", :link_label => "対温度"})),
+     HtmlLink.new(:id,"",:link => AllMLink.merge({ :url => "/shimada/month/graph_month_bugs", :link_label => "対袋数"})),
+     HtmlLink.new(:id,"",:link => AllMLink.merge({ :url => "/shimada/month/graph_month_bugs",method: :revise_by_month_sum, :link_label => "対袋数月度補正"})),
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働数"   , :url => "#{SGRPH}_line_all"   }.merge(AllMLink)),
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働変化別",:url => "#{SGRPH}_month_lines_types" }.merge(AllMLink)), 
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働F",:url => "#{SGRPH}_shape_all_F"  }.merge(AllMLink)), 
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働D",:url => "#{SGRPH}_shape_all_D"  }.merge(AllMLink)), 
+     #HtmlLink.new(:id,"",:link => { :link_label => "稼働O",:url => "#{SGRPH}_shape_all_O"  }.merge(AllMLink)), 
+     HtmlLink.new(:id,"",:link => { method: "difference_3", :link_label => "差分"}.merge(AllMLink)),
+     HtmlLink.new(:id,"",:link => { method: "difference_ave", :link_label => "差分平均"}.merge(AllMLink)),
+     #HtmlLink.new(:id,"",:link => { month_diffdiff", :link_label => "二階差"}.merge(AllMLink)),
+     #HtmlLink.new(:id,"",:link => { month_ave", :link_label => "平均化"}.merge(AllMLink)),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/show_analyze" ,:key => :id, :key_val => :id,:link_label => "月度一覧表示" })
     ]
 
   def analyze
@@ -171,7 +171,7 @@ module Shimada::Analyze
     @TYTLE_post = @models.first.date.strftime("(%Y年%m月)")
 
     @TableEdit  =  
-      [[:form,:analyze,"一覧に戻る"],
+      [[:form,:analyze,"一覧に戻る",{ :method => :get}],
         [:popup,:graph_month,"月度グラフ",{ :win_name => "graph",:method => :powers_3} ],
         [:popup,:graph_month,"月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
         [:popup,:graph_month,"月度温度補正平均",{ :win_name => "graph",:method =>:revise_by_temp_ave } ],
@@ -219,7 +219,7 @@ module Shimada::Analyze
   end
 
   def csv_upload
-    errors= @Model.csv_upload(params[@Domain][:csvfile])
+    errors= @Model.csv_upload(params[@Domain][:csvfile],Shimada::Factory.find(@factory_id))
     redirect_to :action => :index,:layout => "hospital_error_disp"
   end
 
@@ -360,7 +360,7 @@ logger.debug("GRAPH_ALMIGHTY:args=#{args.flatten.join(',')}")
       patern.delete("method")
       winoption = {:win_name => "list", :graph_almighty => patern }
       @TableEdit  =  
-        [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
+        [[:form,:index,"一覧に戻る",{ :method => :get}],[:form,:edit_on_table,"編集"],
          [:popup,:graph_almighty,"補正後電力",winoption.merge({:method => :revise_by_temp_3}) ],
          [:popup,:graph_almighty,"正規化"    ,winoption.merge({:method => :normalized      }) ],
          [:popup,:graph_almighty,"差分"      ,winoption.merge({ :method => :difference_3   }) ],

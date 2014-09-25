@@ -35,7 +35,7 @@ class  Power::MonthController < CommonController #ApplicationController
     @models = @model.powers
     @TYTLE_post = @models.first.date.strftime("(%Y年%m月)")
 
-    @TableEdit  =  [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
+    @TableEdit  =  [[:form,:index,"一覧に戻る",{ :method => :get}],[:form,:edit_on_table,"編集",{ :method => :get}],
                     [:popup,:graph_month,"月度グラフ",{ :win_name => "graph","method" => :powers} ],
                     [:popup,:graph_month,"月度温度補正",{ :win_name => "graph","method" => :revise_by_temp} ],
                    ]
