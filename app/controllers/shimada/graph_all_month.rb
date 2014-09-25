@@ -14,7 +14,7 @@ module Shimada::GraphAllMonth
     @TYTLE_post = "(#{patern})"
 
     @TableEdit  =  
-      [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
+      [[:form,:index,"一覧に戻る",{ :method => :get}],[:form,:edit_on_table,"編集"],
        [:popup,:graph_patern,"補正後電力",{ :win_name => "graph",:patern => patern,:method => :revise_by_temp_3} ],
        [:popup,:graph_patern,"正規化"    ,{ :win_name => "graph",:patern => patern,:method => :normalized} ],
        [:popup,:graph_patern,"差分"      ,{ :win_name => "graph",:patern => patern,:method => :difference_3} ],
