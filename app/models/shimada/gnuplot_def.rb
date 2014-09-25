@@ -21,23 +21,23 @@ module Shimada::GnuplotDef
 
       if opt[:vs_temp]
         case method.to_s 
-        when /^deviation/ ;Shimada::Gnuplot::TempDeff.new(factory_id,powers,method,opt).plot
-        else              ;Shimada::Gnuplot::Temp.new(factory_id,powers,method,opt).plot
+        when /^deviation/ ;TempDeff.new(factory_id,powers,method,opt).plot
+        else              ;Temp.new(factory_id,powers,method,opt).plot
         end
       elsif opt[:vs_bugs] ; logger.debug("GNUPLOT: moethod=#{method}")
-        Shimada::Gnuplot::Bugs.new(factory_id,powers,method,opt).plot
+        Bugs.new(factory_id,powers,method,opt).plot
       else
         case method.to_s
-        when /^normalized/ ;  Shimada::Gnuplot::Nomalized.new(factory_id,powers,method,opt).plot
-        when /^diff/       ;  Shimada::Gnuplot::Differ.new(factory_id,powers,method,opt).plot
-        when /^standerd/   ;  Shimada::Gnuplot::Standerd.new(factory_id,powers,method,opt).plot
-        else               ;  Shimada::Gnuplot::Power.new(factory_id,powers,method,opt).plot
+        when /^normalized/ ;  Nomalized.new(factory_id,powers,method,opt).plot
+        when /^diff/       ;  Differ.new(factory_id,powers,method,opt).plot
+        when /^standerd/   ;  Standerd.new(factory_id,powers,method,opt).plot
+        else               ;  Power.new(factory_id,powers,method,opt).plot
         end
       end
     end
 
     def gnuplot_by_month(factory_id,powers_group_by_month,method,opt={ })
-      Shimada::Gnuplot::PowerByMonth.
+      PowerByMonth.
         new(factory_id,powers_group_by_month,method,opt.merge(:fitting => true)).plot
     end
 
@@ -49,7 +49,7 @@ module Shimada::GnuplotDef
       step = opt[:step] = (max-min)/steps
       histgram = [0]*steps
       histgram = values.inject([0]*steps){ |s,e| s[e/step] += 1 ;s   }
-      Shimada::Gnuplot::Histgram.new(factory_id,histgram,method,opt).plot
+      Histgram.new(factory_id,histgram,method,opt).plot
     end
   end # of module
 
@@ -58,12 +58,12 @@ module Shimada::GnuplotDef
   def tomorrow_graph(factory_id,line)
     temperature = Forecast.temperature24(:maebashi,self.date)
     #[:revise,:max,:min].each{ |method| self.copy_and_inv_revise(temperature,method)  }
-    Shimada::Gnuplot::Tomorrow.new(factory_id,[self],:powers,{:graph_file => "tomorrow_#{factory_id}"  ,
+    Tomorrow.new(factory_id,[self],:powers,{:graph_file => "tomorrow_#{factory_id}"  ,
                                 :fitting => :std_temp }).plot
   end
   def today_graph factory_id
     temperature = Forecast.temperature24(:maebashi,self.date)
-    Shimada::Gnuplot::Today.new(factory_id,[self],:powers,{:graph_file => "today_#{factory_id}" ,
+   Today.new(factory_id,[self],:powers,{:graph_file => "today_#{factory_id}" ,
                                 :fitting => :std_temp }).plot
   end
   class Plot
@@ -149,7 +149,7 @@ module Shimada::GnuplotDef
 
   end
 
-  class Power <  Shimada::Gnuplot::Plot
+  class Power <  Plot
     Def =
       %Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/shimada/giffiles/%s.gif'
@@ -328,7 +328,7 @@ set grid #ytics
   end
 
 
-  class Nomalized <  Shimada::Gnuplot::Plot
+  class Nomalized <  Plot
     Def = %Q!set terminal gif enhanced size 600,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/shimada/giffiles/%s.gif'
 #set terminal x11
@@ -363,7 +363,7 @@ set grid x2tics
 
   end
 
-  class Differ <  Shimada::Gnuplot::Plot
+  class Differ <  Plot
     Def = %Q!set terminal gif enhanced size 600,300 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/shimada/giffiles/%s.gif'
 #set terminal x11
@@ -385,7 +385,7 @@ set grid #ytics
     end
   end
 
-  class Bugs <  Shimada::Gnuplot::Plot
+  class Bugs <  Plot
     Def = %Q!set terminal gif enhanced size %s enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/shimada/giffiles/%s.gif'
 
@@ -427,7 +427,7 @@ set x2tics  0,250
     end
 end
 
-  class Temp <  Shimada::Gnuplot::Plot
+  class Temp <  Plot
     Def = %Q!set terminal gif enhanced size %s enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/shimada/giffiles/%s.gif'
 
@@ -521,7 +521,7 @@ set grid
     end
   end
 
-  class PowerByMonth < Shimada::Gnuplot::Plot
+  class PowerByMonth <Plot
     Def =
       %Q!set term gif  size 800,400 enhanced font '/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10'
  set output 'tmp/shimada/giffiles/%s.gif'  
@@ -564,7 +564,7 @@ set xtics 1,1
     end
   end
 
-  class Histgram < Shimada::Gnuplot::Plot
+  class Histgram < Plot
     Def =
       %Q!set terminal gif enhanced size 500,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/shimada/giffiles/%s.gif'
