@@ -170,8 +170,10 @@ map{|id,pws| pws.map{|pw| pw.revise_by_vaper[14]}.standard_devitation.round(1)}
 
 class Shimada::Month < ActiveRecord::Base
   extend ExcelToCsv
+  require 'shimada/factory_module.rb'
+  #ShimadaMoonth = { "GMC" => Shimada::Month , "中部シマダヤ" => Shimada::Chubu::Month}
   
-  self.table_name= 'shimada_months'
+  #self.table_name= 'shimada_months'
   has_many :shimada_powers ,:class_name =>  "Shimada::Power" ,:dependent => :delete_all
   belongs_to :shimada_factory     ,:class_name => "Shimada::Factory"
 
@@ -180,8 +182,10 @@ class Shimada::Month < ActiveRecord::Base
   end
 
   class << self
-
-    def csv_upload(file)
+    
+    def csv_upload(file,factory)
+      factory = Shimada::Factory.find(factory) if factory.class == Integer
+      return Shimada::Chubu::Month.csv_upload(file,factory) if factory.name == "中部シマダヤ"
       csv_files(file).each{ |csvfile|  create_month_by(csvfile) }
       Shimada::Power.delete_all("hour01 = '0.0'")
     end

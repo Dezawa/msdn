@@ -2,7 +2,7 @@
 require "tempfile"
 require 'statistics'
 class Shimada::Power < ActiveRecord::Base
-  self.table_name= 'shimada_powers'
+  #self.table_name= 'shimada_powers'
   belongs_to :month     ,:class_name => "Shimada::Month"
   belongs_to :db_weather,:class_name => "Weather" 
   belongs_to :shimada_factory     ,:class_name => "Shimada::Factory"
