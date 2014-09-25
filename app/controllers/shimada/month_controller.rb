@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 class Shimada::MonthController <  Shimada::Controller
-  Popup = %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"! 
-
   include Shimada::Analyze
 
-  URL_GRAPH0 = "/shimada/month/graph?fitting=standerd&method="
-  URL_GRAPH1 = "/shimada/month/graph?fitting=std_temp&method="
+  onClick=
+    %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!
+  DLink  = {:url => "/shimada/month/graph", :fitting => :standerd ,:key => :id,:key_val => :id,:htmloption => onClick}
+  MLink  = {:url => "/shimada/month/graph_month" , :fitting => :standerd ,:key => :id,:key_val => :id,:htmloption => onClick}
   Labels_for_month_results = 
     [
      HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
-     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}powers_3", :link_label => "グラフ",:fitting => :standerd}.merge(POPUP)),
-     HtmlLink.new(:id,"",:link => { :url => "#{SGRPH}revise_by_temp_3", :link_label => "温度補正",:fitting => :standerd}.merge(POPUP)),
+     HtmlLink.new(:id,"",:link => { method: "powers_3", :link_label => "グラフ"}.merge(MLink)),
+     HtmlLink.new(:id,"",:link => MLink.merge({ method: "revise_by_temp_3", :link_label => "温度補正"})),
     ]
 
    Action_buttoms_for_month_results = 
@@ -21,15 +21,16 @@ class Shimada::MonthController <  Shimada::Controller
         [:popup,:graph_all_month,"全月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
        ]
       ]
+
   DaylyLabels =
     [
-      HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%y/%m/%d"),
-     HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => URL_GRAPH1+"powers_3"   , :htmloption => Popup}),
-      HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => URL_GRAPH0+"revise_by_temp_3",:htmloption => Popup }),
+     HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%y/%m/%d"),
+     HtmlLink.new(:id,"",:link => DLink.merge( :link_label => "グラフ" ,:method => "powers_3" )),
+     HtmlLink.new(:id,"",:link => DLink.merge( :link_label => "温度補正",:method =>"revise_by_temp_3", :fitting => :std_temp )),
       #HtmlCeckForSelect.new(:id,""),
-      HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
-      HtmlText.new(:shape_is,"形<br>状",:ro => true,:size =>2,:ro => true),
-      HtmlText.new(:deform,"変形",:ro => true,:size =>4),
+     HtmlNum.new(:lines,"稼<br>働<br>数",:ro => true,:size =>2),
+     HtmlText.new(:shape_is,"形<br>状",:ro => true,:size =>2,:ro => true),
+     HtmlText.new(:deform,"変形",:ro => true,:size =>4),
      HtmlNum.new(:hukurosu,"袋数",:size => 4 )
       
     ] + 
@@ -58,7 +59,7 @@ class Shimada::MonthController <  Shimada::Controller
     @AssosiationLabels = PowerLabels
     @TableEdit  = 
       [
-       [:form,:factory,"戻る"] # ,{ :controller => "shimada"}]
+       [:form,:factory,"戻る",{ :method => :get}] # ,{ :controller => "shimada"}]
       ]
     @action_buttoms = Action_buttoms_for_month_results
     @action_buttoms_analize =[# Action_buttoms,
@@ -84,10 +85,24 @@ class Shimada::MonthController <  Shimada::Controller
 
   def index
     #factory = Shimada::Factory.find(params[:id])
+    @Show = true
+    @page = params[:page] || 1 
+    @factory_id  = session[:shimada_factory] = params[:id] if  params[:id]
+    #@FindOption = { :conditions => ["shimada_factory_id = ?",@factory_id],:order => "month desc" }
+    @FindWhere = ["shimada_factory_id = ?",@factory_id]
+    @FindOrder =  "month desc" 
+    find_and
+    render  :file => 'application/index',:layout => 'application'
+  end
+
+  def power
+    #factory = Shimada::Factory.find(params[:id])
      @Show = true
      @page = params[:page] || 1 
     @factory_id  = session[:shimada_factory] = params[:id] if  params[:id]
-   @FindOption = { :conditions => ["shimada_factory_id = ?",@factory_id],:order => "month desc" }
+    @FindWhere = ["shimada_factory_id = ?",@factory_id]
+    @FindOrder =  "month desc" 
+    @FindOption = { :conditions => ["shimada_factory_id = ?",@factory_id],:order => "month desc" }
     find_and
     render  :file => 'application/index',:layout => 'application'
   end
@@ -99,7 +114,7 @@ class Shimada::MonthController <  Shimada::Controller
     @models = @model.powers
     @TYTLE_post = @models.first.date.strftime("(%Y年%m月)")
 
-    @TableEdit  =  [[:form,:index,"一覧に戻る"],[:form,:edit_on_table,"編集"],
+    @TableEdit  =  [[:form,:index,"一覧に戻る",{ :method => :get}],[:form,:edit_on_table,"編集"],
                     [:popup,:graph_month,"月度グラフ",{ :win_name => "graph",:method => :powers_3} ],
                     [:popup,:graph_month,"月度温度補正",{ :win_name => "graph",:method => :revise_by_temp_3} ],
                    ]

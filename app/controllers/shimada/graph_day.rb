@@ -21,7 +21,8 @@ module Shimada::GraphDay
 
   }
   def graph  
-    method,id = params[:method].split("/")
+    method = params[:method]
+    id     = params[:id]
     
     opt = case method
           when /^revise|^normal/ ; { :fitting => :std_temp }

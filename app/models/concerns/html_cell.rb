@@ -154,8 +154,7 @@ class HtmlLink   < HtmlCell
     htmloption = links.delete(:htmloption)
     lbl = links.delete(:link_label) || object.send(symbol)
 
-    params = links.size == 0 ? "" : 
-     links.map{ |k,v| "#{k}=#{v}"}.join("&")
+    params = links.size == 0 ? "" : links.map{ |k,v| "#{k}=#{v}"}.join("&")
     #logger.debug("HtmlLink: #{object.send(symbol)},#{url},#{key}, #{key_val}")
     if key
       "<a href='#{url}?#{key}=#{object.send(key_val)}&#{params}' #{htmloption}>#{lbl}</a>".html_safe

@@ -4,17 +4,17 @@ module  Shimada::GraphMonth
 
 
   # 月別画面でのリンクボタン
-  URL_GRAPH = "/shimada/month/graph?method="
+  URL_GRAPH =  {  :url =>  "/shimada/month/graph",key: :id,key_val: :id, :htmloption => Popup}
   PowerLabels =
-    [ HtmlLink.new(:id,"",:link => { :link_label => "グラフ"   , :url => URL_GRAPH+"powers_3"   , :htmloption => Popup}),
-      HtmlLink.new(:id,"",:link => { :link_label => "温度補正"  ,:url => URL_GRAPH+"revise_by_temp_3",:htmloption => Popup }),
-      HtmlLink.new(:id,"",:link => { :link_label => "蒸気補正"  ,:url => URL_GRAPH+"revise_by_vaper_3",:htmloption => Popup }),
-      HtmlLink.new(:id,"",:link => { :link_label => "補正後平均",:url => URL_GRAPH+"revise_by_temp_ave",:htmloption => Popup}),
-      #HtmlLink.new(:id,"",:link => { :link_label => "対温度"   , :url => URL_GRAPH+"temp"    , htmloption =>Popup}),
-      HtmlLink.new(:id,"",:link => { :link_label => "正規化"   , :url => URL_GRAPH+"normalized"   , :htmloption =>Popup}),
-      HtmlLink.new(:id,"",:link => { :link_label => "差分"     , :url => URL_GRAPH+"difference_3",:htmloption =>Popup}),
-      HtmlLink.new(:id,"",:link => { :link_label => "差分平均" , :url => URL_GRAPH+"difference_ave",:htmloption =>Popup}),
-      HtmlLink.new(:id,"",:link => { :link_label => "差分差分" , :url => URL_GRAPH+"diffdiff_3"  ,:htmloption =>Popup}),
+    [ HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "グラフ"    ,method: "powers_3"           })),
+      HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "温度補正"  ,method: "revise_by_temp_3"   })),
+      HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "蒸気補正"  ,method: "revise_by_vaper_3"  })),
+      HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "補正後平均",method: "revise_by_temp_ave" })),
+      #HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "対温度"   ,method: "temp"               })),
+      HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "正規化"    ,method: "normalized"         })),
+      HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "差分"      ,method: "difference_3"       })),
+      HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "差分平均"  ,method: "difference_ave"     })),
+      HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "差分差分"  ,method: "diffdiff_3"         })),
       #HtmlCeckForSelect.new(:id,""),
       HtmlDate.new(:date,"月日",:ro=>true,:size =>4,:tform => "%m/%d"),
      HtmlNum.new(:hukurosu,"袋数",:size => 4 ),
@@ -59,7 +59,7 @@ module  Shimada::GraphMonth
   end
 
   def graph_month_sub(method,title,opt={ })
-logger.debug("GRAPH_MONTH_SUB: opt = #{opt}")
+logger.debug("GRAPH_MONTH_SUB: opt = #{opt} params=#{params}")
     id =  ( params[@Domain] ? params[@Domain][:id] : params[:id] ) || opt.delete(:id)
     month =  @Model.find(id)
     
@@ -106,9 +106,7 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
     method =  if params[@Domain] 
                 params[@Domain][:method].to_sym
               else
-                m,id = params[:method].split("/")
-                params[:id] = id.to_i
-                m.to_sym
+               params[:method].to_sym
               end
     graph_month_sub(method,TITLES[method])
   end
