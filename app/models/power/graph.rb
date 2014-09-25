@@ -12,7 +12,7 @@ module  Power::Graph
   end
 
   def  def_file_by_hour(path,opt={ })
-    deffile = ( opt[:def_dir] || Rails.root+"tmp/graph")+"/"+(opt[:def_file] || "graph.def" )
+    deffile = Pathname.new(( opt[:def_dir] || Rails.root+"tmp/graph"))+(opt[:def_file] || "graph.def" )
     graph_dir,graph_file,title,set_key,xrange,tics = dif_opts(opt)
     open(deffile,"w"){ |f|
       preunble = DefByHour% dif_opts(opt)

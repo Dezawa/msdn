@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140909104403) do
+ActiveRecord::Schema.define(version: 201409131724152) do
 
   create_table "book_kamokus", force: true do |t|
     t.text    "kamoku"
@@ -117,6 +117,9 @@ ActiveRecord::Schema.define(version: 20140909104403) do
 
   create_table "hospital_bushos", force: true do |t|
     t.string "name"
+  end
+
+  create_table "hospital_defines", force: true do |t|
     t.string "name"
     t.string "attri"
     t.string "value"
@@ -157,6 +160,7 @@ ActiveRecord::Schema.define(version: 20140909104403) do
     t.integer "busho_id"
     t.integer "kinmu_total"
     t.integer "night_total"
+    t.integer "nurce_id"
   end
 
   create_table "hospital_meetings", force: true do |t|
@@ -379,267 +383,6 @@ ActiveRecord::Schema.define(version: 20140909104403) do
   create_table "sessions", force: true do |t|
     t.string   "session_id", null: false
     t.text     "data"
-=======
-  create_table "power_ube_hospital_months", :force => true do |t|
-    t.date "month"
-  end
-
-  create_table "power_ube_hospital_powers", :force => true do |t|
-    t.date    "date"
-    t.integer "month_id"
-    t.integer "weather_id"
-    t.float   "power01"
-    t.float   "power02"
-    t.float   "power03"
-    t.float   "power04"
-    t.float   "power05"
-    t.float   "power06"
-    t.float   "power07"
-    t.float   "power08"
-    t.float   "power09"
-    t.float   "power10"
-    t.float   "power11"
-    t.float   "power12"
-    t.float   "power13"
-    t.float   "power14"
-    t.float   "power15"
-    t.float   "power16"
-    t.float   "power17"
-    t.float   "power18"
-    t.float   "power19"
-    t.float   "power20"
-    t.float   "power21"
-    t.float   "power22"
-    t.float   "power23"
-    t.float   "power24"
-    t.float   "rev01"
-    t.float   "rev02"
-    t.float   "rev03"
-    t.float   "rev04"
-    t.float   "rev05"
-    t.float   "rev06"
-    t.float   "rev07"
-    t.float   "rev08"
-    t.float   "rev09"
-    t.float   "rev10"
-    t.float   "rev11"
-    t.float   "rev12"
-    t.float   "rev13"
-    t.float   "rev14"
-    t.float   "rev15"
-    t.float   "rev16"
-    t.float   "rev17"
-    t.float   "rev18"
-    t.float   "rev19"
-    t.float   "rev20"
-    t.float   "rev21"
-    t.float   "rev22"
-    t.float   "rev23"
-    t.float   "rev24"
-    t.float   "ave01"
-    t.float   "ave02"
-    t.float   "ave03"
-    t.float   "ave04"
-    t.float   "ave05"
-    t.float   "ave06"
-    t.float   "ave07"
-    t.float   "ave08"
-    t.float   "ave09"
-    t.float   "ave10"
-    t.float   "ave11"
-    t.float   "ave12"
-    t.float   "ave13"
-    t.float   "ave14"
-    t.float   "ave15"
-    t.float   "ave16"
-    t.float   "ave17"
-    t.float   "ave18"
-    t.float   "ave19"
-    t.float   "ave20"
-    t.float   "ave21"
-    t.float   "ave22"
-    t.float   "ave23"
-    t.float   "ave24"
-    t.float   "by_vaper01"
-    t.float   "by_vaper02"
-    t.float   "by_vaper03"
-    t.float   "by_vaper04"
-    t.float   "by_vaper05"
-    t.float   "by_vaper06"
-    t.float   "by_vaper07"
-    t.float   "by_vaper08"
-    t.float   "by_vaper09"
-    t.float   "by_vaper10"
-    t.float   "by_vaper11"
-    t.float   "by_vaper12"
-    t.float   "by_vaper13"
-    t.float   "by_vaper14"
-    t.float   "by_vaper15"
-    t.float   "by_vaper16"
-    t.float   "by_vaper17"
-    t.float   "by_vaper18"
-    t.float   "by_vaper19"
-    t.float   "by_vaper20"
-    t.float   "by_vaper21"
-    t.float   "by_vaper22"
-    t.float   "by_vaper23"
-    t.float   "by_vaper24"
-  end
-
-  create_table "shimada_factories", :force => true do |t|
-    t.string "name"
-    t.string "weather_location"
-    t.string "forecast_location"
-  end
-
-  create_table "shimada_months", :force => true do |t|
-    t.date    "month"
-    t.integer "shimada_factory_id"
-  end
-
-  create_table "shimada_powers", :force => true do |t|
-    t.date    "date"
-    t.integer "month_id"
-    t.float   "hour01"
-    t.float   "hour02"
-    t.float   "hour03"
-    t.float   "hour04"
-    t.float   "hour05"
-    t.float   "hour06"
-    t.float   "hour07"
-    t.float   "hour08"
-    t.float   "hour09"
-    t.float   "hour10"
-    t.float   "hour11"
-    t.float   "hour12"
-    t.float   "hour13"
-    t.float   "hour14"
-    t.float   "hour15"
-    t.float   "hour16"
-    t.float   "hour17"
-    t.float   "hour18"
-    t.float   "hour19"
-    t.float   "hour20"
-    t.float   "hour21"
-    t.float   "hour22"
-    t.float   "hour23"
-    t.float   "hour24"
-    t.integer "weather_id"
-    t.float   "rev01"
-    t.float   "rev02"
-    t.float   "rev03"
-    t.float   "rev04"
-    t.float   "rev05"
-    t.float   "rev06"
-    t.float   "rev07"
-    t.float   "rev08"
-    t.float   "rev09"
-    t.float   "rev10"
-    t.float   "rev11"
-    t.float   "rev12"
-    t.float   "rev13"
-    t.float   "rev14"
-    t.float   "rev15"
-    t.float   "rev16"
-    t.float   "rev17"
-    t.float   "rev18"
-    t.float   "rev19"
-    t.float   "rev20"
-    t.float   "rev21"
-    t.float   "rev22"
-    t.float   "rev23"
-    t.float   "rev24"
-    t.float   "ave01"
-    t.float   "ave02"
-    t.float   "ave03"
-    t.float   "ave04"
-    t.float   "ave05"
-    t.float   "ave06"
-    t.float   "ave07"
-    t.float   "ave08"
-    t.float   "ave09"
-    t.float   "ave10"
-    t.float   "ave11"
-    t.float   "ave12"
-    t.float   "ave13"
-    t.float   "ave14"
-    t.float   "ave15"
-    t.float   "ave16"
-    t.float   "ave17"
-    t.float   "ave18"
-    t.float   "ave19"
-    t.float   "ave20"
-    t.float   "ave21"
-    t.float   "ave22"
-    t.float   "ave23"
-    t.float   "ave24"
-    t.string  "shape"
-    t.float   "difference00"
-    t.float   "difference01"
-    t.float   "difference02"
-    t.float   "difference03"
-    t.float   "difference04"
-    t.float   "difference05"
-    t.float   "difference06"
-    t.float   "difference07"
-    t.float   "difference08"
-    t.float   "difference09"
-    t.float   "difference10"
-    t.float   "difference11"
-    t.float   "difference12"
-    t.float   "difference13"
-    t.float   "difference14"
-    t.float   "difference15"
-    t.float   "difference16"
-    t.float   "difference17"
-    t.float   "difference18"
-    t.float   "difference19"
-    t.float   "difference20"
-    t.float   "difference21"
-    t.float   "difference22"
-    t.float   "difference23"
-    t.float   "f4_na0"
-    t.float   "f4_na1"
-    t.float   "f4_na2"
-    t.float   "f4_na3"
-    t.float   "f4_na4"
-    t.float   "f3_x1"
-    t.float   "f3_x2"
-    t.float   "f3_x3"
-    t.float   "f2_x1"
-    t.float   "f2_x2"
-    t.integer "line"
-    t.string  "deform"
-    t.float   "hukurosu"
-    t.float   "by_vaper01"
-    t.float   "by_vaper02"
-    t.float   "by_vaper03"
-    t.float   "by_vaper04"
-    t.float   "by_vaper05"
-    t.float   "by_vaper06"
-    t.float   "by_vaper07"
-    t.float   "by_vaper08"
-    t.float   "by_vaper09"
-    t.float   "by_vaper10"
-    t.float   "by_vaper11"
-    t.float   "by_vaper12"
-    t.float   "by_vaper13"
-    t.float   "by_vaper14"
-    t.float   "by_vaper15"
-    t.float   "by_vaper16"
-    t.float   "by_vaper17"
-    t.float   "by_vaper18"
-    t.float   "by_vaper19"
-    t.float   "by_vaper20"
-    t.float   "by_vaper21"
-    t.float   "by_vaper22"
-    t.float   "by_vaper23"
-    t.float   "by_vaper24"
-    t.integer "shimada_factory_id"
-  end
-
-  create_table "top_pages", :force => true do |t|
->>>>>>> HospitalPower
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -656,6 +399,207 @@ ActiveRecord::Schema.define(version: 20140909104403) do
   create_table "shimada_months", force: true do |t|
     t.date    "month"
     t.integer "shimada_factory_id"
+  end
+
+  create_table "shimada_power_by_30mins", force: true do |t|
+    t.integer  "shimada_factory_id"
+    t.date     "date"
+    t.integer  "month_id"
+    t.integer  "weather_id"
+    t.float    "hour000",            limit: 24
+    t.float    "hour005",            limit: 24
+    t.float    "hour010",            limit: 24
+    t.float    "hour015",            limit: 24
+    t.float    "hour020",            limit: 24
+    t.float    "hour025",            limit: 24
+    t.float    "hour030",            limit: 24
+    t.float    "hour035",            limit: 24
+    t.float    "hour040",            limit: 24
+    t.float    "hour045",            limit: 24
+    t.float    "hour050",            limit: 24
+    t.float    "hour055",            limit: 24
+    t.float    "hour060",            limit: 24
+    t.float    "hour065",            limit: 24
+    t.float    "hour070",            limit: 24
+    t.float    "hour075",            limit: 24
+    t.float    "hour080",            limit: 24
+    t.float    "hour085",            limit: 24
+    t.float    "hour090",            limit: 24
+    t.float    "hour095",            limit: 24
+    t.float    "hour100",            limit: 24
+    t.float    "hour105",            limit: 24
+    t.float    "hour110",            limit: 24
+    t.float    "hour115",            limit: 24
+    t.float    "hour120",            limit: 24
+    t.float    "hour125",            limit: 24
+    t.float    "hour130",            limit: 24
+    t.float    "hour135",            limit: 24
+    t.float    "hour140",            limit: 24
+    t.float    "hour145",            limit: 24
+    t.float    "hour150",            limit: 24
+    t.float    "hour155",            limit: 24
+    t.float    "hour160",            limit: 24
+    t.float    "hour165",            limit: 24
+    t.float    "hour170",            limit: 24
+    t.float    "hour175",            limit: 24
+    t.float    "hour180",            limit: 24
+    t.float    "hour185",            limit: 24
+    t.float    "hour190",            limit: 24
+    t.float    "hour195",            limit: 24
+    t.float    "hour200",            limit: 24
+    t.float    "hour205",            limit: 24
+    t.float    "hour210",            limit: 24
+    t.float    "hour215",            limit: 24
+    t.float    "hour220",            limit: 24
+    t.float    "hour225",            limit: 24
+    t.float    "hour230",            limit: 24
+    t.float    "hour235",            limit: 24
+    t.float    "rev000",             limit: 24
+    t.float    "rev005",             limit: 24
+    t.float    "rev010",             limit: 24
+    t.float    "rev015",             limit: 24
+    t.float    "rev020",             limit: 24
+    t.float    "rev025",             limit: 24
+    t.float    "rev030",             limit: 24
+    t.float    "rev035",             limit: 24
+    t.float    "rev040",             limit: 24
+    t.float    "rev045",             limit: 24
+    t.float    "rev050",             limit: 24
+    t.float    "rev055",             limit: 24
+    t.float    "rev060",             limit: 24
+    t.float    "rev065",             limit: 24
+    t.float    "rev070",             limit: 24
+    t.float    "rev075",             limit: 24
+    t.float    "rev080",             limit: 24
+    t.float    "rev085",             limit: 24
+    t.float    "rev090",             limit: 24
+    t.float    "rev095",             limit: 24
+    t.float    "rev100",             limit: 24
+    t.float    "rev105",             limit: 24
+    t.float    "rev110",             limit: 24
+    t.float    "rev115",             limit: 24
+    t.float    "rev120",             limit: 24
+    t.float    "rev125",             limit: 24
+    t.float    "rev130",             limit: 24
+    t.float    "rev135",             limit: 24
+    t.float    "rev140",             limit: 24
+    t.float    "rev145",             limit: 24
+    t.float    "rev150",             limit: 24
+    t.float    "rev155",             limit: 24
+    t.float    "rev160",             limit: 24
+    t.float    "rev165",             limit: 24
+    t.float    "rev170",             limit: 24
+    t.float    "rev175",             limit: 24
+    t.float    "rev180",             limit: 24
+    t.float    "rev185",             limit: 24
+    t.float    "rev190",             limit: 24
+    t.float    "rev195",             limit: 24
+    t.float    "rev200",             limit: 24
+    t.float    "rev205",             limit: 24
+    t.float    "rev210",             limit: 24
+    t.float    "rev215",             limit: 24
+    t.float    "rev220",             limit: 24
+    t.float    "rev225",             limit: 24
+    t.float    "rev230",             limit: 24
+    t.float    "rev235",             limit: 24
+    t.float    "ave000",             limit: 24
+    t.float    "ave005",             limit: 24
+    t.float    "ave010",             limit: 24
+    t.float    "ave015",             limit: 24
+    t.float    "ave020",             limit: 24
+    t.float    "ave025",             limit: 24
+    t.float    "ave030",             limit: 24
+    t.float    "ave035",             limit: 24
+    t.float    "ave040",             limit: 24
+    t.float    "ave045",             limit: 24
+    t.float    "ave050",             limit: 24
+    t.float    "ave055",             limit: 24
+    t.float    "ave060",             limit: 24
+    t.float    "ave065",             limit: 24
+    t.float    "ave070",             limit: 24
+    t.float    "ave075",             limit: 24
+    t.float    "ave080",             limit: 24
+    t.float    "ave085",             limit: 24
+    t.float    "ave090",             limit: 24
+    t.float    "ave095",             limit: 24
+    t.float    "ave100",             limit: 24
+    t.float    "ave105",             limit: 24
+    t.float    "ave110",             limit: 24
+    t.float    "ave115",             limit: 24
+    t.float    "ave120",             limit: 24
+    t.float    "ave125",             limit: 24
+    t.float    "ave130",             limit: 24
+    t.float    "ave135",             limit: 24
+    t.float    "ave140",             limit: 24
+    t.float    "ave145",             limit: 24
+    t.float    "ave150",             limit: 24
+    t.float    "ave155",             limit: 24
+    t.float    "ave160",             limit: 24
+    t.float    "ave165",             limit: 24
+    t.float    "ave170",             limit: 24
+    t.float    "ave175",             limit: 24
+    t.float    "ave180",             limit: 24
+    t.float    "ave185",             limit: 24
+    t.float    "ave190",             limit: 24
+    t.float    "ave195",             limit: 24
+    t.float    "ave200",             limit: 24
+    t.float    "ave205",             limit: 24
+    t.float    "ave210",             limit: 24
+    t.float    "ave215",             limit: 24
+    t.float    "ave220",             limit: 24
+    t.float    "ave225",             limit: 24
+    t.float    "ave230",             limit: 24
+    t.float    "ave235",             limit: 24
+    t.float    "by_vaper000",        limit: 24
+    t.float    "by_vaper005",        limit: 24
+    t.float    "by_vaper010",        limit: 24
+    t.float    "by_vaper015",        limit: 24
+    t.float    "by_vaper020",        limit: 24
+    t.float    "by_vaper025",        limit: 24
+    t.float    "by_vaper030",        limit: 24
+    t.float    "by_vaper035",        limit: 24
+    t.float    "by_vaper040",        limit: 24
+    t.float    "by_vaper045",        limit: 24
+    t.float    "by_vaper050",        limit: 24
+    t.float    "by_vaper055",        limit: 24
+    t.float    "by_vaper060",        limit: 24
+    t.float    "by_vaper065",        limit: 24
+    t.float    "by_vaper070",        limit: 24
+    t.float    "by_vaper075",        limit: 24
+    t.float    "by_vaper080",        limit: 24
+    t.float    "by_vaper085",        limit: 24
+    t.float    "by_vaper090",        limit: 24
+    t.float    "by_vaper095",        limit: 24
+    t.float    "by_vaper100",        limit: 24
+    t.float    "by_vaper105",        limit: 24
+    t.float    "by_vaper110",        limit: 24
+    t.float    "by_vaper115",        limit: 24
+    t.float    "by_vaper120",        limit: 24
+    t.float    "by_vaper125",        limit: 24
+    t.float    "by_vaper130",        limit: 24
+    t.float    "by_vaper135",        limit: 24
+    t.float    "by_vaper140",        limit: 24
+    t.float    "by_vaper145",        limit: 24
+    t.float    "by_vaper150",        limit: 24
+    t.float    "by_vaper155",        limit: 24
+    t.float    "by_vaper160",        limit: 24
+    t.float    "by_vaper165",        limit: 24
+    t.float    "by_vaper170",        limit: 24
+    t.float    "by_vaper175",        limit: 24
+    t.float    "by_vaper180",        limit: 24
+    t.float    "by_vaper185",        limit: 24
+    t.float    "by_vaper190",        limit: 24
+    t.float    "by_vaper195",        limit: 24
+    t.float    "by_vaper200",        limit: 24
+    t.float    "by_vaper205",        limit: 24
+    t.float    "by_vaper210",        limit: 24
+    t.float    "by_vaper215",        limit: 24
+    t.float    "by_vaper220",        limit: 24
+    t.float    "by_vaper225",        limit: 24
+    t.float    "by_vaper230",        limit: 24
+    t.float    "by_vaper235",        limit: 24
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "shimada_powers", force: true do |t|
@@ -968,6 +912,7 @@ ActiveRecord::Schema.define(version: 20140909104403) do
     t.integer  "limit_dryero"
     t.integer  "limit_dryern"
     t.boolean  "jun_only"
+    t.datetime "replan_from"
     t.date     "plan_from"
   end
 
@@ -1111,6 +1056,158 @@ ActiveRecord::Schema.define(version: 20140909104403) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
 
+  create_table "weather_by_30mins", force: true do |t|
+    t.string   "location"
+    t.date     "month"
+    t.date     "date"
+    t.float    "hourhour005",    limit: 24
+    t.float    "hourhour010",    limit: 24
+    t.float    "hourhour015",    limit: 24
+    t.float    "hourhour020",    limit: 24
+    t.float    "hourhour025",    limit: 24
+    t.float    "hourhour030",    limit: 24
+    t.float    "hourhour035",    limit: 24
+    t.float    "hourhour040",    limit: 24
+    t.float    "hourhour045",    limit: 24
+    t.float    "hourhour050",    limit: 24
+    t.float    "hourhour055",    limit: 24
+    t.float    "hourhour060",    limit: 24
+    t.float    "hourhour065",    limit: 24
+    t.float    "hourhour070",    limit: 24
+    t.float    "hourhour075",    limit: 24
+    t.float    "hourhour080",    limit: 24
+    t.float    "hourhour085",    limit: 24
+    t.float    "hourhour090",    limit: 24
+    t.float    "hourhour095",    limit: 24
+    t.float    "hourhour100",    limit: 24
+    t.float    "hourhour105",    limit: 24
+    t.float    "hourhour110",    limit: 24
+    t.float    "hourhour115",    limit: 24
+    t.float    "hourhour120",    limit: 24
+    t.float    "hourhour125",    limit: 24
+    t.float    "hourhour130",    limit: 24
+    t.float    "hourhour135",    limit: 24
+    t.float    "hourhour140",    limit: 24
+    t.float    "hourhour145",    limit: 24
+    t.float    "hourhour150",    limit: 24
+    t.float    "hourhour155",    limit: 24
+    t.float    "hourhour160",    limit: 24
+    t.float    "hourhour165",    limit: 24
+    t.float    "hourhour170",    limit: 24
+    t.float    "hourhour175",    limit: 24
+    t.float    "hourhour180",    limit: 24
+    t.float    "hourhour185",    limit: 24
+    t.float    "hourhour190",    limit: 24
+    t.float    "hourhour195",    limit: 24
+    t.float    "hourhour200",    limit: 24
+    t.float    "hourhour205",    limit: 24
+    t.float    "hourhour210",    limit: 24
+    t.float    "hourhour215",    limit: 24
+    t.float    "hourhour220",    limit: 24
+    t.float    "hourhour225",    limit: 24
+    t.float    "hourhour230",    limit: 24
+    t.float    "hourhour235",    limit: 24
+    t.float    "hourhour240",    limit: 24
+    t.float    "vaperhour005",   limit: 24
+    t.float    "vaperhour010",   limit: 24
+    t.float    "vaperhour015",   limit: 24
+    t.float    "vaperhour020",   limit: 24
+    t.float    "vaperhour025",   limit: 24
+    t.float    "vaperhour030",   limit: 24
+    t.float    "vaperhour035",   limit: 24
+    t.float    "vaperhour040",   limit: 24
+    t.float    "vaperhour045",   limit: 24
+    t.float    "vaperhour050",   limit: 24
+    t.float    "vaperhour055",   limit: 24
+    t.float    "vaperhour060",   limit: 24
+    t.float    "vaperhour065",   limit: 24
+    t.float    "vaperhour070",   limit: 24
+    t.float    "vaperhour075",   limit: 24
+    t.float    "vaperhour080",   limit: 24
+    t.float    "vaperhour085",   limit: 24
+    t.float    "vaperhour090",   limit: 24
+    t.float    "vaperhour095",   limit: 24
+    t.float    "vaperhour100",   limit: 24
+    t.float    "vaperhour105",   limit: 24
+    t.float    "vaperhour110",   limit: 24
+    t.float    "vaperhour115",   limit: 24
+    t.float    "vaperhour120",   limit: 24
+    t.float    "vaperhour125",   limit: 24
+    t.float    "vaperhour130",   limit: 24
+    t.float    "vaperhour135",   limit: 24
+    t.float    "vaperhour140",   limit: 24
+    t.float    "vaperhour145",   limit: 24
+    t.float    "vaperhour150",   limit: 24
+    t.float    "vaperhour155",   limit: 24
+    t.float    "vaperhour160",   limit: 24
+    t.float    "vaperhour165",   limit: 24
+    t.float    "vaperhour170",   limit: 24
+    t.float    "vaperhour175",   limit: 24
+    t.float    "vaperhour180",   limit: 24
+    t.float    "vaperhour185",   limit: 24
+    t.float    "vaperhour190",   limit: 24
+    t.float    "vaperhour195",   limit: 24
+    t.float    "vaperhour200",   limit: 24
+    t.float    "vaperhour205",   limit: 24
+    t.float    "vaperhour210",   limit: 24
+    t.float    "vaperhour215",   limit: 24
+    t.float    "vaperhour220",   limit: 24
+    t.float    "vaperhour225",   limit: 24
+    t.float    "vaperhour230",   limit: 24
+    t.float    "vaperhour235",   limit: 24
+    t.float    "vaperhour240",   limit: 24
+    t.float    "humidithour005", limit: 24
+    t.float    "humidithour010", limit: 24
+    t.float    "humidithour015", limit: 24
+    t.float    "humidithour020", limit: 24
+    t.float    "humidithour025", limit: 24
+    t.float    "humidithour030", limit: 24
+    t.float    "humidithour035", limit: 24
+    t.float    "humidithour040", limit: 24
+    t.float    "humidithour045", limit: 24
+    t.float    "humidithour050", limit: 24
+    t.float    "humidithour055", limit: 24
+    t.float    "humidithour060", limit: 24
+    t.float    "humidithour065", limit: 24
+    t.float    "humidithour070", limit: 24
+    t.float    "humidithour075", limit: 24
+    t.float    "humidithour080", limit: 24
+    t.float    "humidithour085", limit: 24
+    t.float    "humidithour090", limit: 24
+    t.float    "humidithour095", limit: 24
+    t.float    "humidithour100", limit: 24
+    t.float    "humidithour105", limit: 24
+    t.float    "humidithour110", limit: 24
+    t.float    "humidithour115", limit: 24
+    t.float    "humidithour120", limit: 24
+    t.float    "humidithour125", limit: 24
+    t.float    "humidithour130", limit: 24
+    t.float    "humidithour135", limit: 24
+    t.float    "humidithour140", limit: 24
+    t.float    "humidithour145", limit: 24
+    t.float    "humidithour150", limit: 24
+    t.float    "humidithour155", limit: 24
+    t.float    "humidithour160", limit: 24
+    t.float    "humidithour165", limit: 24
+    t.float    "humidithour170", limit: 24
+    t.float    "humidithour175", limit: 24
+    t.float    "humidithour180", limit: 24
+    t.float    "humidithour185", limit: 24
+    t.float    "humidithour190", limit: 24
+    t.float    "humidithour195", limit: 24
+    t.float    "humidithour200", limit: 24
+    t.float    "humidithour205", limit: 24
+    t.float    "humidithour210", limit: 24
+    t.float    "humidithour215", limit: 24
+    t.float    "humidithour220", limit: 24
+    t.float    "humidithour225", limit: 24
+    t.float    "humidithour230", limit: 24
+    t.float    "humidithour235", limit: 24
+    t.float    "humidithour240", limit: 24
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "weather_locations", force: true do |t|
     t.string  "name"
     t.string  "location"
@@ -1196,95 +1293,6 @@ ActiveRecord::Schema.define(version: 20140909104403) do
     t.float  "humidity22", limit: 24
     t.float  "humidity23", limit: 24
     t.float  "humidity24", limit: 24
-  end
-
-  add_index "users", ["login"], :name => "index_users_on_login", :unique => true
-
-  create_table "weather_locations", :force => true do |t|
-    t.string  "name"
-    t.string  "location"
-    t.string  "weather_block"
-    t.string  "forecast_code"
-    t.string  "excite_zip"
-    t.integer "weather_prec"
-  end
-
-  create_table "weathers", :force => true do |t|
-    t.string "location"
-    t.date   "date"
-    t.float  "hour01"
-    t.float  "hour02"
-    t.float  "hour03"
-    t.float  "hour04"
-    t.float  "hour05"
-    t.float  "hour06"
-    t.float  "hour07"
-    t.float  "hour08"
-    t.float  "hour09"
-    t.float  "hour10"
-    t.float  "hour11"
-    t.float  "hour12"
-    t.float  "hour13"
-    t.float  "hour14"
-    t.float  "hour15"
-    t.float  "hour16"
-    t.float  "hour17"
-    t.float  "hour18"
-    t.float  "hour19"
-    t.float  "hour20"
-    t.float  "hour21"
-    t.float  "hour22"
-    t.float  "hour23"
-    t.float  "hour24"
-    t.date   "month"
-    t.float  "vaper01"
-    t.float  "vaper02"
-    t.float  "vaper03"
-    t.float  "vaper04"
-    t.float  "vaper05"
-    t.float  "vaper06"
-    t.float  "vaper07"
-    t.float  "vaper08"
-    t.float  "vaper09"
-    t.float  "vaper10"
-    t.float  "vaper11"
-    t.float  "vaper12"
-    t.float  "vaper13"
-    t.float  "vaper14"
-    t.float  "vaper15"
-    t.float  "vaper16"
-    t.float  "vaper17"
-    t.float  "vaper18"
-    t.float  "vaper19"
-    t.float  "vaper20"
-    t.float  "vaper21"
-    t.float  "vaper22"
-    t.float  "vaper23"
-    t.float  "vaper24"
-    t.float  "humidity01"
-    t.float  "humidity02"
-    t.float  "humidity03"
-    t.float  "humidity04"
-    t.float  "humidity05"
-    t.float  "humidity06"
-    t.float  "humidity07"
-    t.float  "humidity08"
-    t.float  "humidity09"
-    t.float  "humidity10"
-    t.float  "humidity11"
-    t.float  "humidity12"
-    t.float  "humidity13"
-    t.float  "humidity14"
-    t.float  "humidity15"
-    t.float  "humidity16"
-    t.float  "humidity17"
-    t.float  "humidity18"
-    t.float  "humidity19"
-    t.float  "humidity20"
-    t.float  "humidity21"
-    t.float  "humidity22"
-    t.float  "humidity23"
-    t.float  "humidity24"
   end
 
 end

@@ -4,9 +4,9 @@ require 'test_helper'
 class Shimada::MonthTest < ActiveSupport::TestCase
   #fixtures :shimada_months
 
-  ExcelFile = RAILS_ROOT + "/test/testdata/shimada/gunmen-power-20130-23,2014-23.xls"
-  CSVFile   = RAILS_ROOT + "/test/testdata/shimada/gunmen-power-20130-23,2014-23.csv.0"
-  NullFile   = RAILS_ROOT + "/test/testdata/shimada/gunmen-power-20130-23,2014-23.csv.2"
+  ExcelFile = Rails.root + "/test/testdata/shimada/gunmen-power-20130-23,2014-23.xls"
+  CSVFile   = Rails.root + "/test/testdata/shimada/gunmen-power-20130-23,2014-23.csv.0"
+  NullFile   = Rails.root + "/test/testdata/shimada/gunmen-power-20130-23,2014-23.csv.2"
   def setup
      #@month = Shimada::Month.new
   end

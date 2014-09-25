@@ -1,5 +1,56 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-GMC:
+---
+obj1:
+  id: 1
   name: GMC
   weather_location: maebashi
+  forecast_location: maebashi
+obj2:
+  id: 2
+  name: "東京工場"
+  weather_location: fuchu
+  forecast_location: akishima
+obj3:
+  id: 3
+  name: "郡山工場"
+  weather_location: kouriyama
+  forecast_location: kouriyama
+obj4:
+  id: 4
+  name: "古川本社工場"
+  weather_location: furukawa
+  forecast_location: furukawa
+obj5:
+  id: 5
+  name: "中部シマダヤ"
+  weather_location: gifu
+  forecast_location: gifu
+obj6:
+  id: 6
+  name: "エス・エス・デリカ"
+  weather_location: kashiwa
+  forecast_location: mashudo
+obj7:
+  id: 7
+  name: "埼玉シマダヤ"
+  weather_location: maebashi
+  forecast_location: maebashi
+obj8:
+  id: 8
+  name: "丸中製麺"
+  weather_location: oumihachiman
+  forecast_location: oumihachiman
+obj9:
+  id: 9
+  name: "高砂食品"
+  weather_location: kumagaya
+  forecast_location: fukaya
+obj10:
+  id: 10
+  name: "中野食品"
+  weather_location: koshigaya
+  forecast_location: yashio
+obj11:
+  id: 11
+  name: "寿製麺"
+  weather_location: himeji
+  forecast_location: shiguri
