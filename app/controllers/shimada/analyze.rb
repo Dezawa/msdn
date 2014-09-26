@@ -159,7 +159,6 @@ module Shimada::Analyze
         [:form,:rm_gif,"グラフ再作成",{ method: :get}],
         [:form,:standerd,"標準線計算",{ method: :get}]
       ]
-    
     @action_buttoms =  @action_buttoms_analize
     render  :file => 'application/index',:layout => 'application'
   end
@@ -168,7 +167,7 @@ module Shimada::Analyze
     @model = @Model.find(params[:id])
     @page = params[:id]
     @models = @model.powers
-    @TYTLE_post = @models.first.date.strftime("(%Y年%m月)")
+    @TYTLE_post = @models.first.date.strftime("(#{@factory.name}工場 %Y年%m月)")
 
     @TableEdit  =  
       [[:form,:analyze,"一覧に戻る",{ :method => :get}],

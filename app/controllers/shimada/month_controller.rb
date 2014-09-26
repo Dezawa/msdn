@@ -56,6 +56,7 @@ class Shimada::MonthController <  Shimada::Controller
     @Model = @MonthModel   = Shimada::MonthModels[@factory.power_model_id]
     @PowerModel= Shimada::PowerModels[@factory.power_model_id]
     @TYTLE = "シマダヤ:月度データ"
+    @TYTLE_post = "(#{@factory.name}工場)"
     @labels = Labels_for_month_results
     @AssosiationLabels = PowerLabels
     @TableEdit  = 
@@ -78,6 +79,7 @@ class Shimada::MonthController <  Shimada::Controller
     # @Refresh = :kamokus
     @SortBy    = :month
     #@CSVatrs = CSVatrs; @CSVlabels = CSVlabels
+    
   end
   def factory
     redirect_to :controller => "shimada/factory",:action => :index
