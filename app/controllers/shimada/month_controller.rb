@@ -102,7 +102,9 @@ class Shimada::MonthController <  Shimada::Controller
     #factory = Shimada::Factory.find(params[:id])
      @Show = true
      @page = params[:page] || 1 
-    @factory_id  = session[:shimada_factory] = params[:id] if  params[:id]
+    @factory_id  = session[:shimada_factory] = params[:id].to_i if  params[:id]
+    @factory    = Shimada::Factory.find @factory_id
+    @TYTLE_post = "(#{@factory.name}工場)"
     @FindWhere = ["shimada_factory_id = ?",@factory_id]
     @FindOrder =  "month desc" 
     @FindOption = { :conditions => ["shimada_factory_id = ?",@factory_id],:order => "month desc" }

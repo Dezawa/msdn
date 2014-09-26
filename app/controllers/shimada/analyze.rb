@@ -146,9 +146,11 @@ module Shimada::Analyze
                              ]
 
     @labels =   AllMonthLabels 
-    @factory_id  = session[:shimada_factory] = params[:id] if  params[:id]
-     @page = params[:page] || 1 
-   @FindOption = { :conditions => ["shimada_factory_id = ?",@factory_id],:order => "month desc" }
+    @factory_id  = session[:shimada_factory] = params[:id].to_i if  params[:id]
+    @factory    = Shimada::Factory.find @factory_id
+    @TYTLE_post = "(#{@factory.name}工場)"
+    @page = params[:page] || 1 
+    @FindOption = { :conditions => ["shimada_factory_id = ?",@factory_id],:order => "month desc" }
     @FindWhere = ["shimada_factory_id = ?",@factory_id]
     @FindOrder = "month desc"
     find_and
