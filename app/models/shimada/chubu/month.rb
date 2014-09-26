@@ -9,7 +9,13 @@ class Shimada::Chubu::Month < Shimada::Month
     end
 
     def parse_csvfile_ommit_header(csvfile)
-      filedata = File.read( csvfile,encoding: "shift_jis" ,undef: :replace, replace: '*')#.
+      
+      filedata = case csvfile
+                 when String,Pathname
+                   File.read( csvfile,encoding: "shift_jis" ,undef: :replace, replace: '*')#.
+                 when ActionDispatch::Http::UploadedFile
+                   csvfile.read#( encoding: "shift_jis" ,undef: :replace, replace: '*')#.
+                 end
 #        split(/[\r\n]+/)
       #filedata.shift # skip header
       rows =  CSV.parse(filedata,:headers => true)
@@ -19,14 +25,15 @@ class Shimada::Chubu::Month < Shimada::Month
       return nil unless csvtable["お客さま番号"].first == "650-2508-1"
       monthis = csvtable.values_at("日付").map{ |days| days.first}.uniq.
         map{ |date| Time.parse(date).beginning_of_month.to_date}.
-        uniq.each{ |day|
+        uniq.map{ |day|
         self.find_or_create_by(month: day.beginning_of_month.to_date,shimada_factory_id: factory.id)
       }
     end
 
     def  create_month_and_powers_by_csvtable( csvtable ,factory)
-      create_all_monthis_by_csvtable( csvtable ,factory)
-      Shimada::Chubu::Power.create_by_csvtable_and_make_relation(csvtable,factory)
+      monthes = create_all_monthis_by_csvtable( csvtable ,factory)
+      Shimada::Chubu::Power.create_month_and_powers_by_csvtable(csvtable,factory)
+      monthes
     end
 
     def extract_hour_data(clmns)
