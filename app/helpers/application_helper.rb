@@ -210,10 +210,8 @@ end
     when :edit_bottom       ;edit_bottom(opt||{ })
     when :csv_up_buttom     ;csv_up_buttom
     when :input_and_action  ;
-      logger.debug(":INPUT_AND_ACTION: opt.nil?#{opt.nil?} opt=#{opt}")
       input_and_action(action,label,opt)
     when :select_and_action  ;
-      logger.debug(":INPUT_AND_ACTION: opt.nil?#{opt.nil?} opt=#{opt}")
       select_and_action(action,label,opt)
     when nil; ""
     else function.to_s
