@@ -24,6 +24,9 @@ class Shimada::FactoryController <  Shimada::Controller
     super
     @factory_id = params[:factory_id] if  params[:factory_id]
     @Model= Shimada::Factory
+
+    @MonthModel = Shimada::MonthModels[@factory.power_model_id]
+    @PowerModel = Shimada::PowerModels[@factory.power_model_id]
     @Domain= @Model.name.underscore
     @TYTLE = "シマダヤ工場電力管理"
     @labels=Labels
@@ -51,7 +54,7 @@ class Shimada::FactoryController <  Shimada::Controller
   def update_today
     line = params[:power][:line]  
     @today= Time.now.to_date
-    @power = Shimada::Power.find_by(date: @today) 
+    @power = @PowerModel.find_by(date: @today) 
     @power.update_attribute(:line,line)  
     redirect_to :action => :today
   end
@@ -59,8 +62,8 @@ class Shimada::FactoryController <  Shimada::Controller
   def today_graph
     factory = @Model.find @factory_id #params[:id]
     @today= Time.now.to_date
-    @power = Shimada::Power.find_or_create_by(date: @today)
-    month = Shimada::Month.find_or_create_by(month: @today.beginning_of_month)
+    @power = @PowerModel.find_or_create_by(date: @today)
+    month = @MonthModel.find_or_create_by(month: @today.beginning_of_month)
     @power.month = month;@power.save
     @power.update_attribute(:line,3)  unless @power.line
     @power.today_graph factory.name #@factory_id
@@ -71,7 +74,7 @@ class Shimada::FactoryController <  Shimada::Controller
 
     ############  Demo用 ####################
     if hr = @power.powers.index(nil)
-      dmypw = Shimada::Power.find_or_create_by(date: @today.last_year).powers
+      dmypw = @PowerModel.find_or_create_by(date: @today.last_year).powers
       if hr < 2
         (0..1).each{ |h| @power.update_attribute( "hour%02d"%(h+1) , dmypw[h])}
         hr = 3
@@ -85,7 +88,7 @@ class Shimada::FactoryController <  Shimada::Controller
 
   def clear_today
     @today= Time.now.to_date
-    ( pw = Shimada::Power.find_by(date: @today)  ) && pw.delete 
+    ( pw = @PowerModel.find_by(date: @today)  ) && pw.delete 
     redirect_to :action => :today 
   end
 
@@ -104,7 +107,7 @@ class Shimada::FactoryController <  Shimada::Controller
     factory = @Model.find params[:id]
     @today= Time.now.to_date
     @tomorrow = @today.tomorrow.to_date
-    @power = Shimada::Power.new(:date => @tomorrow,:line => line)
+    @power = @PowerModel.new(:date => @tomorrow,:line => line)
     @date = @tomorrow
     @power.tomorrow_graph(@factory_id,line)
     @forecast =  forecast = Forecast.find_or_fetch(factory.forecast_location,@tomorrow,@today)

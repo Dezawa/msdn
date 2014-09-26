@@ -71,7 +71,7 @@ logger.debug("GRAPH_MONTH_SUB: opt = #{opt} params=#{params}")
     unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{opt[:graph_file]}.gif") == true
       #@power = opt[:find] ? send(opt[:find].first,month, opt[:find].last)  : month.powers
       @power = opt[:find] ? select_by_(month.powers,opt[:find])  : month.powers
-      Shimada::Power.gnuplot(@factory_id,@power,method,opt.merge(:title => @TYTLE))
+      @PowerModel.gnuplot(@factory_id,@power,method,opt.merge(:title => @TYTLE))
    end
     render :action => :graph,:layout => "hospital_error_disp"
   end
@@ -143,7 +143,7 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
                  :title => @TYTLE,:graph_size => "600,400",:range => (7..19),:vs_temp => true
                  ) 
       #@graph_file =  opt[:graph_file]
-      Shimada::Power.gnuplot(@factory_id,@power,opt.delete(:method)||:powers,opt)
+      @PowerModel.gnuplot(@factory_id,@power,opt.delete(:method)||:powers,opt)
     end
   end
 
@@ -166,7 +166,7 @@ logger.debug("GRAPH_MONTH_BUGS:method = #{@method}, params=#{params}")
                  :title => @TYTLE,:graph_size => "600,400",:vs_bugs => true#,:by_date => "%m/%d"
                  ) 
       #@graph_file =  opt[:graph_file]
-      Shimada::Power.gnuplot(@factory_id,@power,@method ||:powers_sum,opt)
+      @PowerModel.gnuplot(@factory_id,@power,@method ||:powers_sum,opt)
     end
   end
 end

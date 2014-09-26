@@ -153,11 +153,11 @@ module Shimada::Analyze
 
     @TableEdit  =
       [ :csv_up_buttom ,
-        [:form,:reset_reevice_and_ave,"再補正・再平均"],
-        [:form,:reculc_all,"再計算"],
-        [:form,:reculc_shapes,"再分類"],
-        [:form,:rm_gif,"グラフ再作成"],
-        [:form,:standerd,"標準線計算"]
+        [:form,:reset_reevice_and_ave,"再補正・再平均",{ method: :get}],
+        [:form,:reculc_all,"再計算",{ method: :get}],
+        [:form,:reculc_shapes,"再分類",{ method: :get}],
+        [:form,:rm_gif,"グラフ再作成",{ method: :get}],
+        [:form,:standerd,"標準線計算",{ method: :get}]
       ]
     
     @action_buttoms =  @action_buttoms_analize
@@ -189,23 +189,23 @@ module Shimada::Analyze
 
 
   def reset_reevice_and_ave
-    Shimada::Power.reset_reevice_and_ave
+    @PowerModel.reset_reevice_and_ave
     redirect_to :action => :index
   end
 
   def rm_gif 
-    Shimada::Power.rm_gif
+    @PowerModel.rm_gif
     redirect_to :action => :analyze
   end
 
   def reculc_all
-    Shimada::Power.reculc_all
+    @PowerModel.reculc_all
     redirect_to :action => :analyze
     #render  :file => 'application/index',:layout => 'application'
   end
 
   def reculc_shapes
-    Shimada::Power.reculc_shapes
+    @PowerModel.reculc_shapes
     redirect_to :action => :analyze
     #render  :file => 'application/index',:layout => 'application'
   end
@@ -232,7 +232,7 @@ module Shimada::Analyze
       
     #@models = %w(稼働1 稼働2 稼働3 稼働4).map{ |patern|
     @models = [1,2,3,4].map{ |patern|
-      Shimada::Power.average_line(@factory_id,patern)
+      @PowerModel.average_line(@factory_id,patern)
     }
     @AfterIndexHtml = to_html(@models)
     render  :file => 'application/index',:layout => 'application'
@@ -258,8 +258,8 @@ module Shimada::Analyze
           when /date\s*,\s*(.*)/ ; { :by_date => $1 }
           when /by\s*,\s*(.*)/   ; { :by_ => $1}  
           end
-    @power = Shimada::Power.all(:conditions => quely)
-    Shimada::Power.gnuplot(@factory_id,@power,method,opt.merge(:title => title))    
+    @power = @PowerModel.all(:conditions => quely)
+    @PowerModel.gnuplot(@factory_id,@power,method,opt.merge(:title => title))    
     render :action => :graph,:layout => "hospital_error_disp"
   end
   def graph_superman2
@@ -269,8 +269,8 @@ module Shimada::Analyze
           when /date\s*,\s*(.*)/ ; { :by_date => $1 }
           when /by\s*,\s*(.*)/   ; { :by_ => $1}  
           end
-    @power = Shimada::Power.all(:conditions => quely)
-    Shimada::Power.gnuplot(@factory_id,@power,method,opt.merge(:title => title,:vs_temp => true,:range => (7..19)))    
+    @power = @PowerModel.all(:conditions => quely)
+    @PowerModel.gnuplot(@factory_id,@power,method,opt.merge(:title => title,:vs_temp => true,:range => (7..19)))    
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
@@ -279,7 +279,7 @@ module Shimada::Analyze
     from = from ? Time.parse(from).to_date : Time.now.last_month.beginning_of_month.to_date
     to  =  to   ? Time.parse(to).to_date  : Time.now.last_month.end_of_month.to_date
 
-    Shimada::Power.simulation(@factory_id,14,3,from,to)
+    @PowerModel.simulation(@factory_id,14,3,from,to)
   end
   
   def graph_almighty
@@ -312,10 +312,10 @@ logger.debug("GRAPH_ALMIGHTY:args=#{args.flatten.join(',')}")
       if month=args.delete("month")
         the_month = Time.local(*month[1].split(/[-\/]/)).beginning_of_month
         if month[0] == "=" 
-          args["month_id"] = ["=",Shimada::Month.find_by(month: the_month).id]
-          "month_id = #{Shimada::Month.find_by(month: the_month).id}"
+          args["month_id"] = ["=",@MonthModel.find_by(month: the_month).id]
+          "month_id = #{@MonthModel.find_by(month: the_month).id}"
         else
-          month_id = Shimada::Month.all(:conditions => [ "month #{month[0]} ? ",the_month ] ).map(&:id)
+          month_id = @MonthModel.all(:conditions => [ "month #{month[0]} ? ",the_month ] ).map(&:id)
           "month_id in (#{month_id.join(',')})"
         end
       end
@@ -338,7 +338,7 @@ logger.debug("GRAPH_ALMIGHTY:args=#{args.flatten.join(',')}")
 
     query = ["date is not null",cnd_dform,month_query,date_query,args_query].compact.join(" and ")
     #logger.debug("GRAPH_ALMIGHTY: query = #{query},args.values=#{values.join(',')}")
-    @models = Shimada::Power.all( :order => "date", 
+    @models = @PowerModel.all( :order => "date", 
                                   :conditions => [query,*values] )
     if args.size > 0
       @models = @models.select{ |pw|  
@@ -371,7 +371,7 @@ logger.debug("GRAPH_ALMIGHTY:args=#{args.flatten.join(',')}")
       show_sub
 
     else
-      Shimada::Power.gnuplot(@factory_id,@models,method.to_sym,:by_date => by_date,
+      @PowerModel.gnuplot(@factory_id,@models,method.to_sym,:by_date => by_date,
                              :title => patern )
       render :action => :graph,:layout => "hospital_error_disp"
     end
