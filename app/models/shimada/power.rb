@@ -189,7 +189,7 @@ class Shimada::Power < ActiveRecord::Base
   CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["line"]
 
   def self.power_all(factory_id,conditions = ["", [] ])
-    self.all(:conditions => ["month_id is not null and date < '2014-7-1' and shimada_factory_id = #{factory_id} " +conditions[0] , *conditions[1] ] ) 
+    self.where( ["month_id is not null and date < '2014-7-1' and shimada_factory_id = #{factory_id} " +conditions[0] , *conditions[1] ] ) 
   end
 
   def self.by_patern(factory_id,patern)
@@ -214,10 +214,10 @@ class Shimada::Power < ActiveRecord::Base
     case by.to_s
     when /_by_temp/    
       low,high = bugs_fit(by)[:offset0][offset.to_i,2]
-      Shimada::Power.all(:conditions => "hukurosu is not null and date < '2014-7-1'").
+      Shimada::Power.where( "hukurosu is not null and date < '2014-7-1'").
         select{ |pw| pw.offset_of_hukurosu_vs_pw(by) > low and  pw.offset_of_hukurosu_vs_pw(by)<= high}
     when /_by_month/
-      Shimada::Power.all(:conditions => "hukurosu is not null and date < '2014-7-1'").
+      Shimada::Power.where( "hukurosu is not null and date < '2014-7-1'").
         select{ |pw| pw.offset_from_hukurosu_vs_pw(by) == offset }
     end
   end
@@ -246,7 +246,7 @@ class Shimada::Power < ActiveRecord::Base
     self.update_all("deform = null")
     @shpe_is = nil
     rm_gif
-    self.all(:conditions => "date is not null").each{ |pw| pw.lines;pw.shape_is}
+    self.where( "date is not null").each{ |pw| pw.lines;pw.shape_is}
   end
 
   def self.rm_gif ;    File.delete(*Dir.glob(Rails.root+"tmp/shimada/giffiles/*.gif")) ;end
@@ -941,8 +941,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def self.maybe3lines
     ids =  Shimada::Month.all.sort_by{|m| m.month}.map(&:id)
 
-    powers = Shimada::Power.all(
-  :conditions => "month_id = #{ids[0]} and date not in ('2013-01-1','2013-01-5','2013-01-19','2013-01-24') or 
+    powers = Shimada::Power.where( "month_id = #{ids[0]} and date not in ('2013-01-1','2013-01-5','2013-01-19','2013-01-24') or 
 month_id =  #{ids[1]} and date not in ('2013-02-6','2013-02-9') or 
 month_id = #{ids[2]} and date not in ('2013-03-6','2013-03-10','2013-03-16','2013-03-19','2013-03-20','2013-03-21') or 
 month_id =  #{ids[3]} and date not in ('2013-04-4','2013-04-8','2013-04-13','2013-04-17','2013-04-20','2013-04-27','2013-04-30') or 

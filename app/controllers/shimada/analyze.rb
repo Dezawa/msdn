@@ -149,6 +149,8 @@ module Shimada::Analyze
     @factory_id  = session[:shimada_factory] = params[:id] if  params[:id]
      @page = params[:page] || 1 
    @FindOption = { :conditions => ["shimada_factory_id = ?",@factory_id],:order => "month desc" }
+    @FindWhere = ["shimada_factory_id = ?",@factory_id]
+    @FindOrder = "month desc"
     find_and
 
     @TableEdit  =
@@ -257,7 +259,7 @@ module Shimada::Analyze
           when /date\s*,\s*(.*)/ ; { :by_date => $1 }
           when /by\s*,\s*(.*)/   ; { :by_ => $1}  
           end
-    @power = @PowerModel.all(:conditions => quely)
+    @power = @PowerModel.where( quely)
     @PowerModel.gnuplot(@factory_id,@power,method,opt.merge(:title => title))    
     render :action => :graph,:layout => "hospital_error_disp"
   end
@@ -268,7 +270,7 @@ module Shimada::Analyze
           when /date\s*,\s*(.*)/ ; { :by_date => $1 }
           when /by\s*,\s*(.*)/   ; { :by_ => $1}  
           end
-    @power = @PowerModel.all(:conditions => quely)
+    @power = @PowerModel.where(quely)
     @PowerModel.gnuplot(@factory_id,@power,method,opt.merge(:title => title,:vs_temp => true,:range => (7..19)))    
     render :action => :graph,:layout => "hospital_error_disp"
   end
@@ -314,7 +316,7 @@ logger.debug("GRAPH_ALMIGHTY:args=#{args.flatten.join(',')}")
           args["month_id"] = ["=",@MonthModel.find_by(month: the_month).id]
           "month_id = #{@MonthModel.find_by(month: the_month).id}"
         else
-          month_id = @MonthModel.all(:conditions => [ "month #{month[0]} ? ",the_month ] ).map(&:id)
+          month_id = @MonthModel.where( [ "month #{month[0]} ? ",the_month ] ).map(&:id)
           "month_id in (#{month_id.join(',')})"
         end
       end
@@ -337,8 +339,7 @@ logger.debug("GRAPH_ALMIGHTY:args=#{args.flatten.join(',')}")
 
     query = ["date is not null",cnd_dform,month_query,date_query,args_query].compact.join(" and ")
     #logger.debug("GRAPH_ALMIGHTY: query = #{query},args.values=#{values.join(',')}")
-    @models = @PowerModel.all( :order => "date", 
-                                  :conditions => [query,*values] )
+    @models = @PowerModel.where( [query,*values] ).order( "date")
     if args.size > 0
       @models = @models.select{ |pw|  
         args.keys.all?{ |m| 
