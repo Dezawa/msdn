@@ -149,10 +149,10 @@ module Actions
       @Pagenation = params[:parpage].to_i
     end
     @models=  @Pagenation ? pagenate(@page) : find(@page)
-    @TYTLE_post = case @TYTLEpost
-                  when Proc ; @TYTLEpost.call
+    @TYTLE_post = case @TYTLE_post
+                  when Proc ; @TYTLE_post.call
                   when nil  ; ""
-                  else      ; @TYTLEpost.to_s
+                  else      ; @TYTLE_post.to_s
                   end
     @models
   end
