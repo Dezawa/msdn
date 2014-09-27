@@ -14,6 +14,13 @@ class Shimada::Power < ActiveRecord::Base
 
   attr_accessor :shape_is, :na, :f4_peaks, :f3_solve, :f2_solve, :differences
 
+  Hours = ("hour01".."hour24").to_a
+  Revs = ("rev01".."rev24").to_a
+  ByVapers = ("by_vaper01".."by_vaper24").to_a
+  Vapers = ("vaper01".."vaper24").to_a
+  Aves = ("ave01".."ave24").to_a
+  Differences = ("difference00".."difference23").to_a
+
 
   PolyFitHour = (5 .. 23)  # 6時～23時
   PolyFitX0   = 14.0       # 15時
@@ -159,16 +166,11 @@ class Shimada::Power < ActiveRecord::Base
     { :y0 => [4400,4400,4400,4400], :slop => [4.4,5.7,7.0,10.0],:offset => [0,0,0,0],
       :offset0 => [0,5.7,7.0,10.0] }
   }
-  Hours = ("hour01".."hour24").to_a
-  Revs = ("rev01".."rev24").to_a
-  ByVapers = ("by_vaper01".."by_vaper24").to_a
-  Vapers = ("vaper01".."vaper24").to_a
-  Aves = ("ave01".."ave24").to_a
+
   DayOffset = [(3..23),(0..3)]
   TimeOffset = 2
   @@average_diff = nil
 
-  Differences = ("difference00".."difference23").to_a
   Lines = [(0..280),(280..410),(410..540),(540..660),(660..800),(800..1000)]
   LinesVaper = [(0..280),(280..410),(410..540),(540..660),(660..800),(800..1000)]
   Header = "時刻"
