@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 require 'csv'
+require 'nkf'
 class Shimada::Chubu::Month < Shimada::Month
   self.table_name = 'shimada_months'
+  has_many :shimada_powers ,:class_name =>  "Shimada::Chubu::Power" ,:dependent => :delete_all
   class << self
     def csv_upload(csvfile,factory)
       csvtable = parse_csvfile_ommit_header(csvfile)
@@ -16,9 +18,10 @@ class Shimada::Chubu::Month < Shimada::Month
                  when ActionDispatch::Http::UploadedFile
                    csvfile.read#( encoding: "shift_jis" ,undef: :replace, replace: '*')#.
                  end
+      utf8data = NKF.nkf("-w",filedata)
 #        split(/[\r\n]+/)
       #filedata.shift # skip header
-      rows =  CSV.parse(filedata,:headers => true)
+      rows =  CSV.parse(utf8data,:headers => true)
     end
 
     def  create_all_monthis_by_csvtable( csvtable ,factory)

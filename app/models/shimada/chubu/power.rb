@@ -3,7 +3,9 @@ require "tempfile"
 require 'statistics'
 class Shimada::Chubu::Power < Shimada::Power
   self.table_name = "shimada_power_by_30mins"
-  belongs_to :db_weather,:class_name => "WeatherBy_30min" 
+  belongs_to :month     ,:class_name => "Shimada::Month::Chubu"
+  belongs_to :db_weather,:class_name => "Weather" 
+  belongs_to :shimada_factory     ,:class_name => "Shimada::Factory"
 
   PolyFitHour = (5 .. 23)  # 6時～23時
   PolyFitX0   = 14.0       # 15時
@@ -38,6 +40,7 @@ class Shimada::Chubu::Power < Shimada::Power
     def  ary_of_date_hour_pw_group_by_date_by_csvtable( csvtable ,factory)
       idxDay,idxHour,idxPw = ["日付","開始時間","最大電力(kW)"].map{ |clmn| csvtable.headers.find_index(clmn)}
       csvtable.map{ |row| 
+logger.debug("ARY_OF_DATE_HOUR: row #{row}")
           day=Time.parse(row[idxDay])
           hh,mm = row[idxHour].split(":")
           hour = "%02d"%hh.to_i + "%d"%(mm.to_i*10/60)
