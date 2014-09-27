@@ -3,7 +3,8 @@ require 'csv'
 require 'nkf'
 class Shimada::Chubu::Month < Shimada::Month
   self.table_name = 'shimada_months'
-  has_many :shimada_powers ,:class_name =>  "Shimada::Chubu::Power" ,:dependent => :delete_all
+  has_many :shimada_powers ,:class_name: "Shimada::Chubu::Power" ,:dependent: :delete_all
+
   class << self
     def csv_upload(csvfile,factory)
       csvtable = parse_csvfile_ommit_header(csvfile)
