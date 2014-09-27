@@ -1,5 +1,5 @@
 class CreateShimadaPowerBy30mins < ActiveRecord::Migration
-  Hours = (0..235).step(5).map{ |h| "%03d"%h}
+  Hours = ("00".."24").to_a.map{|h| [h,h+"5"]}.flatten[1,24*2]
   def change
     create_table :shimada_power_by_30mins do |t|
       t.integer "shimada_factory_id"

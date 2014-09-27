@@ -391,9 +391,10 @@ ActiveRecord::Schema.define(version: 201409131724152) do
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
   create_table "shimada_factories", force: true do |t|
-    t.string "name"
-    t.string "weather_location"
-    t.string "forecast_location"
+    t.string  "name"
+    t.string  "weather_location"
+    t.string  "forecast_location"
+    t.integer "power_model_id",    default: 0
   end
 
   create_table "shimada_months", force: true do |t|
@@ -406,198 +407,198 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.date     "date"
     t.integer  "month_id"
     t.integer  "weather_id"
-    t.float    "hour000",            limit: 24
     t.float    "hour005",            limit: 24
-    t.float    "hour010",            limit: 24
+    t.float    "hour01",             limit: 24
     t.float    "hour015",            limit: 24
-    t.float    "hour020",            limit: 24
+    t.float    "hour02",             limit: 24
     t.float    "hour025",            limit: 24
-    t.float    "hour030",            limit: 24
+    t.float    "hour03",             limit: 24
     t.float    "hour035",            limit: 24
-    t.float    "hour040",            limit: 24
+    t.float    "hour04",             limit: 24
     t.float    "hour045",            limit: 24
-    t.float    "hour050",            limit: 24
+    t.float    "hour05",             limit: 24
     t.float    "hour055",            limit: 24
-    t.float    "hour060",            limit: 24
+    t.float    "hour06",             limit: 24
     t.float    "hour065",            limit: 24
-    t.float    "hour070",            limit: 24
+    t.float    "hour07",             limit: 24
     t.float    "hour075",            limit: 24
-    t.float    "hour080",            limit: 24
+    t.float    "hour08",             limit: 24
     t.float    "hour085",            limit: 24
-    t.float    "hour090",            limit: 24
+    t.float    "hour09",             limit: 24
     t.float    "hour095",            limit: 24
-    t.float    "hour100",            limit: 24
+    t.float    "hour10",             limit: 24
     t.float    "hour105",            limit: 24
-    t.float    "hour110",            limit: 24
+    t.float    "hour11",             limit: 24
     t.float    "hour115",            limit: 24
-    t.float    "hour120",            limit: 24
+    t.float    "hour12",             limit: 24
     t.float    "hour125",            limit: 24
-    t.float    "hour130",            limit: 24
+    t.float    "hour13",             limit: 24
     t.float    "hour135",            limit: 24
-    t.float    "hour140",            limit: 24
+    t.float    "hour14",             limit: 24
     t.float    "hour145",            limit: 24
-    t.float    "hour150",            limit: 24
+    t.float    "hour15",             limit: 24
     t.float    "hour155",            limit: 24
-    t.float    "hour160",            limit: 24
+    t.float    "hour16",             limit: 24
     t.float    "hour165",            limit: 24
-    t.float    "hour170",            limit: 24
+    t.float    "hour17",             limit: 24
     t.float    "hour175",            limit: 24
-    t.float    "hour180",            limit: 24
+    t.float    "hour18",             limit: 24
     t.float    "hour185",            limit: 24
-    t.float    "hour190",            limit: 24
+    t.float    "hour19",             limit: 24
     t.float    "hour195",            limit: 24
-    t.float    "hour200",            limit: 24
+    t.float    "hour20",             limit: 24
     t.float    "hour205",            limit: 24
-    t.float    "hour210",            limit: 24
+    t.float    "hour21",             limit: 24
     t.float    "hour215",            limit: 24
-    t.float    "hour220",            limit: 24
+    t.float    "hour22",             limit: 24
     t.float    "hour225",            limit: 24
-    t.float    "hour230",            limit: 24
+    t.float    "hour23",             limit: 24
     t.float    "hour235",            limit: 24
-    t.float    "rev000",             limit: 24
+    t.float    "hour24",             limit: 24
     t.float    "rev005",             limit: 24
-    t.float    "rev010",             limit: 24
+    t.float    "rev01",              limit: 24
     t.float    "rev015",             limit: 24
-    t.float    "rev020",             limit: 24
+    t.float    "rev02",              limit: 24
     t.float    "rev025",             limit: 24
-    t.float    "rev030",             limit: 24
+    t.float    "rev03",              limit: 24
     t.float    "rev035",             limit: 24
-    t.float    "rev040",             limit: 24
+    t.float    "rev04",              limit: 24
     t.float    "rev045",             limit: 24
-    t.float    "rev050",             limit: 24
+    t.float    "rev05",              limit: 24
     t.float    "rev055",             limit: 24
-    t.float    "rev060",             limit: 24
+    t.float    "rev06",              limit: 24
     t.float    "rev065",             limit: 24
-    t.float    "rev070",             limit: 24
+    t.float    "rev07",              limit: 24
     t.float    "rev075",             limit: 24
-    t.float    "rev080",             limit: 24
+    t.float    "rev08",              limit: 24
     t.float    "rev085",             limit: 24
-    t.float    "rev090",             limit: 24
+    t.float    "rev09",              limit: 24
     t.float    "rev095",             limit: 24
-    t.float    "rev100",             limit: 24
+    t.float    "rev10",              limit: 24
     t.float    "rev105",             limit: 24
-    t.float    "rev110",             limit: 24
+    t.float    "rev11",              limit: 24
     t.float    "rev115",             limit: 24
-    t.float    "rev120",             limit: 24
+    t.float    "rev12",              limit: 24
     t.float    "rev125",             limit: 24
-    t.float    "rev130",             limit: 24
+    t.float    "rev13",              limit: 24
     t.float    "rev135",             limit: 24
-    t.float    "rev140",             limit: 24
+    t.float    "rev14",              limit: 24
     t.float    "rev145",             limit: 24
-    t.float    "rev150",             limit: 24
+    t.float    "rev15",              limit: 24
     t.float    "rev155",             limit: 24
-    t.float    "rev160",             limit: 24
+    t.float    "rev16",              limit: 24
     t.float    "rev165",             limit: 24
-    t.float    "rev170",             limit: 24
+    t.float    "rev17",              limit: 24
     t.float    "rev175",             limit: 24
-    t.float    "rev180",             limit: 24
+    t.float    "rev18",              limit: 24
     t.float    "rev185",             limit: 24
-    t.float    "rev190",             limit: 24
+    t.float    "rev19",              limit: 24
     t.float    "rev195",             limit: 24
-    t.float    "rev200",             limit: 24
+    t.float    "rev20",              limit: 24
     t.float    "rev205",             limit: 24
-    t.float    "rev210",             limit: 24
+    t.float    "rev21",              limit: 24
     t.float    "rev215",             limit: 24
-    t.float    "rev220",             limit: 24
+    t.float    "rev22",              limit: 24
     t.float    "rev225",             limit: 24
-    t.float    "rev230",             limit: 24
+    t.float    "rev23",              limit: 24
     t.float    "rev235",             limit: 24
-    t.float    "ave000",             limit: 24
+    t.float    "rev24",              limit: 24
     t.float    "ave005",             limit: 24
-    t.float    "ave010",             limit: 24
+    t.float    "ave01",              limit: 24
     t.float    "ave015",             limit: 24
-    t.float    "ave020",             limit: 24
+    t.float    "ave02",              limit: 24
     t.float    "ave025",             limit: 24
-    t.float    "ave030",             limit: 24
+    t.float    "ave03",              limit: 24
     t.float    "ave035",             limit: 24
-    t.float    "ave040",             limit: 24
+    t.float    "ave04",              limit: 24
     t.float    "ave045",             limit: 24
-    t.float    "ave050",             limit: 24
+    t.float    "ave05",              limit: 24
     t.float    "ave055",             limit: 24
-    t.float    "ave060",             limit: 24
+    t.float    "ave06",              limit: 24
     t.float    "ave065",             limit: 24
-    t.float    "ave070",             limit: 24
+    t.float    "ave07",              limit: 24
     t.float    "ave075",             limit: 24
-    t.float    "ave080",             limit: 24
+    t.float    "ave08",              limit: 24
     t.float    "ave085",             limit: 24
-    t.float    "ave090",             limit: 24
+    t.float    "ave09",              limit: 24
     t.float    "ave095",             limit: 24
-    t.float    "ave100",             limit: 24
+    t.float    "ave10",              limit: 24
     t.float    "ave105",             limit: 24
-    t.float    "ave110",             limit: 24
+    t.float    "ave11",              limit: 24
     t.float    "ave115",             limit: 24
-    t.float    "ave120",             limit: 24
+    t.float    "ave12",              limit: 24
     t.float    "ave125",             limit: 24
-    t.float    "ave130",             limit: 24
+    t.float    "ave13",              limit: 24
     t.float    "ave135",             limit: 24
-    t.float    "ave140",             limit: 24
+    t.float    "ave14",              limit: 24
     t.float    "ave145",             limit: 24
-    t.float    "ave150",             limit: 24
+    t.float    "ave15",              limit: 24
     t.float    "ave155",             limit: 24
-    t.float    "ave160",             limit: 24
+    t.float    "ave16",              limit: 24
     t.float    "ave165",             limit: 24
-    t.float    "ave170",             limit: 24
+    t.float    "ave17",              limit: 24
     t.float    "ave175",             limit: 24
-    t.float    "ave180",             limit: 24
+    t.float    "ave18",              limit: 24
     t.float    "ave185",             limit: 24
-    t.float    "ave190",             limit: 24
+    t.float    "ave19",              limit: 24
     t.float    "ave195",             limit: 24
-    t.float    "ave200",             limit: 24
+    t.float    "ave20",              limit: 24
     t.float    "ave205",             limit: 24
-    t.float    "ave210",             limit: 24
+    t.float    "ave21",              limit: 24
     t.float    "ave215",             limit: 24
-    t.float    "ave220",             limit: 24
+    t.float    "ave22",              limit: 24
     t.float    "ave225",             limit: 24
-    t.float    "ave230",             limit: 24
+    t.float    "ave23",              limit: 24
     t.float    "ave235",             limit: 24
-    t.float    "by_vaper000",        limit: 24
+    t.float    "ave24",              limit: 24
     t.float    "by_vaper005",        limit: 24
-    t.float    "by_vaper010",        limit: 24
+    t.float    "by_vaper01",         limit: 24
     t.float    "by_vaper015",        limit: 24
-    t.float    "by_vaper020",        limit: 24
+    t.float    "by_vaper02",         limit: 24
     t.float    "by_vaper025",        limit: 24
-    t.float    "by_vaper030",        limit: 24
+    t.float    "by_vaper03",         limit: 24
     t.float    "by_vaper035",        limit: 24
-    t.float    "by_vaper040",        limit: 24
+    t.float    "by_vaper04",         limit: 24
     t.float    "by_vaper045",        limit: 24
-    t.float    "by_vaper050",        limit: 24
+    t.float    "by_vaper05",         limit: 24
     t.float    "by_vaper055",        limit: 24
-    t.float    "by_vaper060",        limit: 24
+    t.float    "by_vaper06",         limit: 24
     t.float    "by_vaper065",        limit: 24
-    t.float    "by_vaper070",        limit: 24
+    t.float    "by_vaper07",         limit: 24
     t.float    "by_vaper075",        limit: 24
-    t.float    "by_vaper080",        limit: 24
+    t.float    "by_vaper08",         limit: 24
     t.float    "by_vaper085",        limit: 24
-    t.float    "by_vaper090",        limit: 24
+    t.float    "by_vaper09",         limit: 24
     t.float    "by_vaper095",        limit: 24
-    t.float    "by_vaper100",        limit: 24
+    t.float    "by_vaper10",         limit: 24
     t.float    "by_vaper105",        limit: 24
-    t.float    "by_vaper110",        limit: 24
+    t.float    "by_vaper11",         limit: 24
     t.float    "by_vaper115",        limit: 24
-    t.float    "by_vaper120",        limit: 24
+    t.float    "by_vaper12",         limit: 24
     t.float    "by_vaper125",        limit: 24
-    t.float    "by_vaper130",        limit: 24
+    t.float    "by_vaper13",         limit: 24
     t.float    "by_vaper135",        limit: 24
-    t.float    "by_vaper140",        limit: 24
+    t.float    "by_vaper14",         limit: 24
     t.float    "by_vaper145",        limit: 24
-    t.float    "by_vaper150",        limit: 24
+    t.float    "by_vaper15",         limit: 24
     t.float    "by_vaper155",        limit: 24
-    t.float    "by_vaper160",        limit: 24
+    t.float    "by_vaper16",         limit: 24
     t.float    "by_vaper165",        limit: 24
-    t.float    "by_vaper170",        limit: 24
+    t.float    "by_vaper17",         limit: 24
     t.float    "by_vaper175",        limit: 24
-    t.float    "by_vaper180",        limit: 24
+    t.float    "by_vaper18",         limit: 24
     t.float    "by_vaper185",        limit: 24
-    t.float    "by_vaper190",        limit: 24
+    t.float    "by_vaper19",         limit: 24
     t.float    "by_vaper195",        limit: 24
-    t.float    "by_vaper200",        limit: 24
+    t.float    "by_vaper20",         limit: 24
     t.float    "by_vaper205",        limit: 24
-    t.float    "by_vaper210",        limit: 24
+    t.float    "by_vaper21",         limit: 24
     t.float    "by_vaper215",        limit: 24
-    t.float    "by_vaper220",        limit: 24
+    t.float    "by_vaper22",         limit: 24
     t.float    "by_vaper225",        limit: 24
-    t.float    "by_vaper230",        limit: 24
+    t.float    "by_vaper23",         limit: 24
     t.float    "by_vaper235",        limit: 24
+    t.float    "by_vaper24",         limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
   end
