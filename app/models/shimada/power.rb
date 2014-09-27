@@ -192,7 +192,7 @@ class Shimada::Power < ActiveRecord::Base
 
   @@ReviseParams = []
   def self.revise_params(factory_id)
-    return @@ReviseParams[factory_id] if @@ReviseParams[factory_id] 
+    #return @@ReviseParams[factory_id] if @@ReviseParams[factory_id] 
     factory = Shimada::Factory.find(factory_id)
     @@ReviseParams[factory_id] = 
       { :threshold => factory.revise_threshold,   :y0           => factory.revise_y0,

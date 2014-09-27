@@ -433,7 +433,7 @@ set out 'tmp/shimada/giffiles/%s.gif'
 
 set title "%s" #"温度-消費電力 " 
 set key outside  autotitle columnheader samplen 1 width -4
-set yrange [0:1000]
+set yrange [0:1100]
 set xrange %s  #[-10:40]
 set xtics -10,5
 set x2tics -10,5
@@ -467,7 +467,6 @@ set x2tics -10,5
           if @method == :revise_by_temp ;['蒸気補償', Shimada::Power::VaperParams]
           else ;                        ; ['蒸気補償', Shimada::Power::VaperParamsRaw]
           end
-        #else         ; ['温度補償', Shimada::Power::ReviceParams]#.revise_params(@factory_id)]
         else         ; ['温度補償', Shimada::Power.revise_params(@factory_id)]
         end
 
@@ -475,12 +474,7 @@ set x2tics -10,5
         map{ |sym| line_params[sym]}
 
       lines = 
-        ",  (x>#{x0}) ? #{y0}+#{slh}*(x-#{x0}) : #{y0} title '#{title}' lt -1 lw 1.5" +
-        case @opt[:vs_temp]
-        when  :vaper  ; "\n"
-        else 
-          ",\\\n0.440*(x-5)**1.8+750 title 'TopLine' lc rgbcolor '#FF0000' lw 1.5\n"
-        end
+        ",  (x>#{x0}) ? #{y0}+#{slh}*(x-#{x0}) : #{y0}+#{sll}*(x-#{x0}) title '#{title}' lt -1 lw 1.5\n" 
       open(@def_file,"w"){ |f|
           f.puts @Def%[@graph_size,@graph_file,@opt[:title]||"温度-消費電力 ",size]
           f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ") + lines +
