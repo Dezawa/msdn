@@ -15,9 +15,10 @@ module ExcelToCsv
                tempfile
              when File,  ActionDispatch::Http::UploadedFile ,
                ActionDispatch::Http::UploadedFile # #
+
                logger.debug("ExcelToCsv:original_filename #{file.original_filename}")
                file
-             when String
+             when String,Pathname
                open(file,"r")
              else
                logger.info("ERROR: UPDATE_RESULT 未定義IOstreamClass。= #{file.class}")
