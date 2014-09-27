@@ -203,7 +203,9 @@ class Shimada::Power < ActiveRecord::Base
     @@ReviseParams[factory_id]
   end
 
-  def revise_params ; self.class.revise_params(shimada_factory_id) ;  end
+  def revise_params ; 
+    @revise_params ||= self.class.revise_params(shimada_factory_id) 
+  end
   
   def self.power_all(factory_id,conditions = ["", [] ])
     self.where( ["month_id is not null and shimada_factory_id = #{factory_id} " +conditions[0] , *conditions[1] ] ) 
@@ -241,14 +243,14 @@ class Shimada::Power < ActiveRecord::Base
 
   def self.reset_reevice_and_ave
     self.all.each{ |power|
-      ( Revs +   Aves + Vapers).each{ |clm|  power[clm]=nil }
+      ( Revs +   Aves + ByVapers).each{ |clm|  power[clm]=nil }
       power.save
     }
     reculc_all
   end
 
-  def self.reculc_all
-    self.all.each{ |pw|
+  def self.reculc_all(factory)
+    self.where("shimaad_factory_id = #{factory.id}").each{ |pw|
       pw.shape_is =  pw.na = pw.f4_peaks = pw.f3_solve = pw.f2_solve =  pw.differences = nil
       CashColumns.each{ |sym| pw[sym] = nil}
       pw.save
@@ -691,7 +693,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
         temp  = weather[h]
          if power && temp
            x0,y0,p0,sll,slh = [:threshold,:y0,:power_0line, :slope_lower, :slope_higher ].
-             map{ |sym|Shimada::Power::revise_params[sym]}
+             map{ |sym| revise_params[sym]}
            slp = temp > revise_params[:threshold]  ? slh : sll
            power -  slp*(temp-x0)*(power-p0)/(slp*(temp-x0)+y0-p0)
          else power ? power : 0

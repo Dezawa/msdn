@@ -202,7 +202,7 @@ module Shimada::Analyze
   end
 
   def reculc_all
-    @PowerModel.reculc_all
+    @PowerModel.reculc_all @factory
     redirect_to :action => :analyze
     #render  :file => 'application/index',:layout => 'application'
   end
