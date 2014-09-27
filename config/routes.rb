@@ -121,6 +121,7 @@ Rails.application.routes.draw do
   %w( analyze power factory reset_reevice_and_ave reculc_all reculc_shapes rm_gif standerd
      show_analyze show_gif).each{ |act|
    get  "/shimada/month/#{act}" =>  "shimada/month##{act}"
+   get  "/shimada/chubu/month/#{act}" =>  "shimada/chubu/month##{act}"
   }
 %w(graph graph_month graph_month_temp graph_month_bugs
 graph_the_day graph_patarn_all_month graph_deform graph_line 
@@ -129,6 +130,7 @@ graph_the_day graph_patarn_all_month graph_deform graph_line
 graph_simyartion graph_almighty graph_superman graph_superman2
 ).each{ |act|
    get  "/shimada/month/#{act}" =>  "shimada/month##{act}"
+   get  "/shimada/chubu/month/#{act}" =>  "shimada/chubu/month##{act}"
   }
 #       graph_month_bugs show_analyze difference_3 difference_ave
 #analyze power factory reset_reevice_and_ave reculc_all reculc_shapes rm_gif standerd
