@@ -40,27 +40,27 @@ class ShimadaPaternTest < ActiveSupport::TestCase
   end
 
   must "all" do
-    powers = Shimada::Month.all(:conditions => "month='2013-2-1'").map(&:powers).flatten
+    powers = Shimada::Month.where( "month='2013-2-1'").map(&:powers).flatten
     assert_equal [[1, "S"], [3, "00"], [3, "F"], [3, "H"], [4, "-0"], [4, "00"]
                  ],powers.map{ |pw| [pw.lines,pw.shape_calc]}.uniq.sort
   end
 
   must "average_diff:: data size" do
-    assert_equal 118,Shimada::Power.all(:conditions => "date is  not null").size
+    assert_equal 118,Shimada::Power.where("date is  not null").size
   end
   must "average_diff:: ave_power 初めはなし" do
     assert_equal nil, Shimada::Power.find_by_date(nil)
   end
   must "average_diff:: ave_power できる" do
-    ave_power = Shimada::Power.find_or_create_by_date(nil)
-    assert  Shimada::Power.find_by_date(nil)
+    ave_power = Shimada::Power.find_or_create_by(date: nil)
+    assert  Shimada::Power.find_by(date: nil)
   end
   must "average_diff:: " do
-    ave_power = Shimada::Power.average_diff
-    assert_equal [],  Shimada::Power.find_by_date(nil)
+    ave_power = Shimada::Power.average_diff 1
+    assert_equal [],  Shimada::Power.find_by(date: nil)
   end
  # must "3O" do
- #   powers = Shimada::Month.all(:conditions => "month='2013-2-1'").map(&:powers).flatten
+ #   powers = Shimada::Month.where("month='2013-2-1'").map(&:powers).flatten
  #   assert_equal [1],powers.select{ |pw| pw.lines == 3 && pw.shape_calc=="O"}.map(&:date)
  # end
 end

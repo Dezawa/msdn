@@ -4,16 +4,17 @@ require 'test_helper'
 class Shimada::MonthTest < ActiveSupport::TestCase
   #fixtures :shimada_months
 
-  ExcelFile = Rails.root + "/test/testdata/shimada/gunmen-power-20130-23,2014-23.xls"
-  CSVFile   = Rails.root + "/test/testdata/shimada/gunmen-power-20130-23,2014-23.csv.0"
-  NullFile   = Rails.root + "/test/testdata/shimada/gunmen-power-20130-23,2014-23.csv.2"
+  ExcelFile = File = Rails.root + "test/testdata/shimada/gunmen-power-20130-23,2014-23.xls"
+  CSVFile   = (Rails.root + "test/testdata/shimada/gunmen-power.csv.0").to_s
+  NullFile   = (Rails.root + "test/testdata/shimada/gunmen-power.csv.2").to_s
   def setup
      #@month = Shimada::Month.new
   end
 
   must "EXCEL から取り込む CSVファイル数" do
-    csvfiles = Shimada::Month.csv_files(ExcelFile).size
-    assert_equal 3,csvfiles
+    csvfiles = Shimada::Month.csv_files(ExcelFile,Rails.root+"test/testdata/shimada/gunmem_power.csv")
+pp csvfiles
+    assert_equal 3,csvfiles.size
   end
 
   must "CSV から取り込む 年" do

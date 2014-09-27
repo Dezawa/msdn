@@ -4,7 +4,7 @@ require 'test_helper'
 class ShimadaPowerTest < ActiveSupport::TestCase
 
   fixtures :shimada_powers
-
+  GMC=1
   must "データ数" do
     assert_equal 28*2 + 31*2,Shimada::Power.all.size
   end
@@ -20,7 +20,7 @@ class ShimadaPowerTest < ActiveSupport::TestCase
 
   must "複数のpowerで gnuplot するとgifができる" do
     powers = Shimada::Power.find(1,4,10)
-    path   = Shimada::Power.gnuplot(powers,:powers)
+    path   = Shimada::Power.gnuplot(GMC,powers,:powers)
   end
 
   must "Id=1 の最大値群は" do

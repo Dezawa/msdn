@@ -21,12 +21,24 @@ class Shimada::Chubu::MonthTest < ActiveSupport::TestCase
 
   must "2014/8 のmonth作成:月は2014/8一つできた" do
     monthis =     Shimada::Chubu::Month.create_all_monthis_by_csvtable( @rows ,@factory)
-    assert_equal [@month],monthis
-
+    assert_equal [@month],monthis.map(&:month)
   end
 
-  must "2014/8 のmonth作成:工場は中部" do
-    #assert_equal "中部シマダヤ",Shimada::Chubu::Month.create_by_file( @fp ,@factory).shimada_factory.name
+  must "2014/8 のmonth作成:CSV_UPLOAD するとMonthが１増える" do
+    start = Shimada::Chubu::Month.count
+    Shimada::Chubu::Month.csv_upload(@csvfile,@factory)
+    assert_equal start+1,Shimada::Chubu::Month.count
+  end
+
+  must "2014/8 のmonth作成:CSV_UPLOAD するとPowerが31増える" do
+    start = Shimada::Chubu::Power.count
+    Shimada::Chubu::Month.csv_upload(@csvfile,@factory)
+    assert_equal start+31,Shimada::Chubu::Power.count
+  end
+
+  must "2014/8 のmonth作成:CSV_UPLOAD するとできたのは8月" do
+    month = Shimada::Chubu::Month.csv_upload(@csvfile,@factory)
+    assert_equal @month,month.first.month
   end
 
   def cooldown
