@@ -191,7 +191,7 @@ class Shimada::Power < ActiveRecord::Base
   CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["line"]
 
   def self.power_all(factory_id,conditions = ["", [] ])
-    self.where( ["month_id is not null and date < '2014-7-1' and shimada_factory_id = #{factory_id} " +conditions[0] , *conditions[1] ] ) 
+    self.where( ["month_id is not null and shimada_factory_id = #{factory_id} " +conditions[0] , *conditions[1] ] ) 
   end
 
   def self.by_patern(factory_id,patern)
