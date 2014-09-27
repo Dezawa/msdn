@@ -467,7 +467,8 @@ set x2tics -10,5
           if @method == :revise_by_temp ;['蒸気補償', Shimada::Power::VaperParams]
           else ;                        ; ['蒸気補償', Shimada::Power::VaperParamsRaw]
           end
-        else         ; ['温度補償', Shimada::Power::ReviceParams]
+        #else         ; ['温度補償', Shimada::Power::ReviceParams]#.revise_params(@factory_id)]
+        else         ; ['温度補償', Shimada::Power.revise_params(@factory_id)]
         end
 
       x0,y0,sll,slh = [:threshold,:y0, :slope_lower, :slope_higher ].

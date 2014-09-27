@@ -190,6 +190,21 @@ class Shimada::Power < ActiveRecord::Base
   F2_SOLVE = %w(f2_x1 f2_x2)
   CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["line"]
 
+  @@ReviseParams = []
+  def self.revise_params(factory_id)
+    return @@ReviseParams[factory_id] if @@ReviseParams[factory_id] 
+    factory = Shimada::Factory.find(factory_id)
+    @@ReviseParams[factory_id] = 
+      { :threshold => factory.revise_threshold,   :y0           => factory.revise_y0,
+      :slope_lower => factory.revise_slope_lower, :slope_higher => factory.revise_slope_higher,
+      :power_0line => factory.revise_power_0line
+    }
+    #logger.debug("ReviceParams:#{@@ReviseParams[factory_id]}")
+    @@ReviseParams[factory_id]
+  end
+
+  def revise_params ; self.class.revise_params(shimada_factory_id) ;  end
+  
   def self.power_all(factory_id,conditions = ["", [] ])
     self.where( ["month_id is not null and shimada_factory_id = #{factory_id} " +conditions[0] , *conditions[1] ] ) 
   end
@@ -305,7 +320,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     #ave_power.difference
     @@average_line[line] = average_line
   end
-
+  
   # rev => 平均 、difference => SDEV、powers => +2σ、ave => -2σ
   def self.average_line_temp(factory_id,line)
     return @@average_line[line] if @@average_line[line]
@@ -337,6 +352,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     @@average_line[line] = average_line
   end
 
+
   def copy_revise
     std = self.class.average_line(self.line)
     Revs.each{ |sym|  self[sym] = std[sym] }
@@ -346,9 +362,9 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def inv_revise(temperature)
     temperature.each_with_index{ |temp,idx|
       rev = self[Revs[idx]]
-      self[Hours[idx]] = temp >  ReviceParams[:threshold]  ?
-      rev + ReviceParams[:slope_higher] * (temp - ReviceParams[:threshold]) : 
-      rev + ReviceParams[:slope_lower] * (temp - ReviceParams[:threshold])
+      self[Hours[idx]] = temp >  revise_params[:threshold]  ?
+      rev + revise_params[:slope_higher] * (temp - revise_params[:threshold]) : 
+      rev + revise_params[:slope_lower] * (temp - revise_params[:threshold])
     }
     self
   end
@@ -359,9 +375,9 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     temperature.each_with_index{ |temp,idx|
       Keys[method].each{ |hour|  
         value  = std[hour]
-        self[hour] = temp >  ReviceParams[:threshold]  ?
-        value + ReviceParams[:slope_higher] * (temp - ReviceParams[:threshold]) : 
-        value + ReviceParams[:slope_lower] * (temp - ReviceParams[:threshold])
+        self[hour] = temp >  revise_params[:threshold]  ?
+        value + revise_params[:slope_higher] * (temp - revise_params[:threshold]) : 
+        value + revise_params[:slope_lower] * (temp - revise_params[:threshold])
       }
     }
     self
@@ -675,8 +691,8 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
         temp  = weather[h]
          if power && temp
            x0,y0,p0,sll,slh = [:threshold,:y0,:power_0line, :slope_lower, :slope_higher ].
-             map{ |sym|Shimada::Power::ReviceParams[sym]}
-           slp = temp > ReviceParams[:threshold]  ? slh : sll
+             map{ |sym|Shimada::Power::revise_params[sym]}
+           slp = temp > revise_params[:threshold]  ? slh : sll
            power -  slp*(temp-x0)*(power-p0)/(slp*(temp-x0)+y0-p0)
          else power ? power : 0
          end
@@ -886,9 +902,9 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   end
 
   def self.inv_temp(pw,temp)
-    params = ReviceParams
-    temp >  params[:threshold]  ? pw + params[:slope_higher] * (temp - params[:threshold]) : 
-      pw + params[:slope_lower] * (temp - params[:threshold])
+    temp >  revise_params[:threshold]  ? 
+    pw + revise_params[:slope_higher] * (temp - revise_params[:threshold]) : 
+      pw + revise_params[:slope_lower] * (temp - revise_params[:threshold])
   end
 
   def self.inv_vaper(pw,vaper)

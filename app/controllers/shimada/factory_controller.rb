@@ -20,6 +20,11 @@ class Shimada::FactoryController <  Shimada::Controller
                     :link_label => "分析"})
      #HtmlLink.new(:id,"",:link => { :url => shimada_month_analyze_index_path,:link_label => "分析"})
     ]
+  LabelParams=
+    %w(revise_threshold revise_slope_lower revise_slope_higher revise_y0 revise_power_0line).
+    zip(%w(閾値 低域傾斜 高域傾斜 切片 ゼロライン)).
+    map{ |param,lbl|  HtmlNum.new(param,lbl,size: 3) }
+
   def set_instanse_variable
     super
     @factory_id = params[:factory_id] if  params[:factory_id]
@@ -31,17 +36,17 @@ class Shimada::FactoryController <  Shimada::Controller
     @TYTLE = "シマダヤ工場電力管理"
     @labels=Labels
     @TableEdit  = true
-    @TableHeaderDouble = [1,[2,"気象データ"]]
+    @TableHeaderDouble = [1,[2,"気象データ"],1,[5,"温度補正パラメータ"]]
     @Show = @Delete = @Edir = true
   end
   def add_on_table
-    @labels =  Labels[0,4]
+    @labels =  Labels[0,4]+LabelParams
     super
   end
 
 
   def edit_on_table
-    @labels =  Labels[0,4]
+    @labels =  Labels[0,4]+LabelParams
     super
   end
 
