@@ -62,7 +62,8 @@ Rails.application.routes.draw do
     acts.each{ |act| post "/#{model}/#{act}" => "#{model}##{act}" }
   end
   def set_resources(module_name,model)
-    resources "#{module_name}_#{model}",
+    resources "#{module_name}_#{model}".gsub(/\//,"_"),
+    #resources "#{module_name}_#{model}",
     path: "#{module_name}/#{model}", 
     controller: "#{module_name}/#{model}"
   end
@@ -118,34 +119,29 @@ Rails.application.routes.draw do
   set_get("book/kamoku",%w(edit_on_table_all_column))
 
   ############ しまだ
-  %w( analyze power factory reset_reevice_and_ave reculc_all reculc_shapes rm_gif standerd
+  %w(shimada/month shimada/chubu/month).each{ |shimada|
+    %w( analyze power factory reset_reevice_and_ave reculc_all reculc_shapes rm_gif standerd
      show_analyze show_gif).each{ |act|
-   get  "/shimada/month/#{act}" =>  "shimada/month##{act}"
-   get  "/shimada/chubu/month/#{act}" =>  "shimada/chubu/month##{act}"
+      get  "/#{shimada}/#{act}" =>  "#{shimada}##{act}"
+    }
+    %w(graph graph_month graph_month_temp graph_month_bugs
+       graph_the_day graph_patarn_all_month graph_deform graph_line 
+       graph_all_month graph_all_by_month  graph_all_month_vaper graph_all_month_temp 
+       graph_all_month_bugs graph_all_month_offset graph_all_month_bugs_offset
+        graph_all_month_lines 
+       graph_simyartion graph_almighty graph_superman graph_superman2
+    ).each{ |act|
+      get  "/#{shimada}/#{act}" =>  "#{shimada}##{act}"
+    }
+
+    %w(today tomorrow).each{ |day|
+      get "/#{shimada}/#{day}" => "#{shimada}##{day}"
+    }
+    set_post(shimada,EditTable)
   }
-%w(graph graph_month graph_month_temp graph_month_bugs
-graph_the_day graph_patarn_all_month graph_deform graph_line 
- graph_all_month graph_all_by_month  graph_all_month_vaper graph_all_month_temp graph_all_month_bugs
- graph_all_month_offset graph_all_month_bugs_offset graph_all_month_lines 
-graph_simyartion graph_almighty graph_superman graph_superman2
-).each{ |act|
-   get  "/shimada/month/#{act}" =>  "shimada/month##{act}"
-   get  "/shimada/chubu/month/#{act}" =>  "shimada/chubu/month##{act}"
-  }
-#       graph_month_bugs show_analyze difference_3 difference_ave
-#analyze power factory reset_reevice_and_ave reculc_all reculc_shapes rm_gif standerd
-   %w( 
-               ).each{ |act|
-    get "/shimada/month/:id/#{act}" => "shimada/month##{act}"
-  }
-  %w(today tomorrow).each{ |day|
-    get "/shimada/factory/#{day}" => "shimada/factory##{day}"
-  }
-  set_post("shimada/month",EditTable)
-  set_post("shimada/chubu/month",EditTable)
-  %w(month power factory).each{  |model|
-    set_resources("shimada",model) 
-  }
+    %w(month power factory chubu/month).each{  |model|
+      set_resources("shimada",model) 
+    }
   controller="shimada/factory"
   set_post(controller,EditTable)
   set_get(controller,%w(today update_today clear_today update_tomorrow))
