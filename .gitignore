@@ -49,3 +49,4 @@ tmp/img
 log
 vender
 vendor
+test/testdata/shimada/*csv*
