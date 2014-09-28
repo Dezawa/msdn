@@ -448,7 +448,9 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def offset_3(method,last=23)
     return [] if ( values = send(method) ).size < TimeOffset
     if date 
-      values[TimeOffset..last] + (( pw = self.class.find_by(date: date.tomorrow)) ? pw.send(method)[0..TimeOffset] : [])
+      values[TimeOffset..last] + 
+        (( pw = self.class.find_by(date: date.tomorrow,shimada_factory_id: shimada_factory_id)) ?
+         pw.send(method)[0..TimeOffset] : [])
     else
       values[TimeOffset..last] + values[0..TimeOffset]
     end
@@ -523,9 +525,10 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def f4_peaks ;@f4_peaks ||= f3_solve.map{ |x| f4(x)} ;end
   def nf4(x) ;    (((na[4] * x + na[3])*x + na[2])*x + na[1])*x+na[0] ;  end
   def nf4_peaks ;@nf4_peaks ||= nf3_solve.map{ |x| nf4(x)} ;end
-  def pw_peaks 
+
+  def revise_peaks 
     return if revise_by_temp.size == 0
-    logger.debug("PW_PEAKS:#{date} f3_solve=#{f3_solve.join(',')}")
+    logger.debug("REVISE_PEAKS:#{date} f3_solve=#{f3_solve.join(',')}")
     if f3x2 
       [ revise_by_temp_ave[0..[f3x2+PolyFitX0,1].max].max, 
         revise_by_temp_ave[[f3x2+PolyFitX0,22].min..23].max]
@@ -533,8 +536,8 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
       [revise_by_temp_ave.max]
     end
   end
-  def pw_peak1 ;pw_peaks[0] ;end
-  def pw_peak2 ;pw_peaks[1] ;end
+  def revise_peak1 ;revise_peaks[0] ;end
+  def revise_peak2 ;revise_peaks[1] ;end
 
 
   def pw_vary
@@ -546,15 +549,15 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   def difference_peak_sholder
     return nil if revise_by_temp_ave.size ==0
-    pw_peaks[0] - 
+    revise_peaks[0] - 
       ( revise_by_temp_ave[x2+PolyFitX0] || revise_by_temp_ave.last)
   end
 
   def difference_peak_vary
-    pw_peaks.max - pw_vary if pw_vary
+    revise_peaks.max - pw_vary if pw_vary
   end
 
-  def difference_peaks ;  ( pw_peaks.first - pw_peaks.last ).abs ;  end
+  def difference_peaks ;  ( revise_peaks.first - revise_peaks.last ).abs ;  end
 
   def f3(x) ;    ((a[4] * 4 * x + a[3]*3)*x + a[2]*2)*x + a[1] ;  end
   def nf3(x) ;    ((na[4] * 4 * x + na[3]*3)*x + na[2]*2)*x + na[1] ;  end
@@ -649,7 +652,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     return @weather if @weather
     return @weather = db_weather if db_weather
     return nil unless date
-    if db_weather = Weather.find_or_feach("maebashi", self.date)
+    if db_weather = Weather.find_or_feach(shimada_factory.weather_location, self.date)
       save
       @weather = db_weather
    
@@ -869,6 +872,17 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     Hours.map{ |h| self[h]}.sort.last(num)
   end
 
+
+  def month_of_day ;date.month ;end
+  def day_of_year ;date.yday ;end
+  def min_max_revs
+    pw = Revs.map{ |h| self[h]}.sort
+    [pw.first,pw.last]
+  end
+  def min_max_power
+    pw = Hours.map{ |h| self[h]}.sort
+    [pw.first,pw.last]
+  end
   def min_revs
     Revs.map{ |h| self[h]}.sort.first
   end
@@ -890,26 +904,27 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     revise_by_temp.zip(revise_by_temp_ave)[range].map{ |d,a| d-a }.standard_devitation
   end
 
-  def self.simulate_a_hour(line,hr,temp,vaper)
+  def self.simulate_a_hour(line,hr,temp,vaper,factory_id)
      polyfits = Shimada::Power::PolyFits[ line]
-     [inv_revice(f4(hr,polyfits[:ave]),temp,vaper),
-      inv_revice(f4(hr,polyfits[:min]),temp,vaper),
-      inv_revice(f4(hr,polyfits[:max]),temp,vaper)
+     [inv_revice(f4(hr,polyfits[:ave]),temp,vaper,factory_id),
+      inv_revice(f4(hr,polyfits[:min]),temp,vaper,factory_id),
+      inv_revice(f4(hr,polyfits[:max]),temp,vaper,factory_id)
      ]
   end 
 
-  def self.inv_revice(pw,temp,vaper) 
-    pw =   inv_vaper(pw,vaper) 
-    inv_temp(pw,temp)
+  def self.inv_revice(pw,temp,vaper,factory_id) 
+    pw =   inv_vaper(pw,vaper,factory_id) 
+    inv_temp(pw,temp,factory_id)
   end
 
-  def self.inv_temp(pw,temp)
-    temp >  revise_params[:threshold]  ? 
-    pw + revise_params[:slope_higher] * (temp - revise_params[:threshold]) : 
-      pw + revise_params[:slope_lower] * (temp - revise_params[:threshold])
+  def self.inv_temp(pw,temp,factory_id)
+    params=revise_params(factory_id)
+    temp >  params[:threshold]  ? 
+    pw + params[:slope_higher] * (temp - params[:threshold]) : 
+      pw + params[:slope_lower] * (temp - params[:threshold])
   end
 
-  def self.inv_vaper(pw,vaper)
+  def self.inv_vaper(pw,vaper,factory_id)
     params = VaperParams
     vaper >  params[:threshold]  ?
     pw + params[:slope_higher] * (vaper - params[:threshold]) : 

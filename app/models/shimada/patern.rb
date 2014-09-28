@@ -61,8 +61,8 @@ module Shimada::Patern
     if lines < 2  ; "S"
     elsif discriminant.abs < 0.000002       ;"00"
     elsif na && na[4] > 0
-     # if f3x3 < 9 && pw_peaks[1]-pw_peaks[2] > 120  ; "d" 
-     # elsif f3x1 >-12 && pw_peaks[1]-pw_peaks[0] > 120  ; "d" 
+     # if f3x3 < 9 && revise_peaks[1]-revise_peaks[2] > 120  ; "d" 
+     # elsif f3x1 >-12 && revise_peaks[1]-revise_peaks[0] > 120  ; "d" 
      # else
         "O"
      # end
@@ -79,8 +79,8 @@ module Shimada::Patern
       logger.debug("SHAPE-+: #{ date} #{difference_peaks < 100} && #{difference_peak_vary} > 150")
       if difference_peaks < 100 && difference_peak_vary > 100
          "-+H" #凹(H)は f3x1,f3x3 におけるf4の差が少なく、f3x2のf4の落ち込みが大
-      elsif pw_peaks[0] - pw_peaks[1] > 100  ; "-+D"
-      elsif pw_peaks[1] - pw_peaks[0] > 100  ; "-+U"
+      elsif revise_peaks[0] - revise_peaks[1] > 100  ; "-+D"
+      elsif revise_peaks[1] - revise_peaks[0] > 100  ; "-+U"
       else              ; "-+F"
       end
     elsif y1.abs <  Err && y2.abs <   Err   ;  "00" #
