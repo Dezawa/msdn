@@ -181,8 +181,8 @@ class Shimada::Power < ActiveRecord::Base
   VaperParams = { :threshold => 20.0, :slope_lower => 0.0, :slope_higher => 6.0,
     :y0 => 620.0 , :power_0line => 200.0}
 
-  VaperParamsRaw = { :threshold => 20.0, :slope_lower => 0.0, :slope_higher => 20.0,
-    :y0 => 660.0 , :power_0line => 200.0}
+  #VaperParamsRaw = { :threshold => 20.0, :slope_lower => 0.0, :slope_higher => 20.0,
+  #  :y0 => 660.0 , :power_0line => 200.0}
 
   Differ = ("00".."23").map{ |h| "difference#{h}" }
   NA     = ("f4_na0".."f4_na4").to_a
