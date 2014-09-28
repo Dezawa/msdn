@@ -175,8 +175,8 @@ class Shimada::Power < ActiveRecord::Base
   LinesVaper = [(0..280),(280..410),(410..540),(540..660),(660..800),(800..1000)]
   Header = "時刻"
 
-  ReviceParams = { :threshold => 10.0, :slope_lower => 0.0, :slope_higher => 9.0,
-    :y0 => 660.0 , :power_0line => 200.0}
+  #ReviceParams = { :threshold => 10.0, :slope_lower => 0.0, :slope_higher => 9.0,
+  #  :y0 => 660.0 , :power_0line => 200.0}
 
   VaperParams = { :threshold => 20.0, :slope_lower => 0.0, :slope_higher => 6.0,
     :y0 => 620.0 , :power_0line => 200.0}
@@ -190,6 +190,23 @@ class Shimada::Power < ActiveRecord::Base
   F2_SOLVE = %w(f2_x1 f2_x2)
   CashColumns = Differ + NA + F3_SOLVE + F2_SOLVE + ["line"]
 
+  @@VaperParamsRaw = []
+  def self.vaper_params_raw(factory_id)
+    #return @@ReviseParams[factory_id] if @@ReviseParams[factory_id] 
+    factory = Shimada::Factory.find(factory_id)
+    @@VaperParamsRaw[factory_id] = 
+      { :threshold => factory.raw_vaper_threshold,   :y0           => factory.raw_vaper_y0,
+      :slope_lower => factory.raw_vaper_slope_lower, :slope_higher => factory.raw_vaper_slope_higher,
+      :power_0line => factory.raw_vaper_power_0line
+    }
+    #logger.debug("ReviceParams:#{@@ReviseParams[factory_id]}")
+    @@VaperParamsRaw[factory_id]
+  end
+
+  def vaper_params_raw ; 
+    @vaper_params_raw ||= self.class.vaper_params_raw(shimada_factory_id) 
+  end
+  
   @@ReviseParams = []
   def self.revise_params(factory_id)
     #return @@ReviseParams[factory_id] if @@ReviseParams[factory_id] 

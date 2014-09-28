@@ -394,12 +394,17 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.string  "name"
     t.string  "weather_location"
     t.string  "forecast_location"
-    t.integer "power_model_id",                 default: 0
-    t.float   "revise_threshold",    limit: 24
-    t.float   "revise_slope_lower",  limit: 24
-    t.float   "revise_slope_higher", limit: 24
-    t.float   "revise_y0",           limit: 24
-    t.float   "revise_power_0line",  limit: 24
+    t.integer "power_model_id",                    default: 0
+    t.float   "revise_threshold",       limit: 24
+    t.float   "revise_slope_lower",     limit: 24
+    t.float   "revise_slope_higher",    limit: 24
+    t.float   "revise_y0",              limit: 24
+    t.float   "revise_power_0line",     limit: 24
+    t.float   "raw_vaper_threshold",    limit: 24
+    t.float   "raw_vaper_slope_lower",  limit: 24
+    t.float   "raw_vaper_slope_higher", limit: 24
+    t.float   "raw_vaper_y0",           limit: 24
+    t.float   "raw_vaper_power_0line",  limit: 24
   end
 
   create_table "shimada_months", force: true do |t|

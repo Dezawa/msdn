@@ -465,7 +465,7 @@ set x2tics -10,5
         case @opt[:vs_temp]
         when :vaper  ;
           if @method == :revise_by_temp ;['蒸気補償', Shimada::Power::VaperParams]
-          else ;                        ; ['蒸気補償', Shimada::Power::VaperParamsRaw]
+          else ;                        ; ['蒸気補償', Shimada::Power.vaper_params_raw(@factory_id)]
           end
         else         ; ['温度補償', Shimada::Power.revise_params(@factory_id)]
         end
