@@ -91,6 +91,7 @@ module Shimada::GraphAllMonth
     @PowerModel.gnuplot(@factory_id,@power,method,:by_date=>"%y/%m/%d",:yitle =>title )
     render :action => :graph,:layout => "hospital_error_disp"
   end
+
   def graph_all_month_
     graph_all_month_line_shape(params[@Domain][:graph_all_month_])
   end
