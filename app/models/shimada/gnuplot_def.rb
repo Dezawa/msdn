@@ -207,8 +207,8 @@ set grid #ytics
 
    def output_std_temp_file(power)
      polyfits = Shimada::Power::PolyFits[ power.line]
-     temp =  power.temps || Forecast.temperature24(:maebashi,power.date)
-     vaper = power.vapers || Forecast.vaper24(:maebashi,power.date)
+     temp =  power.temps || Forecast.temperature24(@factory.weather_location,power.date)
+     vaper = power.vapers || Forecast.vaper24(@factory.weather_location ,power.date)
       ave = []
       min = []
       max = []
@@ -452,7 +452,7 @@ set x2tics -10,5
             else        ; :temperatures
             end
       output_plot_data{ |f,power| 
-        weather = Weather.find_or_feach("maebashi", power.date)#.temperatureseratures[idx] 
+        weather = Weather.find_or_feach(@factory.weather_location , power.date)#.temperatureseratures[idx] 
           power.send(@method).zip(weather.send(sym))[@range].each{ |pw,tmp| 
             f.printf( "%.1f %.1f\n",tmp,pw ) if pw && tmp
           } if weather
@@ -503,7 +503,7 @@ set grid
 
     def output_path
       output_plot_data{ |f,power| 
-        weather = Weather.find_or_feach("maebashi", power.date)#.temperatures
+        weather = Weather.find_or_feach(@factory.weather_location , power.date)#.temperatures
           f.printf( "%.1f %.1f\n",weather.max_temp, power.send(@method)) if  weather
       }
     end
