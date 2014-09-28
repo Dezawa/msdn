@@ -18,6 +18,20 @@ class Shimada::Chubu::MonthController <   Shimada::MonthController
       # :data_file_labels => ""
     },
   }
+
+
+  def action_buttoms_analize
+    [# Action_buttoms,
+     #AllMonthaction_buttomss,         # 全月度グラフ ....
+     #AllMonthaction_buttomsPaterns,  # パターン分析結果
+     #AllMonthaction_buttomsPaternsByVaper,  # パターン分析結果
+     #AllMonthaction_buttomsPaternsByMonth,  # パターン分析結果
+     #AllMonthaction_buttomsDeform,   # 異常パターン
+     #AllMonthaction_buttoms3,        # 数、型指定しての、グラフなど
+     #AllMonthaction_buttoms2         # 
+    ]
+  end
+
   def graph_all_days
     para = params[@Domain]
     option = "hour10" #para.delete(:option) || para.delete("option") 

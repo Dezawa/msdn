@@ -134,19 +134,25 @@ module Shimada::Analyze
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/show_analyze" ,:key => :id, :key_val => :id,:link_label => "月度一覧表示" })
     ]
 
-  def analyze
-    @action_buttoms_analize =[# Action_buttoms,
-                               AllMonthaction_buttoms,         # 全月度グラフ ....
-                               AllMonthaction_buttomsPaterns,  # パターン分析結果
-                               AllMonthaction_buttomsPaternsByVaper,  # パターン分析結果
-                               AllMonthaction_buttomsPaternsByMonth,  # パターン分析結果
-                               AllMonthaction_buttomsDeform,   # 異常パターン
-                               AllMonthaction_buttoms3,        # 数、型指定しての、グラフなど
-                               AllMonthaction_buttoms2         # 
-                               
-                             ]
+  def action_buttoms_analize
+    [# Action_buttoms,
+     AllMonthaction_buttoms,         # 全月度グラフ ....
+     #AllMonthaction_buttomsPaterns,  # パターン分析結果
+     #AllMonthaction_buttomsPaternsByVaper,  # パターン分析結果
+     #AllMonthaction_buttomsPaternsByMonth,  # パターン分析結果
+     #AllMonthaction_buttomsDeform,   # 異常パターン
+     #AllMonthaction_buttoms3,        # 数、型指定しての、グラフなど
+     #AllMonthaction_buttoms2         # 
+    ]
+  end
 
+  def analyze
+    @action_buttoms_analize = action_buttoms_analize
     @labels =   AllMonthLabels 
+    analyze_sub
+  end
+
+  def analyze_sub
     @factory_id  = session[:shimada_factory] = params[:id].to_i if  params[:id]
     @factory    = Shimada::Factory.find @factory_id
     @TYTLE_post = "(#{@factory.name}工場)"
