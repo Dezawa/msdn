@@ -3,6 +3,7 @@ require "tempfile"
 require 'statistics'
 class Shimada::Chubu::Power < Shimada::Power
   self.table_name = "shimada_powers" # "shimada_power_by_30mins"
+
   belongs_to :month     ,:class_name => "Shimada::Month::Chubu"
   belongs_to :db_weather,:class_name => "Weather" 
   belongs_to :shimada_factory     ,:class_name => "Shimada::Factory"
