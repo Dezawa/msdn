@@ -4,6 +4,11 @@ require 'nkf'
 class Shimada::Chubu::Month < Shimada::Month
   self.table_name = 'shimada_months'
   has_many :shimada_powers ,class_name: "Shimada::Chubu::Power" ,dependent: :delete_all
+  include PowerGraph #::MonthlyGraph
+  extend PowerGraphScatter
+  extend PowerGraphGraph
+  #extend ::Power::Scatter
+  #extend ::Power::Graph
 
   class << self
     def csv_upload(csvfile,factory)
@@ -47,10 +52,28 @@ class Shimada::Chubu::Month < Shimada::Month
       pw =  clmns["最大電力(kW)"].to_f
       [date.beginning_of_month.to_date,date.to_date,"hour#{hour}".to_sym,pw]
     end
+
+    def target_powers(opt={ })
+      factory_id = opt.delete(:factory_id)
+      objects = 
+        if year = opt["year"] 
+          opt[:by_date] = "%m"  
+          self.where("shimada_factory_id = #{factory_id}").select{ |m| m.month.year == year.to_i}
+        elsif month = opt["month"]
+          opt[:by_date] = "%d"
+          self.where("shimada_factory_id = #{factory_id}").select{ |m| m.month == Time.parse(month)}
+        else
+          self.where("shimada_factory_id = #{factory_id}")
+        end.map(&:powers).flatten
+      objects = objects.select{ |pw| eval opt['select'] } if opt["select"]
+      objects
+    end
+
     def test
       file="/home/dezawa/MSDN/Custamer/しまだや/中部/平成２５年９月分.csv"
       csv_upload("/home/dezawa/MSDN/Custamer/しまだや/中部/平成２５年９月分.csv",1)
     end
+
 
   end
 end
