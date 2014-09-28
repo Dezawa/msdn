@@ -70,6 +70,7 @@ module Shimada::GnuplotDef
     attr_reader :factory_id
     def initialize(factory_id,powers,method,opt)
       @factory_id = factory_id
+      @factory    = Shimada::Factory.find @factory_id
       @powers = powers
       @method = method
       @opt    = opt
@@ -118,14 +119,14 @@ module Shimada::GnuplotDef
       end
     end
 
-    def output_path
+    def output_path(method)
       output_plot_data{ |f,power| 
-        power.send(@method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+@time_ofset,h ) if h }
+        power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+@time_ofset,h ) if h }
       }
     end
 
     def plot()
-      path = output_path
+      path = output_path(@method)
       group_by = ( @opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
       output_def_file(path, group_by)
       `(cd #{Rails.root};/usr/local/bin/gnuplot #{@def_file})`
@@ -205,10 +206,11 @@ set grid #ytics
       end
     end
 
-   def output_std_temp_file(power)
-     polyfits = Shimada::Power::PolyFits[ power.line]
-     temp =  power.temps || Forecast.temperature24(@factory.weather_location,power.date)
-     vaper = power.vapers || Forecast.vaper24(@factory.weather_location ,power.date)
+    # 標準稼動ラインを温湿度補正したデータ
+    def output_std_temp_file(power)
+      polyfits = Shimada::Power::PolyFits[ power.line]
+      temp =  power.temps || Forecast.temperature24(@factory.weather_location,power.date)
+      vaper = power.vapers || Forecast.vaper24(@factory.weather_location ,power.date)
       ave = []
       min = []
       max = []
@@ -279,7 +281,7 @@ set xtics 3,3 #1,1
 set x2tics 3,3 # 2,2
 set grid #ytics
 !
-    def output_path
+    def output_path(method)
       return [@std_data_file] #unless @powers
       output_plot_data{ |f,pw| 
         f.print "時刻 中央 上限 下限\n"
@@ -318,7 +320,7 @@ set grid #ytics
  
     def plot()
 @f.puts "BF output_path"
-      path = output_path
+      path = output_path(@method)
 @f.puts path.size
       group_by = ( @opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
 @f.puts group_by
@@ -403,10 +405,10 @@ set x2tics  0,250
       #@graph_size = opt[:graph_size] || "700,400"  
     end
 
-    def output_path
+    def output_path(method)
       output_plot_data{ |f,power| 
-        f.printf( "%.1f %.1f\n",power.hukurosu,power.send(@method)) if power.hukurosu && power.send(@method)
-        f.print "#{ @method} #{Shimada::Power::BugsFit[@method]}\n"
+        f.printf( "%.1f %.1f\n",power.hukurosu,power.send(method)) if power.hukurosu && power.send(method)
+        f.print "#{ method} #{Shimada::Power::BugsFit[method]}\n"
       }
     end
 
@@ -446,14 +448,14 @@ set x2tics -10,5
       @graph_size = opt[:graph_size] || "700,400"  
     end
 
-    def output_path
+    def output_path(method)
       sym = case @opt[:vs_temp]
             when :vaper ; :vapers
             else        ; :temperatures
             end
       output_plot_data{ |f,power| 
         weather = Weather.find_or_feach(@factory.weather_location , power.date)#.temperatureseratures[idx] 
-          power.send(@method).zip(weather.send(sym))[@range].each{ |pw,tmp| 
+          power.send(method).zip(weather.send(sym))[@range].each{ |pw,tmp| 
             f.printf( "%.1f %.1f\n",tmp,pw ) if pw && tmp
           } if weather
       }
@@ -501,10 +503,10 @@ set grid
       @Def = Def
     end
 
-    def output_path
+    def output_path(method)
       output_plot_data{ |f,power| 
         weather = Weather.find_or_feach(@factory.weather_location , power.date)#.temperatures
-          f.printf( "%.1f %.1f\n",weather.max_temp, power.send(@method)) if  weather
+          f.printf( "%.1f %.1f\n",weather.max_temp, power.send(method)) if  weather
       }
     end
     def output_def_file(path, group_by)
@@ -541,7 +543,7 @@ set xtics 1,1
       }
     end
 
-    def output_path
+    def output_path(method)
       powers_by_year = @powers.group_by{ |m,p_array| m.year }
       path = []
       powers_by_year.each{ |year,powers|
@@ -573,7 +575,7 @@ plot '%s'   using 1:2 with boxes
       super
       @Def = Def
     end
-    def output_path
+    def output_path(method)
       path =  [ Rails.root+"tmp/shimada/data/shimada_histgram"]
       open(path.first,"w"){ |f| 
         f.print "オフセット i頻度\n"
