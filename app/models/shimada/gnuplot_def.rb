@@ -86,10 +86,9 @@ module Shimada::GnuplotDef
     end
 
 
-    def output_plot_data(&block)
+    def output_plot_data(ary_powres,&block)
       path = []
       keys = nil
-      ary_powres = powers_group_by
       keys ||= ary_powres.keys.sort
       keys.each_with_index{ |k,idx|
         #ary_powres.each_with_index{ |month_powers,idx|
@@ -120,13 +119,14 @@ module Shimada::GnuplotDef
     end
 
     def output_path(method)
-      output_plot_data{ |f,power| 
+      output_plot_data(powers_group_by){ |f,power| 
         power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+@time_ofset,h ) if h }
       }
     end
 
     def plot()
       path = output_path(@method)
+      path += output_path(:temps) if @opt[:with] == :temps
       group_by = ( @opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
       output_def_file(path, group_by)
       `(cd #{Rails.root};/usr/local/bin/gnuplot #{@def_file})`
@@ -283,7 +283,7 @@ set grid #ytics
 !
     def output_path(method)
       return [@std_data_file] #unless @powers
-      output_plot_data{ |f,pw| 
+      output_plot_data(powers_group_by){ |f,pw| 
         f.print "時刻 中央 上限 下限\n"
         (0..23).
         each{ |h| f.printf( "%d %.3f %.3f %.3f\n",
@@ -406,7 +406,7 @@ set x2tics  0,250
     end
 
     def output_path(method)
-      output_plot_data{ |f,power| 
+      output_plot_data(powers_group_by){ |f,power| 
         f.printf( "%.1f %.1f\n",power.hukurosu,power.send(method)) if power.hukurosu && power.send(method)
         f.print "#{ method} #{Shimada::Power::BugsFit[method]}\n"
       }
@@ -453,7 +453,7 @@ set x2tics -10,5
             when :vaper ; :vapers
             else        ; :temperatures
             end
-      output_plot_data{ |f,power| 
+      output_plot_data(powers_group_by){ |f,power| 
         weather = Weather.find_or_feach(@factory.weather_location , power.date)#.temperatureseratures[idx] 
           power.send(method).zip(weather.send(sym))[@range].each{ |pw,tmp| 
             f.printf( "%.1f %.1f\n",tmp,pw ) if pw && tmp
@@ -504,7 +504,7 @@ set grid
     end
 
     def output_path(method)
-      output_plot_data{ |f,power| 
+      output_plot_data(powers_group_by){ |f,power| 
         weather = Weather.find_or_feach(@factory.weather_location , power.date)#.temperatures
           f.printf( "%.1f %.1f\n",weather.max_temp, power.send(method)) if  weather
       }
