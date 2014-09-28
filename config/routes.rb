@@ -124,12 +124,14 @@ Rails.application.routes.draw do
      show_analyze show_gif).each{ |act|
       get  "/#{shimada}/#{act}" =>  "#{shimada}##{act}"
     }
-    %w(graph graph_month graph_month_temp graph_month_bugs
+    %w(graph graph_month graph_month_temp graph_month_bugs   
        graph_the_day graph_patarn_all_month graph_deform graph_line 
        graph_all_month graph_all_by_month  graph_all_month_vaper graph_all_month_temp 
        graph_all_month_bugs graph_all_month_offset graph_all_month_bugs_offset
         graph_all_month_lines 
        graph_simyartion graph_almighty graph_superman graph_superman2
+
+       graph_all_days
     ).each{ |act|
       get  "/#{shimada}/#{act}" =>  "#{shimada}##{act}"
     }
@@ -150,6 +152,7 @@ Rails.application.routes.draw do
     each{ |act|
     get  "/power/ube_hospital/month/#{act}" =>  "power/ube_hospital/month##{act}"
   }
+  get  "/power/month/show_jpeg" =>  "power/month#show_jpeg"
   resources "power_ube_hospital_month" ,path:  "/power/ube_hospital/month" , controller: "power/ube_hospital/month"
   set_post( "power/ube_hospital/month",EditTable)
 
