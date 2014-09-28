@@ -54,10 +54,34 @@ class Shimada::Chubu::Power < Shimada::Power
       }.compact.group_by{ |day_hour_pw| day_hour_pw.first }.values
     end
     def average_diff(factory_id);    end
-
-
   end
+
   def max_diff_from_average_difference;  end
+
+  def revise_by_vaper
+    return @revise_by_vaper if @revise_by_vaper
+    unless self.by_vaper01
+      return [] unless weather
+
+      x0,y0,p0,sll,slh = [:threshold,:y0,:power_0line, :slope_lower, :slope_higher ].
+        map{ |sym| vaper_params_raw[sym]}
+
+      vapers0 = (0..23).map{ |h|
+        power = powers[h]
+        vaper  = weather[Vapers[h]]
+        logger.debug("Vapers #{vaper},#{Vapers[h]}")
+         if power && vaper
+           slp = vaper > vaper_params_raw[:threshold]  ? slh : sll
+           power -  slp*(vaper-x0)*(power-p0)/(slp*(vaper-x0)+y0-p0)
+         else power ? power : 0
+         end
+      }
+      ByVapers.each{ |r|  self[r] = vapers0.shift}
+      save
+    end
+    @revise_by_vaper = ByVapers.map{ |r| self[r]}
+  end 
+
   #Hours = (0..235).step(5).map{ |h| "hour%03d"%h}
   #def powers ; Hours.map{ |h| self[h]} ; end
 
