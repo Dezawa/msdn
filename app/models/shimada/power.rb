@@ -241,16 +241,16 @@ class Shimada::Power < ActiveRecord::Base
     end
   end
 
-  def self.reset_reevice_and_ave
+  def self.reset_reevice_and_ave(factory)
     self.all.each{ |power|
       ( Revs +   Aves + ByVapers).each{ |clm|  power[clm]=nil }
       power.save
     }
-    reculc_all
+    reculc_all(factory)
   end
 
   def self.reculc_all(factory)
-    self.where("shimaad_factory_id = #{factory.id}").each{ |pw|
+    self.where("shimada_factory_id = #{factory.id}").each{ |pw|
       pw.shape_is =  pw.na = pw.f4_peaks = pw.f3_solve = pw.f2_solve =  pw.differences = nil
       CashColumns.each{ |sym| pw[sym] = nil}
       pw.save

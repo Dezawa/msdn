@@ -199,7 +199,7 @@ module Shimada::Analyze
 
 
   def reset_reevice_and_ave
-    @PowerModel.reset_reevice_and_ave
+    @PowerModel.reset_reevice_and_ave(@factory)
     redirect_to :action => :index
   end
 
