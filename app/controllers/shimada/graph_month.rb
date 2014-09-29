@@ -6,7 +6,7 @@ module  Shimada::GraphMonth
   # 月別画面でのリンクボタン
   URL_GRAPH =  {  :url =>  "/shimada/month/graph",key: :id,key_val: :id, :htmloption => Popup}
   PowerLabels =
-    [ HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "グラフ"    ,method: "powers_3"           })),
+    [ HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "グラフ"    ,method: "powers_3"  , with: :tempvaper_3})),
       HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "温度補正"  ,method: "revise_by_temp_3"   })),
       HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "蒸気補正"  ,method: "revise_by_vaper_3"  })),
       HtmlLink.new(:id,"",:link => URL_GRAPH.merge({ :link_label => "補正後平均",method: "revise_by_temp_ave" })),

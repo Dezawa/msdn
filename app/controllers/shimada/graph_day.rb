@@ -2,6 +2,7 @@
 module Shimada::GraphDay
   Popup = %Q!onClick="window.open('/shimada/month/graph','graph','width=300,height=300,scrollbars=yes');" target="graph"! 
   def graph_sub(method,title,opt={ })
+logger.debug("GRAPH_SUB:opt -#{opt}")
     @power = Shimada::PowerModels[@factory.power_model_id].find(params[:id])
     @PowerModel.gnuplot(@factory_id,[@power],method,opt)
     @TYTLE = title + @power.date.strftime("(%Y年%m月%d日)")
@@ -21,16 +22,15 @@ module Shimada::GraphDay
 
   }
   def graph  
-    method = params[:method]
-    id     = params[:id]
+    method = params.delete(:method).to_sym
+    id     = params[:id].to_i
     
     opt = case method
           when /^revise|^normal/ ; { :fitting => :std_temp }
           else                  ; { }
           end
-    opt[:fitting] = params[:fitting].to_sym if params[:fitting]
-    method = method.to_sym
-     params[:id] = id.to_i
+    opt[:fitting] = params.delete(:fitting).to_sym if params[:fitting]
+    opt.merge! params
     graph_sub(method,TITLE_DAY[method],opt)
   end
   def graph_temp    

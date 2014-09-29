@@ -480,6 +480,10 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def difference_3 ; offset_3(:difference,22) ;  end
   def diffdiff_3 ; offset_3(:diffdiff,21) ;  end
   def aves_3     ; offset_3(:aves);end
+  def vapers_3    ; offset_3(:vapers) ; end
+  def temps_3    ; offset_3(:temps) ; end
+  def tempvaper_3; temps_3.zip(vapers_3); end
+
 
 
   # Array a of \sum_{i=0}^{次元数}(a_i x^i)
@@ -922,6 +926,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   end
 
   def self.simulate_a_hour(line,hr,temp,vaper,factory_id)
+    return ""
      polyfits = Shimada::Power::PolyFits[ line]
      [inv_revice(f4(hr,polyfits[:ave]),temp,vaper,factory_id),
       inv_revice(f4(hr,polyfits[:min]),temp,vaper,factory_id),

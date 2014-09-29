@@ -86,19 +86,18 @@ module Shimada::GnuplotDef
     end
 
 
-    def output_plot_data(ary_powres,&block)
+    def output_plot_data(ary_powres,idx_offset = 0,&block)
       path = []
-      keys = nil
+      keys = @keys
       keys ||= ary_powres.keys.sort
+      lbl  = @labels || keys
       keys.each_with_index{ |k,idx|
-        #ary_powres.each_with_index{ |month_powers,idx|
-        path << Rails.root+"tmp/shimada/data/shimada_power_temp%d"%idx
+        path << 
+        Rails.root+"tmp/shimada/data/shimada_power_temp%d"%(idx+idx_offset)
         open(path.last,"w"){ |f|
-          #f.puts "時刻 #{month_powers.first}"
-          f.puts "時刻 #{k}"
-          #month_powers.last.each{ |power|
+          f.puts "時刻 #{lbl[idx]}"
           ary_powres[k].each{ |power|
-            yield f,power #power.send(method).each_with_index{ |h,idx| f.printf "%d %.3f\n",idx+1,h }
+            yield f,power
             f.puts
           }
         }
@@ -118,25 +117,67 @@ module Shimada::GnuplotDef
       end
     end
 
-    def output_path(method)
-      output_plot_data(powers_group_by){ |f,power| 
+    def output_path(method,path_offset=0,ary_powers=nil)
+      output_plot_data(ary_powers || powers_group_by,path_offset){ |f,power| 
         power.send(method).each_with_index{ |h,idx| f.printf( "%d %.3f\n",idx+@time_ofset,h ) if h }
       }
     end
 
-    def plot()
-      path = output_path(@method)
-      path += output_path(:temps) if @opt[:with] == :temps
-      group_by = ( @opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
-      output_def_file(path, group_by)
-      `(cd #{Rails.root};/usr/local/bin/gnuplot #{@def_file})`
+    def output_path_with_data(path_offset=0,ary_powers=nil)
+      ary_powers ||= powers_group_by
+      @labels = case with=@opt["with"]
+              when /temps/ ; ["気温"]
+              when /vapers/; ["蒸気圧"]
+              when /tempvapers/; ["気温","蒸気圧"]
+              end#090-5317-3448
+      case with
+      when /temps|vapers/ 
+        return output_plot_data({ "気温 蒸気圧" => @powers},path_offset ){ |f,power| 
+          power.send(with).each_with_index{ |h,idx| 
+            f.printf( "%d %.3f\n",idx+@time_ofset,h ) if h
+          }
+        }
+      when /tempvaper/
+          return output_plot_data({  "気温 蒸気圧" =>  @powers},path_offset ){ |f,power| 
+            power.send(with).each_with_index{ |h,idx| f.printf( "%d %.3f %.3f\n",idx+@time_ofset,*h ) if h 
+          }
+        }
+        
+      end
+      
     end
 
-    def output_def_file(path, group_by)
+    def plot()
+      path = output_path(@method)
+      opt_path =  @opt["with"] ? output_path_with_data(path.size) : []
+      group_by = ( @opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
+      output_def_file(path, group_by,opt_path)
+      `(cd #{Rails.root};/usr/local/bin/gnuplot #{@def_file})`
+    end
+        
+    def ytics_for_with_option
+       case @opt["with"]
+       when /temps|vapers|tempvaper/ ; "set y2tics\nset y2range [-10:40]\nset xtics nomirror\nset key autotitle columnheader"
+       end
+    end
+
+    def plot_with_option(optpath)
+      return "" unless  @opt["with"]
+      case @opt["with"]
+      when /temps|vapers/ ;",\\\n " + optpath.map{ |p| "'#{p}' using 1:2  with line axis x1y2 "}.join(" , ") 
+      when /tempvaper/    
+        ",\\\n " + optpath.map{ |p| 
+          "'#{p}' using 1:2  with line axis x1y2 ,'' using 1:3  with line axis x1y2 "}.join(" , ") 
+      end
+    end
+
+    def output_def_file(path, group_by,optpath=[])
       preunble = @Def% [ @graph_file , @opt[:title] || "消費電力" ,group_by ,@xrange ]
       open(@def_file,"w"){ |f|
         f.puts preunble 
+        f.puts  ytics_for_with_option if @opt["with"]
         f.print "plot " + path.map{ |p| "'#{p}' using 1:2  with line"}.join(" , ")
+        f.print plot_with_option(optpath)
         if  @opt[:by_line] 
           f.print " , " + Lines.map{ |line| line.last}.join(" , ")
         elsif @opt[:fitting]
@@ -215,7 +256,7 @@ set grid #ytics
       min = []
       max = []
       (0..23).each{ |h| 
-        av,mn,mx = Shimada::Power.simulate_a_hour(power.line,h,temp[h],vaper[h])
+        av,mn,mx = Shimada::Power.simulate_a_hour(power.line,h,temp[h],vaper[h],@factory_id)
         ave << av; min << mn ; max << mx
       }
 
@@ -226,9 +267,9 @@ set grid #ytics
        max = max[l..-1]+max[0 .. l-1]
      end
      open(@std_data_file,"w"){ |f|
-        f.print "時刻 平均 上限 下限\n"
-        (0..21).
-       each{ |h| f.printf( "%d %.3f %.3f %.3f\n", @time_ofset+h,ave[h],max[h],min[h]) }
+    #    f.print "時刻 平均 上限 下限\n"
+    #    (0..21).
+    #   each{ |h| f.printf( "%d %.3f %.3f %.3f\n", @time_ofset+h,ave[h],max[h],min[h]) }
       }
     end   
    def output_stdfile(line)
@@ -292,7 +333,7 @@ set grid #ytics
         }
       }
     end
-    def doutput_def_file(path, group_by)
+    def doutput_def_file(path, group_by,optpath=[])
       preunble = @Def% [ @graph_file , @opt[:title] || "消費電力予想" ,group_by ,@xrange ]
       open(@def_file,"w"){ |f|
         f.puts preunble 
@@ -324,7 +365,7 @@ set grid #ytics
 @f.puts path.size
       group_by = ( @opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
 @f.puts group_by
-      output_def_file(path, group_by)
+      output_def_file(path, group_by,optpath=[])
       `(cd #{Rails.root};/usr/local/bin/gnuplot #{@def_file})`
     end
   end
@@ -412,7 +453,7 @@ set x2tics  0,250
       }
     end
 
-    def output_def_file(path, group_by)
+    def output_def_file(path, group_by,optpath=[])
       bugs_fit =  Shimada::Power.bugs_fit(@method)
       open(@def_file,"w"){ |f|
         f.puts  "# #{ @method} #{Shimada::Power::BugsFit[@method.to_sym]}\n"
@@ -461,7 +502,7 @@ set x2tics -10,5
       }
     end
 
-    def output_def_file(path, group_by)
+    def output_def_file(path, group_by,optpath=[])
       size = @opt[:vs_temp] == :vaper ? "[0:35]" : "[-10:40]"
       title,line_params = 
         case @opt[:vs_temp]
@@ -509,7 +550,7 @@ set grid
           f.printf( "%.1f %.1f\n",weather.max_temp, power.send(method)) if  weather
       }
     end
-    def output_def_file(path, group_by)
+    def output_def_file(path, group_by,optpath=[])
       open(@def_file,"w"){ |f|
           f.puts @Def%[@graph_file,@opt[:title] ]
           f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 ps 0.3"}.join(" , ")
@@ -534,7 +575,7 @@ set xtics 1,1
       @Def = Def
     end
 
-    def output_def_file(path, group_by)
+    def output_def_file(path, group_by,optpath=[])
       open(@def_file,"w"){ |f|
         f.puts @Def%[@graph_file,@opt[:title] ]
         i=5
@@ -585,7 +626,7 @@ plot '%s'   using 1:2 with boxes
       path
     end
 
-    def output_def_file(path, group_by)
+    def output_def_file(path, group_by,optpath=[])
       open(@def_file,"w"){ |f|
           f.puts @Def%[@graph_file,@opt[:title],path[0] ]
           f.puts "set terminal  jpeg  size 600,200 \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n"         #end
