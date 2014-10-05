@@ -132,23 +132,11 @@ class HtmlLink   < HtmlCell
     disp(object,htmlopt="")
   end
   def disp(object,htmlopt="")
-# <<<<<<< HEAD:app/models/concerns/html_cell.rb
-#     #safe_join(
-#     "<a href='".html_safe+
-#               link[:url].html_safe+
-#               "?".html_safe+
-#               link[:key].to_s.html_safe+
-#               "=".html_safe+
-#               object.send(link[:key_val]).to_s.html_safe+
-#               "'>".html_safe+
-#               object.send(symbol).html_safe+
-#               "</a>G".html_safe
-#
-#     ("<a href='#{link[:url]}?#{link[:key]}=#{object.send(link[:key_val])}"+
-#      "'>#{object.send(symbol)}</a>").html_safe
-# =======
     links = link.dup
     url = links.delete(:url)
+    if /%s/ =~ url
+      url = url % object.prefix
+    end
     key = links.delete(:key)
     key_val = links.delete(:key_val)
     htmloption = links.delete(:htmloption)

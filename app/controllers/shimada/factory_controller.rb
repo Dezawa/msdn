@@ -10,13 +10,14 @@ class Shimada::FactoryController <  Shimada::Controller
      HtmlSelect.new(:forecast_location,"予報",:correction => WeatherLocation.name_location),
      #all.map{|wl| [wl.name,wl.location]}),
      HtmlNum.new(:power_model_id,"パワーモデル",size: 2),
+     HtmlText.new(:prefix,"subモデル",:size=>4),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/today",:key => :id, :key_val => :id,
                     :link_label => "本日実績", :htmloption =>PopupToday}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/tomorrow",:key => :id, :key_val => :id,
                     :link_label => "明日予報"}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/power",:key => :id, :key_val => :id,
                     :link_label => "過去実績"}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/analyze",:key => :id, :key_val => :id,
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/%s/analyze",:key => :id, :key_val => :id,
                     :link_label => "分析"})
      #HtmlLink.new(:id,"",:link => { :url => shimada_month_analyze_index_path,:link_label => "分析"})
     ]
@@ -41,14 +42,20 @@ class Shimada::FactoryController <  Shimada::Controller
     @TableHeaderDouble = [1,[2,"気象データ"],1,[5,"温度補正パラメータ"],[5,"蒸気圧補正パラメータ"]]
     @Show = @Delete = @Edir = true
   end
+
+  def index
+    find_and
+    render :layout => 'application'
+  end
+
   def add_on_table
-    @labels =  Labels[0,4]+LabelParams
+    @labels =  Labels[0,5]+LabelParams
     super
   end
 
 
   def edit_on_table
-    @labels =  Labels[0,4]+LabelParams
+    @labels =  Labels[0,5]+LabelParams
     super
   end
 
