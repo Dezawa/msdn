@@ -39,12 +39,12 @@ module Statistics
 end
 class Array
   def average
-    inject(0.0) { |sum, i| sum += i } / size
+    compact.inject(0.0) { |sum, i| sum += i } / size
   end
 
   def variance
     ave = average
-    inject(0.0) { |sum, i| sum += (i - ave)**2 } / size
+    compact.inject(0.0) { |sum, i| sum += (i - ave)**2 } / size
   end
 
   def standard_devitation
