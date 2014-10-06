@@ -110,6 +110,7 @@ module Shimada::GraphAllMonth
     opt.merge!(:graph_file => "all_month#{graph_file}_#{method}_#{@factory_id}" ) 
     @graph_file =  opt[:graph_file]
     unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{opt[:graph_file]}.gif") == true
+logger.debug(":GRAPH_FILE: #{@graph_file}")
       #months = @MonthModel.all
       if params[@Domain][:powers]
         @power=@PowerModel.send(params[@Domain][:powers].to_sym)
@@ -195,42 +196,53 @@ module Shimada::GraphAllMonth
   end
 
   def graph_all_month_vaper
-    line =  (params[@Domain] && params[@Domain][:line]) ? params[@Domain][:line] : nil 
-    method =   (params[@Domain] && params[@Domain][:method]) ? params[@Domain][:method] : :revise_by_temp
-    if params[@Domain] && params[@Domain][:each_month]
-      @MonthModel.all.each{ |month| graph_temp_(month)}
-    else
-      @graph_file =  "all_month_vs_vaper_#{method}" + (line ? line : "")+"_#{@factory_id}"
-      unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
-        conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
-        @power = @PowerModel.power_all(@factory_id,conditions)
-        @TYTLE = "蒸気量-#{method == 'powers' ? '未補正' : ''}消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
+    @method =   (params[@Domain] && params[@Domain][:method]) ? params[@Domain][:method] : :revise_by_temp
+    @vs_temp = :vaper
+    @graphbasename =  "all_month_vs_vaper_"
+    @title_base    =  "蒸気量-#{@method == 'powers' ? '未補正' : ''}消費電力 全月度 "
 
-        @PowerModel.gnuplot(@factory_id,@power,method,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => :vaper,
-                               :graph_file =>  @graph_file, :with_Approximation => true,
-                               :range => (7..19))
-      end
-    end
+    # if params[@Domain] && params[@Domain][:each_month]
+    #   @MonthModel.all.each{ |month| graph_temp_(month)}
+    # else
+    #   @line =  (params[@Domain] && params[@Domain][:line]) ? params[@Domain][:line] : nil 
+    #   @graph_file =  "all_month_vs_temp" + "#{@method}" + (@line ? "_"+@line : "")+"_#{@factory_id}"
+    #   unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
+         graph_all_month_temp_vaper_sub
+    #   end
+    # end
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
   def graph_all_month_temp
-    line =  (params[@Domain] && params[@Domain][:line]) ? params[@Domain][:line] : nil 
+    @method =   (params[@Domain] && params[@Domain][:method]) ? params[@Domain][:method] : :powers
+    @vs_temp = true
+    @graphbasename =  "all_month_vs_temp_"
+    @title_base    =  "温度-消費電力 全月度 "
+
+         graph_all_month_temp_vaper_sub
+    render :action => :graph,:layout => "hospital_error_disp"
+  end
+
+  def graph_all_month_temp_vaper_sub
     if params[@Domain] && params[@Domain][:each_month]
       @MonthModel.all.each{ |month| graph_temp_(month)}
     else
-      @graph_file =  "all_month_vs_temp" + (line ? "_"+line : "")+"_#{@factory_id}"
+      @line =  (params[@Domain] && params[@Domain][:line]) ? params[@Domain][:line] : nil 
+      @graph_file =  "all_month_vs_temp" + "#{@method}" + (@line ? "_"+@line : "")+"_#{@factory_id}"
       unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
-        conditions = line ?  [" and line = ? ", line ] :  ["", [] ]
+        conditions = case @line
+                     when "0","1","2" ;  [" and line = ? ", @line ]
+                     when nil         ;  ["", [] ]
+                     when /^-\d/      ;  [" and not line = ? ", @line.sub(/-/,"") ]
+                     end
         @power = @PowerModel.power_all(@factory_id,conditions)
-        @TYTLE = "温度-消費電力 全月度 " + ( line ? line+"ライン稼働" : "")
-
-        @PowerModel.gnuplot(@factory_id,@power,:powers,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => true,
-                               :graph_file =>  @graph_file, :with_Approximation => true,
-                               :range => (7..19))
+        @TYTLE ||= "温度-消費電力 全月度 " + ( @line ? @line+"ライン稼働" : "")
+        @TYTLE ||= @title_base + ( @line ? @line+"ライン稼働" : "")
+        @PowerModel.gnuplot(@factory_id,@power,@method,:by_date => "%y/%m",:title => @TYTLE,:vs_temp => @vs_temp,
+                            :graph_file =>  @graph_file, :with_Approximation => true,
+                            :range => (7..19))
       end
     end
-    render :action => :graph,:layout => "hospital_error_disp"
   end
 
   def graph_all_month_bugs
