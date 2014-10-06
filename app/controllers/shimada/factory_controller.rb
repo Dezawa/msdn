@@ -17,7 +17,7 @@ class Shimada::FactoryController <  Shimada::Controller
                     :link_label => "明日予報"}),
      HtmlLink.new(:id,"",:link => { :url => "/shimada/month/power",:key => :id, :key_val => :id,
                     :link_label => "過去実績"}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/%s/analyze",:key => :id, :key_val => :id,
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/%s/month/analyze",:key => :id, :key_val => :id,
                     :link_label => "分析"})
      #HtmlLink.new(:id,"",:link => { :url => shimada_month_analyze_index_path,:link_label => "分析"})
     ]
