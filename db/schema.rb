@@ -405,6 +405,7 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.float   "raw_vaper_slope_higher", limit: 24
     t.float   "raw_vaper_y0",           limit: 24
     t.float   "raw_vaper_power_0line",  limit: 24
+    t.text    "prefix"
   end
 
   create_table "shimada_months", force: true do |t|

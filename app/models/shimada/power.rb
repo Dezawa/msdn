@@ -168,7 +168,7 @@ class Shimada::Power < ActiveRecord::Base
   }
 
   DayOffset = [(3..23),(0..3)]
-  TimeOffset = 2
+  #TimeOffset = 2
   @@average_diff = nil
 
   Lines = [(0..280),(280..410),(410..540),(540..660),(660..800),(800..1000)]
@@ -462,14 +462,14 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def powers ; Hours.map{ |h| self[h]} ; end
   def aves   ; Aves.map{ |h|  self[h]} ; end
 
-  def offset_3(method,last=23)
-    return [] if ( values = send(method) ).size < TimeOffset
+  def offset_3(method,opt = { last: 23, offset: Shimada::TimeOffset[shimada_factory.power_model_id]})
+    return [] if ( values = send(method) ).size < opt[:offset]
     if date 
-      values[TimeOffset..last] + 
+      values[opt[:offset]..opt[:last]] + 
         (( pw = self.class.find_by(date: date.tomorrow,shimada_factory_id: shimada_factory_id)) ?
-         pw.send(method)[0..TimeOffset] : [])
+         pw.send(method)[0.. opt[:offset]] : [])
     else
-      values[TimeOffset..last] + values[0..TimeOffset]
+      values[opt[:offset].. opt[:last]] + values[0..opt[:offset]]
     end
   end
 
@@ -477,8 +477,8 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   def revise_by_temp_3 ; offset_3(:revise_by_temp) ;  end
   def revise_by_vaper_3 ; offset_3(:revise_by_vaper) ;  end
   def revise_by_month_3 ; offset_3(:revise_by_month) ;  end
-  def difference_3 ; offset_3(:difference,22) ;  end
-  def diffdiff_3 ; offset_3(:diffdiff,21) ;  end
+  def difference_3 ; offset_3(:difference,last: 22) ;  end
+  def diffdiff_3 ; offset_3(:diffdiff,last: 21) ;  end
   def aves_3     ; offset_3(:aves);end
   def vapers_3    ; offset_3(:vapers) ; end
   def temps_3    ; offset_3(:temps) ; end
