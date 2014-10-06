@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 class Shimada::Chubu::MonthController <   Shimada::MonthController
+  include Shimada::Chubu::Analyze
+
   AllMonthOpt ={ "power" =>  { :by_date => "%Y",:data_file_labels => nil,:x_method => :hours},
     
     "temp-power" => { :by_date => "%Y",
