@@ -76,7 +76,7 @@ module Shimada::GnuplotDef
       @opt    = opt
       @time_ofset,@xrange =  
         if /_3$/ =~ method.to_s
-          [ Shimada::Power::TimeOffset+1,"[#{Shimada::Power::TimeOffset+1}:#{Shimada::Power::TimeOffset+25}]"]
+          [ Shimada::TimeOffset[@factory.power_model_id]+1,"[#{Shimada::TimeOffset[@factory.power_model_id]+1}:#{Shimada::TimeOffset[@factory.power_model_id]+25}]"]
         else ;  [1,"[1:24]"]
         end
       @def_file = Rails.root+"tmp/shimada/data/power.def"
@@ -172,7 +172,7 @@ module Shimada::GnuplotDef
     end
 
     def output_def_file(path, group_by,optpath=[])
-      preunble = @Def% [ @graph_file , @opt[:title] || "消費電力" ,group_by ,@xrange ]
+      preunble = @Def% [ @graph_file , @opt[:title] || "消費電力" ,group_by ,@xrange ,@xrange ]
       open(@def_file,"w"){ |f|
         f.puts preunble 
         f.puts  ytics_for_with_option if @opt["with"]
@@ -199,6 +199,7 @@ set title "%s"
 %s
 set yrange [0:1000]
 set xrange %s # [1:24]
+set x2range %s # [1:24]
 set xtics 3,3 #1,1
 set x2tics 3,3 # 2,2
 set grid #ytics
@@ -349,8 +350,8 @@ set grid #ytics
   class Standerd < Power
     def initialize(factory_id,powers,method,opt)
       super
-      @time_ofset,@xrange =  [ Shimada::Power::TimeOffset+1,
-                               "[#{Shimada::Power::TimeOffset+1}:#{Shimada::Power::TimeOffset+25}]"]
+      @time_ofset,@xrange =  [ Shimada::TimeOffset[@factory.power_model_id]+1,
+                               "[#{Shimada::TimeOffset[@factory.power_model_id]+1}:#{Shimada::TimeOffset[@factory.power_model_id]+25}]"]
       @method = @opt[:mode] || :revise_by_temp_3
       @opt[:fitting] = true
 
