@@ -82,8 +82,42 @@ class Shimada::Chubu::Power < Shimada::Power
     @revise_by_vaper = ByVapers.map{ |r| self[r]}
   end 
 
-  #Hours = (0..235).step(5).map{ |h| "hour%03d"%h}
-  #def powers ; Hours.map{ |h| self[h]} ; end
+  # 12-18時の平均と分散を求め、 
+  #   平均： deviation_of_difference,"差分の偏差"
+  #   分散： :deviation_of_revice、電力偏差
+  # その関係から平日稼働、平日稼働だが不安定、休日 を分ける
+  #    line   稼働数：  休0   不1   平2
+  def deviation_of_difference # 平均
+    @deviation_of_difference ||= powers[11..17].average
+  end
+
+  def deviation_of_revice(range = 8..20 ) # 分散
+    @deviation_of_revice ||= powers[11..17].standard_devitation 
+  end
+
+  # 分散 <20 平均 > 350
+  def lines
+    return @lines if @lines
+    unless line
+      lines = 
+        case [deviation_of_revice <= 20.0 , deviation_of_difference > 350]
+        when [true,true]   ; 2
+        when [false,true]  ; 1
+        else               ;0
+        end
+      update_attribute(:line , lines)
+    end
+    @lines = line
+  end
+
+  def shape_calc
+    case [deviation_of_revice <= 20.0 , deviation_of_difference > 350]
+    when [true,true]   ; 2
+    when [false,true]  ; 1
+    else               ;0
+    end
+
+  end
 
 
 end
