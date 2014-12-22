@@ -200,16 +200,7 @@ logger.debug(":GRAPH_FILE: #{@graph_file}")
     @vs_temp = :vaper
     @graphbasename =  "all_month_vs_vaper_"
     @title_base    =  "蒸気量-#{@method == 'powers' ? '未補正' : ''}消費電力 全月度 "
-
-    # if params[@Domain] && params[@Domain][:each_month]
-    #   @MonthModel.all.each{ |month| graph_temp_(month)}
-    # else
-    #   @line =  (params[@Domain] && params[@Domain][:line]) ? params[@Domain][:line] : nil 
-    #   @graph_file =  "all_month_vs_temp" + "#{@method}" + (@line ? "_"+@line : "")+"_#{@factory_id}"
-    #   unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
          graph_all_month_temp_vaper_sub
-    #   end
-    # end
     render :action => :graph,:layout => "hospital_error_disp"
   end
 
@@ -228,7 +219,7 @@ logger.debug(":GRAPH_FILE: #{@graph_file}")
       @MonthModel.all.each{ |month| graph_temp_(month)}
     else
       @line =  (params[@Domain] && params[@Domain][:line]) ? params[@Domain][:line] : nil 
-      @graph_file =  "all_month_vs_temp" + "#{@method}" + (@line ? "_"+@line : "")+"_#{@factory_id}"
+      @graph_file =  @graphbasename + "#{@method}" + (@line ? "_"+@line : "")+"_#{@factory_id}"
       unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
         conditions = case @line
                      when "0","1","2" ;  [" and line = ? ", @line ]

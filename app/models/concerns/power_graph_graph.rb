@@ -2,7 +2,7 @@
 module  PowerGraphGraph
   def graph_by_hour(objects,opt={ })
     opt = { :xlabel => "xl '時刻'",:ylabel => "yl '消費電力'"}.merge opt
-    objs = group_by(objects,opt)
+    objs = group_by_(objects,opt)
     path = output_plot_data(objs,opt){ |f,obj|
       values = obj.send(opt["method"])
       ("01".."24").each_with_index{ |hr,idx| f.printf "%s %.3f\n",hr,values[idx] }
@@ -93,7 +93,7 @@ logger.debug("DIF_OPTS opt=#{opt}")
       end
   end
 
-  def group_by(objects,opt)
+  def group_by_(objects,opt)
     pws = if opt[:by_date]
             objects.group_by{ |p| p.date.strftime(opt[:by_date])}
           elsif opt[:group_by] 

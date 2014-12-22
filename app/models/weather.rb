@@ -2,6 +2,8 @@
 require 'pp'
 
 class Weather < ActiveRecord::Base
+  include PowerGraph
+  extend PowerGraphGraph
   Temperature = ("hour01".."hour24").to_a
   Vaper       = ("vaper01".."vaper24").to_a
   Humidity    = ("humidity01".."humidity24").to_a
@@ -13,6 +15,24 @@ class Weather < ActiveRecord::Base
 
 
   class << self
+    def plot_year(weather_location,day_from,day_to,hour_from,hour_to)
+      day_from  = Time.parse(day_from || "2013-1-1") 
+      day_to    = Time.parse(day_to   || "2020-12-31")
+      hour_from = (hour_from||9).to_i - 1
+      hour_to   = (hour_to ||15).to_i - 1
+      weathers  = self.where(["location =? and date >= ?  and date <= ?",
+                             weather_location,day_from,day_to])
+      graph_by_days_hour weathers
+      #output_plot_year_data(weathers,hour_from,hour_to)
+      #opt = {:def_file => Rails.root+"tmp/weather_temp_vaper.def",
+      #  :location => WeatherLocation.find_by(location: weather_location) 
+      #}.merge(opt)
+      #graph_file = output_plot_year_def_file(path,opt)
+      #`(cd #{Rails.root};/usr/local/bin/gnuplot #{opt[:def_file]})`
+      graph_file
+      
+    end
+
     def temp_vaper_graph(weather_location,opt={ })
       path = output_plot_data(weather_location,opt)
       opt = {:def_file => Rails.root+"tmp/weather_temp_vaper.def",
@@ -38,6 +58,21 @@ class Weather < ActiveRecord::Base
         }
       }
       path
+    end
+
+    def output_plot_year_data(weathers,hour_from,hour_to)
+      path = [Rails.root+"/tmp/weather_temp_vaper_year"]
+      open( path.last,"w"){ |f|
+        f.puts "年初からの日数 温度 水蒸気圧"
+        weathers.each{ |w| 
+          year_date = w.date.yday
+          (hour_from..hour_to).each
+            w.temperatures.each_with_index{ |temp,idx| 
+              f.printf("%.1f %.1f\n",temp,w.vapers[idx])
+            }
+          }
+        }
+
     end
 
     Def =

@@ -4,8 +4,9 @@ module Shimada::GraphDay
   def graph_sub(method,title,opt={ })
 logger.debug("GRAPH_SUB:opt -#{opt}")
     @power = Shimada::PowerModels[@factory.power_model_id].find(params[:id])
+    opt[:title] = @TYTLE = title + @power.date.strftime("(%Y年%m月%d日)")
     @PowerModel.gnuplot(@factory_id,[@power],method,opt)
-    @TYTLE = title + @power.date.strftime("(%Y年%m月%d日)")
+
     render  :action => :graph,:layout => "hospital_error_disp"
   end
 

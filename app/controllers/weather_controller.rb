@@ -26,6 +26,7 @@ class WeatherController < CommonController #ApplicationController
     @TableEdit = [[:select_and_action,:change_location,"地域変更",
                    {:correction => correction ,:selected => @weather_location }],
                   [:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}],
+                  [:input_and_action,"plot_year","期間変化グラフ。start end 時刻-時刻",{:size=>24}],
                   [:form,:temp_vaper,"温度-水上気圧図"],
                   [:form,:weather_location,"気象エリア設定"],
                   [:form,:cband,"C-band"]
@@ -54,6 +55,13 @@ class WeatherController < CommonController #ApplicationController
     else
       super
     end
+  end
+
+  def plot_year
+    day_from,day_to,hour_from,hour_to = params[@Domain][:plot_year].split(/\s+|,/)
+    @graph_file = Weather.plot_year(@weather_location,day_from,day_to,hour_from,hour_to)
+    @graph_format = :jpeg
+    render  :file => 'application/graph',:layout => 'application'
   end
 
   def temp_vaper

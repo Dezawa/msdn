@@ -4,7 +4,7 @@ module  PowerGraphScatter
 
   # opt  :by_date, :group_by, or {}
   def graph_scatter(powers,opt={ })
-    objs = group_by(powers,opt)
+    objs = group_by_(powers,opt)
     path = output_plot_data(objs,opt){ |f,obj|
       values   = obj.send(opt["method"])
       x_values = obj.send(opt[:x_method]) 

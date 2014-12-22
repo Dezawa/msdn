@@ -294,7 +294,7 @@ end
     if win_name = opt[:popup]
       if @model
       fmt =
- "<div><form action='/%s/%s'>
+ "<div><form action='/%s/%s' method='get'>
   <input name='authenticity_token' type='hidden' value='%s' />
   <input id='%s_id' name='%s[id]' type='hidden' value='%d' />
   <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' 'width=500,height=400%s'); target='%s'\">
@@ -302,14 +302,14 @@ end
       fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,win_name,scroll,win_name]
       else
       fmt =
- "<div><form action='/%s/%s'>
+ "<div><form action='/%s/%s' method='get'>
   <input name='authenticity_token' type='hidden' value='%s' />
   <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400%s'); target='%s'\">
 " + input +  "</form></div>"
       fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,scroll,win_name]
       end
     else
-      "<div>"+form_tag(:action => action) + 
+      "<div>"+form_tag({ :action => action},method: :get) + 
         "<input type='hidden' name='page' value='#{@page}'>"+
         (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
          else;"";end

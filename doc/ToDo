@@ -1,12 +1,26 @@
+####### Rails4化 ＄＃＃＃＃＃＃＃＃＃＃＃
 シビア
 済 1. 削除が確認無で進んでしまう 565d9f5f9e1f6931b028fb24f03995032194213a
 済 2. error_messages_forがなくなった 対策。  
 済 3. weather/temperature が id="temp" に解釈されて表示できない b3af21bdab67c8355ba8ff2ed7519009b5dfd1ad
-       
+4. Ubeboard/skd#lips_loadが取り込み失敗してる
+5. Ubeboard/skd#new でcreateがroute失敗
+6. LiPSからubeboardでlinkは届くが取り込み失敗
+7. 新規製造計画立案 CSVからの取り込みで失敗
+8. Encoding::UndefinedConversionError in Ubeboard::MeigaraController#csv_out 
+   Encoding::UndefinedConversionError in Ubeboard::PlanController#csv_out 
+9. NameError in Ubeboard::ChangeTimesController#csv_out
+   uninitialized constant Ubeboard::ChangeTime::UbeSkd
+
+
+
 route足りない
 済 1.  [POST] "/book/main/renumber"
 済 [POST] "/forecast/fetch"
 済 [POST] "/forecast/error_graph"
+/ube/skd/new
+ubeboard shimada 宇部病院がめちゃめちゃ
+  ubeboard 大まかにはOK
 
 そのうち
 1. 勘定科目一覧で課目のソートがエラー

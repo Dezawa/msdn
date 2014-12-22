@@ -86,7 +86,7 @@ Rails.application.routes.draw do
   ########### 天候関連
   resources :weather,:forecast,:weather_location
   set_get(:forecast,%w( fetch error_graph show_img show_gif show_jpeg))
-  set_get(:weather,%w( temperatuer humidity show_img))
+  set_get(:weather,%w( temperatuer humidity show_img plot_year))
   set_post(:forecast,%w(change_location))
   set_post(:weather,%w(change_location get_data temp_vaper weather_location cband))
   set_post(:weather_location,%w(change_location)+EditTable)
