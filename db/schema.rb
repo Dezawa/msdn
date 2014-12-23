@@ -755,6 +755,45 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.integer "shimada_factory_id"
   end
 
+  create_table "sola_monthlies", force: true do |t|
+    t.date     "month"
+    t.string   "base_name"
+    t.string   "ch_name"
+    t.float    "kwh01",      limit: 24
+    t.float    "kwh02",      limit: 24
+    t.float    "kwh03",      limit: 24
+    t.float    "kwh04",      limit: 24
+    t.float    "kwh05",      limit: 24
+    t.float    "kwh06",      limit: 24
+    t.float    "kwh07",      limit: 24
+    t.float    "kwh08",      limit: 24
+    t.float    "kwh09",      limit: 24
+    t.float    "kwh10",      limit: 24
+    t.float    "kwh11",      limit: 24
+    t.float    "kwh12",      limit: 24
+    t.float    "kwh13",      limit: 24
+    t.float    "kwh14",      limit: 24
+    t.float    "kwh15",      limit: 24
+    t.float    "kwh16",      limit: 24
+    t.float    "kwh17",      limit: 24
+    t.float    "kwh18",      limit: 24
+    t.float    "kwh19",      limit: 24
+    t.float    "kwh20",      limit: 24
+    t.float    "kwh21",      limit: 24
+    t.float    "kwh22",      limit: 24
+    t.float    "kwh23",      limit: 24
+    t.float    "kwh24",      limit: 24
+    t.float    "kwh25",      limit: 24
+    t.float    "kwh26",      limit: 24
+    t.float    "kwh27",      limit: 24
+    t.float    "kwh28",      limit: 24
+    t.float    "kwh29",      limit: 24
+    t.float    "kwh30",      limit: 24
+    t.float    "kwh31",      limit: 24
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "top_pages", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"

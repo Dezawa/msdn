@@ -82,7 +82,12 @@ Rails.application.routes.draw do
   set_get("lips",%w( member calc csv_download))
   set_post("lips",%w(change_form calc)+EditTable)
 
-  
+  ########### 太陽光発電
+  namespace :sola do
+    resources :monthly
+  end
+  set_post( "sola/monthly",EditTable )
+
   ########### 天候関連
   resources :weather,:forecast,:weather_location
   set_get(:forecast,%w( fetch error_graph show_img show_gif show_jpeg))
