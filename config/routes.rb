@@ -84,9 +84,10 @@ Rails.application.routes.draw do
 
   ########### 太陽光発電
   namespace :sola do
-    resources :monthly
+    resources :monthly, :dayly
   end
   set_post( "sola/monthly",EditTable )
+  set_post( "sola/dayly",%w(load) )
 
   ########### 天候関連
   resources :weather,:forecast,:weather_location

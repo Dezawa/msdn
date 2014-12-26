@@ -9,8 +9,8 @@ class Sola::Dayly < ActiveRecord::Base
       #errors.add(:base_name,"dezawaのsolaの電力データではない" )
       return
     end
-    times_values = ondotori.channels["sola-電圧"].times.
-      zip(ondotori.channels["sola-電圧"].values).
+    times_values = ondotori.channels["power01-電圧"].times.
+      zip(ondotori.channels["power01-電圧"].values).
       group_by{ |time,value| time.to_date }
     times_values.each{ |day,time_values|
       dayly = self.find_or_create_by(:date => day){ |dayly|
