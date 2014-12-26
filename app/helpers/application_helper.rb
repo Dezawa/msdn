@@ -193,6 +193,12 @@ end
       submit_tag("CSVで登録")+file_field(@Domain, :csvfile)+"</form>".html_safe
   end
 
+  def upload_buttom(action,label)
+    url = "/#{@Domain}/#{action}"
+    form_tag(url,:multipart => true,:method => :post)+
+      submit_tag(label)+file_field(@Domain, :uploadfile)+"</form>".html_safe
+  end
+
   def edit_bottom(arg={ })
     action  =  (arg.delete(:edit_action) || :edit_on_table)
     button_to( '編集', { :action => action,:page => @page}.merge(arg) )
@@ -208,6 +214,7 @@ end
     when :add_edit_buttoms ;edit_buttoms(@Domain) 
     when :add_buttom       ;add_buttom(@Domain)
     when :edit_bottom       ;edit_bottom(opt||{ })
+    when :upload_buttom     ;upload_buttom(action,label)
     when :csv_up_buttom     ;csv_up_buttom
     when :input_and_action  ;
       input_and_action(action,label,opt)
@@ -320,11 +327,13 @@ end
   end
 
   def input_and_action(action,label,opt={ })
+    opt ||= { }
     input =  text_field( @Domain,action,opt )
     and_action(input,action,label,opt)
   end
 
   def select_and_action(action,label,opt={ })
+    opt ||= { }
     correction = opt.delete(:correction)
     input =   select(@Domain,action, correction, opt)
     #input =   select(action, correction, opt)
