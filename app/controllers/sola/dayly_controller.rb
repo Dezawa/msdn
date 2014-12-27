@@ -11,7 +11,7 @@ class Sola::DaylyController < CommonController #ApplicationController
                      :key => :month, :key_val => :month}), 
     ]
   LabelsMonthIndex = 
-    [ HtmlDate.new(:month,"年月日",:tform =>"%Y-%m-%d"),
+    [ HtmlDate.new(:date,"年月日",:tform =>"%Y-%m-%d"),
       HtmlNum.new(:peak_kw,"ピーク"),
       HtmlNum.new(:kwh_day,"発電量")
     ] +
