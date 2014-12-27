@@ -13,8 +13,16 @@ class Sola::DaylyController < CommonController #ApplicationController
   LabelsMonthIndex = 
     [ HtmlDate.new(:month,"年月日",:tform =>"%Y-%m-%d"),
       HtmlNum.new(:peak_kw,"ピーク"),
-      HtmlNum.new(:kwh_day,"発電量"),
-    ]
+      HtmlNum.new(:kwh_day,"発電量")
+    ] +
+    ("06".."18").map{ |kwh| HtmlNum.new("kwh#{kwh}",kwh)}
+  LabelsShow = 
+    [ HtmlDate.new(:month,"年月日",:tform =>"%Y-%m-%d"),
+      HtmlNum.new(:peak_kw,"ピーク"),
+      HtmlNum.new(:kwh_day,"発電量")
+    ] +
+    ("06".."18").map{ |kwh| HtmlNum.new("kwh#{kwh}",kwh)}
+
   def set_instanse_variable
     @Model= Sola::Dayly
     @Domain= @Model.name.underscore
@@ -61,7 +69,7 @@ class Sola::DaylyController < CommonController #ApplicationController
 
 
   def show
-
+    @model = @Model.find params[:id]
   end
 
 

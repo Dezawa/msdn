@@ -24,6 +24,12 @@ class Sola::Dayly < ActiveRecord::Base
     }
   end
 
+  ("06".."18").each{ |h|  
+    define_method("kwh#{h}") do
+      min = h.to_i*60
+      (min..min+59).inject(0.0){ |kw,m|  kw + (kws[m] || 0.0) }
+      end
+  }
   def kws_to_peak_kw ;     self.peak_kw = kws.compact.max ; end
   def kws_to_kwh_day
     self.kwh_day = 
