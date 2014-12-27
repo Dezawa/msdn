@@ -249,17 +249,6 @@ end
     (html + "\n</form>").html_safe
   end
 
-#  <input name="commit" type="submit"  value="%s" style="margin-top: -12px; left;"
-  PopupHead =  %Q!<form action="/%s/%s">
-  <input name="authenticity_token" type="hidden" value="%s" />
-  <input name="commit" type="submit"  value="%s" style='margin-top: -12px; left;' 
-!
-  PopupWithOUTModel = %Q! onclick="window.open('/%s/%s', '%s', 'width=500,height=400 %s'); target='%s'">
-!
-  PopupWithModel = %Q!  onclick="window.open('/%s/%s?id=%d', '%s', 'width=500,height=400 %s'); target='%s'">
-  <input id="%s_id" name="%s[id]" type="hidden" value="%d" />
-!
-
   def popupform_buttom(action,label,opt ={ },htmlopt={ })
     win_name = opt.delete(:win_name) || "new_win"
     scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
