@@ -12,10 +12,10 @@ class Sola::DaylyController < CommonController #ApplicationController
     ]
   LabelsMonthIndex = 
     [ HtmlDate.new(:date,"年月日",:tform =>"%Y-%m-%d"),
-      HtmlNum.new(:peak_kw,"ピーク"),
-      HtmlNum.new(:kwh_day,"発電量")
+      HtmlNum.new(:peak_kw,"ピーク<br>kW(分)",:tform => "%5.2f"),
+      HtmlNum.new(:kwh_day,"発電量<br>kWh(日)",:tform => "%4.1f")
     ] +
-    ("06".."18").map{ |kwh| HtmlNum.new("kwh#{kwh}",kwh)}
+    ("06".."18").map{ |kwh| HtmlNum.new("kwh#{kwh}",kwh,:tform => "%4.1f")}
   LabelsShow = 
     [ HtmlDate.new(:month,"年月日",:tform =>"%Y-%m-%d"),
       HtmlNum.new(:peak_kw,"ピーク"),
@@ -28,31 +28,25 @@ class Sola::DaylyController < CommonController #ApplicationController
     @Domain= @Model.name.underscore
     @TYTLE = "太陽光発電 日データ"
     #@TYTLEpost = "#{@year}年度"
-    #@labels=Labels
-    #@Links=BookKeepingController::Labels
     @FindOption = {}
     @TableEdit = true  #[[:edit_bottom]]
     #@Edit = true
     @Delete=true
-    #@Refresh = :kamokus
-    #@SortBy   = :bunrui
-    #@CSVatrs = Ube::Product::CSVatrs; @CSVlabels = Ube::Product::CSVlabels
-    #@pageSession="UBpro_perpage"
-    @Pagenation =  session[@PageSession] || (session[@PageSession] = 20)
-    #@New = {:no => no, :date => Time.now}
-    #@Create = {:owner => current_user.login }
-    #@PostMessage = BookMainController::Comment
   end
 
   def index
+    #@page = params[:page] || 1 
     @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"]]
     @labels = LabelsMonthesIndex
-    super
+    @models = find_and.group_by{ |d| d.month }
+    @models = @models.values.map{ |daylies|daylies.first}
+    render  :file => 'application/index',:layout => 'application'    
   end
 
   def index_month
     month = params[:month]
     @page = params[:page] || 1 
+    @TableHeaderDouble = [3,[13,"毎時発電量(kWh)"]]
     @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"]]
     @labels = LabelsMonthIndex
     @Show = true
