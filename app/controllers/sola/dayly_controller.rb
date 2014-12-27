@@ -4,7 +4,17 @@ class Sola::DaylyController < CommonController #ApplicationController
   before_action :authenticate_user! 
   before_filter :set_instanse_variable
   
-  LabelsMonthIndex = [ HtmlDate.new(:month,"年月",:tform =>"%Y-%m")]
+  LabelsMonthesIndex = 
+    [ HtmlDate.new(:month,"年月",:tform =>"%Y-%m"),
+      HtmlLink.new(:id,"",
+                   :link => {:link_label => "表示", :url => "/sola/dayly/index_month",
+                     :key => :month, :key_val => :month}), 
+    ]
+  LabelsMonthIndex = 
+    [ HtmlDate.new(:month,"年月日",:tform =>"%Y-%m-%d"),
+      HtmlNum.new(:peak_kw,"ピーク"),
+      HtmlNum.new(:kwh_day,"発電量"),
+    ]
   def set_instanse_variable
     @Model= Sola::Dayly
     @Domain= @Model.name.underscore
@@ -28,15 +38,31 @@ class Sola::DaylyController < CommonController #ApplicationController
 
   def index
     @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"]]
-    @Show   = true
-    @labels = LabelsMonthIndex
+    @labels = LabelsMonthesIndex
     super
   end
 
+  def index_month
+    month = params[:month]
+    @page = params[:page] || 1 
+    @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"]]
+    @labels = LabelsMonthIndex
+    @Show = true
+    #@models = @Model.where(month: month)
+    find_and
+    render  :file => 'application/index',:layout => 'application'
+  end
+
   def load
-logger.debug("Sola::DaylyCnrl load #{params[@Domain][:uploadfile]}")
+    logger.debug("Sola::DaylyCnrl load #{params[@Domain][:uploadfile]}")
     @Model.load_trz params[@Domain][:uploadfile]
     redirect_to :action => :index
   end
+
+
+  def show
+
+  end
+
 
 end

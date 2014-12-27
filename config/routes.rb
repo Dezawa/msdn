@@ -83,12 +83,13 @@ Rails.application.routes.draw do
   set_post("lips",%w(change_form calc)+EditTable)
 
   ########### 太陽光発電
+    set_post( "sola/monthly",EditTable )
+  set_post( "sola/dayly",%w(load) )
+  #set_get("sola/dayly",%w(index_month))
   namespace :sola do
+    get "dayly/index_month" => "dayly#index_month"
     resources :monthly, :dayly
   end
-  set_post( "sola/monthly",EditTable )
-  set_post( "sola/dayly",%w(load) )
-
   ########### 天候関連
   resources :weather,:forecast,:weather_location
   set_get(:forecast,%w( fetch error_graph show_img show_gif show_jpeg))
