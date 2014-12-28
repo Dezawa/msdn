@@ -85,7 +85,7 @@ Rails.application.routes.draw do
   ########### 太陽光発電
     set_post( "sola/monthly",EditTable )
   set_post( "sola/dayly",%w(load) )
-  #set_get("sola/dayly",%w(index_month))
+  set_get("sola/dayly",%w(index_month load_local_file))
   namespace :sola do
     get "dayly/index_month" => "dayly#index_month"
     resources :monthly, :dayly

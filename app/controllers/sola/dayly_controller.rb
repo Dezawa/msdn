@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class Sola::DaylyController < CommonController #ApplicationController
   include Actions
-  before_action :authenticate_user! 
+  before_action :authenticate_user!, :except => :load_local_file
   before_filter :set_instanse_variable
   
   LabelsMonthesIndex = 
@@ -58,6 +58,10 @@ class Sola::DaylyController < CommonController #ApplicationController
   def load
     logger.debug("Sola::DaylyCnrl load #{params[@Domain][:uploadfile]}")
     @Model.load_trz params[@Domain][:uploadfile]
+    redirect_to :action => :index
+  end
+  def load_local_file
+    @Model.load_trz params[:uploadfile]
     redirect_to :action => :index
   end
 
