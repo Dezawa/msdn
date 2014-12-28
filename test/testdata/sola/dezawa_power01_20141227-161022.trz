@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<file format="recorded_data" version="1.22" name="dezawa_power01_20141227-161022.trz">
+<base>
+<serial>529C0541</serial>
+<model>RTR-500NW</model>
+<name>dezawa</name>
+</base>
+<ch>
+<serial>52C215FA</serial>
+<model>RTR-505-V</model>
+<name>power01</name>
+<num>1</num>
+<time_diff>540</time_diff>
+<std_bias>0</std_bias>
+<dst_bias>0</dst_bias>
+<time_zone>(UTC+09:00) 大阪、札幌、東京</time_zone>
+<type>146</type>
+<unix_time>1419649879</unix_time>
+<data_id>1898</data_id>
+<interval>60</interval>
+<count>240</count>
+<data>
+lgmLCYoJcgl2CYkJCAlwCWwJeQl3BucCWga9ByII2Ae7BegDYwOFBCYKEwqoCJYIpgn3BPwCFANVA94C9gL7Aq8FmQRYBxgJZgRcA6MCuwUCCC8ITAgcBEwEtgYzBdQEDwiPBHkDcgWaBTgGWQVhBQIHPQdMBwkH7AaxBpoEGwLoAokECgZwBmUGZgZ4BlgGMQYNBiwGKQZQBk4GfQalBq8GpAaOBnYGlwaIBuEGMQctBxwHCgcXBzAHOwc6B0kHTQcEBkYHOgccBw8HDgfHBqsGrAaVBo4GhQaGBn0GjQZ+BncGeAZfBm4FRQU5BTEF
+GQX9BOsE6ATjBNAEygS7BK0EsQS9BLwEngSHBGwEbwR9BHMEVARoBGIESgQ4BDcEJgQhBCMEKwQeBBgEEgQTBBoECwQGBAME/wPvA/0D7APpA+gD4APdA9oD0wPVA8cDsgODA38DdQNxA3IDcANpA2cDagNkA2ADXQNhA1YDUwNUA0gDRwNGAxYDEAMUAw8DEgMRAw4DCQMCA/8CAAP2AvsC4wLHArYCuQK6AroCsAKvArACtwK3ArkCuQK4AskC3QLbAtsC0wLVAtcCzgK9Ar0CuQK4AlACSgJQAsECpwImA3EDfQRtBI0DTgNSAy8D
+</data>
+<upper_limit></upper_limit>
+<lower_limit></lower_limit>
+<scale_expr></scale_expr>
+<record_prop>
+PADDnpxUAAAAAAEAAQAAAAMAvJ7oA+gDAAEAAAAA4AHUDmoH+hXCUgARkgD6FcJST0ybVHBvd2VyMDEAAQCkAQ==
+</record_prop>
+</ch>
+</file>
