@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Sola::DaylyController < CommonController #ApplicationController
+class Sola::DaylyController < Sola::Controller #ApplicationController
   include Actions
   before_action :authenticate_user!, :except => :load_local_file
   before_filter :set_instanse_variable
@@ -24,6 +24,7 @@ class Sola::DaylyController < CommonController #ApplicationController
     ("06".."18").map{ |kwh| HtmlNum.new("kwh#{kwh}",kwh)}
 
   def set_instanse_variable
+    super
     @Model= Sola::Dayly
     @Domain= @Model.name.underscore
     @TYTLE = "太陽光発電 日データ"
