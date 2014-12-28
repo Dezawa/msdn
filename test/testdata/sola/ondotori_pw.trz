@@ -8,7 +8,7 @@
 <ch>
 <serial>52BA0400</serial>
 <model>RTR-502</model>
-<name>sola</name>
+<name>power01</name>
 <num>1</num>
 <time_diff>540</time_diff>
 <std_bias>0</std_bias>
