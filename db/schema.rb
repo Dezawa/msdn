@@ -905,11 +905,6 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.integer "skd_id"
   end
 
-  create_table "ube_plans_ube_skds", id: false, force: true do |t|
-    t.integer "ube_plan_id"
-    t.integer "ube_skd_id"
-  end
-
   create_table "ube_products", force: true do |t|
     t.string  "proname"
     t.string  "shozo"
