@@ -45,15 +45,15 @@ class Hospital::BushosController < Hospital::Controller
 end
 
   def index
-<<<<<<< HEAD:app/controllers/hospital/bushos_controller.rb
+#<<<<<<< HEAD:app/controllers/hospital/bushos_controller.rb
     @instances = Hospital::Define.all
     regesterd = @instances.map(&:attri)
     need      = @ItemsDefine.map{ |l| l.symbol.to_s }
-=======
-    instances = Hospital::Define.all
-    regesterd = instances.map(&:attri)
-    need      =  @ItemsAll .map{ |l| l.symbol.to_s }
->>>>>>> HospitalPower:app/controllers/hospital/busho_controller.rb
+# =======
+#     instances = Hospital::Define.all
+#     regesterd = instances.map(&:attri)
+#     need      =  @ItemsAll .map{ |l| l.symbol.to_s }
+#>>>>>>> HospitalPower:app/controllers/hospital/busho_controller.rb
     lack = (need - regesterd)
     creeat = @ItemsAll.map{ |label|
       if lack.include?(label.symbol.to_s)

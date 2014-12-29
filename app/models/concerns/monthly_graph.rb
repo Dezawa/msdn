@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 module  PowerGraph::MonthlyGraph
-  extend PowerGraph::Graph
-  extend PowerGraph::Scatter
+  #extend PowerGraph::Graph
+  #extend PowerGraph::Scatter
   module ClassMethods
     def monthly_graph(opt = { } )
       objects = target_powers(opt)

@@ -31,13 +31,13 @@ class Hospital::Role < ActiveRecord::Base
   end
 
   def self.shokui
-    all(:conditions => "bunrui = 1").map{ |obj| [obj.name,obj.id]}
+  #  all(:conditions => "bunrui = 1").map{ |obj| [obj.name,obj.id]}
   end
   def self.shokushu
-    all(:conditions => "bunrui = 2").map{ |obj| [obj.name,obj.id]}
+   # all(:conditions => "bunrui = 2").map{ |obj| [obj.name,obj.id]}
   end
   def self.kinmukubun
-    all(:conditions => "bunrui = 3").map{ |obj| [obj.name,obj.id]}
+#    all(:conditions => "bunrui = 3").map{ |obj| [obj.name,obj.id]}
   end
 
 
