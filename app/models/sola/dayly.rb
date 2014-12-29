@@ -5,11 +5,9 @@ class Sola::Dayly < ActiveRecord::Base
   before_save :set_culc
   def self.load_trz(trz_file)
 
-    ondotori = ondotori_load(trz_file) #OndotoriRecode.new(trz_file)
-#pp [trz_file,ondotori.base_name,ondotori.channels["power01-電圧"].class]
+    ondotori = ondotori_load(trz_file)
     unless ondotori.base_name == "dezawa" && ondotori.channels["power01-電圧"] 
       #errors.add(:base_name,"dezawaのsolaの電力データではない" )
-#pp ["dezawaのsolaの電力データではない",ondotori.base_name,ondotori.channels["power01-電圧"].class]
       return
     end
     times_values = times_values_group_by_day(ondotori.channels["power01-電圧"])
@@ -19,17 +17,14 @@ class Sola::Dayly < ActiveRecord::Base
   end
 
   def self.find_or_create_and_save(day,time_values)
-    #pp ["find_or_create_and_save",day,time_values.first,time_values.last]
-    dayly = self.find_by(:date => day) || self.new(:date => day)
-    #pp time_values.size
+    #dayly = self.find_or_create_by(:date => day){ |dly| dly.kws = [] }# || self.new(:date => day)
+   dayly = self.find_by(:date => day) || self.new(:date => day)
     time_values.each{ |time,value| 
       min = (time.seconds_since_midnight/60).to_i
       dayly.kws ||= []
       dayly.kws[min] =   value 
-      #pp [day,min,dayly.kws[min]] if min == 731
     }
     dayly.save!
-    #pp dayly.kws[731]
     dayly
   end
 
@@ -39,8 +34,6 @@ class Sola::Dayly < ActiveRecord::Base
   end
 
   def self.ondotori_load(trz_file); OndotoriRecode.new(trz_file);end
-
-
   ("06".."18").each{ |h|  
     define_method("kwh#{h}") do
       min = h.to_i*60
@@ -56,7 +49,7 @@ class Sola::Dayly < ActiveRecord::Base
 
   def update_monthly
     month = date.beginning_of_month
-    monthly = Sola::Monthly.find_by(:month => month) || Sola::Monthly.create(:month => month)
+    monthly = Sola::Monthly.find_or_create_by(:month => month)# || Sola::Monthly.create(:month => month)
     monthly["kwh%02d"%date.day] = kwh_day
     monthly.save
    end
