@@ -49,6 +49,6 @@ test:
 #
 production:
   <<: *default
-  database: msdn_product
+  database: msdn_production_test
   username: msdn
   password: msdnpass
