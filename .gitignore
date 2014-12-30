@@ -16,12 +16,13 @@
 /tmp
 
 Public/restart.txt
-Test/csv/
-Tmp/cache/
-Tmp/hospital/
-Tmp/pids/
-Tmp/tags
-Tmp/ubr/
+tmp/restart.txt
+test/csv/
+tmp/cache/
+tmp/hospital/
+tmp/pids/
+tmp/tags
+tmp/ubr/
 
 *.old
 *~
