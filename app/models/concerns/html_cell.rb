@@ -18,7 +18,7 @@ class HtmlCell
   include ActionView::Helpers::FormHelper 
   include ActionView::Helpers::FormOptionsHelper
   delegate :logger, :to=>"ActiveRecord::Base"
-  Attr_names = [:type,:correction,:display,:size,:align,:comment,:help,
+  Attr_names = [:type,:correction,:display,:size,:cols, :rows, :align,:comment,:help,
                 :tform,:include_blank,:link,:event,:link_label]
   attr_writer :field_disable,:ro
   attr_accessor :symbol,:label
@@ -112,6 +112,15 @@ end
 class HtmlText  < HtmlCell
   def edit(domain,obj,controller,opt)
     text_field(domain,symbol,opt)
+  end
+end
+
+class HtmlArea  < HtmlCell
+  def ddisp(object,htmlopt="")
+    text_area(object,symbol,{  readonly: 'readonly'})
+  end
+  def edit(domain,obj,controller,opt)
+    text_area(domain,symbol,opt)
   end
 end
 

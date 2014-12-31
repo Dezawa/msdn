@@ -806,6 +806,18 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.datetime "updated_at"
   end
 
+  create_table "todos", force: true do |t|
+    t.string   "status"
+    t.string   "task"
+    t.string   "title"
+    t.string   "branch"
+    t.string   "tag"
+    t.text     "note"
+    t.text     "measures"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "top_pages", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"

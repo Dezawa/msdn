@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 Rails.application.routes.draw do
+
 # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -81,6 +82,10 @@ Rails.application.routes.draw do
   ########### LiPS
   set_get("lips",%w( member calc csv_download))
   set_post("lips",%w(change_form calc)+EditTable)
+
+  ########### Todo
+  set_post("todos",EditTable)
+  resources :todos
 
   ########### 太陽光発電
     set_post( "sola/monthly",EditTable )

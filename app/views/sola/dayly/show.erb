@@ -1,0 +1,15 @@
+<h3><%= @TYTLE %> </h3>
+<%= @model.date %>　 ピーク <%= "%4.1f"%(@model.peak_kw*1000) %>W
+　　一日発電量 <%= "%4.1f"%(@model.kwh_day) %>kWh
+<%= form_for(@model) do |f| %>
+<table border=1>
+<tr><td rowspan=2>分</td><td colspan=24 align=center >発電量(1分間平均 W)</td></tr>
+<tr><% (0..23).each{|hr| %><td><%= hr %></td><% } %></tr>
+<%- (0..59).each{|min| %>
+<tr><td><%= min %></td><%- (0..23).each{|hr| h=hr*60 -%>
+<td><%= (kwh=@model.kws[h+min]) ? "%4.1f"%(kwh*1000) : "    " %></td><% } %></tr>
+<% } %>
+</table>
+
+
+<%- end %>
