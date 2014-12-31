@@ -30,6 +30,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     @TYTLE = "太陽光発電 日データ"
     #@TYTLEpost = "#{@year}年度"
     @FindOption = {}
+    @FindOrder = "date"
     @TableEdit = true  #[[:edit_bottom]]
     #@Edit = true
     @Delete=true
