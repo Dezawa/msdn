@@ -13,6 +13,7 @@ show      power 日照時間
 =end
 
   include Actions
+  include GraphController
   before_action :authenticate_user! 
   before_filter :set_instanse_variable
 
@@ -27,7 +28,9 @@ show      power 日照時間
     @labels=Labels
     #@Links=BookKeepingController::Labels
     @FindOption = {}
-    @TableEdit = true  #[[:edit_bottom]]
+    @TableEdit =  [ :add_edit_buttoms,
+                   [:popup,:peak_graph,"ピークグラフ",{:win_name => "default" }]
+                 ]
     #@Edit = true
     @Delete=true
     #@Refresh = :kamokus
@@ -46,6 +49,5 @@ show      power 日照時間
     }
     super
   end
-
 
 end
