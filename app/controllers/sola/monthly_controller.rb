@@ -51,5 +51,12 @@ show      power 日照時間
     }
     super
   end
+  def monthly_graph
+    @graph_file = "sola_monthly"
+    @graph_file_dir = Rails.root+"tmp" + "img"
+    Sola::Monthly.monthly_graph(@graph_file,@graph_file_dir)
+    render   :file => 'application/graph', :layout => "simple"
+  end
+
 
 end
