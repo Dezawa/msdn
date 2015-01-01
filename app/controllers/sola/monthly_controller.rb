@@ -17,7 +17,9 @@ show      power 日照時間
   before_action :authenticate_user! 
   before_filter :set_instanse_variable
 
-  Labels = [HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:size => 5)]+
+  Labels = [HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:size => 5),
+            HtmlNum.new(:sum_kwh,"総発電量",tform: "%4.1f",:ro => true),
+           ]+
     ("01".."31").map{ |kwh| HtmlNum.new("kwh#{kwh}".to_sym,kwh,:size => 2,tform: "%4.1f")}
   def set_instanse_variable
     super

@@ -804,6 +804,7 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.float    "kwh31",      limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.float    "sum_kwh",    limit: 24
   end
 
   create_table "todos", force: true do |t|
