@@ -100,7 +100,15 @@ set title '#{opt[:title]}"
         ( opt[:by_tics] && opt[:by_tics][idx] ? " axes #{opt[:by_tics][idx]}" : "") +
         ( opt[:point_type] && opt[:point_type][idx] ? " pt #{opt[:point_type][idx]}" : "")+
         ( opt[:point_size]  ?   " ps #{opt[:point_size]}" : "")+
-        ( opt[:with] ? " with #{opt[:with]}" : "")
+        #( opt[:with] ? " with #{opt[:with]}" : "")
+        case opt[:with]
+        when nil ; ""
+        when String ;  opt[:with]
+        when Array
+          opt[:with][idx] ? opt[:with][idx] : ""
+        else ; ""
+        end
+
         p=""
         idx += 1
         st
