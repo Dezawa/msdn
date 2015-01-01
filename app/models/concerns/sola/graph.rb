@@ -3,34 +3,77 @@ module Sola::Graph
   include Gnuplot
   module ClassMethod
   include Gnuplot
-    def peak_graph(graph_file=nil,graph_file_dir=nil)
+
+    def monthly_graph(graph_file=nil,graph_file_dir=nil)
       opt = { 
-        :graph_file => graph_file || "peak" ,
+        :graph_file => graph_file || "sola_monthly" ,
         :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
-        :define_file => Rails.root+"tmp/gnuplot/peak.def",
-        :column_labels => %w(日付 ピーク発電量), :column_format => %w(%s %.1f),
-        :axis_labels   => { :xlabel => "日",:ylabel => "ピーク発電量/kW"},
-        :title => "日間ピーク発電量推移" , 
+        :define_file => Rails.root+"tmp/gnuplot/sola_monthly.def",
+        :column_labels => %w(年月 発電量), :column_format => %w(%s %.1f),
+        :axis_labels   => { :xlabel => "年月",:ylabel => "月間発電量/kW"},
+        :title => "月間発電量推移" , 
         :tics =>  { :xtics => "rotate by -90"},
         :point_type => [7],
         :set_key => "unset key",
         :xy => [[[2,3]]]
       }
 
-      data_list = Sola::Dayly.all.order("date").pluck(:date, :peak_kw)
+      data_list = Sola::Monthly.all.order("month").pluck(:month, :peak_kw)
       file = Rails.root+"tmp"+"Sola_peak.data"
       data_file_output(file,data_list)
       gnuplot_(file.to_s,opt)
     end
 
+
+    def dayly_graph(graph_file=nil,graph_file_dir=nil)
+      opt = { 
+        :graph_file => graph_file || "sola_dayly" ,
+        :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
+        :define_file => Rails.root+"tmp/gnuplot/sola_dayly.def",
+        :column_labels => %w(年月 発電量), :column_format => %w(%s %.1f),
+        :axis_labels   => { :xlabel => "年月",:ylabel => "月間発電量/kW"},
+        :title => "月間発電量推移" , 
+        :tics =>  { :xtics => "rotate by -90"},
+        :point_type => [7],
+        :set_key => "unset key",
+        :xy => [[[2,3]]]
+      }
+
+      data_list = Sola::Monthly.all.order("month").pluck(:month, :peak_kw)
+      file = Rails.root+"tmp"+"Sola_peak.data"
+      data_file_output(file,data_list)
+      gnuplot_(file.to_s,opt)
+    end
+
+    def peak_graph(graph_file=nil,graph_file_dir=nil)
+      opt = { 
+        :graph_file => graph_file || "peak" ,
+        :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
+        :define_file => Rails.root+"tmp/gnuplot/peak.def",
+        :column_labels => %w(日付 ピーク発電量), :column_format => %w(%s %.1f),
+        :axis_labels   => { :xlabel => "日",:ylabel => "ピーク発電量/kW",:y2label => "一日発電量"},
+        :title => "日間発電量推移" , 
+        :tics =>  { :xtics => "rotate by -90"},
+        :point_type => [7,8],:with => ["","with line"],
+        :set_key => "unset key",
+        :xy => [[[2,3],[2,4]]], :by_tics => { 1 => "x1y2" }
+      }
+
+      data_list = Sola::Dayly.all.order("date").pluck(:date, :peak_kw, :kwh_day)
+      file = Rails.root+"tmp"+"Sola_peak.data"
+      data_file_output(file,data_list,"Daies 年月日 発電量")
+      gnuplot_(file.to_s,opt)
+    end
+
     # 横軸1年分。毎月1日だけ日付をいれ、その他は ""
     # 
-    def data_file_output(filename_or_pathname,data_list)
+    def data_file_output(filename_or_pathname,data_list,labels)
       start_day = data_list.first.first
       open(filename_or_pathname,"w"){ |f|
-        f.puts "Daies 年月日 発電量"
-        data_list.each{ |date,pw|
-          f.puts "%3d %-10s %4.2f"%[date-start_day,date.day == 1 ? date.strftime("%Y-%m-%d") : '""' ,pw]
+        f.puts labels
+        data_list.each{ |date,pw,spw|
+          f.puts "%3d %-10s %4.2f %4.2f"%
+          [date-start_day,date.day == 1 ? date.strftime("%Y-%m-%d") : '""' ,pw,spw]
         }
       }
   end
