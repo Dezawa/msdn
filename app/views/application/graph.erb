@@ -1,3 +1,8 @@
 <h3><%= @TYTLE %></h3>
-
-<img src='<%= url_for(action: :show_img,graph_format: @graph_format ,graph_file: @graph_file, graph_dir: @graph_dir) %>'>
+<%- opt = {action: :show_img,
+   graph_format: @graph_format||"jpeg" ,
+   graph_file: @graph_file ||  "image.jpeg",
+   graph_file_dir: @graph_file_dir ||  (Rails.root + "tmp" + "img").to_s
+   }
+%>
+<img src='<%= url_for( opt) %>' >

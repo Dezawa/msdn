@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'ondotori_recode_reader'
 class Sola::Dayly < ActiveRecord::Base
+  include Sola::Graph
   serialize :kws
   before_save :set_culc
   def self.load_trz(trz_file)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 class Sola::DaylyController < Sola::Controller #ApplicationController
   include Actions
+  include GraphController
   before_action :authenticate_user!, :except => :load_local_file
   before_filter :set_instanse_variable
   
@@ -38,7 +39,9 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
 
   def index
     #@page = params[:page] || 1 
-    @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"]]
+    @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"],
+                  [:popup,:peak_graph,"ピークグラフ",{:win_name => "default" }]
+                 ]
     @labels = LabelsMonthesIndex
     @models = find_and.group_by{ |d| d.month }
     @models = @models.values.map{ |daylies|daylies.first}
@@ -67,9 +70,15 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     redirect_to :action => :index
   end
 
-
   def show
     @model = @Model.find params[:id]
+  end
+
+  def peak_graph
+    @graph_file = "sola_peak"
+    @graph_file_dir = Rails.root+"tmp" + "img"
+    Sola::Dayly.peak_graph(@graph_file,@graph_file_dir)
+    render   :file => 'application/graph', :layout => "simple"
   end
 
 
