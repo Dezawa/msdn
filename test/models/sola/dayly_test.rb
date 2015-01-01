@@ -8,19 +8,12 @@ class Sola::DaylyTest < ActiveSupport::TestCase
     Sola::Dayly.delete_all
   end
 
-  # must "load_trz" do
-  #   dayly =  Sola::Dayly.load_trz TRZ
-  #   assert_equal [1, 2, 3, 4, 5, 6],Sola::Dayly.all.map{ |d| d.date.day}
-  #   first =  Sola::Dayly.first
-  #   last = Sola::Dayly.last
-  #   #pp first.kws.compact.sort.join(" ")
-  #  # pp first.kws
-  #  # pp first.kws.compact.inject(0.0){ |s,v| s+v }
-  #   assert_equal 2.88672,first.kwh_day,"t一日の発電量"
-  #   assert_equal 0.1242 ,first.peak_kw,"peak"
-  #   assert_equal [0.1242, 0.1231, 0.1237, 0.121, 0.1191, 0.1219],Sola::Dayly.all.map(&:peak_kw)
-  #   assert_equal 2.88672,Sola::Monthly.find_by( month: "2013-9-1").kwh01
-  # end
+  must " peak_graph data" do
+    Sola::Dayly.load_trz TRZ
+    assert_equal [["2013-09-01", 0.1242], ["2013-09-02", 0.1231], ["2013-09-03", 0.1237], 
+                  ["2013-09-04", 0.121], ["2013-09-05", 0.1191], ["2013-09-06", 0.1219] ], 
+    Sola::Dayly.all.order("date").pluck(:date, :peak_kw).map{ |d,v| [d.strftime("%Y-%m-%d"),v]}
+  end
 
   must "同じ日を二度読む" do
 
