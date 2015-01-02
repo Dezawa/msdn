@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 Rails.application.routes.draw do
-
 # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -69,7 +68,7 @@ Rails.application.routes.draw do
     controller: "#{module_name}/#{model}"
   end
 
-  EditTable = %w(add_on_table edit_on_table update_on_table csv_out csv_upload csv_download)
+  @EditTable = %w(add_on_table edit_on_table update_on_table csv_out csv_upload csv_download)
  
   root :to => "top#msdn"
   devise_for :users
@@ -77,18 +76,18 @@ Rails.application.routes.draw do
   ################## -ユーザ管理
   resources :user_options,:users
   get "/users/sign_in" => "devise/sessions#new"
-  %w(user_options users ).each{|controller| set_post(controller,EditTable)    }
+  %w(user_options users ).each{|controller| set_post(controller,@EditTable)    }
     
   ########### LiPS
   set_get("lips",%w( member calc csv_download))
-  set_post("lips",%w(change_form calc)+EditTable)
+  set_post("lips",%w(change_form calc)+@EditTable)
 
   ########### Todo
-  set_post("todos",EditTable)
+  set_post("todos",@EditTable)
   resources :todos
 
   ########### 太陽光発電
-  set_post( "sola/monthly",EditTable )
+  set_post( "sola/monthly",@EditTable )
   set_post( "sola/dayly",%w(load) )
   set_get("sola/dayly",%w(index_month load_local_file peak_graph show_img))
   set_get("sola/monthly",%w(peak_graph monthly_graph show_img))
@@ -103,7 +102,7 @@ Rails.application.routes.draw do
   set_get(:weather,%w( temperatuer humidity show_img plot_year))
   set_post(:forecast,%w(change_location))
   set_post(:weather,%w(change_location get_data temp_vaper weather_location cband))
-  set_post(:weather_location,%w(change_location)+EditTable)
+  set_post(:weather_location,%w(change_location)+@EditTable)
   
   ########### UBR 
   ubr = %w(main waku waku_block souko_plan souko_floor wall pillar)
@@ -113,7 +112,7 @@ Rails.application.routes.draw do
 
   ubr.each{ |model|
     set_resources("ubr",model) 
-    set_post( "ubr/#{model}",EditTable )
+    set_post( "ubr/#{model}",@EditTable )
     set_post( "ubr/#{model}",%w(add_assosiation edit_assosiation))
   }
 
@@ -121,8 +120,8 @@ Rails.application.routes.draw do
   set_get("book/main",%w( book_make  make_new_year csv_out_print sort_by_tytle))
   book = %w(main kamoku permission)
   book.each{ |model|
-    set_post("book/#{model}",EditTable)
-    set_get("book/#{model}",EditTable)
+    set_post("book/#{model}",@EditTable)
+    set_get("book/#{model}",@EditTable)
     set_resources("book",model) 
     set_post("book/#{model}",%w(add_assosiation edit_assosiation owner_change_win))
   }
@@ -153,13 +152,13 @@ Rails.application.routes.draw do
     %w(today tomorrow).each{ |day|
       get "/#{shimada}/#{day}" => "#{shimada}##{day}"
     }
-    set_post(shimada,EditTable)
+    set_post(shimada,@EditTable)
   }
     %w(month power factory chubu/month).each{  |model|
       set_resources("shimada",model) 
     }
   controller="shimada/factory"
-  set_post(controller,EditTable)
+  set_post(controller,@EditTable)
   set_get(controller,%w(today update_today clear_today update_tomorrow))
   ######### 熱管理
   %w(monthly_graph monthly_scatter ).
@@ -168,19 +167,19 @@ Rails.application.routes.draw do
   }
   get  "/power/month/show_jpeg" =>  "power/month#show_jpeg"
   resources "power_ube_hospital_month" ,path:  "/power/ube_hospital/month" , controller: "power/ube_hospital/month"
-  set_post( "power/ube_hospital/month",EditTable)
+  set_post( "power/ube_hospital/month",@EditTable)
 
   ##### Ube
   ube = %w( skd maintain holyday product operation plan change_times
                  meigara meigara_shortname named_changes  constant )
   ube.each{  |model|
-    set_get("ube/#{model}" ,EditTable)
-    set_post("ube/#{model}" ,EditTable)
+    set_get("ube/#{model}" ,@EditTable)
+    set_post("ube/#{model}" ,@EditTable)
     set_resources("ube",model) 
   }
 
-    set_get("ube/top" ,EditTable)
-    set_post("ube/top" ,EditTable)
+    set_get("ube/top" ,@EditTable)
+    set_post("ube/top" ,@EditTable)
   get "/ube/top" => "ube/top#top"
   set_get("ube/top",%w(calc))
   set_get("ube/skd",%w(lips_load))
