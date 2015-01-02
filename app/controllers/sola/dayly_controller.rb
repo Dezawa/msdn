@@ -56,6 +56,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     @labels = LabelsMonthIndex
     @Show = true
     #@models = @Model.where(month: month)
+    @FindWhere = {month: month}
     find_and
     render  :file => 'application/index',:layout => 'application'
   end
