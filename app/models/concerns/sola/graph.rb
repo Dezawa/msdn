@@ -30,18 +30,23 @@ module Sola::Graph
         :graph_file => graph_file || "sola_dayly" ,
         :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
         :define_file => Rails.root+"tmp/gnuplot/sola_dayly.def",
-        :column_labels => %w(年月 発電量), :column_format => %w(%s %.1f),
-        :axis_labels   => { :xlabel => "年月",:ylabel => "月間発電量/kW"},
-        :title => "月間発電量推移" , 
+        :column_labels => %w(年月日 発電量), :column_format => %w(%s %.1f),
+        :axis_labels   => { :xlabel => "年月日",:ylabel => "発電量/kW"},
+        :title => "発電量推移" , 
         :tics =>  { :xtics => "rotate by -90"},
         :point_type => [7],
+        :type => "scatter",
         :set_key => "unset key",
-        :xy => [[[2,3]]]
+        :set => ["xdata time",
+                 "timefmt '%Y-%m-%d'",
+                 #"xrange ['03/21/95':'03/22/95']",
+                 "format x '%Y-%m-%d'"],
+        :xy => [[[1,2]]]
       }
 
-      data_list = Sola::Monthly.all.order("month").pluck(:month, :peak_kw)
-      file = Rails.root+"tmp"+"Sola_peak.data"
-      data_file_output(file,data_list,"年月 発電量")
+      data_list = Sola::Monthly.all.order("month")
+      file = Rails.root+"tmp"+"Sola_dayly.data"
+      data_file_output_dayly(file,data_list,"No 年月日 発電量")
       gnuplot_(file.to_s,opt)
     end
 
@@ -84,6 +89,32 @@ module Sola::Graph
         data_list.each{ |date,pw|
           f.puts "%3d %-10s %4.2f"%
           [date-start_day,[1,7].include?(date.month) ? date.strftime("%Y-%m") : '""' ,pw]
+        }
+      }
+    end
+    def data_file_output_dayly(filename_or_pathname,data_list,labels)
+      start_day = data_list.first.month
+      open(filename_or_pathname,"w"){ |f|
+        f.puts labels
+        data_list.each{ |monthly|
+          first_date = monthly.month.beginning_of_month
+          last_day   = (first_date + 1.month - 1.day).day
+          # f.printf("%3d %-10s %-4s\n",
+          #          date-start_day,
+          #          ([1,4,7,10].include?(date.month)  ? date.strftime("%Y-%m ") : '""'),
+          #          ( monthly.kwh01 ? "%4.1f"%monthly.kwh01 : '""')
+          #          )
+          # (2..((monthly.month.beginning_of_month + 1.month - 1.day).day)).
+          #  each_with_index{ |day,idx| 
+          #   f.printf( "%3d \"\"         %-4s\n", 
+          #             date-start_day+idx+1,
+          #             (monthly.kwh(day) ? "%4.2f"%monthly.kwh(day) : "--")
+          #             )
+          # }
+          (1..last_day). each{ |day|
+            date = first_date + day - 1
+            f.printf("%s %s\n",date.strftime("%Y-%m-%d"),(monthly.kwh(day) ? "%4.2f"%monthly.kwh(day) : "--"))
+          }
         }
       }
     end
