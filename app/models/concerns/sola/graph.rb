@@ -134,7 +134,7 @@ module Sola::Graph
       :axis_labels   => { :xlabel => "分",:ylabel => "発電量/kW",:y2label => "一日発電量"},
       :title => "日間発電量推移" , 
       :tics =>  { :xtics => "rotate by -90"},
-      :point_type => [7],:point_size => 0.2,
+      :point_type => [7],:point_size => 0.2,:with => ["with line"],
       :set_key => "unset key",
         :type => "scatter",
         :set => ["xdata time",
