@@ -1,16 +1,9 @@
-<!--<<<<<<< HEAD:app/views/layouts/application.html.erb
-<!DOCTYPE html>
-<html>
-<head>
-======= -->
 <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=UTF-8">
 <HEAD>
 <%= @script %>
-<!-- >>>>>>> HospitalPower:app/views/layouts/application.erb 
--->
 <TITLE><%= @title %></TITLE></HEAD>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => false %>
   <%= csrf_meta_tags %>
 </head>
 <% if /msdn.+/ =~ File.basename(Rails.root) %><BODY bgcolor="#Ffd0d0">
