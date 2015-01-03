@@ -378,13 +378,15 @@ logger.debug("APPLICATION#GRAPH: params=#{params.to_a.flatten.join(',')}")
     csv_out_comm(models,filename)
   end
 
-  def csv_out_comm(models,filename)    
+  def csv_out_comm(models,filename)
+    @CSVatrs  = @CSVlabels = @Model.column_names unless @CSVatrs && @CSVlabels
     filename ||= @CSVfile || (current_user.username+@Model.name.underscore+".csv")
     tmpfile = @Model.csv_out(models,:columns => @CSVatrs,:labels => @CSVlabels)
     send_file(tmpfile,:filename =>  filename)
   end
+
   def csv_upload
-    
+    @CSVatrs  = @CSVlabels = @Model.column_names unless @CSVatrs && @CSVlabels
     errors= @Model.csv_upload(params[:csvfile]||params[@Domain][:csvfile], @CSVlabels,@CSVatrs)
     unless errors[0]
       flash[:message] = errors[1]

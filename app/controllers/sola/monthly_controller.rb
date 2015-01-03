@@ -31,7 +31,9 @@ show      power 日照時間
     #@Links=BookKeepingController::Labels
     @FindOption = {}
     @TableEdit =  [ :add_edit_buttoms,
-                   [:popup,:peak_graph,"ピークグラフ",{:win_name => "default" }]
+                    [:popup,:peak_graph,"ピークグラフ",{:win_name => "default" }],
+                    [:csv_out,      "CSVダウンロード"],
+                    [:csv_up_buttom]
                  ]
     #@Edit = true
     @Delete=true
@@ -56,6 +58,19 @@ show      power 日照時間
     @graph_file_dir = Rails.root+"tmp" + "img"
     Sola::Monthly.monthly_graph(@graph_file,@graph_file_dir)
     render   :file => 'application/graph', :layout => "simple"
+  end
+
+  def csv_upload
+    @CSVatrs  = @CSVlabels = @Model.column_names unless @CSVatrs && @CSVlabels
+    errors= @Model.csv_update(params[:csvfile]||params[@Domain][:csvfile], @CSVlabels,@CSVatrs)
+    unless errors[0]
+      flash[:message] = errors[1]
+      redirect_to :action => :index
+    else
+      @Model.send(@Refresh,true) if @Refresh
+      flash[:message] = errors[1] if  errors[1]>""
+      redirect_to :action => :index
+    end
   end
 
 
