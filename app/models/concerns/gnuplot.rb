@@ -61,12 +61,13 @@ set title '#{opt[:title]}"
     range = nil
     tics  = opt[:tics] ? tics_str(opt) : nil
     grid  = opt[:grid] ? grid_str(opt) : nil
+    set   = opt[:set]  ? opt[:set].map{ |str| "set #{str}"}.join("\n")  : ""
     axis_labels = opt[:axis_labels] ? axis_labels(opt) : nil
 
     plot  = plot_list(datafile_pathes,opt)
     def_file = opt[:define_file]
 
-    [ head,key ,
+    [ head,key ,set ,
       range,tics,grid,axis_labels,
       plot,    opt[:additional_lines]
     ].flatten.compact.join("\n")
