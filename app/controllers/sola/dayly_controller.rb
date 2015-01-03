@@ -11,18 +11,16 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
                    :link => {:link_label => "表示", :url => "/sola/dayly/index_month",
                      :key => :month, :key_val => :month}), 
     ]
+  onClick=
+    %Q!onClick="window.open('/sola/dayly/minute_graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!
+  MLink  = {:url => "/sola/dayly/minute_graph" ,:key => :id,:key_val => :id,:htmloption => onClick}
   LabelsMonthIndex = 
     [ HtmlDate.new(:date,"年月日",:tform =>"%Y-%m-%d"),
       HtmlNum.new(:peak_kw,"ピーク<br>kW(分)",:tform => "%5.2f"),
       HtmlNum.new(:kwh_day,"発電量<br>kWh(日)",:tform => "%4.1f")
     ] +
-    ("06".."18").map{ |kwh| HtmlNum.new("kwh#{kwh}",kwh,:tform => "%4.1f")}
-  LabelsShow = 
-    [ HtmlDate.new(:month,"年月日",:tform =>"%Y-%m-%d"),
-      HtmlNum.new(:peak_kw,"ピーク"),
-      HtmlNum.new(:kwh_day,"発電量")
-    ] +
-    ("06".."18").map{ |kwh| HtmlNum.new("kwh#{kwh}",kwh)}
+    ("04".."20").map{ |kwh| HtmlNum.new("kwh#{kwh}",kwh,:tform => "%4.1f")} +
+    [HtmlLink.new(:id,"",:link => { method: "minute_graph", :link_label => "分グラフ"}.merge(MLink))]
 
   def set_instanse_variable
     super
@@ -51,7 +49,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   def index_month
     month = params[:month]
     @page = params[:page] || 1 
-    @TableHeaderDouble = [3,[13,"毎時発電量(kWh)"]]
+    @TableHeaderDouble = [3,[19,"毎時発電量(kWh)"]]
     @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"]]
     @labels = LabelsMonthIndex
     @Show = true
@@ -82,5 +80,13 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     render   :file => 'application/graph', :layout => "simple"
   end
 
+  def minute_graph
+    id = params[:id].to_i
+    @model = @Model.find id
+    @graph_file = "sola_minute"
+    @graph_file_dir = Rails.root+"tmp" + "img"
+    @model.minute_graph(@graph_file,@graph_file_dir)
+    render   :file => 'application/graph', :layout => "simple"
+  end
 
 end

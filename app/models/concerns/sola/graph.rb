@@ -123,7 +123,39 @@ module Sola::Graph
   def self.included(base)
     base.extend(ClassMethod)
   end
-  
+
+
+  def minute_graph(graph_file=nil,graph_file_dir=nil)
+    opt = { 
+      :graph_file => graph_file || "minute" ,
+      :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
+      :define_file => Rails.root+"tmp/gnuplot/minute.def",
+      :column_labels => %w(分 ピーク発電量), :column_format => %w(%s %.1f),
+      :axis_labels   => { :xlabel => "分",:ylabel => "発電量/kW",:y2label => "一日発電量"},
+      :title => "日間発電量推移" , 
+      :tics =>  { :xtics => "rotate by -90"},
+      :point_type => [7],:point_size => 0.2,
+      :set_key => "unset key",
+        :type => "scatter",
+        :set => ["xdata time",
+                 "timefmt '%H:%M'",
+                 #"xrange ['03/21/95':'03/22/95']",
+                 "format x '%H:%M'"],
+        :xy => [[[1,2]]]
+    }
+    file = Rails.root+"tmp"+"Sola_minute.data"
+    data_file_output_minute(file,kws,"時刻 年月日 発電量")
+    gnuplot_(file.to_s,opt)
+  end
+
+  def data_file_output_minute(filename_or_pathname,data_list,labels)
+      open(filename_or_pathname,"w"){ |f|
+        f.puts labels
+      data_list.each_with_index{ |kw,min|
+        f.puts "%d:%d %.2f"%[min/60,min%60,kw]
+      }
+    }
+  end
 end
 
 
