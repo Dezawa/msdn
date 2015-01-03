@@ -122,7 +122,7 @@ module ApplicationHelper
       "<font size=1>" +
       link_to_unless_current(menu.label,
                              { :controller => menu.model, :action => menu.action}.
-                             merge( menu.option || {} )
+                             merge( menu.option || {} ),menu.html_option
                              )
     }.join(tdtd).html_safe
     safe_join [TR , td ,table_body,TDend , TRend ] 
@@ -193,6 +193,10 @@ end
       submit_tag("CSVで登録")+file_field(@Domain, :csvfile)+"</form>".html_safe
   end
 
+  def csv_out_buttom
+    button_to( 'CSVダウンロード', { :action => :csv_out })
+  end
+
   def upload_buttom(action,label)
     url = "/#{@Domain}/#{action}"
     form_tag(url,:multipart => true,:method => :post)+
@@ -216,6 +220,7 @@ end
     when :edit_bottom       ;edit_bottom(opt||{ })
     when :upload_buttom     ;upload_buttom(action,label)
     when :csv_up_buttom     ;csv_up_buttom
+    when :csv_out           ;csv_out_buttom
     when :input_and_action  ;
       input_and_action(action,label,opt)
     when :select_and_action  ;

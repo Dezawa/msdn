@@ -91,6 +91,10 @@ Rails.application.routes.draw do
   set_post( "sola/dayly",%w(load) )
   set_get("sola/dayly",%w(index_month load_local_file peak_graph show_img))
   set_get("sola/monthly",%w(peak_graph monthly_graph show_img))
+
+    set_post("sola/monthly",@EditTable)
+    set_get("sola/monthly",@EditTable)
+
   get "sola" => "sola/monthly#index"
   namespace :sola do
     get "dayly/index_month" => "dayly#index_month"

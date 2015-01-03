@@ -1,6 +1,6 @@
 class Sola::Monthly < ActiveRecord::Base
   include Sola::Graph
-
+  extend CsvIo
   before_save :set_culc
   private
   def set_culc
