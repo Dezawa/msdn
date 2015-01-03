@@ -19,15 +19,16 @@ class Menu < ActionView::Base
                 :enable_csv_upload,:csv_upload_action,:buttonlabel,
                 :csv_download_url,:comment,:help]
   attr_accessor *Attr_names
-  attr_accessor :controller,:option
+  attr_accessor :controller,:option,:html_option
 
 #  def self.hash_initializer(*attr_names)
 
-  def initialize(arg_label,arg_model,args={})
+  def initialize(arg_label,arg_model,args={},htmlopt ={ })
     data = {:action => :index}.merge(args)
     Attr_names.each do | attr_name|
       instance_variable_set "@#{attr_name}",data.delete(attr_name)
     end
+    @html_option = htmlopt
     @model  = arg_model
     @label  = arg_label
     @option = data # || { }
