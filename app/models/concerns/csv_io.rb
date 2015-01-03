@@ -29,11 +29,11 @@ module CsvIo
                  colmns = header[:columns] || colmns
                  labels = header[:labels]  || colmns
                end
-               CSV.generate_line(labels) + "\n"
+               CSV.generate_line(labels)# + "\n"
              end
       head + 
         models.map{|model| CSV.generate_line(colmns.map{|n| model[n]}) 
-      }.join("\n" )
+      }.join#("\n" )
     end
   end
 
@@ -63,13 +63,16 @@ module CsvIo
   # "id" を含む場合は、 attr_accessible でなければ結果はわからん
   def csv_upload(csvfile,labels,columns)
     error = [nil,"ファイルが指定されて居ないか、空か、フォーマットが違います"]
-    begin
+pp ["####################",csvfile,labels,columns]
+    labels = columns = self.column_names unless labels && columns
+    #begin
       csvrows = CSV.parse(NKF.nkf("-w",csvfile.read))
       lbl2idx,indexes = serchLabelLine(csvrows,labels)
+pp [lbl2idx,indexes,csvrows]
       return error unless lbl2idx
-    rescue
+    #rescue
       return error
-    end
+    #end
 
     self.delete_all
     errors = [true,""]
@@ -97,14 +100,14 @@ module CsvIo
   #   :condition 編集権を評価して返すメソッド
   #              model に用意されている bool を返すmethod名のSymbol
   # "id" を含まない場合は結果はわからん
-  def csv_update(csvfile,labels,columns0,option)
-    condition = option.delete(:condition) || :true
+  def csv_update(csvfile,labels,columns0,option={ })
+    condition = option.delete(:condition) || true
     csvrows = CSV.parse(NKF.nkf("-w",csvfile.read))
     lbl2idx,indexes = serchLabelLine(csvrows,labels)
     return ["CSVファイルのフォーマットが違う様です"] unless lbl2idx
     
     #self.delete_all
-    idx_id = lbl2idx.delete("id") || lbl2idx.delete("ID") 
+    idx_id = (lbl2idx.delete("id") || lbl2idx.delete("ID") )
     columns = columns0.dup
     columns.delete_at(idx_id)
     indexes.delete_at(idx_id)
@@ -115,8 +118,8 @@ module CsvIo
       new_model = self.new(model_hash.merge option )
       if new_model.valid?
         begin
-          model = self.find(row[idx_id])
-          if model.send(condition)
+          model = self.find(row[idx_id].to_i)
+          if condition.class == TrueClass  || model.send(condition)
             model.update_attributes(model_hash)
           else
             logger.debug("CSV_UPDATE: condition NG #{row.join(',')}")
