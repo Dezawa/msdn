@@ -459,7 +459,7 @@ end
 
   def delete_if_accepted(obj)
     if deletable
-      "<td>" + link_to('削除',obj , "data-confirm" => 'Are you sure?', :method => :delete) + "</td>"
+      "<td>" + link_to('<nobr>削除</nobr>'.html_safe,obj , "data-confirm" => 'Are you sure?', :method => :delete) + "</td>"
     else
       ""
     end.html_safe
