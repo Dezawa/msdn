@@ -34,7 +34,7 @@ module Sola::Graph
         :axis_labels   => { :xlabel => "年月日",:ylabel => "発電量/kW"},
         :title => "発電量推移" , 
         :tics =>  { :xtics => "rotate by -90"},
-        :point_type => [7],
+        :point_type => [7],:point_size => 0.6 ,
         :type => "scatter",
         :set_key => "unset key",
         :set => ["xdata time",
