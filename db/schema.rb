@@ -274,6 +274,19 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.integer "role_id"
   end
 
+  create_table "ondotori_statuses", force: true do |t|
+    t.string   "base_name"
+    t.string   "group_name"
+    t.string   "group_remote_name"
+    t.string   "group_remote_ch_name"
+    t.integer  "group_remote_rssi"
+    t.integer  "group_remote_ch_current_batt"
+    t.integer  "group_remote_ch_record_type"
+    t.datetime "group_remote_ch_unix_time"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "power_ube_hospital_months", force: true do |t|
     t.date "month"
   end
@@ -916,6 +929,11 @@ ActiveRecord::Schema.define(version: 201409131724152) do
   create_table "ube_plans_skds", id: false, force: true do |t|
     t.integer "plan_id"
     t.integer "skd_id"
+  end
+
+  create_table "ube_plans_ube_skds", id: false, force: true do |t|
+    t.integer "ube_plan_id"
+    t.integer "ube_skd_id"
   end
 
   create_table "ube_products", force: true do |t|
