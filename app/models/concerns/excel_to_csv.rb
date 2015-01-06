@@ -35,11 +35,10 @@ module ExcelToCsv
     XSLX = "\x50\x4B".force_encoding("US-ASCII")
     def ssconvert_if_excel(infile,out_basepath=nil)
       magic = infile.read(2).force_encoding("US-ASCII")
-
       #magic = [infile.getc,infile.getc]
       case magic
-        #   xsl       xslx
-      when XSL, XSLX,[208,207],[80,75] 
+        #   xsl       xslx      P  K
+      when XSL, XSLX,[208,207],[80,75] #,"PK"
         ssconvert(infile.path,out_basepath)
       else                   ;[infile.path]
       end
@@ -53,14 +52,17 @@ module ExcelToCsv
     SJIS       = "--import-encoding=shift-jis"
     EXPORT_CSV = "--export-type Gnumeric_stf:stf_csv"
     def ssconvert(path,out_basepath=nil)
-      out_basepath ||=  Tempfile.new("xls2csv","/tmp").path
+logger.debug("SSCONVERT: #{SSCONVERT} -S #{SJIS} #{EXPORT_CSV} #{path} #{out_basepath} 2>/dev/null")
+logger.debug("SSCONVERT:path= #{path} out_basepath = #{out_basepath}")
+      out_basepath ||=  Tempfile.new("xls2csv#{rand}","/tmp").path
       pid = fork{
         exec("#{SSCONVERT} -S #{SJIS} #{EXPORT_CSV} #{path} #{out_basepath} 2>/dev/null")
       }   
       if pid
         Process.waitall
       end
-      
-      files = Dir.glob("#{out_basepath}.[0-9]*").sort_by{|f| /(\d+)$/ =~ f;$1.to_i}
+      files = Dir.glob("#{out_basepath}*").sort_by{|f| /(\d+)$/ =~ f;$1.to_i}
+      logger.debug("SSCONVERT: files=#{files.join(' ')}")
+      files
     end 
 end

@@ -53,12 +53,12 @@ class Ubr::MainController <  Ubr::Controller
   end
 
   def csv_upload
-pp params[:csvfile].class
+#pp params[:csvfile].class
     @filename = case infile = params[:csvfile]
                 when ActionDispatch::Http::UploadedFile; infile.original_filename
                 end
     @basename = @filename.sub(/\....$/,"")
-    csvfiles = csv_files(params[:csvfile])
+    csvfiles = csv_files(params[:csvfile],"/tmp/UbrSCM#{rand}")
     open(Ubr::Lot::SCMFILE,"w"){ |fp| fp.write(File.read(csvfiles[0]))}
     open(Ubr::Lot::SCMFILEBASE,"w"){ |fp| fp.puts(@filename) }
     open(File.join(Rails.root,"tmp","ubr","save",@basename+".csv"),"w"){
