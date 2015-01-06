@@ -26,25 +26,16 @@ show      power 日照時間
     @Model= Sola::Monthly
     @Domain= @Model.name.underscore
     @TYTLE = "太陽光発電"
-    #@TYTLEpost = "#{@year}年度"
     @labels=Labels
-    #@Links=BookKeepingController::Labels
-    @FindOption = {}
+    @FindOrder = "month"
     @TableEdit =  [ :add_edit_buttoms,
                     [:popup,:peak_graph,"ピークグラフ",{:win_name => "default" }],
                     [:csv_out,      "CSVダウンロード"],
                     [:csv_up_buttom]
                  ]
-    #@Edit = true
     @Delete=true
-    #@Refresh = :kamokus
-    #@SortBy   = :bunrui
     #@CSVatrs = Ube::Product::CSVatrs; @CSVlabels = Ube::Product::CSVlabels
-    #@pageSession="UBpro_perpage"
     @Pagenation =  session[@PageSession] || (session[@PageSession] = 20)
-    #@New = {:no => no, :date => Time.now}
-    #@Create = {:owner => current_user.login }
-    #@PostMessage = BookMainController::Comment
   end
 
   def update_on_table
