@@ -34,8 +34,19 @@ class Sola::Dayly < ActiveRecord::Base
       group_by{ |time,value| time.to_date }
   end
 
-  # 1V = 10A → 1kW
-  def self.ondotori_load(trz_file); OndotoriRecode.new(trz_file);end
+  def self.ondotori_load(trz_file)
+    file_or_xmlstring = case trz_file.class
+                        when String    
+                          ; trz_file
+                        when ActionDispatch::Http::UploadedFile 
+                          trz_file.read
+                        else ; 
+                          trz_file.read
+                        end
+
+    Ondotori::Recode.new(file_or_xmlstring)
+  end
+
   ("04".."20").each{ |h|  
     define_method("kwh#{h}") do
       min = h.to_i*60
