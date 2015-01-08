@@ -50,8 +50,8 @@ class Book::KeepingController <  Book::Controller
 
   def year_change
     unless params[:year].blank?
-      @year = Year.new(Time.parse(params[:year]+"/1/1 JST"))
-      session["BK_year"] =  @year.year
+      @year =Time.parse(params[:year][:year]+"/1/1 JST")
+      session["BK_year"] =  @year
     end
     @owner_choices = @arrowed.map{|a| ["#{a.owner} #{a.permission_string}",a.owner]}
     # @year_owner= {"param_owner" => @owner[1]}
