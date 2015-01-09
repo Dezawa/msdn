@@ -95,8 +95,8 @@ class Hospital::Kinmucode < ActiveRecord::Base
 
   Kubun=  { }
   KK=Hash[:nikkin,"日勤",:sankoutai,"三交代",:part,"パート",:touseki,"透析",
-                   :l_kin,"L勤",:gairai,"外来",:kyoutuu,"共通"].
-    each_pair{ |kinmu,name|  Kubun[kinmu] = (k=Hospital::Role.find_by(name: name)) ? k.id : nil }
+                   :l_kin,"L勤",:gairai,"外来",:kyoutuu,"共通"]#.
+   # each_pair{ |kinmu,name|  Kubun[kinmu] = (k=Hospital::Role.find_by(name: name)) ? k.id : nil }
 
 #Hospital::Kinmucode::From0123, To0123 の見直し
 #  例えば出張は1日n勤務だが病棟の勤務人数集計ではゼロ。これに対応する
@@ -123,12 +123,12 @@ class Hospital::Kinmucode < ActiveRecord::Base
                                   
   From0123 = ToFrom0123.invert
 
-  @@KCode = Hash[*self.all.map{ |kc| [kc.id,kc]}.flatten]
+#  @@KCode = Hash[*self.all.map{ |kc| [kc.id,kc]}.flatten]
   def self.k_code(id)
     @@KCode[id] ||= self.find(id)
   end
 
-  @@Code = Hash[*@@KCode.to_a.map{ |id,kcode| [id,kcode.code]}.flatten]
+  #@@Code = Hash[*@@KCode.to_a.map{ |id,kcode| [id,kcode.code]}.flatten]
   def self.id2code(id)
     @@Code[id]
   end
@@ -155,20 +155,20 @@ class Hospital::Kinmucode < ActiveRecord::Base
       when "2","3" ; return shift.to_i
       when "0"     ; return code(:Koukyu)
       when "L","M" ; 
-        return Hospital::Kinmucode.find_by(code: {"L"=>"L2","M"=>"L3"}[sft_str], kinmukubun_id: sanchoku).id
+       # return Hospital::Kinmucode.find_by(code: {"L"=>"L2","M"=>"L3"}[sft_str], kinmukubun_id: sanchoku).id
       when "N","O" ; 
         code = {"N"=>"夜","O"=>"明"}[sft_str]
         #puts code
-        return Hospital::Kinmucode.find_by(code: code).id
+      #  return Hospital::Kinmucode.find_by(code: code).id
       when "1","5"
-        Kubun[:kyoutuu] ||= (k=Hospital::Role.find_by(name: "共通")) ? k.id : nil 
+      #  Kubun[:kyoutuu] ||= (k=Hospital::Role.find_by(name: "共通")) ? k.id : nil 
         value = From0123[sft_str] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
-                                                " and nenkyuu=? and am=? and pm=? and "+
-                                                "night=? and midnight=? and am2=? and "+
-                                                "pm2=? and night2=? and midnight2=? ",
-                                                kinmukubun_id,*value]
-                                ).sort_by{ |k| k.id }[0].id
+     #   Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
+                                #                 " and nenkyuu=? and am=? and pm=? and "+
+                                #                 "night=? and midnight=? and am2=? and "+
+                                #                 "pm2=? and night2=? and midnight2=? ",
+                                #                 kinmukubun_id,*value]
+                                # ).sort_by{ |k| k.id }[0].id
 
       else ; nil
       end
