@@ -4,8 +4,9 @@ class Sola::Controller < CommonController
     [
      Menu.new(   "日々データ",:dayly   ,:action => :index) ,
      Menu.new(   "月データ"  ,:monthly ,:action => :index) ,
-     Menu.new(   "日グラフ"  ,:monthly ,{ :action => :dayly_graph}  ,:target =>"default") ,
-     Menu.new(   "月グラフ"  ,:monthly ,{ :action => :monthly_graph},:target =>"default") ,
+     Menu.new(   "日グラフ"  ,:monthly ,{ :action => :dayly_graph}  ,:target =>"newtab") ,
+     Menu.new(   "月グラフ"  ,:monthly ,{ :action => :monthly_graph},:target =>"newtab") ,
+     Menu.new(   "電池残量"  ,"ondotori/status" ,{ :action => :list}) ,
     ]
 
   def set_instanse_variable
