@@ -9,15 +9,16 @@ class Book::Controller <  CommonController #ApplicationController
   before_action(:except => :error) {|ctrl|  ctrl.require_allowed "/book/keeping/error" }
  
   def set_instanse_variable
-    logger.debug "BookCtrl SET_INSTANSE_VARIABLE session['BK_year'] #{session['BK_year'].class} #{session['BK_year']}"
+    logger.info "BookCtrl SET_INSTANSE_VARIABLE session['BK_year'] #{session['BK_year'].class} #{session['BK_year']}"
     @year = 
       case session["BK_year"]
-      when Year ; session["BK_year"]
-      when Time ; Year.new(session["BK_year"])
-      when String ; Year.new(Time.parse(session["BK_year"]))
+      when Year,Time; session["BK_year"]
+      #when Time ; Year.new(session["BK_year"]).year
+      when String ; Time.parse(session["BK_year"])
+      when Fixnum,Integer; Time.new(session["BK_year"],1,1)
       else        ; Time.now.beginning_of_year
       end
-    session["BK_year"] = @year.year
+    session["BK_year"] = @year
     @arrowed = []
     if current_user
       myself = Book::Permission.create_myself(current_user)      if @editor

@@ -20,13 +20,13 @@ class Hospital::MonthlyController < Hospital::Controller
                           "Shift_%02d_%02d_"%[@current_busho_id,@month.month])
   end
   
-  AssignCorrection = {}
-  (1..6).each{|kinmukubun_id|
-    AssignCorrection[kinmukubun_id] = 
-    Hospital::Kinmucode.
-    where( ["kinmukubun_id = ? or kinmukubun_id = 7",kinmukubun_id]).
-    to_a.map{|kc| [kc.code,kc.id]}
-  }
+  # AssignCorrection = {}
+  # (1..6).each{|kinmukubun_id|
+  #   AssignCorrection[kinmukubun_id] = 
+  #   Hospital::Kinmucode.
+  #   where( ["kinmukubun_id = ? or kinmukubun_id = 7",kinmukubun_id]).
+  #   to_a.map{|kc| [kc.code,kc.id]}
+  # }
 
   def hope_regist
     @must   = params[:must][:val].to_i rescue 1
