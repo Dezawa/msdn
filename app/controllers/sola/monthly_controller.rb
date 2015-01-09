@@ -35,7 +35,7 @@ show      power 日照時間
                  ]
     @Delete=true
     #@CSVatrs = Ube::Product::CSVatrs; @CSVlabels = Ube::Product::CSVlabels
-    @Pagenation =  session[@PageSession] || (session[@PageSession] = 20)
+    @Pagenation = 12
   end
 
   def update_on_table
