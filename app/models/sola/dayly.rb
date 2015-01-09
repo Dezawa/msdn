@@ -4,9 +4,9 @@ class Sola::Dayly < ActiveRecord::Base
   include Sola::Graph
   serialize :kws
   before_save :set_culc
-  def self.load_trz(trz_file)
 
-    ondotori = ondotori_load(trz_file)
+  def self.load_trz(trz_file)
+    ondotori = Ondotori::Recode.new(trz_file)#ondotori_load(trz_file)
     unless ondotori.base_name == "dezawa" && ondotori.channels["power01-電圧"] 
       #errors.add(:base_name,"dezawaのsolaの電力データではない" )
       return
