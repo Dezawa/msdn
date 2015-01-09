@@ -100,10 +100,10 @@ Rails.application.routes.draw do
     get "dayly/index_month" => "dayly#index_month"
     resources :monthly, :dayly
   end
-  ########### おんどとり
-  set_get("ondotori/status",%w(load_local_file list))
-  namespace :ondotori do
-    resources :status
+  ########### 状態管理：おんどとり
+  set_get("status/ondotori",%w(load_local_file list))
+  namespace :status do
+    resources :ondotori
   end
   
   ########### 天候関連
