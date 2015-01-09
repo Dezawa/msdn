@@ -38,7 +38,7 @@ class Ondotori::Status < ActiveRecord::Base
     }
   end
   
-  def self.ondotori_status_load(xml_file); OndotoriCurrent.new(xml_file);end
+  def self.ondotori_status_load(xml_file); Ondotori::Current.new(xml_file);end
     
   def self.select_each_one_from_every_group_by(columns,order,opt={ })
     self.all.order(order).
