@@ -1,7 +1,9 @@
-require 'ondotori_current_reader'
-class Status::Ondotori < ActiveRecord::Base
+require 'ondotori'
+require 'ondotori/converter'
+require 'ondotori/current'
+class Status::TandD < ActiveRecord::Base
   def self.load_xml(xml_file)
-    ondotori = Ondotori::CurrentReader.new(xml_file)#ondotori_status_load(xml_file)
+    ondotori = Ondotori::Current.new(xml_file)#ondotori_status_load(xml_file)
 
     base_name = ondotori.base_name
 

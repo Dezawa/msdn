@@ -101,9 +101,9 @@ Rails.application.routes.draw do
     resources :monthly, :dayly
   end
   ########### 状態管理：おんどとり
-  set_get("status/ondotori",%w(load_local_file list))
+  set_get("status/tand_d",%w(load_local_file list))
   namespace :status do
-    resources :ondotori
+    resources :tand_d
   end
   
   ########### 天候関連

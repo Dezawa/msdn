@@ -807,7 +807,7 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.float    "sum_kwh",    limit: 24
   end
 
-  create_table "status_ondotoris", force: true do |t|
+  create_table "status_tand_ds", force: true do |t|
     t.string   "base_name"
     t.string   "group_name"
     t.string   "group_remote_name"

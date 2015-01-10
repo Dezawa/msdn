@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class Status::OndotoriController < CommonController#ApplicationController
+class Status::TandDController < CommonController#ApplicationController
   include Actions
   before_filter :set_instanse_variable
   Labels =
@@ -15,7 +15,7 @@ class Status::OndotoriController < CommonController#ApplicationController
 
   def set_instanse_variable
     super
-    @Model= Status::Ondotori
+    @Model= Status::TandD
     @Domain= @Model.name.underscore
     @TYTLE = "おんどとり Currentデータ"
     @Delete=true
