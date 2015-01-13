@@ -73,7 +73,7 @@ class Sola::Dayly < ActiveRecord::Base
     self.month ||= date.beginning_of_month
     kws_to_peak_kw
     kws_to_kwh_day
-    update_monthly
+    #update_monthly
   end
 
 end
