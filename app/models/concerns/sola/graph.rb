@@ -152,7 +152,7 @@ module Sola::Graph
       open(filename_or_pathname,"w"){ |f|
         f.puts labels
       data_list.each_with_index{ |kw,min|
-        f.puts "%d:%d %.2f"%[min/60,min%60,kw]
+        f.puts "%d:%d %.2f"%[min/60,min%60,kw] if kw && min
       }
     }
   end
