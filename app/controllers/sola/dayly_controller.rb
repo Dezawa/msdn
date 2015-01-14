@@ -5,15 +5,20 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   before_action :authenticate_user!, :except => :load_local_file
   before_filter :set_instanse_variable
   
+  LabelsPeaks =
+    [ HtmlDate.new(:month,"年月",:tform =>"%Y-%m")] +
+      (1..31).map{ |day| HtmlNum.new(:peak_kw,day.to_s,:tform => "%5.2f")
+  }
+    
   LabelsMonthesIndex = 
     [ HtmlDate.new(:month,"年月",:tform =>"%Y-%m"),
       HtmlLink.new(:id,"",
                    :link => {:link_label => "表示", :url => "/sola/dayly/index_month",
                      :key => :month, :key_val => :month}), 
     ]
-  onClick=
+  OnClick=
     %Q!onClick="window.open('/sola/dayly/minute_graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!
-  MLink  = {:url => "/sola/dayly/minute_graph" ,:key => :id,:key_val => :id,:htmloption => onClick}
+  MLink  = {:url => "/sola/dayly/minute_graph" ,:key => :id,:key_val => :id,:htmloption => OnClick}
   LabelsMonthIndex = 
     [ HtmlDate.new(:date,"年月日",:tform =>"%Y-%m-%d"),
       HtmlNum.new(:peak_kw,"ピーク<br>kW(分)",:tform => "%5.2f"),
@@ -30,23 +35,43 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     #@TYTLEpost = "#{@year}年度"
     @FindOption = {}
     @FindOrder = "date"
-    @TableEdit = true  #[[:edit_bottom]]
+
+
     #@Edit = true
     @Delete=true
   end
 
   def index
     #@page = params[:page] || 1 
+    @MLink = OnClick
+    @labels =LabelsPeaks # LabelsMonthesIndex
+    @models_group_by = find_and.group_by{ |d| d.month }
+    @TYTLE_post = "ピーク発電量"
     @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"],
-                  [:popup,:peak_graph,"ピークグラフ",{:win_name => "default" }]
+                  [:popup,:peak_graph,"ピークグラフ",{:win_name => "default" }],
+                  [:form,:index_day_total,"発電量一覧",method: :get]
                  ]
-    @labels = LabelsMonthesIndex
-    @models = find_and.group_by{ |d| d.month }
-    @models = @models.values.map{ |daylies|daylies.first}
-    render  :file => 'application/index',:layout => 'application'    
+    @TableHeaderDouble = [1,[31,"日々のピーク発電量(kW)"]]
+    #render  :file => 'application/index',:layout => 'application'    
   end
 
-  def index_month
+  def index_day_total
+    #@page = params[:page] || 1 
+    @MLink = OnClick
+    @labels =LabelsPeaks # LabelsMonthesIndex
+    @models_group_by = find_and.group_by{ |d| d.month }
+    @TYTLE_post = "日 発電量"
+     @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"],
+                  [:popup,:peak_graph,"ピークグラフ",{:win_name => "default" }],
+                  [:form,:index,"ピーク発電量",method: :get]
+                 ]
+   @TableHeaderDouble = [1,[31,"日々の発電量(kWh)"]]
+    @method = :kwh_day
+    @action = "show"
+    render  :action => :index
+  end
+
+   def index_month
     month = params[:month]
     @page = params[:page] || 1 
     @TableHeaderDouble = [3,[19,"毎時発電量(kWh)"]]
