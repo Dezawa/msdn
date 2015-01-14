@@ -54,7 +54,7 @@ module Gnuplot
   end
   
   def gnuplot_define(datafile_pathes,opt)
-    head = "set terminal #{opt[:terminal]} enhanced size #{opt[:size]} enhanced font 'usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10'
+    head = "set terminal #{opt[:terminal]} enhanced size #{opt[:size]} enhanced font '/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10'
 set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'
 set title '#{opt[:title]}"
     key = opt[:set_key] || "set key outside autotitle columnheader" #: "unset key"
