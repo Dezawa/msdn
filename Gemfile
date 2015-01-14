@@ -22,7 +22,7 @@ gem 'coffee-rails', '~> 4.0.0'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
-gem 'turbolinks'
+#gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.0'
 # bundle exec rake doc:rails generates the API under doc/api.
@@ -61,3 +61,10 @@ gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
 #   gem 'turnip'
 #   # gem 'spring' # これを新しく追加 
 # end
+# Bootstrap
+gem 'less-rails'
+gem 'therubyracer'
+gem 'twitter-bootstrap-rails', '~> 2.2.8'
+gem 'font-awesome-rails'
+gem 'bootstrap-sass', '2.3.2.0'
+
