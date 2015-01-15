@@ -13,10 +13,10 @@
       -%>
 <% @models_group_by.each do |month,models|  -%>
   <tr><td><%= month.strftime("%Y-%m")%></td>
-  <% @labels.each_with_index{|html_cell,idx| model = models[idx]  -%>
-  <td> <% if model -%>
+  <% @labels.each_with_index{|html_cell,idx| model = models.shift -%>
+  <td> <% if model && model.date.day == idx+1 -%>
     <%= link_to("%5.2f"%model[method],{:action => action, :id => model.id},:target => 'graph') %>
-    <% else %> 　
+    <% else ; models.unshift(model)%> 　
     <% end %>
     </td>
   <% } %>
