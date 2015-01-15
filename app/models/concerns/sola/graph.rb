@@ -188,7 +188,7 @@ module Sola::Graph
       :column_labels => %w(分 ピーク発電量), :column_format => %w(%s %.1f),
       :axis_labels   => { :xlabel => "分",:ylabel => "発電量/kW",:y2label => "一日発電量"},
       :title => "日間発電量推移" , 
-      :tics =>  { :xtics => "rotate by -90"}, :range =>{ :y => "[0:35]"},
+      :tics =>  { :xtics => "rotate by -90"}, :range =>{ :y => "[0:5]"},
       :point_type => [7],:point_size => 0.2,:with => ["with line"],
       :set_key => "unset key",
         :type => "scatter",
