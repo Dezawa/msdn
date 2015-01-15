@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 module Gnuplot
   #
-  # option  :
+  # opt  :
   #   必須  :column_labels   例  %w(日 中央 - + 気温),          必須
   #   必須  :column_format   例 "%s %.1f %.1f %.1f %.1f\n",
   #         :terminal        default    "jpeg"
@@ -14,9 +14,10 @@ module Gnuplot
   #         :size             default  "600,400"
   #         :grid   例 => "ytics"                
   #         :additional_lines  近似線などを書く式を生で記述
-  #  実装まだ
   #         :type   => "scatter"  using 1:2,  無いときは using 2:xticlabel(1)
   #         :with   => "line",
+  #         :labels ["label 1 'Width = 3' at 2,0.1 center","arrow 1 as 2 from -1.5,-0.6 to -1.5,-1"]
+  #  実装まだ
   #
   #         :group_by    data_list.group_by{ |d| d.semd(opt[:group_by])}
   #         :keys        defaultではgroup_by の分類がsortされて使われる。
@@ -27,6 +28,10 @@ module Gnuplot
   #         :graph_file_dir             RAILS_ROOT+"/tmp/img"
   #         :define_file           絶対path  RAILS_ROOT+"/tmp/gnuplot/graph.def"
   # 出力される画像fileは  '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'
+  # detalistの形式は以下を想定
+  #   データファイルpath          String
+  #   データファイルpathの配列    [ String, String ]
+  #   データ                      [ [clm0,clm1,clm,,] ,[clm1,clm2,clm3,,] ] 
   def gnuplot_(data_list,opt)
     opt = { :terminal => "jpeg",:size => "600,400" ,
       :graph_file => "image", :graph_file_dir => Rails.root+"tmp" + "img",
@@ -39,6 +44,12 @@ module Gnuplot
     `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`
   end
 
+  # data_listの形式にしたがって、output_gnuplot_define の入力形式(データファイルのpathのArray)に
+  # 変換する
+  # detalistの形式は以下を想定
+  #   データファイルpath          String
+  #   データファイルpathの配列    [ String, String ]
+  #   データ                      [ [clm0,clm1,clm,,] ,[clm1,clm2,clm3,,] ] 
   def datafiles(data_list,opt)
     if data_list.class == String ; [ data_list] # データファイルパス
     elsif data_list.class == Array
@@ -55,10 +66,10 @@ module Gnuplot
   
   def gnuplot_define(datafile_pathes,opt)
     head = "set terminal #{opt[:terminal]} enhanced size #{opt[:size]} enhanced font '/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10'
-set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'
-set title '#{opt[:title]}"
+set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'"
+    title = opt[:title] ? "set title '#{opt[:title]}'" : nil
     key = opt[:set_key] || "set key outside autotitle columnheader" #: "unset key"
-    range = nil
+    
     tics  = opt[:tics] ? tics_str(opt) : nil
     grid  = opt[:grid] ? grid_str(opt) : nil
     set   = opt[:set]  ? opt[:set].map{ |str| "set #{str}"}.join("\n")  : ""
@@ -67,8 +78,8 @@ set title '#{opt[:title]}"
     plot  = plot_list(datafile_pathes,opt)
     def_file = opt[:define_file]
 
-    [ head,key ,set ,
-      range,tics,grid,axis_labels,
+    [ head,title,key ,set ,
+      range_str(opt),tics,grid,axis_labels,
       plot,    opt[:additional_lines]
     ].flatten.compact.join("\n")
   end
@@ -118,9 +129,13 @@ set title '#{opt[:title]}"
     str
   end
 
+  def labels(arg_labels)   ; arg_labels.map{ |l| "set #{l}"}.join("\n")                ;  end
+  def index_of_label(label); labels.index(label)                                       ;  end
+  def axis_labels(opt)     ; opt[:axis_labels].map{ |k,v| "set #{k} '#{v}'"}.join("\n");  end
 
-  def axis_labels(opt)
-    opt[:axis_labels].map{ |k,v| "set #{k} '#{v}'"}.join("\n")
+  def range_str(opt)
+    return "" unless opt[:range]
+    opt[:range].map{ |axis,str| "set #{axis}range #{str}"}.join("\n")
   end
 
   def  tics_str(opt)

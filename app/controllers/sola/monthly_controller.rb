@@ -45,18 +45,23 @@ show      power 日照時間
     super
   end
 
+  def show_graph
+    @graph_file_monthly = "sola_monthly_with_peak"
+    Sola::Monthly.monthly_graph_with_peak(@graph_file_monthly)
+    @graph_file_dayly = "sola_dayly_with_peak"
+    Sola::Monthly.dayly_graph_with_peak(@graph_file_dayly)
+  end
+
   def monthly_graph
     @graph_file = "sola_monthly"
-    @graph_file_dir = Rails.root+"tmp" + "img"
-    Sola::Monthly.monthly_graph(@graph_file,@graph_file_dir)
+    Sola::Monthly.monthly_graph(@graph_file)
     render   :file => 'application/graph', :layout => "simple"
   end
 
 
   def dayly_graph
     @graph_file = "sola_dayly"
-    @graph_file_dir = Rails.root+"tmp" + "img"
-    Sola::Monthly.dayly_graph(@graph_file,@graph_file_dir)
+    Sola::Monthly.dayly_graph(@graph_file)
     render   :file => 'application/graph', :layout => "simple"
   end
 

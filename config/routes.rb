@@ -90,7 +90,7 @@ Rails.application.routes.draw do
   set_post( "sola/monthly",@EditTable )
   set_post( "sola/dayly",%w(load) )
   set_get("sola/dayly",%w( index_day_total index_month load_local_file peak_graph minute_graph show_img))
-  set_get("sola/monthly",%w(peak_graph dayly_graph monthly_graph show_img))
+  set_get("sola/monthly",%w(peak_graph dayly_graph monthly_graph show_img show_graph))
 
     set_post("sola/monthly",@EditTable)
     set_get("sola/monthly",@EditTable)

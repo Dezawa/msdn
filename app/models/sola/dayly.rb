@@ -48,6 +48,10 @@ class Sola::Dayly < ActiveRecord::Base
     Ondotori::Recode.new(file_or_xmlstring)
   end
 
+  def self.monthly_peak(month)
+    self.where(month: month).select("max(peak_kw)",:peak_kw).first.peak_kw
+  end
+
   ("04".."20").each{ |h|  
     define_method("kwh#{h}") do
       min = h.to_i*60

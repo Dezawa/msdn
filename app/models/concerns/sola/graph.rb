@@ -3,8 +3,70 @@ module Sola::Graph
   include Gnuplot
   module ClassMethod
   include Gnuplot
+    def std_opt_with_peak(xly,graph_file,graph_file_dir=nil)
+      { 
+        :graph_file => graph_file || "sola_#{xly}" ,
+        :define_file => Rails.root+"tmp/gnuplot/sola_#{xly}.def",
+        :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
+        :set_key => "set key center horizontal top box autotitle columnheader samplen 0.2",
+        :size => "1000,230",
+        :type => "scatter",
+        :by_tics => { 1 => "x1y2" }, # 3600*24*
+        :tics =>  { :xtics => "'2013-1-1' #{3600*24*30}  rotate by -90",
+          :ytics => "300,100 nomirror",:y2tics => "0,1"},
+      }
+    end
 
-    def monthly_graph(graph_file=nil,graph_file_dir=nil)
+    def monthly_graph_with_peak(graph_file=nil,graph_file_dir=nil)
+      opt = std_opt_with_peak(:minthly,graph_file,graph_file_dir).
+        merge(
+              { 
+                :set  => [ "lmargin 0", "rmargin 0","size 0.8,1.1", "origin 0.09 ,-0.07",
+                           "xdata time", "timefmt '%Y-%m-%d'"      , "format x '%Y-%m-%d'"
+                         ],
+                :xy => [[[1,2],[1,3]]],        :point_type => [7,6],
+                :range => { :y => "[300:750]",:y2 => "[0:5]"},
+                :axis_labels   => { :ylabel => "月間発電量/kW時", :y2label => "月間ピーク/kW分"},
+              }
+              )
+      data_list = Sola::Monthly.all.order("month").
+        map{ |monthly| [:month, :sum_kwh,:peak_kw].map{ |sym| monthly.send(sym) }} 
+      file = Rails.root+"tmp"+"Sola_monthly.data"
+      data_file_output_with_date(file,data_list,"年月 電力 ピーク")
+      gnuplot_(file.to_s,opt)
+    end
+   def dayly_graph_with_peak(graph_file=nil,graph_file_dir=nil)
+      opt = 
+       opt = std_opt_with_peak(:dayly,graph_file,graph_file_dir).
+       merge({ 
+               :axis_labels   => { :xlabel => "年月日",:ylabel => "日発電量/kW時", :y2label => "ピーク/kW分"},
+               :xy => [[[1,2]],[[1,2]]],
+               :range => { :y => "[0:37]", :y2 => "[0:5]"},
+              # :range => { :y2 => "[0:5]"},
+               :tics =>  {  :xtics => "'2012-12-1' #{3600*24*30}",
+                 :ytics => "0,5 nomirror",:y2tics => "0,1"}  ,
+               :point_type => [7,6],:point_size => 0.6 ,
+               :type => "scatter",
+               :set => [ "lmargin 0","rmargin 0","size 0.8,0.9","origin 0.09 ,0.15",
+                         "xdata time",  "timefmt '%Y-%m-%d'",
+                         #"xrange ['03/21/95':'03/22/95']",
+                         "format x ''"
+                       ],
+             }
+             )
+      data_list = Sola::Monthly.all.order("month")
+      file = Rails.root+"tmp"+"Sola_dayly.data"
+      data_file_output_dayly(file,data_list,"No 年月日 発電量")
+
+      peak_list = Sola::Dayly.all.order("month").pluck(:date,:peak_kw)
+     #map{ |dayly| [:date,:peak_kw].map{ |sym| dayly[sym] }}
+      file_peak = Rails.root+"tmp"+"Sola_peak.data"
+      data_file_output_with_date(file_peak,peak_list,"年月 ピーク")
+
+      gnuplot_([file.to_s,file_peak.to_s],opt)
+    end
+
+  def monthly_graph(graph_file=nil,graph_file_dir=nil)
       opt = { 
         :graph_file => graph_file || "sola_monthly" ,
         :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
@@ -23,8 +85,6 @@ module Sola::Graph
       data_file_output_monthly(file,data_list,"No 年月 電力")
       gnuplot_(file.to_s,opt)
     end
-
-
     def dayly_graph(graph_file=nil,graph_file_dir=nil)
       opt = { 
         :graph_file => graph_file || "sola_dayly" ,
@@ -82,13 +142,13 @@ module Sola::Graph
         }
       }
     end
-    def data_file_output_monthly(filename_or_pathname,data_list,labels)
-      start_day = data_list.first.first
+    def data_file_output_with_date(filename_or_pathname,data_list,labels)
       open(filename_or_pathname,"w"){ |f|
         f.puts labels
-        data_list.each{ |date,pw|
-          f.puts "%3d %-10s %4.2f"%
-          [date-start_day,[1,7].include?(date.month) ? date.strftime("%Y-%m") : '""' ,pw]
+        data_list.each{ |monthly|
+          date = monthly.shift
+          f.print date.strftime("%Y-%m-%d　")
+          f.puts monthly.map{ |pw| pw ? " %5.2f"%pw : "  --  "  }.join
         }
       }
     end
@@ -99,18 +159,6 @@ module Sola::Graph
         data_list.each{ |monthly|
           first_date = monthly.month.beginning_of_month
           last_day   = (first_date + 1.month - 1.day).day
-          # f.printf("%3d %-10s %-4s\n",
-          #          date-start_day,
-          #          ([1,4,7,10].include?(date.month)  ? date.strftime("%Y-%m ") : '""'),
-          #          ( monthly.kwh01 ? "%4.1f"%monthly.kwh01 : '""')
-          #          )
-          # (2..((monthly.month.beginning_of_month + 1.month - 1.day).day)).
-          #  each_with_index{ |day,idx| 
-          #   f.printf( "%3d \"\"         %-4s\n", 
-          #             date-start_day+idx+1,
-          #             (monthly.kwh(day) ? "%4.2f"%monthly.kwh(day) : "--")
-          #             )
-          # }
           (1..last_day). each{ |day|
             date = first_date + day - 1
             f.printf("%s %s\n",date.strftime("%Y-%m-%d"),(monthly.kwh(day) ? "%4.2f"%monthly.kwh(day) : "--"))
@@ -118,6 +166,16 @@ module Sola::Graph
         }
       }
     end
+    def data_file_output_peak_dayly(filename_or_pathname,data_list,labels)
+      open(filename_or_pathname,"w"){ |f|
+        f.puts labels
+        data_list.each{ |dayly|
+          date = dayly.shift
+          f.print date.strftime("%Y-%m-%d　")
+          f.puts dayly.map{ |pw| pw ? " %5.2f"%pw : "  --  "  }.join
+        }
+      }
+   end
 
   end
   def self.included(base)
