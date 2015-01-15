@@ -12,6 +12,7 @@ module Sola::Graph
         :size => "1000,230",
         :type => "scatter",
         :by_tics => { 1 => "x1y2" }, # 3600*24*
+        :grid    => ["xtics"],
         :tics =>  { :xtics => "'2013-1-1' #{3600*24*30}  rotate by -90",
           :ytics => "300,100 nomirror",:y2tics => "0,1"},
       }
@@ -19,16 +20,14 @@ module Sola::Graph
 
     def monthly_graph_with_peak(graph_file=nil,graph_file_dir=nil)
       opt = std_opt_with_peak(:minthly,graph_file,graph_file_dir).
-        merge(
-              { 
+        merge({ 
                 :set  => [ "lmargin 0", "rmargin 0","size 0.8,1.1", "origin 0.09 ,-0.07",
                            "xdata time", "timefmt '%Y-%m-%d'"      , "format x '%Y-%m-%d'"
                          ],
                 :xy => [[[1,2],[1,3]]],        :point_type => [7,6],
                 :range => { :y => "[300:750]",:y2 => "[0:5]"},
                 :axis_labels   => { :ylabel => "月間発電量/kW時", :y2label => "月間ピーク/kW分"},
-              }
-              )
+              })
       data_list = Sola::Monthly.all.order("month").
         map{ |monthly| [:month, :sum_kwh,:peak_kw].map{ |sym| monthly.send(sym) }} 
       file = Rails.root+"tmp"+"Sola_monthly.data"
@@ -42,14 +41,12 @@ module Sola::Graph
                :axis_labels   => { :xlabel => "年月日",:ylabel => "日発電量/kW時", :y2label => "ピーク/kW分"},
                :xy => [[[1,2]],[[1,2]]],
                :range => { :y => "[0:37]", :y2 => "[0:5]"},
-              # :range => { :y2 => "[0:5]"},
                :tics =>  {  :xtics => "'2012-12-1' #{3600*24*30}",
                  :ytics => "0,5 nomirror",:y2tics => "0,1"}  ,
                :point_type => [7,6],:point_size => 0.6 ,
                :type => "scatter",
                :set => [ "lmargin 0","rmargin 0","size 0.8,0.9","origin 0.09 ,0.15",
                          "xdata time",  "timefmt '%Y-%m-%d'",
-                         #"xrange ['03/21/95':'03/22/95']",
                          "format x ''"
                        ],
              }
@@ -191,7 +188,7 @@ module Sola::Graph
       :column_labels => %w(分 ピーク発電量), :column_format => %w(%s %.1f),
       :axis_labels   => { :xlabel => "分",:ylabel => "発電量/kW",:y2label => "一日発電量"},
       :title => "日間発電量推移" , 
-      :tics =>  { :xtics => "rotate by -90"},
+      :tics =>  { :xtics => "rotate by -90"}, :range =>{ :y => "[0:35]"},
       :point_type => [7],:point_size => 0.2,:with => ["with line"],
       :set_key => "unset key",
         :type => "scatter",
