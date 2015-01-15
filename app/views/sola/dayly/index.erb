@@ -1,0 +1,25 @@
+<h3><%= @TYTLE  %> 一覧 <%= @TYTLE_post %></h3>
+<%= flash[:message] %>
+<%= @errors.call.html_safe if @errors -%>
+<%= case @TableEdit
+ when TrueClass ; add_edit_buttoms(@Domain) 
+ when String; @TableEdit 
+ when Array ; action_buttoms @TableEdit 
+ end %>
+<%= action_buttom_table %>
+<table border=1 id="IndexTable"><%= @TableHeader ? send(@TableHeader) : label_line_option %>
+  <%- method = @method || :peak_kw
+      action = @action || :minute_graph
+      -%>
+<% @models_group_by.each do |month,models|  -%>
+  <tr><td><%= month.strftime("%Y-%m")%></td>
+  <% @labels.each_with_index{|html_cell,idx| model = models[idx]  -%>
+  <td> <% if model -%>
+    <%= link_to("%5.2f"%model[method],{:action => action, :id => model.id},:target => 'graph') %>
+    <% else %> 　
+    <% end %>
+    </td>
+  <% } %>
+  </tr>
+<% end -%>
+</table>
