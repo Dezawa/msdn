@@ -1,8 +1,14 @@
-<h3><%= @TYTLE %></h3>
+<h3><%= @TYTLE %>　<%= @TYTLEpost %></h3>
 <%- opt = {action: :show_img,
    graph_format: @graph_format||"jpeg" ,
    graph_file: @graph_file ||  "image.jpeg",
    graph_file_dir: @graph_file_dir ||  (Rails.root + "tmp" + "img").to_s
    }
 %>
+<%= case @TableEdit
+ when TrueClass ; add_edit_buttoms(@Domain) 
+ when String; @TableEdit 
+ when Array ; action_buttoms @TableEdit 
+ end %>
+<%= action_buttom_table %>
 <img src='<%= url_for( opt) %>' >

@@ -108,6 +108,8 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   def minute_graph
     id = params[:id].to_i
     @model = @Model.find id
+    @TableEdit = nil
+    @TYTLEpost = @model.date.strftime("%Y-%m-%d")
     @graph_file = "sola_minute"
     @graph_file_dir = Rails.root+"tmp" + "img"
     @model.minute_graph(@graph_file,@graph_file_dir)
