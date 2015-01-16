@@ -17,7 +17,7 @@ class LipsController < CommonController #ApplicationController
 
   def member
     @title = "線形計画法"
-    @user  = current_user ? current_user : User.find_by_login("guest")
+    @user  = current_user ? current_user : User.find_by(username: "guest")
     #I18n.locale = (@login == "guest") ? :guest : :default #user.lipslabelcode
     I18n.locale = @permit ? :default : :guest   #user.lipslabelcode
     redirect_to :action => :calc
@@ -26,7 +26,7 @@ class LipsController < CommonController #ApplicationController
   def ube_hospital
     @title = "線形計画法"
     I18n.locale = :hospital
-   @user  = current_user ? current_user : User.find_by_login("guest")
+   @user  = current_user ? current_user : User.find_by(username: "guest")
    redirect_to :action => :calc
   end
 
@@ -35,7 +35,7 @@ class LipsController < CommonController #ApplicationController
     @title = "線形計画法"
     I18n.locale = @permit ? :default : :guest 
    # begin
-      @user  = current_user ? current_user : User.find_by_login("guest")
+      @user  = current_user ? current_user : User.find_by(username: "guest")
     @login = @user ? @user.login : "guest"
     set_filename
       @lips=Lips.new(params[:lips])
@@ -53,7 +53,7 @@ class LipsController < CommonController #ApplicationController
    I18n.locale = @permit ? :default : :guest 
      @title = "線形計画法"
     param =HashWithIndifferentAccess.new
-    @user  = current_user ? current_user : User.find_by_login("guest")
+    @user  = current_user ? current_user : User.find_by(username: "guest")
     param[:promax]=current_user.lipssizepro
     param[:opemax]=current_user.lipssizeope	
     @lips = Lips.new(param)
@@ -70,7 +70,7 @@ class LipsController < CommonController #ApplicationController
 
   def change_form
     @title = "線形計画法"
-      @user  = current_user ? current_user : User.find_by_login("guest")
+      @user  = current_user ? current_user : User.find_by(username: "guest")
     @login = @user ? @user.login : "guest" 
     @lips=Lips.new(params[:lips])
     set_filename
