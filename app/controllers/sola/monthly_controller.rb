@@ -27,7 +27,7 @@ show      power 日照時間
     @Domain= @Model.name.underscore
     @TYTLE = "太陽光発電"
     @labels=Labels
-    @FindOrder = "month"
+    @FindOrder = "month desc"
     @TableEdit =  [ :add_edit_buttoms,
                     [:popup,:peak_graph,"ピークグラフ",{:win_name => "default" }],
                     [:csv_out,      "CSVダウンロード"],
