@@ -14,7 +14,7 @@ show      power 日照時間
 
   include Actions
   include GraphController
-  before_action :authenticate_user! 
+  before_action :authenticate_user! ,:only => [:update_on_table, :edit_on_table,:csv_upload,:csv_out]
   before_filter :set_instanse_variable
 
   Labels = [HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:size => 5),
