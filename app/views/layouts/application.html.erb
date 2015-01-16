@@ -8,7 +8,10 @@
 </head>
 <% if /msdn.+/ =~ File.basename(Rails.root) %><BODY bgcolor="#Ffd0d0">
 <% else; %> <BODY> <% end %>
-<%   names_free     = [["MSDN Top","/"],["線形計画法","/lips/member"],["複式簿記","/book/keeping"]]
+<%   names_free     =
+     [["MSDN Top","/"],["線形計画法","/lips/member"],["複式簿記","/book/keeping"],
+      ["太陽光発電","sola/monthly/show_graph"]
+     ]
      names_login    = [["ログイン","/users/sign_in"]]
      names_loggedin = []
      names_logout   = [["ログアウト","/users/sign_out",{method: :delete}],["パスワード変更","/change_password"]]
