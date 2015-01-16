@@ -1,4 +1,4 @@
-<h3><%= @TYTLE %> </h3>
+<h3><%= @TYTLE %> <%= @TYTLE_post %></h3></h3>
 <%= @model.date %>　 ピーク <%= "%4.1f"%(@model.peak_kw*1000) %>W
 　　一日発電量 <%= "%4.1f"%(@model.kwh_day) %>kWh
 <%= form_for(@model) do |f| %>
