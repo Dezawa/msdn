@@ -8,12 +8,12 @@ module Sola::Graph
         :graph_file => graph_file || "sola_#{xly}" ,
         :define_file => Rails.root+"tmp/gnuplot/sola_#{xly}.def",
         :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
-        :set_key => "set key center horizontal top box autotitle columnheader samplen 0.2",
+        :set_key => "set key center horizontal top box autotitle columnheader width -7 samplen 0.0",
         :size => "1000,230",
         :type => "scatter",
         :by_tics => { 1 => "x1y2" }, # 3600*24*
         :grid    => ["xtics"],
-        :tics =>  { :xtics => "'2013-1-1' #{3600*24*30}  rotate by -90",
+        :tics =>  { :xtics => "'2013-1-1',#{3600*24*30},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
           :ytics => "300,100 nomirror",:y2tics => "0,1"},
       }
     end
@@ -31,7 +31,7 @@ module Sola::Graph
       data_list = Sola::Monthly.all.order("month").
         map{ |monthly| [:month, :sum_kwh,:peak_kw].map{ |sym| monthly.send(sym) }} 
       file = Rails.root+"tmp"+"Sola_monthly.data"
-      data_file_output_with_date(file,data_list,"年月 電力 ピーク")
+      data_file_output_with_date(file,data_list,"年月 月間発電量 月間ピーク発電")
       gnuplot_(file.to_s,opt)
     end
    def dayly_graph_with_peak(graph_file=nil,graph_file_dir=nil)
@@ -53,12 +53,12 @@ module Sola::Graph
              )
       data_list = Sola::Monthly.all.order("month")
       file = Rails.root+"tmp"+"Sola_dayly.data"
-      data_file_output_dayly(file,data_list,"No 年月日 発電量")
+      data_file_output_dayly(file,data_list,"年月日 一日発電量")
 
       peak_list = Sola::Dayly.all.order("month").pluck(:date,:peak_kw)
      #map{ |dayly| [:date,:peak_kw].map{ |sym| dayly[sym] }}
       file_peak = Rails.root+"tmp"+"Sola_peak.data"
-      data_file_output_with_date(file_peak,peak_list,"年月 ピーク")
+      data_file_output_with_date(file_peak,peak_list,"年月  ピーク発電量")
 
       gnuplot_([file.to_s,file_peak.to_s],opt)
     end
