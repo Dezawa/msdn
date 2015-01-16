@@ -81,6 +81,7 @@ Rails.application.routes.draw do
   ########### LiPS
   set_get("lips",%w( member calc csv_download))
   set_post("lips",%w(change_form calc)+@EditTable)
+  get "/lips" => "lips#member" 
 
   ########### Todo
   set_post("todos",@EditTable)
