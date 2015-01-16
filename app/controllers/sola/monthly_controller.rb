@@ -46,10 +46,13 @@ show      power 日照時間
   end
 
   def show_graph
-    @graph_file_monthly = "sola_monthly_with_peak"
-    Sola::Monthly.monthly_graph_with_peak(@graph_file_monthly)
-    @graph_file_dayly = "sola_dayly_with_peak"
-    Sola::Monthly.dayly_graph_with_peak(@graph_file_dayly)
+    Sola::Monthly.monthly_graph_with_peak(@graph_file_monthly = "sola_monthly_with_peak")
+    Sola::Monthly.dayly_graph_with_peak(@graph_file_dayly = "sola_dayly_with_peak")
+    @TYTLE_post = "　累積発電量とピーク発電量"
+    @postTitleMsg = "
+        発電量はソーラパネルメーカ提供oコントローラの日間発電量による。(手動転記なのでupdate遅れる事あり)<br>
+        ピーク発電量は自前電力計による1分間平均発電量。
+"
   end
 
   def monthly_graph
