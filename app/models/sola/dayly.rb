@@ -2,6 +2,9 @@
 require 'ondotori'
 require 'ondotori/converter'
 require 'ondotori/recode'
+require "csv"
+# 月    日                     kW分のmax ΣkW分  モニターでの一日発電   毎分の電力
+# month date base_name ch_name peak_kw   kwh_day :kwh_monitor           kws
 class Sola::Dayly < ActiveRecord::Base
   include Sola::Graph
   serialize :kws
@@ -52,14 +55,31 @@ class Sola::Dayly < ActiveRecord::Base
     self.where(month: month).select("max(peak_kw)",:peak_kw).first.peak_kw
   end
 
+  def self.csv_update_monitor(csvfile,labels,columns0,option={ })
+    condition = option.delete(:condition) || true
+    CSV.parse(NKF.nkf("-w",csvfile.read),:headers => true){ |row|
+      month = Time.parse( row["month"])
+      ("01".."31").each_with_index{ |day,idx| clmn = "kwh#{day}"
+        next unless row[clmn]
+        date = month + idx.day
+        dayly = self.find_by(date: date.to_date) || self.new(date: date, month: month.to_date)
+       # dayly = Sola::Dayly.find_by(date: date.to_date) || Sola::Dayly.new(date: date, month: month.to_date)
+        dayly.kwh_monitor = row[clmn].to_f
+        dayly.save
+      }
+    }
+[]
+  end
+
   ("04".."20").each{ |h|  
     define_method("kwh#{h}") do
       min = h.to_i*60
       (min..min+59).inject(0.0){ |kw,m|  kw + (kws[m] || 0.0) }/60.0
       end
   }
-  def kws_to_peak_kw ;     self.peak_kw = kws.compact.max ; end
+  def kws_to_peak_kw ;     self.peak_kw = kws.compact.max if kws; end
   def kws_to_kwh_day
+    return unless kws
     self.kwh_day = 
       kws.inject(0.0){ |kwh,kw| kwh + (kw || 0.0) } /
       kws.compact.size * 24 # *60*24 / 60 

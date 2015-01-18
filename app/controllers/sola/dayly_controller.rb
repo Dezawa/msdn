@@ -94,6 +94,18 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     redirect_to :action => :index
   end
 
+  def csv_upload
+    errors= @Model.csv_update_monitor(params[:csvfile]||params[@Domain][:csvfile], @CSVlabels,@CSVatrs)
+    unless errors[0]
+      flash[:message] = errors[1]
+      redirect_to :action => :index
+    else
+      @Model.send(@Refresh,true) if @Refresh
+      flash[:message] = errors[1] if  errors[1]>""
+      redirect_to :action => :index
+    end
+  end
+
   def show
     @model = @Model.find params[:id]
   end
