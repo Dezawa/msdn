@@ -9,6 +9,8 @@ class Sola::Dayly < ActiveRecord::Base
   include Sola::Graph
   serialize :kws
   before_save :set_culc
+#select max(peak_kw) sola_daylies,month from sola_daylies group by month;
+#select max(peak_kw) max_peak,month from sola_daylies group by month;
 
   def self.load_trz(trz_file)
     ondotori = Ondotori::Recode.new(trz_file) # ondotori_load(trz_file)
@@ -52,7 +54,7 @@ class Sola::Dayly < ActiveRecord::Base
   end
 
   def self.monthly_peak(month)
-    self.where(month: month).select("max(peak_kw)",:peak_kw).first.peak_kw
+    self.where(month: month).select("max(peak_kw) peak").first.peak
   end
 
   def self.csv_update_monitor(csvfile,labels,columns0,option={ })

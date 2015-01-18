@@ -32,13 +32,18 @@ module Sola::Graph
               })
 
       return if graph_updated?(opt)
+      
+      peaks  = Sola::Dayly.select("min(peak_kw) peak",:month).group(:month).
+        map{|m| [m.month,m.peak]}.to_h
+      powers = Sola::Dayly.select("sum(kwh_monitor) power",:month).group(:month).
+        map{|m| [m.month,m.power]}.to_h
+      data_list = (powers.keys + peaks.keys).uniq.sort.map{ |month| [month,powers[month],peaks[month]]}
 
-      data_list = Sola::Monthly.all.order("month").
-        map{ |monthly| [:month, :sum_kwh,:peak_kw].map{ |sym| monthly.send(sym) }} 
       file = Rails.root+"tmp"+"Sola_monthly.data"
       data_file_output_with_date(file,data_list,"年月 月間発電量 月間ピーク発電")
       gnuplot_(file.to_s,opt)
-    end
+    end 
+
     def dayly_graph_with_peak(graph_file=nil,graph_file_dir=nil)
       opt = 
         opt = std_opt_with_peak(:dayly,graph_file,graph_file_dir).
@@ -59,16 +64,10 @@ module Sola::Graph
 
       return if graph_updated?(opt)
 
-      data_list = Sola::Monthly.all.order("month")
+      data_list  = Sola::Dayly.select(:date, :kwh_monitor, :peak_kw).order(:date)
       file = Rails.root+"tmp"+"Sola_dayly.data"
-      data_file_output_dayly(file,data_list,"年月日 一日発電量")
-
-      peak_list = Sola::Dayly.all.order("month").pluck(:date,:peak_kw)
-      #map{ |dayly| [:date,:peak_kw].map{ |sym| dayly[sym] }}
-      file_peak = Rails.root+"tmp"+"Sola_peak.data"
-      data_file_output_with_date(file_peak,peak_list,"年月  ピーク発電量")
-
-      gnuplot_([file.to_s,file_peak.to_s],opt)
+      data_file_output_with_date(file,data_list,"年月日 一日発電量 ピーク発電量")
+      gnuplot_(file.to_s,opt)
     end
 
     def monthly_graph(graph_file=nil,graph_file_dir=nil)
