@@ -29,43 +29,43 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
 
   def set_instanse_variable
     super
+    @CSVatrs  = @CSVlabels = %w(month)+("01".."31").map{ |day| "kwh#{day}"}
+
     @Model= Sola::Dayly
     @Domain= @Model.name.underscore
     @TYTLE = "太陽光発電 日データ"
     #@TYTLEpost = "#{@year}年度"
+    @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"],
+    @labels =LabelsPeaks # LabelsMonthesIndex
+                ]
+
     @FindOption = {}
     @FindOrder = "date"
-
-
     #@Edit = true
     @Delete=true
   end
 
   def index
-    #@page = params[:page] || 1 
-    @MLink = OnClick
-    @labels =LabelsPeaks # LabelsMonthesIndex
     @models_group_by = find_and.group_by{ |d| d.month }
     @TYTLE_post = "ピーク発電量"
-    @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"],
-                  [:popup,:peak_graph,"ピークグラフ",{:win_name => "default" }],
-                  [:form,:index_day_total,"発電量一覧",method: :get]
-                 ]
     @TableHeaderDouble = [1,[31,"日々のピーク発電量(kW)"]]
     #render  :file => 'application/index',:layout => 'application'    
   end
-
+  def index_monitor
+    @models_group_by = find_and.group_by{ |d| d.month }
+    @TYTLE_post = "モニターデータ 日発電量"
+    @TableHeaderDouble = [1,[31,"モニターデータ ：日発電量(kWh)"]]
+    @TableEdit = [[:csv_up_buttom,"モニターデータ取り込み"],  [:csv_out,      "CSVダウンロード"],
+                 ]
+    @method = :kwh_monitor
+    @action = "show"
+    render  :action => :index
+  end
   def index_day_total
-    #@page = params[:page] || 1 
-    @MLink = OnClick
-    @labels =LabelsPeaks # LabelsMonthesIndex
     @models_group_by = find_and.group_by{ |d| d.month }
     @TYTLE_post = "日 発電量"
-     @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"],
-                  [:popup,:peak_graph,"ピークグラフ",{:win_name => "default" }],
-                  [:form,:index,"ピーク発電量",method: :get]
-                 ]
-   @TableHeaderDouble = [1,[31,"日々の発電量(kWh)"]]
+    @TableHeaderDouble = [1,[31,"日々の発電量(kWh)"]]
+
     @method = :kwh_day
     @action = "show"
     render  :action => :index

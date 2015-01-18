@@ -11,10 +11,10 @@
   <%- method = @method || :peak_kw
       action = @action || :minute_graph
       -%>
-<% @models_group_by.each do |month,models|  -%>
+<% @models_group_by.keys.reverse.each do |month| models =@models_group_by[month]   -%>
   <tr><td><%= month.strftime("%Y-%m")%></td>
   <% @labels.each_with_index{|html_cell,idx| model = models.shift -%>
-  <td> <% if model && model.date.day == idx+1 -%>
+  <td> <% if model && model.date.day == idx+1 && model[method] -%>
     <%= link_to("%5.2f"%model[method],{:action => action, :id => model.id},:target => 'graph') %>
     <% else ; models.unshift(model)%> 　
     <% end %>
