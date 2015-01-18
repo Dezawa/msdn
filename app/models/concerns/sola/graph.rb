@@ -139,7 +139,7 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
         :xy => [[[2,3],[2,4]]], :by_tics => { 1 => "x1y2" }
       }
 
-      data_list = Sola::Dayly.all.order("date").pluck(:date, :peak_kw, :kwh_day)
+      data_list = Sola::Dayly.all.order("date").pluck(:date, :peak_kw, :kwh_day).delete_if{ |a,b,c| !b}
       file = Rails.root+"tmp"+"Sola_peak.data"
       data_file_output(file,data_list,"Daies 年月日 発電量")
       gnuplot_(file.to_s,opt)
