@@ -2,9 +2,11 @@
 class Sola::Controller < CommonController 
   Links =
     [
-     Menu.new(   "日々データ",:dayly   ,:action => :index) ,
-     Menu.new(   "月データ"  ,:monthly ,:action => :index) ,
-     #Menu.new(   "日グラフ"  ,:monthly ,{ :action => :dayly_graph}  ,:target =>"newtab") ,
+     Menu.new(   "日々ピーク",:dayly   ,:action => :index) ,
+     Menu.new(   "日々発電量",:dayly   ,:action => :index_day_total) ,
+     Menu.new(   "モニタデータ",:dayly ,:action => :index_monitor) ,
+     Menu.new(   "月データ"    ,:monthly ,:action => :index) ,
+     Menu.new(   "ピークグラフ",:dayly ,{ :action => :peak_graph}  ,:win_name => "newtab", :target =>"newtab") ,
      #Menu.new(   "月グラフ"  ,:monthly ,{ :action => :monthly_graph},:target =>"newtab") ,
      Menu.new(   "電池残量"  ,"status/tand_d" ,{ :action => :list}) ,
     ]
