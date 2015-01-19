@@ -2,11 +2,14 @@
 require 'ondotori'
 require 'ondotori/converter'
 require 'ondotori/recode'
+require 'statistics'
 require "csv"
 # 月    日                     kW分のmax ΣkW分  モニターでの一日発電   毎分の電力
 # month date base_name ch_name peak_kw   kwh_day :kwh_monitor           kws
 class Sola::Dayly < ActiveRecord::Base
   include Sola::Graph
+  extend Statistics
+#include Statistics
   serialize :kws
   before_save :set_culc
 #select max(peak_kw) sola_daylies,month from sola_daylies group by month;
@@ -53,8 +56,10 @@ class Sola::Dayly < ActiveRecord::Base
     Ondotori::Recode.new(file_or_xmlstring)
   end
 
+
   def self.monthly_peak(month)
-    self.where(month: month).select("max(peak_kw) peak").first.peak
+    models = self.where(month: month).select("max(peak_kw) peak").first.peak
+    multiple_regression(models)
   end
 
   def self.csv_update_monitor(csvfile,labels,columns0,option={ })

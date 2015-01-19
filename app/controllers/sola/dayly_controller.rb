@@ -102,12 +102,19 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     else
       @Model.send(@Refresh,true) if @Refresh
       flash[:message] = errors[1] if  errors[1]>""
-      redirect_to :action => :index
+      redirect_to :action => :index_monitor
     end
   end
 
   def show
     @model = @Model.find params[:id]
+  end
+
+  def correlation
+    @graph_file = "sola_correlation"
+    @graph_file_dir = Rails.root+"tmp" + "img"
+    @Model.correlation_graph(@graph_file,@graph_file_dir)
+    render   :file => 'application/graph', :layout => "simple"
   end
 
   def peak_graph

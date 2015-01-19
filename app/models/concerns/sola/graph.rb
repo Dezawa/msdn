@@ -3,6 +3,7 @@ module Sola::Graph
   include Gnuplot
   module ClassMethod
   include Gnuplot
+
     def std_opt_with_peak(xly,graph_file,graph_file_dir=nil)
       { 
         :graph_file => graph_file || "sola_#{xly}" ,
@@ -17,6 +18,36 @@ module Sola::Graph
           :ytics => "300,100 nomirror",:y2tics => "0,1"},
         
       }
+    end
+
+    def correlation_graph(graph_file=nil,graph_file_dir=nil)
+      opt = { 
+        :graph_file => graph_file || "sola_correlation" ,
+        :define_file => Rails.root+"tmp/gnuplot/sola_correlation.def",
+        :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
+        :set_key => "unset key" ,
+        :size => "500,500",
+        :type => "scatter",
+        :set  => [ "lmargin 0", "rmargin 0","size 0.8,0.8", "origin 0.15 ,0.1"  ],
+        :xy => [[[2,1]]],        :point_type => [7,6],
+        :range => { :y => "[0:35]",:x => "[0:35]"},
+        :axis_labels   => { :ylabel => "おんどとり/kWh", :xlabel => "モニター/kWh"},
+      }
+      #return if graph_updated?(opt)
+
+      data_list = self.where("kwh_day is not null  and kwh_monitor is not null").pluck(:kwh_day,  :kwh_monitor)
+      a,resudal = multiple_regression data_list
+
+      opt.merge!( { :additional_lines => "#{a[0]}+#{a[1]}*x" ,
+                    :labels => ["label 1 'おんどとり = %.2f * モニタ+%.2f' at 3,32"%a,
+                                "label 2 'R=%.2f' at 10,30"%resudal]
+                  })
+      file = Rails.root+"tmp"+"Sola_correlation.data"
+      open(file,"w"){ |f|
+        f.puts "モニター発電量 おんどとり発電量"
+        data_list.each{ |powers| f.puts "%.1f %.1f"%powers}
+      }
+      gnuplot_(file.to_s,opt)
     end
 
     def monthly_graph_with_peak(graph_file=nil,graph_file_dir=nil)
@@ -94,6 +125,7 @@ module Sola::Graph
 
     def graph_updated?(opt)
       file_path = "#{opt[:graph_file_dir]}/#{opt[:graph_file]}.jpeg"
+      return false unless File.exist? file_path
 logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
       db_updated = [Sola::Dayly,Sola::Monthly].
         map{|model| model.select("max(updated_at) max_updated_at").first.max_updated_at}.max

@@ -7,7 +7,7 @@ class Sola::Controller < CommonController
      Menu.new(   "モニタデータ",:dayly ,:action => :index_monitor) ,
      Menu.new(   "月データ"    ,:monthly ,:action => :index) ,
      Menu.new(   "ピークグラフ",:dayly ,{ :action => :peak_graph}  ,:win_name => "newtab", :target =>"newtab") ,
-     #Menu.new(   "月グラフ"  ,:monthly ,{ :action => :monthly_graph},:target =>"newtab") ,
+     Menu.new(   "相関"  ,:dayly ,{ :action => :correlation},:target =>"newtab") ,
      Menu.new(   "電池残量"  ,"status/tand_d" ,{ :action => :list}) ,
     ]
 

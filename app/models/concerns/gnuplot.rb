@@ -78,10 +78,11 @@ set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'"
     plot  = plot_list(datafile_pathes,opt)
     def_file = opt[:define_file]
 
-    [ head,title,key ,set ,
+    [ head,title,key ,set ,labels( opt[:labels]) ,
       range_str(opt),tics,grid,axis_labels,
-      plot,    opt[:additional_lines]
-    ].flatten.compact.join("\n")
+      plot
+    ].flatten.compact.join("\n") +
+     ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")
   end
 
   def output_gnuplot_define(datafile_pathes,opt)
@@ -129,7 +130,7 @@ set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'"
     str
   end
 
-  def labels(arg_labels)   ; arg_labels.map{ |l| "set #{l}"}.join("\n")                ;  end
+  def labels(arg_labels)   ; arg_labels ? arg_labels.map{ |l| "set #{l}"}.join("\n") : ""   ;  end
   def index_of_label(label); labels.index(label)                                       ;  end
   def axis_labels(opt)     ; opt[:axis_labels].map{ |k,v| "set #{k} '#{v}'"}.join("\n");  end
 
