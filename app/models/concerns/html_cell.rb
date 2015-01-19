@@ -149,7 +149,14 @@ class HtmlLink   < HtmlCell
     key = links.delete(:key)
     key_val = links.delete(:key_val)
     htmloption = links.delete(:htmloption)
-    lbl = links.delete(:link_label) || object.send(symbol)
+    lbl = links.delete(:link_label) || 
+      if val = object.send(symbol) 
+        if tform ; tform%val 
+        else  val
+        end
+      else
+        ""
+      end
 
     params = links.size == 0 ? "" : links.map{ |k,v| "#{k}=#{v}"}.join("&")
     #logger.debug("HtmlLink: #{object.send(symbol)},#{url},#{key}, #{key_val}")
