@@ -20,6 +20,7 @@ class TodosController < CommonController # ApplicationController
     @TYTLE = "Todo"
     @TableEdit = true
     @Show = @Edit = @Delete=true
+    @FindOrder("id decs")
     @Pagenation = 20
   end
   private
