@@ -6,9 +6,30 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   before_filter :set_instanse_variable
   
   LabelsPeaks =
-    [ HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:ro => true )] +
-      (1..31).map{ |day| HtmlNum.new(:peak_kw,day.to_s,:tform => "%5.2f")
-  }
+    [[ HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:ro => true )] ,
+     (1..31).map{ |day| 
+       HtmlLink.new(:peak_kw,day.to_s,:tform => "%5.2f",
+                    :link => {  :url => "/sola/dayly/minute_graph",:key => :id, :key_val => :id})
+     }
+    ]
+
+     LabelsPowers =
+    [[ HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:ro => true )] ,
+     (1..31).map{ |day| 
+       HtmlLink.new(:kwh_day,day.to_s,:tform => "%5.2f",
+                    :link => {  :url => "/sola/dayly/show",:key => :id, :key_val => :id})
+     }
+    ]
+    
+  LabelsMonitor =
+    [[ HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:ro => true ),
+      HtmlLink.new(:month,"編集",:link => {:link_label =>"編",  :url => "/sola/dayly/edit_on_table",
+                     :key => :month, :key_val => :month})
+    ],
+      (1..31).map{ |day| 
+       HtmlNum.new(:kwh_monitor,day.to_s,:tform => "%5.2f",:size => 2)
+     }
+    ]
     
   LabelsMonthesIndex = 
     [ HtmlDate.new(:month,"年月",:tform =>"%Y-%m"),
@@ -36,9 +57,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     @TYTLE = "太陽光発電 日データ"
     #@TYTLEpost = "#{@year}年度"
     @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"],
-    @labels =LabelsPeaks # LabelsMonthesIndex
                 ]
-
     @FindOption = {}
     @FindOrder = "date"
     #@Edit = true
@@ -46,22 +65,25 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   end
 
   def index
+    @Labels =LabelsPeaks
     @models_group_by = find_and.group_by{ |d| d.month }
     @TYTLE_post = "ピーク発電量"
     @TableHeaderDouble = [1,[31,"日々のピーク発電量(kW)"]]
     #render  :file => 'application/index',:layout => 'application'    
   end
   def index_monitor
+    @Labels =LabelsMonitor # LabelsMonthesIndex
+
     @models_group_by = find_and.group_by{ |d| d.month }
     @TYTLE_post = "モニターデータ 日発電量"
-    @TableHeaderDouble = [1,[31,"モニターデータ ：日発電量(kWh)"]]
+    @TableHeaderDouble = [2,[31,"モニターデータ ：日発電量(kWh)"]]
     @TableEdit = [[:edit_bottom],[:csv_up_buttom,"モニターデータ取り込み"],  [:csv_out,      "CSVダウンロード"],
                  ]
     @method = :kwh_monitor
-    @action = "show"
     render  :action => :index
   end
   def index_day_total
+    @Labels =LabelsPowers
     @models_group_by = find_and.group_by{ |d| d.month }
     @TYTLE_post = "日 発電量"
     @TableHeaderDouble = [1,[31,"日々の発電量(kWh)"]]
@@ -71,17 +93,41 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     render  :action => :index
   end
 
-   def index_month
+  def index_month
+     month = params[:month]
+     @page = params[:page] || 1 
+     @TableHeaderDouble = [3,[19,"毎時発電量(kWh)"]]
+     @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"]]
+     @labels = LabelsMonthIndex
+     @Show = true
+     #@models = @Model.where(month: month)
+     @FindWhere = {month: month}
+     find_and
+     render  :file => 'application/index',:layout => 'application'
+  end
+
+  def edit_on_table
     month = params[:month]
-    @page = params[:page] || 1 
-    @TableHeaderDouble = [3,[19,"毎時発電量(kWh)"]]
-    @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"]]
-    @labels = LabelsMonthIndex
-    @Show = true
-    #@models = @Model.where(month: month)
-    @FindWhere = {month: month}
-    find_and
-    render  :file => 'application/index',:layout => 'application'
+    @Labels =LabelsMonitor 
+    @models = @Model.where(month: month).order(:date).to_a
+    @TYTLE_post = "モニターデータ 日発電量"
+    @TableHeaderDouble = [1,[31,"モニターデータ ：日発電量(kWh)"]]
+    @TableEdit = [[:update_bottom]]
+    @method = :kwh_monitor
+    @action = "show"
+  end
+  def update_on_table 
+    @models = [] 
+    @errors = []
+    @result = true
+    @modelList = params[@Domain]
+    @modelList.each_pair{|i,model| id=i.to_i
+        @mdl = @Model.find(id)
+        @result &=  @mdl.update_attributes(model)
+        @errors << @mdl.errors if @mdl.errors.size>0
+        @models << @mdl
+    }
+    redirect_to :action => :index_monitor 
   end
 
   def load
