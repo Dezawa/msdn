@@ -1,0 +1,23 @@
+　　ユーザ：<%= current_user.username %><hr>
+<h3><%= @TYTLE %> 編集 <%= @TYTLE_post_edit %></h3>
+<%= disp_errors @models %>
+<%=    form_tag(:action => :update_on_table)+submit_tag('更新') %>
+<%=  option_tags(@option_tags) if @option_tags %>
+<%- @labels = @Labels[0]+@Labels[1] -%>
+<table border=1 id="index_table"><%=  @TableHeader ? send(@TableHeader) : label_line_option %>
+<%  method = @method || :kwh_monitor   ; month = @models.first.month -%>
+  <tr><td><%= month.strftime("%Y-%m")%></td>
+  <% @Labels[1].each_with_index{|html_cell,idx| model = @models.shift -%>
+  <td> <% unless model && model.date.day == idx+1 
+     @models.unshift(model) ; model=@Model.create(:date => (month+idx).to_date) 
+    end
+    -%> 　
+      <%= html_cell.edit_field_with_id(@Domain,model,controller) -%>
+    </td>
+  <% } %>
+  </tr>
+</table>
+<br />
+
+<%= send(@AfterIndex,:edit) if @AfterIndex %>
+</form>
