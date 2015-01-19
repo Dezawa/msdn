@@ -62,6 +62,23 @@ class Sola::Dayly < ActiveRecord::Base
     multiple_regression(models)
   end
 
+  def self.csv_out_monitor(filename, csv_labels,csv_atrs)
+    daylies = self.all.order(:date).pluck(:month,:date,:kwh_monitor).
+      group_by{ |month,date,kwh_monitor| month}
+    CSV.open(filename, "wb") do |csv|
+      csv << csv_labels
+      daylies.each{ |month,values| csv << csv_row(month,values) }
+    end
+    filename
+  end
+
+  def self.csv_row(month,values)
+    ret = []
+    ret << month.strftime("%Y-%m-%d")
+    values.each{ |month,date,kwh_monitor|  ret[date.day] = kwh_monitor  }
+    ret
+  end
+
   def self.csv_update_monitor(csvfile,labels,columns0,option={ })
     condition = option.delete(:condition) || true
     CSV.parse(NKF.nkf("-w",csvfile.read),:headers => true){ |row|

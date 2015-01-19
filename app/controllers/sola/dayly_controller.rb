@@ -6,7 +6,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   before_filter :set_instanse_variable
   
   LabelsPeaks =
-    [ HtmlDate.new(:month,"年月",:tform =>"%Y-%m")] +
+    [ HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:ro => true )] +
       (1..31).map{ |day| HtmlNum.new(:peak_kw,day.to_s,:tform => "%5.2f")
   }
     
@@ -20,7 +20,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     %Q!onClick="window.open('/sola/dayly/minute_graph','graph','width=300,height=300,scrollbars=yes');" target="graph"!
   MLink  = {:url => "/sola/dayly/minute_graph" ,:key => :id,:key_val => :id,:htmloption => OnClick}
   LabelsMonthIndex = 
-    [ HtmlDate.new(:date,"年月日",:tform =>"%Y-%m-%d"),
+    [ HtmlDate.new(:date,"年月日",:tform =>"%Y-%m-%d",:ro => true ),
       HtmlNum.new(:peak_kw,"ピーク<br>kW(分)",:tform => "%5.2f"),
       HtmlNum.new(:kwh_day,"発電量<br>kWh(日)",:tform => "%4.1f")
     ] +
@@ -55,7 +55,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     @models_group_by = find_and.group_by{ |d| d.month }
     @TYTLE_post = "モニターデータ 日発電量"
     @TableHeaderDouble = [1,[31,"モニターデータ ：日発電量(kWh)"]]
-    @TableEdit = [[:csv_up_buttom,"モニターデータ取り込み"],  [:csv_out,      "CSVダウンロード"],
+    @TableEdit = [[:edit_bottom],[:csv_up_buttom,"モニターデータ取り込み"],  [:csv_out,      "CSVダウンロード"],
                  ]
     @method = :kwh_monitor
     @action = "show"
@@ -94,11 +94,17 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     redirect_to :action => :index
   end
 
+  def csv_out
+    filename ||= @CSVfile || (current_user.username+@Model.name.underscore.gsub(/\//,"_")+".csv")
+    tmpfile = @Model.csv_out_monitor(filename,@CSVatrs, @CSVlabels)
+    send_file(tmpfile,:filename =>  filename)
+  end
+
   def csv_upload
     errors= @Model.csv_update_monitor(params[:csvfile]||params[@Domain][:csvfile], @CSVlabels,@CSVatrs)
     unless errors[0]
       flash[:message] = errors[1]
-      redirect_to :action => :index
+      redirect_to :action => :index_monitor
     else
       @Model.send(@Refresh,true) if @Refresh
       flash[:message] = errors[1] if  errors[1]>""
