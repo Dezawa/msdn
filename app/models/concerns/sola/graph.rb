@@ -31,20 +31,20 @@ module Sola::Graph
         :set  => [ "lmargin 0", "rmargin 0","size 0.8,0.8", "origin 0.15 ,0.1"  ],
         :xy => [[[2,1]]],        :point_type => [7,6],
         :range => { :y => "[0:35]",:x => "[0:35]"},
-        :axis_labels   => { :ylabel => "おんどとり/kWh", :xlabel => "モニター/kWh"},
+        :axis_labels   => { :ylabel => "モニター/kWh", :xlabel => "おんどとり/kWh"},
       }
       #return if graph_updated?(opt)
 
-      data_list = self.where("kwh_day is not null  and kwh_monitor is not null").pluck(:kwh_day,  :kwh_monitor)
+      data_list = self.where("kwh_day is not null  and kwh_monitor is not null").pluck(:kwh_monitor,  :kwh_day)
       a,resudal = multiple_regression data_list
 
       opt.merge!( { :additional_lines => "#{a[0]}+#{a[1]}*x" ,
-                    :labels => ["label 1 'おんどとり = %.2f * モニタ+%.2f' at 3,32"%a,
+                    :labels => ["label 1 'モニタ = %.2f * おんどとり+%.2f' at 3,32"%a,
                                 "label 2 'R=%.2f' at 10,30"%resudal]
                   })
       file = Rails.root+"tmp"+"Sola_correlation.data"
       open(file,"w"){ |f|
-        f.puts "モニター発電量 おんどとり発電量"
+        f.puts "おんどとり発電量 モニター発電量"
         data_list.each{ |powers| f.puts "%.1f %.1f"%powers}
       }
       gnuplot_(file.to_s,opt)
