@@ -95,7 +95,7 @@ module Sola::Graph
 
       return if graph_updated?(opt)
 
-      data_list  = Sola::Dayly.select(:date, :kwh_monitor, :peak_kw).order(:date)
+      data_list  = Sola::Dayly.order(:date).pluck(:date, :kwh_monitor, :peak_kw)
       file = Rails.root+"tmp"+"Sola_dayly.data"
       data_file_output_with_date(file,data_list,"年月日 一日発電量 ピーク発電量")
       gnuplot_(file.to_s,opt)
