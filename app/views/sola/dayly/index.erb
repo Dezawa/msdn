@@ -8,15 +8,16 @@
  end %>
 <%= action_buttom_table %>
 <%- @labels = @Labels[0]+@Labels[1] -%>
-<table border=1 id="IndexTable"><%= @TableHeader ? send(@TableHeader) : label_line_option %>
   <%- method = @method || :peak_kw
       action = @action || :minute_graph
       -%>
+<table border=1 id="IndexTable"><%= @TableHeader ? send(@TableHeader) : label_line_option %>
+
 <%- @models_group_by.keys.reverse.each do |month| 
    models =@models_group_by[month] ; model = models.first  -%>
   <tr><% @Labels[0].each{|html_cell| %><td><%= html_cell.disp_field(model) %></td><% } -%>
   <% @Labels[1].each_with_index{|html_cell,idx| model = models.shift -%>
-  <td> <% if model && model.date.day == idx+1 && model[method] -%>
+  <td><% if model && model.date.day == idx+1 -%>
     <%= html_cell.disp_field(model) %>
     <% else ; models.unshift(model)%> 　
     <% end %>

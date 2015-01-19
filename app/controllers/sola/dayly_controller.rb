@@ -69,6 +69,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     @models_group_by = find_and.group_by{ |d| d.month }
     @TYTLE_post = "ピーク発電量"
     @TableHeaderDouble = [1,[31,"日々のピーク発電量(kW)"]]
+    @method = :peak_kw
     #render  :file => 'application/index',:layout => 'application'    
   end
   def index_monitor
