@@ -169,8 +169,13 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     @TYTLE_post = "　累積発電量とピーク発電量"
     @postTitleMsg = "
         発電量はソーラパネルメーカ提供oコントローラの日間発電量による。(手動転記なのでupdate遅れる事あり)<br>
-        ピーク発電量は自前電力計による1分間平均発電量。
-"
+        ピーク発電量は自前電力計による1分間平均発電量。<p>
+　　　　電池残量:%d　　 電波強度 %d
+" 
+    status =  Status::TandD.where(base_name: "dezawa",group_name: "Dhome", group_remote_name: "power01" ).order("group_remote_ch_unix_time desc").first
+
+    @postTitleMsg = @postTitleMsg%[:group_remote_ch_current_batt,:group_remote_rssi].
+      map{ |sym| status[sym]}
   end
 
   def correlation
