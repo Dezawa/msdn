@@ -407,54 +407,42 @@ end
   end
 
   def label_multi_lines(ary_of_list)
-    row = "<tr>"
+    row = "" #<tr>"
     lbl_idx=0
-    #list=ary_of_list[0]
-    #list.each_with_index{|style,idx|
-    #  case style
-    #  when Integer   ;
-    #    (1..style).each{
-    #      row += "<td rowspan=#{ary_of_list.size+1}>#{@labels[lbl_idx].label}</td>"
-    #      lbl_idx += 1
-    #    }
-    #  when Array; 
-    #    row += "<td colspan=#{style[0]}>#{style[1]}</td>"
-    #    lbl_idx += style[0]
-    #  end
-    #}
     firstline = true
-    row += "</tr>\n"
-      ary_of_list.map{ |list| 
+    #row += #"</tr>\n"
+    ary_of_list.each{ |list| 
       row += "<tr>"
       list.each_with_index{|style,idx|
         case style
         when Integer   
           next unless firstline
-        (1..style).each{
-          row += "<td rowspan=#{ary_of_list.size+1}>#{@labels[lbl_idx].label}</td>"
-          lbl_idx += 1
-        }
+          (1..style).each{
+            row += "<td rowspan=#{ary_of_list.size+1}>#{@labels[lbl_idx].label}</td>"
+            lbl_idx += 1
+          }
         when  Array; 
           row += "<td colspan=#{style[0]}>#{style[1]}</td>"
           lbl_idx += style[0]
         end
       }
       firstline = false
-    }.join("</tr>\n")
+      row += "</tr>"
+    }#.join("</tr><tr>\n")
 
-   row += "</tr>\n"
-   lbl_idx=0
-   ary_of_list[0].each_with_index{|style,idx|
-     case style
-     when Integer   ;        lbl_idx += style
-     when Array; 
-       (1..style[0]).each{
-         row += "<td>#{@labels[lbl_idx].label}</td>" if @labels[lbl_idx]
-         lbl_idx += 1
-       }
-     end
-   }
-   return row.html_safe
+    row += "<tr>\n"
+    lbl_idx=0
+    ary_of_list[0].each_with_index{|style,idx|
+      case style
+      when Integer   ;        lbl_idx += style
+      when Array; 
+        (1..style[0]).each{
+          row += "<td>#{@labels[lbl_idx].label}</td>" if @labels[lbl_idx]
+          lbl_idx += 1
+        }
+      end
+    }
+    return row.html_safe
   end
 
   def delete_if_accepted(obj)
