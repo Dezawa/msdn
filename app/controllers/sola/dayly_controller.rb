@@ -59,23 +59,24 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     @TableEdit = [[ :upload_buttom,:load,"TRZファイル取り込み"],
                 ]
     @FindOption = {}
-    @FindOrder = "date"
+    @FindOrder = "date "
     #@Edit = true
     @Delete=true
   end
 
   def index
+    index_sub
     @Labels =LabelsPeaks
-    @models_group_by = find_and.group_by{ |d| d.month }
+    #@models_group_by = find_and.group_by{ |d| d.month }
     @TYTLE_post = "ピーク発電量"
     @TableHeaderDouble = [1,[31,"日々のピーク発電量(kW)"]]
     @method = :peak_kw
     #render  :file => 'application/index',:layout => 'application'    
   end
-  def index_monitor
-    @Labels =LabelsMonitor # LabelsMonthesIndex
 
-    @models_group_by = find_and.group_by{ |d| d.month }
+  def index_monitor
+    index_sub
+     @Labels =LabelsMonitor # LabelsMonthesIndex
     @TYTLE_post = "モニターデータ 日発電量"
     @TableHeaderDouble = [2,[31,"モニターデータ ：日発電量(kWh)"]]
     @TableEdit = [[:edit_bottom],[:csv_up_buttom,"モニターデータ取り込み"],  [:csv_out,      "CSVダウンロード"],
@@ -84,8 +85,8 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     render  :action => :index
   end
   def index_day_total
+    index_sub
     @Labels =LabelsPowers
-    @models_group_by = find_and.group_by{ |d| d.month }
     @TYTLE_post = "日 発電量"
     @TableHeaderDouble = [1,[31,"日々の発電量(kWh)"]]
 
@@ -196,5 +197,15 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     @model.minute_graph(@graph_file,@graph_file_dir)
     render   :file => 'application/graph', :layout => "simple"
   end
+
+  private
+  def index_sub
+    @Pagenation = 12
+    @page = params[:page] || 1
+    @dayly = @Model.order("date desc").group(:month).paginate( :page =>  @page,:per_page => @Pagenation)
+    #page_monthes = monthes[(@page-1)*@Pagenation,@Pagenation]
+    @models_group_by = @Model.where(:month  => @dayly.map(&:month)).order("date").group_by{ |d| d.month }
+  end
+
 
 end
