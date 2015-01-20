@@ -101,12 +101,13 @@ class Sola::Dayly < ActiveRecord::Base
       (min..min+59).inject(0.0){ |kw,m|  kw + (kws[m] || 0.0) }/60.0
       end
   }
-  def kws_to_peak_kw ;     self.peak_kw = kws.compact.max if kws; end
+  def kws_to_peak_kw ; self.peak_kw = kws.max if kws ; end
+
   def kws_to_kwh_day
     return unless kws
     self.kwh_day = 
-      kws.inject(0.0){ |kwh,kw| kwh + (kw || 0.0) } /
-      kws.compact.size * 24 # *60*24 / 60 
+      kws[4*60..19*60].inject(0.0){ |kwh,kw| kwh + (kw || 0.0) } /
+      kws[4*60 , 14*60].compact.size * 14 # *60*24 / 60 
   end
 
   def update_monthly
