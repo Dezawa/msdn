@@ -183,11 +183,14 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
       open(filename_or_pathname,"w"){ |f|
         f.puts labels
         data_list.each{ |date,pw,spw|
-          f.puts "%3d %-10s %4.2f %4.2f"%
-          [date-start_day,date.day == 1 ? date.strftime("%Y-%m-%d") : '""' ,pw,spw]
+          f.puts "%3d %-10s %-4s %-4s"%
+          [date-start_day,date.day == 1 ? date.strftime("%Y-%m-%d") : '""' ,strfflt(pw),strfflt(spw)]
         }
       }
     end
+
+    def strfflt(val,fmt="%f") ;      val ? fmt%val : "" ; end
+
     def data_file_output_with_date(filename_or_pathname,data_list,labels)
       open(filename_or_pathname,"w"){ |f|
         f.puts labels
