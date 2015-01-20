@@ -109,7 +109,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
 
   def edit_on_table
     month = params[:month]
-    @Labels =LabelsMonitor 
+    @Labels =[LabelsMonitor[0][0,1], LabelsMonitor[1]]
     @models = @Model.where(month: month).order(:date).to_a
     @TYTLE_post = "モニターデータ 日発電量"
     @TableHeaderDouble = [1,[31,"モニターデータ ：日発電量(kWh)"]]
