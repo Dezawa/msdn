@@ -64,7 +64,7 @@ module Sola::Graph
 
       return if graph_updated?(opt)
       
-      peaks  = Sola::Dayly.select("min(peak_kw) peak",:month).group(:month).
+      peaks  = Sola::Dayly.select("max(peak_kw) peak",:month).group(:month).
         map{|m| [m.month,m.peak]}.to_h
       powers = Sola::Dayly.select("sum(kwh_monitor) power",:month).group(:month).
         map{|m| [m.month,m.power]}.to_h
@@ -80,9 +80,12 @@ module Sola::Graph
         opt = std_opt_with_peak(:dayly,graph_file,graph_file_dir).
         merge({ 
                 :axis_labels   => { :xlabel => "年月日",:ylabel => "日発電量/kW時", :y2label => "ピーク/kW分"},
-                :xy => [[[1,2]],[[1,2]]],
+                :xy => [[[1,2],[1,3]]],
                 :range => { :y => "[0:37]", :y2 => "[0:5]",
                   :x => "['2013-1-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
+
+                :tics =>  { :xtics => "'2013-1-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
+          :ytics => "0 5 nomirror",:y2tics => "0,1"},
                 #:tics =>  {  :xtics => "'2012-12-1' #{3600*24*30}", :ytics => "0,5 nomirror",:y2tics => "0,1"}  ,
                 :point_type => [7,6],:point_size => 0.6 ,
                 :type => "scatter",
