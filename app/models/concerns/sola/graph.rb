@@ -40,7 +40,7 @@ module Sola::Graph
 
       opt.merge!( { :additional_lines => "#{a[0]}+#{a[1]}*x" ,
                     :labels => ["label 1 'モニタ = %.2f * おんどとり+%.2f' at 3,32"%a,
-                                "label 2 'R=%.2f' at 10,30"%resudal]
+                                "label 2 '1-R=%f データ数=%d' at 10,30"%[1.0-resudal,data_list.size]]
                   })
       file = Rails.root+"tmp"+"Sola_correlation.data"
       open(file,"w"){ |f|
