@@ -24,7 +24,8 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   LabelsMonitor =
     [[ HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:ro => true ),
       HtmlLink.new(:month,"編集",:link => {:link_label =>"編",  :url => "/sola/dayly/edit_on_table",
-                     :key => :month, :key_val => :month})
+                     :key => :month, :key_val => :month}),
+       HtmlNum.new(:total,"月発電量",:tform => "%.0f",:ro => true)
     ],
       (1..31).map{ |day| 
        HtmlNum.new(:kwh_monitor,day.to_s,:tform => "%5.2f",:size => 2)
@@ -78,7 +79,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     index_sub
      @Labels =LabelsMonitor # LabelsMonthesIndex
     @TYTLE_post = "モニターデータ 日発電量"
-    @TableHeaderDouble = [2,[31,"モニターデータ ：日発電量(kWh)"]]
+    @TableHeaderDouble = [3,[31,"モニターデータ ：日発電量(kWh)"]]
     @TableEdit = [[:edit_bottom],[:csv_up_buttom,"モニターデータ取り込み"],  [:csv_out,      "CSVダウンロード"],
                  ]
     @method = :kwh_monitor
