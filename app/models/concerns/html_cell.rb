@@ -79,6 +79,8 @@ class HtmlCell
     case symbol
     when Symbol;    object.send(symbol).blank?  ? "　" : object.send(symbol)
     when String;    symbol
+    when Proc  ;    symbol.call
+    when NilClass ; ""
     end
   end
   def checked( obj,symbol,choice)
@@ -127,8 +129,9 @@ end
 
 class HtmlNum  < HtmlText
   def disp(object,htmlopt="")
+    val = super
     @align = :right
-    object.send(symbol).blank?  ? "　" : tform ? tform%object.send(symbol) : object.send(symbol)
+    val.blank?  ? "　" : (tform ? tform%val : val)
   end
 end
 
