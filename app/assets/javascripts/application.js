@@ -14,33 +14,34 @@
 //= require jquery_ujs
 //= require_tree .
 $(function(){
-$('#year_year').change(function(){
-var the_year = $("#year_year").val();
-$.get("keeping/year_change?year=" + the_year);
-});
-});
+	$('#year_year').change(function(){
+		var the_year = $("#year_year").val();
+		$.get("keeping/year_change?year=" + the_year);
+	    });
+    });
 
 jQuery(function(){
-  $('#people').change(function(){
-  var people = $("#people").val();
-  $.get("todoufuken_select.js?people=" + people);
-});
+	$('#people').change(function(){
+		var people = $("#people").val();
+		$.get("todoufuken_select.js?people=" + people);
+	    });
 
-$("select#year_year").change(function(){
-        $.ajax({
-            url: "book/keeping/year_change",
-            type: "GET",
-            data: {year : $(":selected").attr("value"),
-                    id: 1,
-                    mode: 'hoge',
-                    type: 'entry'
-                    },
-            dataType: "html",
-            success: function(data) {
-                alert("success");
-            },
-            error: function(data) {
-                alert("errror");
-            }
-        });
+	$("select#year_year").change(function(){
+		$.ajax({
+			url: "book/keeping/year_change",
+			    type: "GET",
+			    data: {year : $(":selected").attr("value"),
+				id: 1,
+				mode: 'hoge',
+				type: 'entry'
+				},
+			    dataType: "html",
+			    success: function(data) {
+			    alert("success");
+			},
+			    error: function(data) {
+			    alert("errror");
+			}
+		    });
+	    });
     });
