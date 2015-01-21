@@ -2,7 +2,7 @@
 class Sola::DaylyController < Sola::Controller #ApplicationController
   include Actions
   include GraphController
-  before_action :authenticate_user!, :only => :load #:except => :load_local_file,
+  before_action :authenticate_user!, :only => [:load,:edit_on_table, :update_on_table ]#:except => :load_local_file,
   before_filter :set_instanse_variable
   
   LabelsPeaks =
