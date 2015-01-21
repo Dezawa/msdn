@@ -14,7 +14,7 @@ module Sola::Graph
         :type => "scatter",
         :by_tics => { 1 => "x1y2" }, # 3600*24*
         :grid    => ["xtics"],
-        :tics =>  { :xtics => "'2013-1-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
+        :tics =>  { :xtics => "'2011-5-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
           :ytics => "300,100 nomirror",:y2tics => "0,1"},
         
       }
@@ -58,7 +58,7 @@ module Sola::Graph
                          ],
                 :xy => [[[1,2],[1,3]]],        :point_type => [7,6],
                 :range => { :y => "[300:750]",:y2 => "[0:5]",
-                  :x => "['2013-1-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
+                  :x => "['2011-5-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
                 :axis_labels   => { :ylabel => "月間発電量/kW時", :y2label => "月間ピーク/kW分"},
               })
 
@@ -82,9 +82,9 @@ module Sola::Graph
                 :axis_labels   => { :xlabel => "年月日",:ylabel => "日発電量/kW時", :y2label => "ピーク/kW分"},
                 :xy => [[[1,2],[1,3]]],
                 :range => { :y => "[0:37]", :y2 => "[0:5]",
-                  :x => "['2013-1-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
+                  :x => "['2011-5-1-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
 
-                :tics =>  { :xtics => "'2013-1-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
+                :tics =>  { :xtics => "'2011-5-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
           :ytics => "0 5 nomirror",:y2tics => "0,1"},
                 #:tics =>  {  :xtics => "'2012-12-1' #{3600*24*30}", :ytics => "0,5 nomirror",:y2tics => "0,1"}  ,
                 :point_type => [7,6],:point_size => 0.6 ,
