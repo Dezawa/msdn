@@ -57,7 +57,7 @@ module Sola::Graph
                            "xdata time", "timefmt '%Y-%m-%d'"      , "format x '%Y-%m-%d'"
                          ],
                 :xy => [[[1,2],[1,3]]],        :point_type => [7,6],
-                :range => { :y => "[300:750]",:y2 => "[0:5]",
+                :range => { :y => "[300:780]",:y2 => "[0:5]",
                   :x => "['2011-5-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
                 :axis_labels   => { :ylabel => "月間発電量/kW時", :y2label => "月間ピーク/kW分"},
               })
@@ -81,7 +81,7 @@ module Sola::Graph
         merge({ 
                 :axis_labels   => { :xlabel => "年月日",:ylabel => "日発電量/kW時", :y2label => "ピーク/kW分"},
                 :xy => [[[1,2],[1,3]]],
-                :range => { :y => "[0:37]", :y2 => "[0:5]",
+                :range => { :y => "[0:39]", :y2 => "[0:5]",
                   :x => "['2011-5-1-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
 
                 :tics =>  { :xtics => "'2011-5-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
