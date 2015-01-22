@@ -180,6 +180,8 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   end
 
   def correlation
+    @TYTLE = "太陽光発電 モニタと おんどとり の値の相関"
+    @TableEdit = nil
     @graph_file = "sola_correlation"
     @graph_file_dir = Rails.root+"tmp" + "img"
     @Model.correlation_graph(@graph_file,@graph_file_dir)
