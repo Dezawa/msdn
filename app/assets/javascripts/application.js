@@ -33,7 +33,7 @@ jQuery(function(){
 				},
 			    dataType: "html",
 			    success: function(data) {
-			    $("#this_year").text(year);
+			    $("#this_year").text("複式簿記：メイン:"+year);
 			},
 			    error: function(data) {
 			    alert("errror");
