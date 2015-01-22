@@ -13,10 +13,10 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
      }
     ]
 
-     LabelsPowers =
+  LabelsPowers =
     [[ HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:ro => true )] ,
      (1..31).map{ |day| 
-       HtmlLink.new(:kwh_day,day.to_s,:tform => "%5.2f",
+       HtmlLink.new(:kwh_day,day.to_s,:tform => "%5.1f",
                     :link => {  :url => "/sola/dayly/show",:key => :id, :key_val => :id})
      }
     ]
@@ -28,7 +28,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
        HtmlNum.new(:total,"月発電量",:tform => "%.0f",:ro => true)
     ],
       (1..31).map{ |day| 
-       HtmlNum.new(:kwh_monitor,day.to_s,:tform => "%5.2f",:size => 2)
+       HtmlNum.new(:kwh_monitor,day.to_s,:tform => "%5.1f",:size => 2)
      }
     ]
     
