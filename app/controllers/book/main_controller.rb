@@ -67,13 +67,11 @@ class Book::MainController < Book::Controller
   def set_const
     @Model= Book::Main
 
-#    @year = (year = session["BK_year"] || Time.now) #.year
-    #pp "@year=#{@year}"
-    year= @year_beginning =  @year.beginning_of_year
-    @year_end       =  @year.end_of_year
-    @year_full = year
+    # year= @year_beginning =  @year.beginning_of_year
+    # @year_end       =  @year.end_of_year
+    # @year_full = year
     @TYTLE = "#{@owner.owner}の 複式簿記：振替伝票"
-    @TYTLEpost = "#{@year.year}年度"
+    @TYTLEpost = "#{@year}年度"
     #@Links=BookKeepingController::Labels
     @FindOption = ["owner = ? and date >= ? and date <= ?",
                      @owner.owner, @year_beginning,@year_end]

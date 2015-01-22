@@ -10,15 +10,18 @@ class Book::Controller <  CommonController #ApplicationController
  
   def set_instanse_variable
     logger.info "BookCtrl SET_INSTANSE_VARIABLE session['BK_year'] #{session['BK_year'].class} #{session['BK_year']}"
-    @year = 
-      case session["BK_year"]
-      when Year,Time; session["BK_year"]
-      #when Time ; Year.new(session["BK_year"]).year
-      when String ; Time.parse(session["BK_year"])
-      when Fixnum,Integer; Time.new(session["BK_year"],1,1)
-      else        ; Time.now.beginning_of_year
-      end
+    @year = #session['BK_year'] || Time.now.beginning_of_year
+       case session["BK_year"]
+       when Time; session["BK_year"]
+      # #when Time ; Year.new(session["BK_year"]).year
+       when String ; Time.parse(session["BK_year"])
+      # when Fixnum,Integer; Time.new(session["BK_year"],1,1)
+       else        ; Time.now.beginning_of_year
+       end
     session["BK_year"] = @year
+    @year_beginning =  @year
+    @year_end       =  @year.end_of_year
+    @year_full = @year_beginning
     @arrowed = []
     if current_user
       myself = Book::Permission.create_myself(current_user)      if @editor
