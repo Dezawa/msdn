@@ -14,21 +14,17 @@
 //= require jquery_ujs
 //= require_tree .
 $(function(){
-	$('#year_year').change(function(){
+		$('#year_year').change(function(){
 		var the_year = $("#year_year").val();
 		$.get("keeping/year_change?year=" + the_year);
 	    });
     });
 
 jQuery(function(){
-	$('#people').change(function(){
-		var people = $("#people").val();
-		$.get("todoufuken_select.js?people=" + people);
-	    });
-
 	$("select#year_year").change(function(){
+	var year = $("#year_year").val();
 		$.ajax({
-			url: "book/keeping/year_change",
+			url: "keeping/year_change",
 			    type: "GET",
 			    data: {year : $(":selected").attr("value"),
 				id: 1,
@@ -37,7 +33,7 @@ jQuery(function(){
 				},
 			    dataType: "html",
 			    success: function(data) {
-			    alert("success");
+			    $("#this_year").text(year);
 			},
 			    error: function(data) {
 			    alert("errror");
@@ -45,3 +41,4 @@ jQuery(function(){
 		    });
 	    });
     });
+

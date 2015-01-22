@@ -35,33 +35,18 @@ class Book::KeepingController <  Book::Controller
 
 
   def year_change
-    session[:book_keeping_owner] ||= @owner
-    unless params[:value].blank?
-      @year = session["BK_year"] = Year.new(Time.parse(params[:value]+"/1/1 JST")) 
-    end
-    @owner_choices = @arrowed.map{|a| ["#{a.owner} #{a.permission_string}",a.owner]}
-    #@year_owner= {"param_owner" => @owner[1]}
-    @labels = Labels 
-
-    logger.debug "BookKeeping:year_change session['BK_year']=#{session[:book_keeping_year]}"
-    #redirect_to :action => :index
-   render :partial => "index"
-  end
-
-  def year_change
-    unless params[:year].blank?
-      @year =Time.parse(params[:year][:year]+"/1/1 JST")
+    unless params["year"].blank?
+      @year = Time.parse(params["year"]+"/1/1 JST")
       session["BK_year"] =  @year
+      logger.debug "BOOKKEEPING:YEAR_CHANGED  SESSION params[:year]=#{ params[:year]},#{ params["year"]},@year =#{@year},['BK_year']=#{session['BK_year']}"
     end
     @owner_choices = @arrowed.map{|a| ["#{a.owner} #{a.permission_string}",a.owner]}
-    # @year_owner= {"param_owner" => @owner[1]}
-
     @labels = Labels 
 
-    logger.debug "BookKeeping:year_change session['BK_year']=#{session['BK_year']}"
-    #redirect_to :action => :index
-   render :partial => "index" #"index_sub"
-   #render :text => @year 
+    logger.debug "BookKeeping:year_change  @year = #{ @year}session['BK_year']=#{session['BK_year']}"
+    #render :partial => "this_year" 
+    render  :action => :index
+    # redirect_to :action => :index
   end
 
  def error
