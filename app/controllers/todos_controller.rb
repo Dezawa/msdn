@@ -20,8 +20,25 @@ class TodosController < CommonController # ApplicationController
     @TYTLE = "Todo"
     @TableEdit = true
     @Show = @Edit = @Delete=true
-    @FindOrder = "id decs"
+    @FindOrder = "id desc"
     @Pagenation = 20
+  @Links =
+    [
+     Menu.new(   "未解決",:todos   ,:action => :index,:where => %w(未着手 着手 保留)) ,
+     Menu.new(   "未着手",:todos   ,:action => :index,:where => "未着手") ,
+     Menu.new(   "着手"  ,:todos   ,:action => :index,:where => "着手") ,
+     Menu.new(   "保留"  ,:todos   ,:action => :index,:where => "保留") ,
+     Menu.new(   "却下"  ,:todos   ,:action => :index,:where => "却下") ,
+     Menu.new(   "完了"  ,:todos   ,:action => :index,:where => "完了") ,
+     Menu.new(   "全て"  ,:todos   ,:action => :index,:where => "全て") ,
+    ]
+  end
+
+  def index
+    where = params[:where] ||  %w(未着手 着手 保留)
+    @FindWhere = where == "全て" ? nil : { :status => where }
+    super
+
   end
   private
     # Use callbacks to share common setup or constraints between actions.
