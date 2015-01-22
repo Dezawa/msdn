@@ -104,59 +104,13 @@ module Sola::Graph
       gnuplot_(file.to_s,opt)
     end
 
-    def monthly_graph(graph_file=nil,graph_file_dir=nil)
-      opt = { 
-        :graph_file => graph_file || "sola_monthly" ,
-        :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
-        :define_file => Rails.root+"tmp/gnuplot/sola_monthly.def",
-        :column_labels => %w(年月 発電量),
-        :axis_labels   => { :xlabel => "年月",:ylabel => "月間発電量/kW"},
-        :title => "月間発電量推移" , 
-        :tics =>  { :xtics => "rotate by -90"},
-        :point_type => [7],
-        :set_key => "unset key",
-        :xy => [[[2,3]]]
-      }
-
-      return if graph_updated?(graph_file,graph_file_dir)
-
-      data_list = Sola::Monthly.all.order("month").pluck(:month, :sum_kwh, :sum_kwh)
-      file = Rails.root+"tmp"+"Sola_monthly.data"
-      data_file_output_monthly(file,data_list,"No 年月 電力")
-      gnuplot_(file.to_s,opt)
-    end
-
     def graph_updated?(opt)
       file_path = "#{opt[:graph_file_dir]}/#{opt[:graph_file]}.jpeg"
       return false unless File.exist? file_path
 logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
-      db_updated = [Sola::Dayly,Sola::Monthly].
+      db_updated = [Sola::Dayly].
         map{|model| model.select("max(updated_at) max_updated_at").first.max_updated_at}.max
       File::Stat.new(file_path).mtime >= db_updated
-    end
-    def dayly_graph(graph_file=nil,graph_file_dir=nil)
-      opt = { 
-        :graph_file => graph_file || "sola_dayly" ,
-        :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
-        :define_file => Rails.root+"tmp/gnuplot/sola_dayly.def",
-        :column_labels => %w(年月日 発電量), :column_format => %w(%s %.1f),
-        :axis_labels   => { :xlabel => "年月日",:ylabel => "発電量/kW"},
-        :title => "発電量推移" , 
-        :tics =>  { :xtics => "rotate by -90"},
-        :point_type => [7],:point_size => 0.6 ,
-        :type => "scatter",
-        :set_key => "unset key",
-        :set => ["xdata time",
-                 "timefmt '%Y-%m-%d'",
-                 #"xrange ['03/21/95':'03/22/95']",
-                 "format x '%Y-%m-%d'"],
-        :xy => [[[1,2]]]
-      }
-
-      data_list = Sola::Monthly.all.order("month")
-      file = Rails.root+"tmp"+"Sola_dayly.data"
-      data_file_output_dayly(file,data_list,"No 年月日 発電量")
-      gnuplot_(file.to_s,opt)
     end
 
     def peak_graph(graph_file=nil,graph_file_dir=nil)

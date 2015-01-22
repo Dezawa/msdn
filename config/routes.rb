@@ -92,9 +92,7 @@ Rails.application.routes.draw do
   set_post( "sola/dayly",%w(load) )
   set_get("sola/dayly",%w( index_day_total index_monitor index_month load_local_file show show_img
                            show_graph peak_graph minute_graph correlation))
-  set_get("sola/monthly",%w(peak_graph dayly_graph monthly_graph show_img show_graph))
 
-    set_post("sola/monthly",@EditTable)
     set_get("sola/dayly",@EditTable)
 
   get "sola" => "sola/monthly#index"

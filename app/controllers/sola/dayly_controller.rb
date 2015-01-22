@@ -52,7 +52,6 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   def set_instanse_variable
     super
     @CSVatrs  = @CSVlabels = %w(month)+("01".."31").map{ |day| "kwh#{day}"}
-
     @Model= Sola::Dayly
     @Domain= @Model.name.underscore
     @TYTLE = "太陽光発電 日データ"
@@ -165,8 +164,8 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     @model = @Model.find params[:id]
   end
   def show_graph
-    Sola::Monthly.monthly_graph_with_peak(@graph_file_monthly = "sola_monthly_with_peak")
-    Sola::Monthly.dayly_graph_with_peak(@graph_file_dayly = "sola_dayly_with_peak")
+    Sola::Dayly.monthly_graph_with_peak(@graph_file_monthly = "sola_monthly_with_peak")
+    Sola::Dayly.dayly_graph_with_peak(@graph_file_dayly = "sola_dayly_with_peak")
     @TYTLE_post = "　累積発電量とピーク発電量"
     @postTitleMsg = "
         発電量はソーラパネルメーカ提供oコントローラの日間発電量による。(手動転記なのでupdate遅れる事あり)<br>

@@ -6,7 +6,6 @@
 #   積算発電量を残す
 #
 #  Model
-#    Monthly   1recodeに一月分の日毎発電量を残す。
 #    Dayly     1recodeに一日分のデータを残す。1分毎の値、peak値、積算値
 #              1分データ1440個をどう見せるか？？ 60行24カラムで見せる
 #    Ondotori::Current   Solaに限らず、このサーバで管理する全おんどとりのCurrentの電池データ、電波状態を残す

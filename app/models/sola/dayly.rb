@@ -112,7 +112,7 @@ class Sola::Dayly < ActiveRecord::Base
 
   def update_monthly
     month = date.beginning_of_month
-    monthly = Sola::Monthly.find_or_create_by(:month => month)# || Sola::Monthly.create(:month => month)
+    #monthly = Sola::Monthly.find_or_create_by(:month => month)# || Sola::Monthly.create(:month => month)
     monthly["kwh%02d"%date.day] = kwh_day
     monthly.save
    end
