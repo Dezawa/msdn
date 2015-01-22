@@ -15,7 +15,7 @@
         next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
   <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
   <% if @Show %>
-    <td><%= link_to '表示', obj %></td>
+    <td><%= link_to '<nobr>表示</nobr>'.html_safe, obj %></td>
   <% end %>
   <% if @Edit %>
     <td><%= link_to 'Edit', :action => :edit ,:page => @page,:id => obj.id %>
