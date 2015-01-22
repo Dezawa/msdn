@@ -128,9 +128,12 @@ end
 
 
 class HtmlNum  < HtmlText
+  def initialize(sym,lbl=nil,args={})
+    super
+    @align = :right
+  end
   def disp(object,htmlopt="")
     val = super
-    @align = :right
     val.blank?  ? "　" : (tform ? tform%val : val)
   end
 end
