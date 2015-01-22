@@ -33,10 +33,10 @@ class Book::MainController < Book::Controller
   CSVlabels= Labels.map{|lbl| lbl.label}
  # 勘定元帳を表示する
   LabelsBookMake=[
-                  HtmlDate.new(:date    ,"日付"   ,:tform=>"%Y-%m-%d"  ),
-                  HtmlText.new(:tytle   ,"摘要"   ,:link => "sort_by_tytle"  ),
+                  HtmlDate.new(:date    ,"日付"   ,:tform=>"%Y-%m-%d"  ,:link => "sort?by=date" ),
+                  HtmlText.new(:tytle   ,"摘要"   ,:link => "sort?by=tytle"  ),
                   HtmlText.new(:memo    ,"メモ"     ),
-                  HtmlText.new(:aite    ,"相手課目"  ),
+                  HtmlText.new(:aite    ,"相手課目" ,:link => "sort?by=aite"  ),
                   HtmlText.new(:kasi    ,"借方"    ,:align => :right),
                   HtmlText.new(:kari    ,"貸方"    ,:align => :right),
                   HtmlText.new(:kasikari,""        ),
@@ -157,15 +157,17 @@ class Book::MainController < Book::Controller
     @models = Book::Main.book_make(@kamoku_id,current_user.username,@year)
   end
 
-  def sort_by_tytle
+  def sort
+    sort_key = params[:by]
     @kamoku_id = session[:BK_kamoku_id]
     @TYTLE = Book::Kamoku.find(@kamoku_id).kamoku
     @labels= LabelsBookMake
-    @models = Book::Main.book_make(@kamoku_id,current_user.username,@year).
-      sort{ |booka,bookb| ((booka.tytle<=>bookb.tytle) << 2) + ((booka.date <=> bookb.date) << 1) + (booka.no <=> bookb.no)}
+    @models = Book::Main.book_make(@kamoku_id,current_user.login,@year).
+      sort{ |booka,bookb| ((booka.send(sort_key)<=>bookb.send(sort_key)) << 2) + 
+      ((booka.date <=> bookb.date) << 1) + (booka.no <=> bookb.no)}
     render :action => :book_make
   end
-
+  
   def make_new_year
      Book::Main.make_new_year(@owner.owner,@year)
     find_and
