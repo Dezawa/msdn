@@ -138,8 +138,8 @@ Rails.application.routes.draw do
     set_post("book/#{model}",%w(add_assosiation edit_assosiation owner_change_win))
   }
   get "/book/keeping" => "book/keeping#index"
-  set_post("book/keeping",%w(year_change))
-  set_get("book/keeping",%w(taishaku csv_taishaku motocho book_make help csv_motocho owner_change owner_change_win))
+  set_post("book/keeping",%w())
+  set_get("book/keeping",%w(taishaku csv_taishaku motocho book_make help csv_motocho owner_change owner_change_win year_change))
   set_post("book/main",%w(renumber))
   set_get("book/kamoku",%w(edit_on_table_all_column))
 
