@@ -133,7 +133,7 @@ Rails.application.routes.draw do
     set_post("book/#{model}",@EditTable)
     set_get("book/#{model}",@EditTable)
     set_resources("book",model) 
-    set_post("book/#{model}",%w(add_assosiation edit_assosiation owner_change_win))
+    set_post("book/#{model}",%w(add_assosiation edit_assosiation owner_change_win owner_change))
   }
   get "/book/keeping" => "book/keeping#index"
   set_post("book/keeping",%w())
