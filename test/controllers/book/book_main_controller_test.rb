@@ -20,11 +20,8 @@ class Book::MainControllerTest < BookControllerTest
   @@success  = [:success,true]
   @@redirect = [:redirect,false]
   BookMain=Book::Main
-  if Rails.version < "3"
-    fixtures "book/mains","book/kamokus"
-  elsif Rails.version > "3"
-    fixtures "book/mains","book/kamokus"
-  end
+    fixtures "book/mains","book/kamokus","book/permissions"
+  
     
   fixtures :users,:user_options,:user_options_users
   fixtures "book/permissions"
@@ -81,16 +78,6 @@ class Book::MainControllerTest < BookControllerTest
   end
   }
 
-
-  Users[DEZAWA].zip([:success]*2).each{|login,result|
-    test "ユーザ #{login}は出沢の伝票を作成(new)可能か #{result}" do
-      owner_change(login,"dezawa")
-      post :create, "book/main" => Params.merge( owner: "dezawa")
-      assert_equal "dezawa",assigns(:owner).owner
-    end
-  }
-
-
   Users[DEZAWA].zip([1,1,0]).each{|login,result|
     test "ユーザ #{login}はowner出沢で伝票を作成(create)可能か #{result}" do
       owner_change(login,"dezawa")
@@ -120,7 +107,7 @@ class Book::MainControllerTest < BookControllerTest
  # }
 
  #            id delta
-  Users.zip([ [1,-1] , [1,-1],[1,0],[2,-1],[3,-1],[3,-1],[1,0]]).
+  Users.zip([ [1,-1] , [1,-1],[1,0],[2,0],[3,0],[3,0],[1,0]]).
     each{|login,id_delta|
     must "User #{login} は#{@@Model.name}:#{id_delta[0]}の削除 可能か" do
       owner_change(login,"dezawa")
@@ -190,7 +177,7 @@ class Book::MainControllerTest < BookControllerTest
     assert_response 200
     assert 0,assigns[:models].size
 
-    assert_equal 2013,session[:BK_year]
+    assert_equal Time.now.year,session[:BK_year].year
     session[:BK_year]
   end
 

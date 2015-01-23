@@ -42,12 +42,12 @@ class Book::PermissionControllerTest < BookControllerTest
 
   right = ["/book/main/owner_change_win", "/book/main", "/book/main","/book/keeping/error"]
   rights = [2,2,1,0,0,0,3] 
-  Users.zip(rights).each{|login,ret|
-    must "#{login}はdezawaの共有ユーザーか" do
-      owner_change(login,"dezawa")
-      assert_redirected_to right[ret]
-    end
-  }
+  #Users.zip(rights).each{|login,ret|
+  #  must "#{login}はdezawaの共有ユーザーか" do
+  #    owner_change(login,"dezawa")
+  #    assert_redirected_to right[ret]
+  #  end
+  #}
 
   Users.zip([true]*3+[false]*4).each{|login,ret|
     must  "#{login}はdezawaの伝票を読めるか" do
