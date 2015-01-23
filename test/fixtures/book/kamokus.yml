@@ -84,11 +84,6 @@ No17:
   code: '1'
   bunrui: '150'
   kamoku: 売掛金
-No18:
-  id: '24'
-  code: '1'
-  bunrui: '160'
-  kamoku: 棚卸資産
 No19:
   id: '10'
   code: '1'
@@ -99,48 +94,8 @@ No20:
   code: '1'
   bunrui: '190'
   kamoku: 事業主貸
-No21:
-  id: '25'
-  code: '2'
-  bunrui: '270'
-  kamoku: 買掛金
 No22:
   id: '4'
   code: '3'
   bunrui: '310'
   kamoku: 元入金
-No23:
-  id: '26'
-  code: '4'
-  bunrui: '420'
-  kamoku: 雑収入
-No24:
-  id: '27'
-  code: '4'
-  bunrui: '430'
-  kamoku: 自家消費
-No25:
-  id: '28'
-  code: '5'
-  bunrui: '510'
-  kamoku: 仕入
-No26:
-  id: '5'
-  code: '5'
-  bunrui: '510'
-  kamoku: 水道光熱費
-No27:
-  id: '29'
-  code: '5'
-  bunrui: '518'
-  kamoku: 減価償却費
-No28:
-  id: '1'
-  code: '5'
-  bunrui: '522'
-  kamoku: 利子割引料
-No29:
-  id: '30'
-  code: '5'
-  bunrui: '523'
-  kamoku: 地代家賃

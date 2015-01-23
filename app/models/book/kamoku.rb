@@ -34,11 +34,25 @@ class Book::Kamoku < ActiveRecord::Base
   end
 
   def self.find_with_main(login)
+    custamize_book= Book::Main.where(["owner = ? and date = '2000/1/1' ",login]).order(:no)
+    custamize_ids = custamize_book.map(&:karikata) 
+
+    defaults_kamoku = self.where.not(id: custamize_ids).order(:bunrui)
+    custamize_kmk   = self.where(id: custamize_ids)
+    custamize_kamoku = 
+      custamize_book.map{ |book| 
+        id = book.karikata
+        kamoku = custamize_kmk.select{ |kmk| kmk.id == id}.first
+        kamoku.no      = book.no
+        kamoku.book_id = login
+        kamoku
+    }
+    custamize_kamoku + defaults_kamoku
+  end
+
+  def self.find_with_main_old(login)
     kamokus = Book::Kamoku.all.each{|kamoku| kamoku.book_id=login }
-    mains   = Book::Main.where(["owner = ? and date = ? ",
-                                             login,
-                                             "2000/1/1"]
-                             )
+    mains   = Book::Main.where(["owner = ? and date = '2000/1/1' ",login] )
     mains.each{|book| 
       kamoku=kamokus.find{|kamoku| kamoku.id == book.karikata}
       kamoku.book_id=book.id; kamoku.book = book
@@ -53,19 +67,16 @@ class Book::Kamoku < ActiveRecord::Base
   # optional arg が !nil の時は読み直す。これは Book::Kamokuの
   # create、update、csv_upload があると実行される。
   def self.kamokus(login=nil,read = nil )
-    #find_with_main(login)
-    @@kamokus = self.order(:bunrui,:kamoku).
-      to_a.map{|ch| [ch.kamoku,ch.id]} 
     find_with_main(login).map{|ch| [ch.kamoku,ch.id]}
   end
 
-  def no
+  def ddno
     @book.no rescue nil
   end
   #def book_id ; @book.id rescue nil ;end
   def update_attributes(attrs)
-    unless (no = attrs[:no]).blank?
-      Book::Kamoku.change_order_no_for_display(attrs[:book_id],id,no)
+    unless (no = attrs.delete(:no)).blank?
+      Book::Kamoku.change_order_no_for_display(attrs.delete(:book_id),id,no)
     end
     #pp no
     super(attrs)
