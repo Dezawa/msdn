@@ -2,8 +2,23 @@
 # 複式簿記のアプリ BookKeeping 
 # BookKeepingはModelはなく、CVのみ。
 # このBookMAinが主なModel
+# 
 # オカレンスは振替伝票
-# column owner とloginが一致しないと読まれない。
+#   2000/1/1 の伝票は特別な意味を持つ。
+#      勘定科目のselectを開くと、defaultでは 「順」Book::Kamoku#bunruiに表示される。
+#      この順番をカスタマイズするために使われる。
+#      伝票の ownerが ログインユーザで、かつ2000/1/1の伝票が有った場合
+#      その伝票の 借方 の勘定科目が 上の方に出てくる。
+#       複数有った場合は 伝票の通し番号順となる
+# 
+# 読み出し権(変更、作成権)がある伝票のみ読み込まれる。
+#   その管理は controller にて行う。
+#      Book::Main.owner と実行ownerが一致するもののみ読む
+#      実行ownerとは、
+#         userは自分の帳簿の他に、許可のでた他の人の帳簿もアクセスできます
+#         login時は 自分が実行ownerで、自分の帳簿へのアクセスとなります。
+#         other の帳簿を選ぶと other が実行ownerとなります
+#
 # 勘定元帳、貸借対照表(と損益計算書)総勘定元帳を作る classメソッドがある
 # また、それらを印刷用CSVに書き出すclassメソッドがある。
 class Book::Main < ActiveRecord::Base

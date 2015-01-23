@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 class Book::Permission < ActiveRecord::Base
   #self.table_name = 'book_permissions'
+  # login ,owner ,show ,edit ,permission ,user_id"
+  # owner の帳簿を user_id,login な人が permission権限でアクセスできる
   belongs_to     :user
   EDIT = 2
   SHOW = 1
