@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 module HospitalHelper
-  def input_busho_month
+  TABLE =  "<table>".html_safe
+  TR = "<tr>".html_safe
+  TD = "<td>".html_safe
+  TDTD="</td><td>".html_safe
+  TABLEend =  "</table>".html_safe
+  TRend    = "</tr>".html_safe
+  TDend    = "</td>".html_safe
+   def input_busho_month
     text_field(:busho_getudo,:yyyymm,size: 5)+
       select(:busho_getudo,:busho_id,Hospital::Busho.names)
   end
@@ -136,19 +143,25 @@ module HospitalHelper
 
   def hospital_define(show_or_edit)
     html = hospital_define_table_title
-    body = safe_join(@ItemsDefine.map{ |item|
+    body = safe_join(Hospital::Const::ItemsDefine.map{ |item|
                        sym = item.symbol.to_s
-                       logger.debug "=== #{sym} #{@instances.map(&:attri).join(',')}"
-                       model = @instances.select{ |inst| inst.attri == sym }.first
+                       logger.debug "=== #{sym} #{@instances.keys.join(',')}"
+                       model = @instances.select{ |attri,inst| inst.attri == sym }.first
                        case show_or_edit 
-                       when :show ;hospital_define_show_(model)
-                       when :edit ;hospital_define_edit_(model,item)
+                       when :show ;hospital_define_show_line(model)
+                       when :edit ;hospital_define_edit_line(model,item)
                        end
                      })
     "<hr>\n#{@instances.size}<table border=1>\n<tr>".html_safe +
       html + body + "</table>\n".html_safe
   end
 
+  def hospital_define(show_or_edit)
+    case show_or_edit
+    when :show ;hospital_define_show 
+    when :edit ;hospital_define_edit 
+    end
+  end
   def hospital_define_table_title
     (
       @LabelsDefine.map{|html_cell| 
@@ -157,80 +170,86 @@ module HospitalHelper
      }.compact.join + "</tr>\n").html_safe 
   end
 
-
   def hospital_define_show
     html = "<hr>\n#{@instances.size}<table border=1>\n<tr>" +
       %w(項目 値 コメント _ 項目 値).map{ |l| "<td>#{l}</td>"}.join+"\n"
 
     body = ""
-    @ItemsDefine.each_with_index{ |html_cell,idx|
-      body += "<tr><td>#{html_cell.label}</td>" +
-      "<td>#{@instances[html_cell.symbol].value}</td>"+
-      "<td>#{@instances[html_cell.symbol].comment}</td><td></td>"+
+    Hospital::Const::ItemsDefine.each_with_index{ |html_cell,idx|
+      body += "<tr><td>#{html_cell.label}</td><td>".html_safe +
+      "#{@instances[html_cell.symbol].value}"  + TDTD +
+      "#{@instances[html_cell.symbol].comment}"+ TDTD +
       hospital_define2_show(idx) +
-      "</tr>\n"
+      "</tr>\n".html_safe
     }
-    html + body + "</table>\n"
+    html.html_safe + body.html_safe + "</table>\n".html_safe
   end
 
   def hospital_define2_show(idx)
     body = ""
-    html_cells = @ItemsDefine2[idx]
-    return body unless html_cells
-    body += "<td>" + 
-      html_cells.map{ |html_cell| html_cell.label }.join + "</td><td>"
+    html_cells = Hospital::Const::ItemsDefine2[idx]
+    return "" unless html_cells
+    body = TD + 
+      safe_join( html_cells.map{ |html_cell| html_cell.label.html_safe })+TDTD
 
     if html_cells.size == 1
-      body += @instances[html_cells[0].symbol].value.to_s + "</td>"
+      body += @instances[html_cells[0].symbol].value.to_s.html_safe + TDend
     else
-      body += @instances[html_cells[0].symbol].value.to_s + "年" +
-        @instances[html_cells[1].symbol].value.to_s + "月～" +
-        @instances[html_cells[2].symbol].value.to_s + "年" +
-        @instances[html_cells[3].symbol].value.to_s + "月"
+      body += @instances[html_cells[0].symbol].value.to_s.html_safe + "年" +
+        @instances[html_cells[1].symbol].value.to_s.html_safe + "月～" +
+        @instances[html_cells[2].symbol].value.to_s.html_safe + "年" +
+        @instances[html_cells[3].symbol].value.to_s .html_safe+ "月"
     end
     body
   end
 
   def hospital_define2_edit(idx)
     name = "hospital_define[%d][value]"
-    body = ""
-    html_cells = @ItemsDefine2[idx]
-    return body unless html_cells
-    body += "<td>" + 
-      html_cells.map{ |html_cell| html_cell.label }.join + "</td><td>"
+    html_cells = Hospital::Const::ItemsDefine2[idx]
+    return "" unless html_cells
+    body = TD + 
+      safe_join(html_cells.map{ |html_cell| html_cell.label }) + TDTD
 
-    if html_cells.size == 1
-      obj = @instances[html_cells[0].symbol]
-      body += html_cells[0].edit_field_with_id("hospital_define",obj,controller,
-                                           :value => obj.value,:name => name%obj.id)
-    else
-      objs=[0,1,2,3].map{ |i| @instances[html_cells[i].symbol]}
-      body += 
-        html_cells[0].edit_field_with_id("hd",objs[0],controller,:value => objs[0].value,:name => name%objs[0].id) + "年" +
-        html_cells[1].edit_field_with_id("hd",objs[1],controller,:value => objs[1].value,:name => name%objs[1].id) + "月～" +
-        html_cells[2].edit_field_with_id("hd",objs[2],controller,:value => objs[2].value,:name => name%objs[2].id) + "年" +
-        html_cells[3].edit_field_with_id("hd",objs[3],controller,:value => objs[3].value,:name => name%objs[3].id) + "月"
-    end
+     if html_cells.size == 1
+       obj = @instances[html_cells[0].symbol]
+       body += html_cells[0].edit_field_with_id("hospital_define",obj,controller,
+                                            :value => obj.value,:name => name%obj.id)
+     else
+       objs=[0,1,2,3].map{ |i| @instances[html_cells[i].symbol]}
+       body += 
+         html_cells[0].edit_field_with_id("hd",objs[0],controller,:value => objs[0].value,:name => name%objs[0].id).html_safe + "年".html_safe +
+         html_cells[1].edit_field_with_id("hd",objs[1],controller,:value => objs[1].value,:name => name%objs[1].id).html_safe + "月～".html_safe +
+         html_cells[2].edit_field_with_id("hd",objs[2],controller,:value => objs[2].value,:name => name%objs[2].id).html_safe + "年".html_safe +
+         html_cells[3].edit_field_with_id("hd",objs[3],controller,:value => objs[3].value,:name => name%objs[3].id).html_safe + "月".html_safe
+     end
     body
   end
 
   def hospital_define_edit
-    html = "<hr>\n#{@instances.size}<table border=1>\n<tr>" +
-      %w(項目 値 コメント _ 項目 値).map{ |l| "<td>#{l}</td>"}.join+"\n"
+    html = "<hr>\n#{@instances.size}<table border=1>\n<tr>".html_safe +
+      safe_join(%w(項目 値 コメント _ 項目 値).map{ |l| "<td>#{l}</td>".html_safe})
 
-    body = ""
-    name = "hospital_define[%d][value]"
-    @ItemsDefine.each_with_index{ |html_cell,idx|
+    body = "".html_safe
+    name = "hospital_define[%d][value]".html_safe 
+    Hospital::Const::ItemsDefine.each_with_index{ |html_cell,idx|
       obj = @instances[html_cell.symbol]
-      body += "<tr><td>#{html_cell.label}</td>"+
-      "<td>"+ html_cell.edit_field_with_id("hospital_define",obj,controller,
-                                           :value => obj.value,:name => name%obj.id) + "</td><td>" +
-      @LabelsDefine[2].edit_field_with_id("hospital_define",obj,controller) + "</td>"+
-       "<td></td>" + hospital_define2_edit(idx)
-      }.join("\n")+
-      "</tr>\n"
-    
-    (html + body + "</table>\n").html_safe
+      body += 
+      safe_join( [TR,
+                  TD,
+                  "#{html_cell.label}".html_safe ,
+                  TDTD,
+                  html_cell.edit_field_with_id("hospital_define",obj,controller,
+                                            :value => obj.value,:name => name%obj.id) ,
+                  TDTD,
+                  @LabelsDefine[2].edit_field_with_id("hospital_define",obj,controller),
+                  TDend ,
+                  TDTD  ,
+                  hospital_define2_edit(idx)
+                 ]
+      )+
+      TRend
+    }
+    (html + body + TABLEend).html_safe
   end
 
   def assign_links
