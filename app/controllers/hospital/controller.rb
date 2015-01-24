@@ -11,7 +11,7 @@ class Hospital::Controller < CommonController #ApplicationController
       set(arg_busho_id,arg_month)
     end
     def set(arg_busho_id,arg_month)
-      @busho_id = arg_busho_id || Hospital::Busho.first.id
+      @busho_id = arg_busho_id || ((busho = Hospital::Busho.first) ? busho.id : nil )
       @month    = arg_month    || Time.now.beginning_of_month.next_month.to_date
       self
     end
@@ -30,10 +30,10 @@ class Hospital::Controller < CommonController #ApplicationController
 
   def set_instanse_variable
     @Links = [
-              Menu.new("記号一覧",:kinmucode),
-              Menu.new("役割一覧",:role),
+              Menu.new("記号一覧",:kinmucodes),
+              Menu.new("役割一覧",:roles),
               Menu.new("禁忌",:avoid_combination),
-              Menu.new("部署登録",:busho), 
+              Menu.new("部署登録",:bushos), 
               Menu.new("必要人数",:need),
               Menu.new("個人登録",:nurces), 
               Menu.new("役割割当",:roles, :action => :show_assign),
@@ -41,21 +41,22 @@ class Hospital::Controller < CommonController #ApplicationController
               Menu.new("希望入力",:monthly,:action => :hope_regist),
               Menu.new("割付",:monthly,:action => :show_assign),
               Menu.new("様式9",:form9,:action => :calc),
-              Menu.new("休日",:holyday,:controller => "../holyday",:action => :index,:page=>1,:id => Time.now.year)
+              Menu.new("休日",:holyday,:controller => "/holyday",:action => :index,:page=>1,:id => Time.now.year)
              ]
-    session[:hospital] ||= BushoGetudo.new
-    session[:hospital].busho_id = 1 unless session[:hospital] && session[:hospital].busho_id > 0
-    @busho_getudo = session[:hospital]
-    @month = @busho_getudo.month # session[:hospital_year] || Time.now.beginning_of_month
-    @current_busho_id = @busho_getudo.busho_id #session[:hospital_busho] || 1
-    @current_busho    = Hospital::Busho.find(@current_busho_id)
-    @current_busho_id_name = @current_busho.name
+    #@busho_getudo = Marshal.load(session[:hospital] ||= Marshal.dump(BushoGetudo.new))
+    @busho_getudo = Marshal.load( Marshal.dump(BushoGetudo.new))
+    @month = @busho_getudo.month 
+    if @busho_getudo.busho_id 
+      @current_busho_id = @busho_getudo.busho_id #session[:hospital_busho] || 1
+      @current_busho    = Hospital::Busho.find(@current_busho_id)
+      @current_busho_id_name = @current_busho.name
+    end
   end
 
 
   def set_busho_sub
     @busho_getudo.busho_id = params[:busho_getudo][:busho_id].to_i 
-    session[:hospital] = @busho_getudo
+    session[:hospital] = Marshal.dump @busho_getudo
     #logger.debug "session[:hospital]: #{session[:hospital].busho_id}"
   end
   def set_busho

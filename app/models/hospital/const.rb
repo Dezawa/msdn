@@ -1,6 +1,39 @@
 # -*- coding: utf-8 -*-
 module Hospital
 module Const
+  HtmlCell
+  ItemsDefine =
+      [HtmlText.new(  :hospital_name    ,"保険医療機関名"),
+       HtmlSelect.new(:hospital_Koutai  ,"交代勤務",  :correction => %w(二交代 三交代)     ),
+       HtmlText.new(  :hospital_bed_num ,"病床数"    ,:size =>3  ),
+       HtmlText.new(  :kubun            ,"届出区分"      ,:size =>3, 
+                      :comment => "対１入院基本料"),
+       HtmlSelect.new(:KangoHaichi_addition,"看護配置加算の有無" ,
+                      :correction => %w(有 無), :include_blank=> true),
+       HtmlSelect.new(:Kyuuseiki_addition  ,"急性期看護補助体制加算の届出区分",
+                      :correction => %w(25 50 75),:include_blank=> true),
+       HtmlSelect.new(:Yakan_Kyuuseiki_addition,"夜間急性期看護補助体制加算の届出区分",
+                      :correction => %w(50 100),:include_blank=> true),
+       HtmlSelect.new(:night_addition  ,"看護職員夜間配置加算の有無"  , 
+                      :correction => %w(有 無),:include_blank=> true),
+       HtmlSelect.new(:KangoHojo_additon   ,"看護補助加算の届出区分",
+                      :correction => %w(30 50 75),:include_blank=> true),
+       HtmlText.new(  :weekly_hour,"常勤職員の週所定労働時間",:size => 3)
+      ]
+  ItemsDefine2 =
+      [[HtmlText.new(:patient_num        ,"届出時入院患者数"  ,:size =>3,:align => :right)],
+       [HtmlText.new(:average_patient    ,"１日平均入院患者数",:size =>3,:align => :right)],
+       [HtmlText.new(:patient_start_year ,"算出期間 年"       ,:size =>3,:align => :right),
+        HtmlText.new(:patient_start_month,"月～"              ,:size =>1,:align => :right),
+        HtmlText.new(:patient_stop_year  ,"年"                ,:size =>3,:align => :right),
+        HtmlText.new(:patient_stop_month ,"月"                ,:size =>1,:align => :right)],
+       [HtmlText.new(:average_Nyuuin     ,"平均在院日数"      ,:size =>3,:align => :right)],
+       [HtmlText.new(:Nyuuin_start_year  ,"算出期間 年"       ,:size =>3,:align => :right),
+        HtmlText.new(:Nyuuin_start_month ,"月～"              ,:size =>1,:align => :right),
+        HtmlText.new(:Nyuuin_stop_year   ,"年"                ,:size =>3,:align => :right),
+        HtmlText.new(:Nyuuin_stop_month  ,"月"                ,:size =>1,:align => :right)]
+    ]
+  ItemsDefineAll =  (ItemsDefine + ItemsDefine2).flatten
 
   LimitOfNurceCandidateList = 6
   Size_of_NurceCombinationList = 3
