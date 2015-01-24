@@ -282,7 +282,7 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     @models = [] 
     @models= @PagenatTbl ? find_and : find #@Model.all(@conditions)#@PagenatTbl
     @maxid    = @Model.count == 0 ? 0 : @Model.maximum(:id)
-    @modelList = params[@Domain]
+    @modelList = params[@Domain] || { }
     update_on
     if @result
       #UbeMeigara.meigaras true
