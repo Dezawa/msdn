@@ -179,19 +179,5 @@ Rails.application.routes.draw do
   resources "power_ube_hospital_month" ,path:  "/power/ube_hospital/month" , controller: "power/ube_hospital/month"
   set_post( "power/ube_hospital/month",@EditTable)
 
-  ##### Ube
-  ube = %w( skd maintain holyday product operation plan change_times
-                 meigara meigara_shortname named_changes  constant )
-  ube.each{  |model|
-    set_get("ube/#{model}" ,@EditTable)
-    set_post("ube/#{model}" ,@EditTable)
-    set_resources("ube",model) 
-  }
-
-    set_get("ube/top" ,@EditTable)
-    set_post("ube/top" ,@EditTable)
-  get "/ube/top" => "ube/top#top"
-  set_get("ube/top",%w(calc))
-  set_get("ube/skd",%w(lips_load))
 end
 
