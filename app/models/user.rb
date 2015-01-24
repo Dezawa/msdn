@@ -100,17 +100,3 @@ logger.debug("DatabaseAuthenticatable: #{resource}")
     end
   end
 end
-class ActiveRecord::Base
-
-  #self.table_name = 'book_mains'
-  def self.table_name
-    unless defined?(@table_name)
-      if /::/ =~ self.name
-        @table_name = self.name.gsub(/::/,"_").underscore.pluralize
-      else
-        reset_table_name
-      end
-    end 
-    @table_name
-  end
-end
