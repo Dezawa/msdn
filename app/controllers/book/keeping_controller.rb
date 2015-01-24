@@ -19,12 +19,7 @@ class Book::KeepingController <  Book::Controller
              Menu.new(   "共有ユーザー"    ,:permission,:disable => :owner?,:help => "Book#permission")
             ] 
   Links = [Menu.new("簿記Top",:keeping)] + Labels + [Menu.new("ヘルプ",:keeping,:action => :help)]
-  OwnerChangeLabels =
-    [
-      HtmlText.new(:owner     ,"簿記ユーザlogin名",:ro=>true),
-      HtmlText.new(:owner_name,"簿記ユーザ 氏名"  ,:ro=>true),
-      HtmlText.new(:permission_string,"権限"      ,:ro=>true)
-    ]
+
   # メニューを出す
   def index
     @owner_choices = @arrowed.map{|a| ["#{a.owner} #{a.permission_string}",a.owner]}
@@ -53,11 +48,11 @@ class Book::KeepingController <  Book::Controller
   end
 
 
-  def owner_change_win
+  def ddowner_change_win
     @labels = OwnerChangeLabels
   end
 
-  def owner_change
+  def ddowner_change
     unless params[:owner].blank?
       if owner = @arrowed.find{|arrw| arrw.owner == params[:owner]}
         @owner = owner; session[:BK_owner] = owner.id

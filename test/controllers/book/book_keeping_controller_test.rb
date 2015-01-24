@@ -147,7 +147,7 @@ class BookKeepingControllerTest < BookControllerTest
   }
   
   Users[SUCCESS].zip(Choise).each{|login,choise|
-    must "#{login}のときのowner選択肢は" do
+    must "login #{login}のときのowner選択肢は" do
       login_as login
       get :index
       assert_equal choise,assigns(:owner_choices)
@@ -156,14 +156,24 @@ class BookKeepingControllerTest < BookControllerTest
 
 
 
-  must "出沢のとき、quentin を共有ユーザに指定するとエラー" do
+  must "login出沢のとき、quentin を共有ユーザに指定するとエラー" do
     login_as("dezawa")
     get :owner_change, :owner => "quentin"
     assert_equal "許可の無いユーザです",flash[:error]
   end
 
+  must "login出沢のとき、aaron を共有ユーザに指定すると成功" do
+    login_as("dezawa")
+    get :owner_change, :owner => "aaron"
+    assert_equal nil,flash[:error] ,"login出沢のとき、aaron を共有ユーザに指定すると成功"
+    assert_equal "aaron",@controller.params[:owner]
+    assert_equal 10000,@controller.session[:BK_owner]
+    get :index
+    assert_equal "aaron",assigns(:owner).owner
+  end
+
   %w(aaron ubeboard).each{|owner|
-    must "出沢のときのowner選択を#{owner}としたとき共有ユーザーは出ない" do
+    must "出沢でloginしたときのowner選択を#{owner}としたときメニューtableに共有ユーザーの行は出ない" do
       login_as("dezawa")
       get :owner_change, :owner => owner
       get :index
@@ -172,10 +182,13 @@ class BookKeepingControllerTest < BookControllerTest
 
     end
   }
-end
 
 class Book::Permission < ActiveRecord::Base
   def owner_permission
    [owner,permission_string]
 end
 end
+end
+
+__END__
+
