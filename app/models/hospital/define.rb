@@ -2,10 +2,12 @@
 require "pp"
 
 srand(1)
+ # name"
+ # attri"
+ # value"
+ # comment"
 class Hospital::Define < ActiveRecord::Base
   include Hospital::Const
-
-  self.table_name = 'hospital_defines'
 
   attr_reader *Hospital::Define.all.map{ |define| define.attri.to_sym}
   attr_reader :koutai3,:shifts_int,:shifts ,:shifts123,:shiftsmx , :night , :shifts_night 
@@ -17,9 +19,16 @@ class Hospital::Define < ActiveRecord::Base
   end
   def nil ;"" ; end
 
-  def self.create
-    define = self.new
+  def self.find_or_create_all
+    ItemsDefineAll.map{ |item|
+      self.find_or_create_by( name: item.label, attri: item.symbol)
+    }
+  end
+
+  def self.create(args)
+    define = self.new(args)
     define.set_attr
+    define.save
   end
 
   def set_attr
