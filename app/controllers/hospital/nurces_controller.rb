@@ -3,23 +3,23 @@ class Hospital::NurcesController <  Hospital::Controller
   before_filter :set_instanse_variable
   # GET /nurces
   # GET /nurces.xml
-
+  attr_reader :tableedit
   Labels = 
     [ HtmlText.new(:id,"ID",:align =>:right,:ro=>true,:size =>4),
       HtmlText.new(:number,"番号",:align =>:right,:size =>3),
-      HtmlText.new(:name,"氏名",:align =>:right,:size =>3),
+      HtmlText.new(:name,"氏名",:align =>:right,:size =>6),
       HtmlSelect.new(:busho_id,"部署",   :correction => Hospital::Busho.names),
       HtmlSelectWithBlank.new(:shokui_id,"職位",:correction => Hospital::Role.shokui),
       HtmlSelect.new(:shokushu_id,"職種",:correction => Hospital::Role.shokushu),
       HtmlSelect.new(:kinmukubun_id,"勤務区分",   :correction => Hospital::Role.kinmukubun),
-      HtmlDate.new(:assign_date,"配属年月日",:tform=>"%Y-%m-%d",:size =>8),
-      HtmlSelectWithBlank.new(:idou,"異動" ,          :correction => Hospital::Const::Idou),
-      HtmlSelectWithBlank.new(:pre_busho_id,"前部署", :correction => Hospital::Busho.names),
-      HtmlSelectWithBlank.new(:pre_shokui_id,"前職位",:correction => Hospital::Role.shokui),
-      HtmlSelectWithBlank.new(:pre_shokushu_id,"前職種",
-                              :correction => Hospital::Role.shokushu),
-      HtmlSelectWithBlank.new(:pre_kinmukubun_id,"前勤務区分",
-                              :correction => Hospital::Role.kinmukubun)
+      #HtmlDate.new(:assign_date,"配属年月日",:tform=>"%Y-%m-%d",:size =>8),
+      #HtmlSelectWithBlank.new(:idou,"異動" ,          :correction => Hospital::Const::Idou),
+      #HtmlSelectWithBlank.new(:pre_busho_id,"前部署", :correction => Hospital::Busho.names),
+      #HtmlSelectWithBlank.new(:pre_shokui_id,"前職位",:correction => Hospital::Role.shokui),
+      #HtmlSelectWithBlank.new(:pre_shokushu_id,"前職種",
+      #                        :correction => Hospital::Role.shokushu),
+      #HtmlSelectWithBlank.new(:pre_kinmukubun_id,"前勤務区分",
+      #                        :correction => Hospital::Role.kinmukubun)
     ]
 
   def set_instanse_variable
@@ -30,20 +30,12 @@ class Hospital::NurcesController <  Hospital::Controller
     @labels=Labels
     #@Links=BookKeepingController::Labels
     @FindOption =["busho_id = ?",@current_busho_id] 
-    #@errors=Proc.new{@Model.error_check.join("<br>")}
-    @TableEdit = 
-    @TableEdit = _TableAddEditChangeBusho
+
+    @TableEdit  = _TableAddEditChangeBusho
     @Edit = true
     @Delete=true
     @Domain= @Model.name.underscore
-    #@Refresh = :kamokus
-    #@SortBy   = :bunrui
     @CSVatrs   = Labels.map{|html| html.symbol}
-    #@CSVlabels = Labels.map{|html| html.label}
-    #@Pagenation = 20
-    #@New = {:no => no, :date => Time.now}
-    #@Create = {:owner => current_user.username }
-    #@on_cell_edit = true
   end
 
   def dddset_busho

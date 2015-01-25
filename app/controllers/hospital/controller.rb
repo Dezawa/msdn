@@ -20,7 +20,8 @@ class Hospital::Controller < CommonController #ApplicationController
 
   def _TableAddEditChangeBusho 
       [[:add_edit_buttoms], ["　　　"],
-       [:form,:set_busho,"部署変更",:input_busho]]
+#       [:form,:set_busho,"部署変更",:input_busho]]
+       [:form,:set_busho,"部署変更"]]
   end
 
   def  _TableEditChangeBusho 
