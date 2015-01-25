@@ -182,12 +182,11 @@ Rails.application.routes.draw do
 resources :holyday
   ########## 病院勤務管理
   namespace :hospital do
-    set_post(:bushos,@EditTable)
     set_get(:roles,[:show_assign])
     set_get(:monthly,[:show_assign,:hope_regist])
     set_get(:form9,[:calc])
-    set_post(:kinmucodes,@EditTable)
-    set_post(:bushos,@EditTable)
+    set_get(:nurces,[:set_busho])
+    [:bushos,:kinmucodes,:nurces].each{ |model| set_post(model,@EditTable)}
     resources :bushos, :nurces, :kinmucodes, :roles, :avoid_combination,:need,:meetings
     resources :monthly,:form9
   end
