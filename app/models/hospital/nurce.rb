@@ -122,10 +122,10 @@ class Hospital::Nurce < ActiveRecord::Base
 
 
   def self.by_busho(busho_id,option = {})
-    all( option.merge({:conditions => ["busho_id = ?",busho_id]}))
+    where( ["busho_id = ?",busho_id])
   end
   def self.correction(busho_id,option = {})
-    all( option.merge({:conditions => ["busho_id = ?",busho_id]})).map{ |nurce| [nurce.name,nurce.id]}
+    by_busho(busho_id).map{ |nurce| [nurce.name,nurce.id]}
   end
 
   def shokui_id     ; shokui.first ? shokui.first.id         : nil ;end

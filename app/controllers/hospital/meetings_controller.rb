@@ -71,16 +71,16 @@ class Hospital::MeetingsController < Hospital::Controller
 
  def show_assign
     @correction = AssignCorrection
-    @nurces = Hospital::Nurce.all(:conditions=>["busho_id = ?",@current_busho_id])
+    @nurces = Hospital::Nurce.where(["busho_id = ?",@current_busho_id])
     @meetings = @Model.
-      all(:conditions => ["busho_id = ? and month = ? ",@current_busho_id,@month],
+      where( ["busho_id = ? and month = ? ",@current_busho_id,@month],
           :order => "start")
  end 
  def assign
     @correction = AssignCorrection
-    @nurces = Hospital::Nurce.all(:conditions=>["busho_id = ?",@current_busho_id])
+    @nurces = Hospital::Nurce.where(["busho_id = ?",@current_busho_id])
     @meetings = @Model.
-      all(:conditions => ["busho_id = ? and month = ? ",@current_busho_id,@month],
+      where( ["busho_id = ? and month = ? ",@current_busho_id,@month],
           :order => "start"
           )
   end

@@ -10,7 +10,7 @@ class Hospital::Need < ActiveRecord::Base
 
   def self.need_list_each_role_daytype_of(busho_id)
     ret = Hash.new{ |h,k| h[k]={  Weekday => [nil,nil,nil],Weekend=> [nil,nil,nil]}}
-    needs = all(:conditions => ["busho_id = ? ",busho_id])
+    needs = where( ["busho_id = ? ",busho_id])
     needs.each{ |need| 
       next unless need_role_ids.include?(need.role_id) && [2,3].include?(need.daytype)
       ret[need.role_id][need.daytype][need.kinmucode_id-1]=need
@@ -30,7 +30,7 @@ logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sor
   end
 
   def self.need_roles
-    @@need_roles ||= Hospital::Role.all(:conditions => "need = true") 
+    @@need_roles ||= Hospital::Role.where( "need = true") 
   end
   def self.need_role_ids
    @@need_role_ids ||= need_roles.map(&:id)
@@ -38,7 +38,7 @@ logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sor
 
 
   def self.roles
-    @@roles ||= self.all(:conditions => "minimun>0").map(&:role_id).uniq.sort
+    @@roles ||= self.where( "minimun>0").map(&:role_id).uniq.sort
   end 
 
   def self.names
@@ -47,7 +47,7 @@ logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sor
 
   def self.on_date_for_busho(month,day,busho_id)
     date = month+(day-1).day
-    self.all(:conditions => ["minimun>0 and busho_id = ? and daytype in (1,?)",busho_id,what_day(date)])
+    self.where( ["minimun>0 and busho_id = ? and daytype in (1,?)",busho_id,what_day(date)])
   end
 
   def self.of_datetype_for_busho(month,what_day,busho_id)
@@ -128,7 +128,7 @@ logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sor
   
   
   def after_save
-    @@roles = self.class.all(:conditions=>["minimun>0"]).map(&:role_id).uniq.sort
+    @@roles = self.class.where("minimun>0").map(&:role_id).uniq.sort
     @@combination3 = self.class.make_combination
     Hospital::Nurce.make_cost_table
   end

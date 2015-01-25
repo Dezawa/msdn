@@ -207,28 +207,28 @@ class Hospital::Kinmucode < ActiveRecord::Base
   end
     Sql="code in (?) and kinmukubun_id = ?"
   def self.code_holyday
-    self.all(:conditions => [Sql,%w(0 D N),Kubun[:kyoutuu]])
+    self.where( [Sql,%w(0 D N),Kubun[:kyoutuu]])
   end
   def self.code_holydaye_other
-    self.all(:conditions => [Sql,%w(S A),Kubun[:kyoutuu]])
+    self.where( [Sql,%w(S A),Kubun[:kyoutuu]])
   end
   def self.code_nikkin
-    self.all(:conditions => [Sql,%w(4□ 管),Kubun[:nikkin]])
+    self.whre( [Sql,%w(4□ 管),Kubun[:nikkin]])
   end
   def self.code_nikkin_all
-    self.all(:conditions => ["kinmukubun_id = ?",Kubun[:nikkin]])
+    self.where( ["kinmukubun_id = ?",Kubun[:nikkin]])
   end
   def self.code_sanchoku
-    self.all(:conditions => [Sql,%w(1 2 3),Kubun[:sankoutai]])
+    self.where( [Sql,%w(1 2 3),Kubun[:sankoutai]])
   end
   def self.code_sanchoku_other
-    self.all(:conditions => ["kinmukubun_id = ?",Kubun[:sankoutai]])
+    self.where( ["kinmukubun_id = ?",Kubun[:sankoutai]])
   end
   def self.code_kyoutuu_other
-    self.all(:conditions => ["kinmukubun_id = ?",Kubun[:kyoutuu]])
+    self.where( ["kinmukubun_id = ?",Kubun[:kyoutuu]])
   end
   def self.code_kyoutuu
-    self.all(:conditions => [Sql,%w(S A),Kubun[:kyoutuu]])
+    self.where( [Sql,%w(S A),Kubun[:kyoutuu]])
   end
 
 #<<<<<<< HEAD
@@ -271,5 +271,5 @@ class Hospital::Kinmucode < ActiveRecord::Base
 #>>>>>>> HospitalPower
 end
 __END__
-Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= 14) and nenkyuu=? and am=? and pm=? and night=? and midnight=? and am2=? and  pm2=? and night2=? and midnight2=? ", kinmukubun_id,*value])
+Hospital::Kinmucode.where( ["(kinmukubun_id=? or kinmukubun_id= 14) and nenkyuu=? and am=? and pm=? and night=? and midnight=? and am2=? and  pm2=? and night2=? and midnight2=? ", kinmukubun_id,*value])
                                 ).sort_by{ |k| k.id }[0].id

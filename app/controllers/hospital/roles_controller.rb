@@ -33,7 +33,7 @@ class Hospital::RolesController < Hospital::Controller
 
   def show_assign
     $HP_DEF =  Hospital::Define.create
-    @roles  = Hospital::Role.all(:conditions => "bunrui <> 3")
+    @roles  = Hospital::Role.where( "bunrui <> 3")
     @labels = AssignLabel 
     @nurces = Hospital::Nurce.by_busho(@current_busho_id)
     @TableEdit = [[:form,:assign,"編集"],
