@@ -179,5 +179,18 @@ Rails.application.routes.draw do
   resources "power_ube_hospital_month" ,path:  "/power/ube_hospital/month" , controller: "power/ube_hospital/month"
   set_post( "power/ube_hospital/month",@EditTable)
 
+resources :holyday
+  ########## 病院勤務管理
+  namespace :hospital do
+    set_post(:bushos,@EditTable)
+    set_get(:roles,[:show_assign])
+    set_get(:monthly,[:show_assign,:hope_regist])
+    set_get(:form9,[:calc])
+    set_post(:kinmucodes,@EditTable)
+    set_post(:bushos,@EditTable)
+    resources :bushos, :nurces, :kinmucodes, :roles, :avoid_combination,:need,:meetings
+    resources :monthly,:form9
+  end
+
 end
 
