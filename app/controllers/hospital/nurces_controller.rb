@@ -60,11 +60,13 @@ class Hospital::NurcesController <  Hospital::Controller
   end
 
   def update_on_table
+    @permit = Labels.select{ |lbl| !lbl.ro}.map{ |lbl| lbl.symbol }
     @page = params[:page] || 1
     @models = [] 
     @models= @PagenatTbl ? find_and : find #@Model.all(@conditions)#@PagenatTbl
     @maxid    = @Model.count == 0 ? 0 : @Model.maximum(:id)
-    @modelList = params[@Domain]
+    @modelList = params[@Domain].map{|id,param| [id,param.permit(*@permit)]}.to_h
+
     kanren_list = Hash.new{ |h,k| h[k]={ }}
     @modelList.keys.each{ |idstr|
       [:shokui_id,:shokushu_id,:kinmukubun_id].
