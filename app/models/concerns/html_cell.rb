@@ -252,7 +252,7 @@ class HtmlSelect < HtmlCell
   def disp(object)
     if display ;      object.send display
     else
-      choice = choices(object)
+      choice = choices(object)||[]
       ch = object.send(symbol)
       if choice[0].class == Array
         ch = choice.rassoc(ch)
