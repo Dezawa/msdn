@@ -269,14 +269,14 @@ class HtmlSelect < HtmlCell
       html_options[:name]= options[:name] || "#{domain}[#{id}][#{symbol}]"
       html_options[:id] = html_options[:name].gsub(/[\[\/]+/,"_").gsub(/\]/,"")
     end
-    if include = options[:include_blank] || include_blank
-      options[:include_blank]=include
-    end
-    value = options[:value]
-    choice=choices(obj)
-    cc = (choice[0].class == Array) ? choice : (choice.map{|c| [c]} + [[value]]).uniq
+ 
+    options[:include_blank] ||= include_blank
+
+    options.merge!({ :selected=> options[:value] }) if options[:value]
+    choice=choices(obj) || []
+    #cc = (choice[0].class == Array) ? choice : (choice.map{|c| [c]} + [[value]]).uniq
     #choices(obj)
-    select(domain,symbol,choices(obj), options.merge(:selected=>value),html_options)
+    select(domain,symbol,choice, options,html_options)
   end
 end
 
