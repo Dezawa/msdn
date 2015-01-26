@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class Hospital::Need < ActiveRecord::Base
   extend CsvIo
-  self.table_name = 'hospital_needs'
+  
   include Hospital::Const
 
   

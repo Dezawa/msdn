@@ -264,12 +264,12 @@ module HospitalHelper
   # build_models { daytype => [ shift1,2,3 ] }
   def show_needs(build_models)
     obj = build_models[2].first
-    ret = @labels[0].td + @labels[0].disp_field( obj)+"</td>"
+    ret = @labels[0].td + @labels[0].disp_field( obj)+TDend
     [2,3].map{ |daytype| build_models[daytype].each{|obj| 
         @minmax_label.map{|html_cell| 
           next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) 
 
-          ret += html_cell.td + html_cell.disp_field( obj) +"</td>"
+          ret += html_cell.td + html_cell.disp_field( obj) + TDend
         }
       }
     }
@@ -282,12 +282,12 @@ module HospitalHelper
 
   def edit_needs(build_models)
     obj = build_models[2][0]
-    ret = @labels[0].td + @labels[0].disp_field( obj)+"</td>"
+    ret = @labels[0].td + @labels[0].disp_field( obj)+TDend
     [2,3].map{ |daytype| build_models[daytype].each{|obj| 
         @minmax_label.map{|html_cell| 
           next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) 
 
-          ret += html_cell.td + html_cell.edit_field_with_id(@Domain, obj,controller) +"</td>"
+          ret += html_cell.td + html_cell.edit_field_with_id(@Domain, obj,controller) + TDend
         }
       }
     }

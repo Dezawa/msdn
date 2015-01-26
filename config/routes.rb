@@ -185,10 +185,10 @@ resources :holyday
     set_get(:roles,[:show_assign])
     set_get(:monthly,[:show_assign,:hope_regist])
     set_get(:form9,[:calc])
-    set_get(:nurces,[:set_busho])
-    [:bushos,:kinmucodes,:nurces].each{ |model| set_post(model,@EditTable)}
-    resources :bushos, :nurces, :kinmucodes, :roles, :avoid_combination,:need,:meetings
-    resources :monthly,:form9
+    [:nurces,:needs].each{|model| set_get(model,[:set_busho]);set_post(model,[:set_busho])}
+    [:bushos,:kinmucodes,:nurces, :roles, :avoid_combination,:needs].each{ |model| set_post(model,@EditTable)}
+    resources :bushos, :nurces, :kinmucodes, :roles, :avoid_combination,:needs,:meetings
+    resources :monthly,:holyday, :form9
   end
 
 end
