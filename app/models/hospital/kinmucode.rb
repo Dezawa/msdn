@@ -86,7 +86,10 @@ class Hospital::Kinmucode < ActiveRecord::Base
   } 
   @@Code = { }
 
-  def name ;    Hospital::Const::Kinmukubun.rassoc(kinmukubun_id)[0];  end
+  def name 
+    kubun = Hospital::Const::Kinmukubun.rassoc(kinmukubun_id)
+    kubun ? kubun[0] : ""
+  end
 
   def self.code(sym)
     @@Code[sym] ||= self.find_by(code: CodeSym[sym]).id rescue SymVal[sym]
