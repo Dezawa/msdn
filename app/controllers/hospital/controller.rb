@@ -19,14 +19,14 @@ class Hospital::Controller < CommonController #ApplicationController
   end
 
   def _TableAddEditChangeBusho 
-      [[:add_edit_buttoms], ["　　　"],
-#       [:form,:set_busho,"部署変更",:input_busho]]
-       [:form,:set_busho,"部署変更"]]
+    [[:add_edit_buttoms], ["　　　"],
+     [:form,:set_busho,"部署変更",:input_busho]
+    ]
   end
 
   def  _TableEditChangeBusho 
-      [[:edit_bottom],      ["　　　"],
-       [:form,:set_busho,"部署変更",:input_busho]]
+    [[:edit_bottom],      ["　　　"],
+     [:form,:set_busho,"部署変更",:input_busho]]
   end
 
   def set_instanse_variable

@@ -270,6 +270,12 @@ end
 
   def form_buttom(action,label,opt ={ },htmlopt={ })
     opt ||={ }
+    opt,additional =
+      case opt
+      when Hash    ; [opt,nil]
+      when Symbol  ; [{ },opt]
+    end
+
     hidden = opt.delete(:hidden) if opt.class==Hash
     hidden_value = opt.delete(:hidden_value) if opt.class==Hash
 
@@ -283,7 +289,7 @@ end
        else;"";end
        )+
       "<input type='hidden' name='page' value='#{@page}'>".html_safe+
-      (opt.class==Symbol ? send(opt) : "") +
+      (additional ?  send(additional) : "") +
 
       (submit_tag(label)+from_notclose).html_safe
   end
