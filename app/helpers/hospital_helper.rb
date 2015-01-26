@@ -56,44 +56,6 @@ module HospitalHelper
                          :name => name(domain,nurce.id,"day%02d"%day)) 
  end
 
- def kinmucode_header
-   list = [5,[2,"勤務時間"],1,
-           [9,"積算勤務日数"],[3,"所属部門勤務時間"],[3,"応援勤務時間"]
-          ]
-   row = "<tr>".html_safe
-   lbl_idx=0
-   list.each_with_index{|style,idx|
-     case style
-     when Integer   ;
-       (1..style).each{
-         row += "<td rowspan=2>#{@labels[lbl_idx].label}</td>".html_safe
-         lbl_idx += 1
-       }
-     when Array; 
-       row += "<td colspan=#{style[0]}>#{style[1]}</td>".html_safe
-       lbl_idx += style[0]
-     end
-   }
-   row += "</tr>\n".html_safe
-   lbl_idx=0
-   list.each_with_index{|style,idx|
-     case style
-     when Integer   ;        lbl_idx += style
-     when Array; 
-       (1..style[0]).each{
-         row += "<td>#{@labels[lbl_idx].label}</td>".html_safe
-         lbl_idx += 1
-       }
-     end
-   }
-   return row
-   "<tr>"+"<td></td>"*5+"<td colspan=2>勤務時間</td><td></td>"+
-     "<td colspan=9>積算勤務日数</td>"+
-     "<td colspan=3>所属部門勤務時間(hr)</td>"+
-     "<td colspan=3>応援勤務時間(hr)</td></tr>"+
-     label_line_option 
- end
- 
   def role_checkbox(domain,role,nurce,roles)
     name = "#{domain}[#{nurce.id}][#{role.id}]"
     id   = "#{domain}_#{nurce.id}_#{role.id}"
