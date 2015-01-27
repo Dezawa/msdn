@@ -32,7 +32,7 @@ class Hospital::MeetingsController < Hospital::Controller
               HtmlText.new(:length  ,"所要時間",:size => 3)
              ]
 
-    @FindOption = ["busho_id = ? and month = ? ",
+    @FindWhere = ["busho_id = ? and month = ? ",
                                          @current_busho_id, @month]
     @Findorder = "start"
   end

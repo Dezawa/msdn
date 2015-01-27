@@ -30,7 +30,7 @@ class Hospital::NurcesController <  Hospital::Controller
     #@TYTLEpost = 
     @labels=Labels
     #@Links=BookKeepingController::Labels
-    @FindOption =["busho_id = ?",@current_busho_id] 
+    @FindWhere =["busho_id = ?",@current_busho_id] 
 
     @TableEdit  = _TableAddEditChangeBusho
     @Edit = true

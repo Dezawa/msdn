@@ -19,7 +19,7 @@ class Hospital::NeedsController < Hospital::Controller
        @minmax_label*6
     super
 
-    @FindOption = ["busho_id = ? ",@current_busho_id]
+    @FindWhere = ["busho_id = ? ",@current_busho_id]
     @TYTLE_post_edit  = @current_busho_id_name 
     @TYTLEpost = @current_busho_id_name 
     @on_cell_edit = true
