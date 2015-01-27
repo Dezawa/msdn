@@ -719,7 +719,7 @@ try{
   # Login 前  Lips(デモ) Login
   # Login　後 Lips(デモ) LiPS(会員版) ユーザ固有  パスワード変更　Logout
   Login = [[["LiPS(無償版)","/lips/free"],["ログイン","/login"]],
-           [["LiPS(無償版)","/lips/free"],["LiPS(会員版)","/lips/member"]],
+           [["LiPS(無償版)","/lips/free"],["LiPS(会員版)","/lips/calc"]],
            [["パスワード変更","/login"],["ログアウト","/logout"]]
           ]
   def error_messages_for a_r
