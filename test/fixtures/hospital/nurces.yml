@@ -5,7 +5,7 @@ one:
   name: 和田智子
   busho_id: '3'
   shokui_id: '1'
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '1'
   limit_id: '1'
 two:
@@ -14,7 +14,7 @@ two:
   name: 高橋　リン
   busho_id: '3'
   shokui_id: '2'
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '1'
   limit_id: '2'
 No3:
@@ -23,7 +23,7 @@ No3:
   name: 松本カズ子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '1'
   limit_id: '3'
 No4:
@@ -32,7 +32,7 @@ No4:
   name: 福島和代
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '4'
 No5:
@@ -41,7 +41,7 @@ No5:
   name: 諸星敏子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '5'
 No6:
@@ -50,7 +50,7 @@ No6:
   name: 鈴木静江
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '6'
 No7:
@@ -59,7 +59,7 @@ No7:
   name: 市川シウ
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '7'
 No8:
@@ -77,7 +77,7 @@ No9:
   name: 和田重子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '9'
 No10:
@@ -86,7 +86,7 @@ No10:
   name: 岩本米子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '10'
 No11:
@@ -95,7 +95,7 @@ No11:
   name: 曽山松美
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '11'
 No12:
@@ -104,7 +104,7 @@ No12:
   name: 荒井美代子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '12'
 No13:
@@ -113,7 +113,7 @@ No13:
   name: 矢野是子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '13'
 No14:
@@ -122,7 +122,7 @@ No14:
   name: 奥津喜美江
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '14'
 No15:
@@ -131,7 +131,7 @@ No15:
   name: 茂野タイ
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '15'
 No16:
@@ -140,7 +140,7 @@ No16:
   name: 瀬戸トシ子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '16'
 No17:
@@ -149,7 +149,7 @@ No17:
   name: 志村澄江
   busho_id: '3'
   shokui_id: '2'
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '17'
 No18:
@@ -158,7 +158,7 @@ No18:
   name: 真壁スミ子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '18'
 No19:
@@ -167,7 +167,7 @@ No19:
   name: 岩本幸江
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '19'
 No20:
@@ -176,7 +176,7 @@ No20:
   name: 諸星登久子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '20'
 No21:
@@ -185,7 +185,7 @@ No21:
   name: 岩本テル子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '21'
 No22:
@@ -194,7 +194,7 @@ No22:
   name: 飯嶋ハツ子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '22'
 No23:
@@ -203,7 +203,7 @@ No23:
   name: 遠藤トミ
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '23'
 No24:
@@ -212,7 +212,7 @@ No24:
   name: 佐々木テル子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '24'
 No25:
@@ -221,7 +221,7 @@ No25:
   name: 植松幸枝
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '25'
 No26:
@@ -230,7 +230,7 @@ No26:
   name: 渡辺節子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '26'
 No27:
@@ -239,7 +239,7 @@ No27:
   name: 加藤七三子
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '27'
 No28:
@@ -248,7 +248,7 @@ No28:
   name: 荒井マツ
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '28'
 No29:
@@ -257,7 +257,7 @@ No29:
   name: 佐々木キクヱ
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '29'
 No30:
@@ -266,7 +266,7 @@ No30:
   name: 高木ヤエ
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '30'
 No31:
@@ -275,7 +275,7 @@ No31:
   name: 奥津クニ江　
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '31'
 No32:
@@ -284,7 +284,7 @@ No32:
   name: 荒井初江
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '32'
 No33:
@@ -293,7 +293,7 @@ No33:
   name: 飯嶋織江
   busho_id: '3'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '33'
 No34:
@@ -302,7 +302,7 @@ No34:
   name: 奥津豊子
   busho_id: '1'
   shokui_id: '1'
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '1'
   limit_id: '34'
 No35:
@@ -311,7 +311,7 @@ No35:
   name: 奥津久子
   busho_id: '1'
   shokui_id: '2'
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '1'
   limit_id: '35'
 No36:
@@ -320,7 +320,7 @@ No36:
   name: 奥津俊子
   busho_id: '1'
   shokui_id: '2'
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '1'
   limit_id: '36'
 No37:
@@ -329,7 +329,7 @@ No37:
   name: 奥津ハルヱ
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '37'
 No38:
@@ -338,7 +338,7 @@ No38:
   name: 瀬戸綾子
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '38'
 No39:
@@ -347,7 +347,7 @@ No39:
   name: 岩本カネ
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '39'
 No40:
@@ -356,7 +356,7 @@ No40:
   name: 佐々木ハマ子
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '40'
 No41:
@@ -365,7 +365,7 @@ No41:
   name: 藤原トキエ
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '41'
 No42:
@@ -374,7 +374,7 @@ No42:
   name: 加藤幸子
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '1'
   limit_id: '42'
 No43:
@@ -383,7 +383,7 @@ No43:
   name: 加藤文
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '43'
 No44:
@@ -392,7 +392,7 @@ No44:
   name: 今川チヨ
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '44'
 No45:
@@ -401,7 +401,7 @@ No45:
   name: 小野澤みどり
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '45'
 No46:
@@ -410,7 +410,7 @@ No46:
   name: 諸星綾子
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '46'
 No47:
@@ -419,7 +419,7 @@ No47:
   name: 奥津ヨシ江
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '47'
 No48:
@@ -428,7 +428,7 @@ No48:
   name: 奥津成子
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '48'
 No49:
@@ -437,7 +437,7 @@ No49:
   name: 石井菊江
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '49'
 No50:
@@ -446,7 +446,7 @@ No50:
   name: 加藤照子
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '1'
   limit_id: '50'
 No51:
@@ -455,7 +455,7 @@ No51:
   name: 岩本千代子
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '2'
   kinmukubun_id: '2'
   limit_id: '51'
 No52:
@@ -464,6 +464,6 @@ No52:
   name: 露木弘子
   busho_id: '1'
   shokui_id: 
-  shokushu_id: '1'
+  shokushu_id: '3'
   kinmukubun_id: '1'
   limit_id: '52'

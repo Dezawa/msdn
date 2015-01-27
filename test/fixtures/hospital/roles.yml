@@ -1,21 +1,64 @@
 ---
 one:
+  id: '6'
+  name: 看護師長
+  bunrui: 1
+  need: 0
+  comment: 
+oneone:
   id: '1'
   name: リーダー
+  bunrui: 1
+  need: 1
   comment: 
 two:
   id: '2'
   name: 看護師
+  bunrui: 2
+  need: 1
   comment: 
 No3:
   id: '3'
   name: 準看護師
+  bunrui: 2
+  need: 1
   comment: 
 No4:
   id: '4'
   name: Aチーム
+  bunrui: 3
+  need: 1
   comment: 
 No5:
   id: '5'
   name: Bチーム
+  bunrui: 3
+  need: 1
   comment: 
+No6:
+  id: '7'
+  name: 日勤
+  bunrui: 4
+  need: 0
+  comment: 
+No7:
+  id: '8'
+  name: 三交代
+  bunrui: 4
+  need: 0
+  comment: 
+
+No8:
+  id: '9'
+  name: 二 交代
+  bunrui: 4
+  need: 0
+  comment: 
+
+No9:
+  id: '10'
+  name: パート
+  bunrui: 4
+  need: 0
+  comment: 
+  
