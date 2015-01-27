@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 class Hospital::Need < ActiveRecord::Base
   extend CsvIo
-  
   include Hospital::Const
+
+  HD = Hospital::Define
 
   
   @@need_roles = nil
@@ -10,7 +11,7 @@ class Hospital::Need < ActiveRecord::Base
 
   def self.need_list_each_role_daytype_of(busho_id)
     ret = Hash.new{ |h,k| h[k]={  Weekday => [nil,nil,nil],Weekend=> [nil,nil,nil]}}
-    needs = where( ["busho_id = ? ",busho_id])
+    needs = self.where( ["busho_id = ? ",busho_id])
     needs.each{ |need| 
       next unless need_role_ids.include?(need.role_id) && [2,3].include?(need.daytype)
       ret[need.role_id][need.daytype][need.kinmucode_id-1]=need
@@ -50,8 +51,11 @@ logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sor
     self.where( ["minimun>0 and busho_id = ? and daytype in (1,?)",busho_id,what_day(date)])
   end
 
-  def self.of_datetype_for_busho(month,what_day,busho_id)
-    self.where( ["busho_id = ? and daytype in (1,?)",busho_id,what_day])
+  # [ [role,日準深]=>[min,max],, ,,,]
+  def self.needs_of_busho_of_datetype(what_day,busho_id)
+    self.where( ["busho_id = ? and daytype in (1,?)",busho_id,what_day]).
+      group_by{ |need| [need.role_id,need.kinmucode_id]}.
+      map{ |k,vv| [[k.first,k.last.to_s],[vv.first.minimun,vv.first.maximum]]}.to_h
   end
 
   def self.what_day(day)
@@ -73,24 +77,25 @@ logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sor
   # それを返す。
   # 戻り値 [ [ [資格,sft_str]=>[最低数、最大数], []=>[], []=>[] ],[ 土日の分] ]
   def self.need_patern(busho_id)
-    need_patern =[Weekday,Weekend].map{|what_day|  # 1:毎日  2:平日、  3:土日休
-      nd = Hash.new
-      self.of_datetype_for_busho(what_day,busho_id).
-      each{|need|            #shift_idとすべきであった
-        nd[[need.role_id,need.kinmucode_id.to_s]] = [need.minimun||0 ,need.maximum||need.minimun]
-      }
-      nd
+    need_patern =[Weekday,Weekend].map{|day_type|  # 1:毎日  2:平日、  3:土日休
+      self.needs_of_busho_of_datetype(day_type,busho_id)
     }
-    nurse_size = Hospital::Nurce.by_busho(busho_id).
-      select{|nurce| nurce.shokushu_id == $HP_DEF.kangoshi}.size
-    need_patern.each{ |nd| 
-      nd[[$HP_DEF.kangoshi,Sshift0]] = 
-      [0,
-       nurse_size -  # 看護師の人数
-       $HP_DEF.shifts123.inject(0){|s,shift| s + nd[[$HP_DEF.kangoshi,shift]].first } ]  # 看護師必要人数合計
-    }
+    
+    set_arrowable_void(busho_id,need_patern)
   end
 
+  # 休暇をとってもよい看護師の人数
+  def  self.set_arrowable_void(busho_id,need_patern)
+    nurse_size_of_this_busho = Hospital::Nurce.
+      where( ["busho_id = ? and shokushu_id = ? ",busho_id,HD.define.kangoshi]).size
+    need_patern.each{ |nd| 
+      nd[[HD.define.kangoshi,Sshift0]] = 
+      [0,
+       nurse_size_of_this_busho -  # 看護師の人数
+       HD.define.shifts123.inject(0){|s,shift| s + 
+         nd[[HD.define.kangoshi,shift]].first } ]  # 看護師必要人数合計
+    }
+  end
   ############ 逼迫role関連
   def self.combination3
         @@combination3 ||= make_combination
