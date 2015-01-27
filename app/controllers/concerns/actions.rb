@@ -258,7 +258,13 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
     @errors = []
     @result = true
     @modelList.each_pair{|i,model| id=i.to_i
-      logger.debug("Update_on_table:#{i} #{id}#{@maxid} #{model}")
+      logger.debug("Update_on_table:#{i} id=#{id} maxid=#{@maxid} #{model}")
+      case model
+      when ActionController::Parameters
+        model = model.permit(*@permit)
+      when ActiveSupport::HashWithIndifferentAccess,Hash
+      end
+
       if id >@maxid
         next if model.map{|k,v| v}.join == ""
         @model=@Model.new(model)
