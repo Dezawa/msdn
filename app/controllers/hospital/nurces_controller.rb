@@ -7,10 +7,11 @@ class Hospital::NurcesController <  Hospital::Controller
   Labels = 
     [ HtmlText.new(:id,"ID",:align =>:right,:ro=>true,:size =>4),
       HtmlText.new(:number,"番号",:align =>:right,:size =>3),
-      HtmlText.new(:name,"氏名",:align =>:right,:size =>6),
+      HtmlText.new(:name,"氏名",:align =>:right,:size =>7),
       HtmlSelect.new(:busho_id,"部署",   :correction => Hospital::Busho.names),
       HtmlSelectWithBlank.new(:shokui_id,"職位",:correction => Hospital::Role.shokui),
       HtmlSelect.new(:shokushu_id,"職種",:correction => Hospital::Role.shokushu),
+      #HtmlSelect.new(:shikaku_id,"資格",:correction => Hospital::Role.shikaku),
       HtmlSelect.new(:kinmukubun_id,"勤務区分",   :correction => Hospital::Role.kinmukubun),
       #HtmlDate.new(:assign_date,"配属年月日",:tform=>"%Y-%m-%d",:size =>8),
       #HtmlSelectWithBlank.new(:idou,"異動" ,          :correction => Hospital::Const::Idou),
