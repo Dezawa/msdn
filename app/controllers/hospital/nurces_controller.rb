@@ -62,23 +62,23 @@ class Hospital::NurcesController <  Hospital::Controller
   def update_on_table
     @permit = Labels.select{ |lbl| !lbl.ro}.map{ |lbl| lbl.symbol }
     @page = params[:page] || 1
-    @models = [] 
-    @models= @PagenatTbl ? find_and : find #@Model.all(@conditions)#@PagenatTbl
+    @models = []
+    @models= @PagenatTbl ? find_and : find # @Model.all(@conditions)#@PagenatTbl
     @maxid    = @Model.count == 0 ? 0 : @Model.maximum(:id)
-    @modelList = params[@Domain].map{|id,param| [id,param.permit(*@permit)]}.to_h
+    @modelList = params[@Domain]#.map{|id,param| [id,param.permit(*@permit)]}.to_h
 
-    kanren_list = Hash.new{ |h,k| h[k]={ }}
-    @modelList.keys.each{ |idstr|
-      [:shokui_id,:shokushu_id,:kinmukubun_id].
-      each{ |sym| kanren_list[idstr.to_i][sym] = @modelList[idstr].delete(sym)}
-      }
+    # kanren_list = Hash.new{ |h,k| h[k]={ }}
+    # @modelList.keys.each{ |idstr|
+    #   [:shokui_id,:shokushu_id,:shikaku_id,:kinmukubun_id].
+    #   each{ |sym| kanren_list[idstr.to_i][sym] = @modelList[idstr].delete(sym)}
+    #   }
     update_on
 
-    @models.each{ |model|
-      model.shokui_id         = kanren_list[model.id][:shokui_id]
-      model.shokushu_id       = kanren_list[model.id][:shokushu_id]
-      model.kinmukubun_id     = kanren_list[model.id][:kinmukubun_id]
-    }
+    # @models.each{ |model|
+    #   model.shokui_id         = kanren_list[model.id][:shokui_id]
+    #   model.shokushu_id       = kanren_list[model.id][:shokushu_id]
+    #   model.kinmukubun_id     = kanren_list[model.id][:kinmukubun_id]
+    # }
     if @result
       #UbeMeigara.meigaras true
       @Model.send(@Refresh,true) if @refresh #BookKamoku.kamokus true

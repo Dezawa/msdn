@@ -1,10 +1,10 @@
+# -*- coding: utf-8 -*-
 class Hospital::Role < ActiveRecord::Base
   extend CsvIo
   has_and_belongs_to_many :nurces
-  self.table_name = 'hospital_roles'
 
-  has_and_belongs_to_many :nurces
-
+  Bunrui = [ ["職位", 1], ["職種", 2], ["資格", 3], ["勤務区分", 4] ]
+  Bunrui2Id = Bunrui.to_h
   def self.names
     all.map{|obj| [obj.name,obj.id]}
   end
