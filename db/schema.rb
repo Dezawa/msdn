@@ -227,6 +227,7 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.integer "shokushu_id"
     t.integer "kinmukubun_id"
     t.integer "limit_id"
+    t.integer "shikaku_id"
   end
 
   create_table "hospital_nurces_roles", id: false, force: true do |t|

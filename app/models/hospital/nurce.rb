@@ -31,9 +31,11 @@ class Hospital::Nurce < ActiveRecord::Base
   include Hospital::Reguration
 
   has_and_belongs_to_many :hospital_roles,:class_name => "Hospital::Role"
-  has_and_belongs_to_many :shokui,:class_name => "Hospital::Role",:conditions => "bunrui = 1"
-  has_and_belongs_to_many :shokushu,:class_name => "Hospital::Role",:conditions => "bunrui = 2"
-  has_and_belongs_to_many :kinmukubun,:class_name => "Hospital::Role",:conditions => "bunrui = 3"
+  has_and_belongs_to_many :shikaku,:class_name => "Hospital::Role",:conditions => "bunrui = 3"
+
+  belongs_to :shokui,:class_name => "Hospital::Role"
+  belongs_to :shokushu,:class_name => "Hospital::Role"
+  belongs_to :kinmukubun,:class_name => "Hospital::Role"
   belongs_to :limit    ,:class_name => "Hospital::Limit"
   belongs_to :busho    ,:class_name => "Hospital::Busho"
 # <<<<<<< HEAD
@@ -128,67 +130,7 @@ class Hospital::Nurce < ActiveRecord::Base
     by_busho(busho_id).map{ |nurce| [nurce.name,nurce.id]}
   end
 
-  def shokui_id     ; shokui.first ? shokui.first.id         : nil ;end
-  def shokushu_id   ; shokushu.first ? shokushu.first.id     : nil ;end
-  def kinmukubun_id ; kinmukubun.first ? kinmukubun.first.id : nil ;end
-  def shokui_id=(arg_id) 
-    if arg_id.blank? || !(role = Hospital::Role.find arg_id)
-      self.shokui=[]
-    else
-      self.shokui=[role]
-    end
-#>>>>>>> HospitalPower
-  end
 
-  def shokushu_id=(arg_id)
-      shokushu=[]
-    if arg_id.blank? || !(role = Hospital::Role.find arg_id.to_i)
-      self.shokushu=[]
-    else
-      self.shokushu=[role]
-    end
-  end
-
-# <<<<<<< HEAD
-#   def self.by_busho(busho_id,option = {})
-#     where(  ["busho_id = ?",busho_id] )
-#   end
-
-#   ### 看護師の属性関連
-#   #  def busho_name ; busho ? busho.name : ""          ;end
-#   #  def pre_busho_name ; pre_busho ? pre_busho.name : "" ; end
-#   #  def idou_name ; (a=Hospital::Const::Idou.rassoc(idou)) ? a.first : "";end
-#   def shokui_name; (a=Hospital::Const::Shokui.rassoc(shokui_id)) ? a.first : "";end
-#   #  def pre_shokui_name; (a=Hospital::Const::Shokui.rassoc(pre_shokui_id)) ? a.first : "";end
-#   def shokushu_name;(a=Hospital::Const::Shokushu.rassoc(shokushu_id)) ? a.first : "";end
-#   # def pre_shokushu_name;(a=Hospital::Const::Shokushu.rassoc(pre_shokushu_id)) ? a.first : "";end
-#   def kinmukubun_name;(a=Hospital::Const::Kinmukubun.rassoc(kinmukubun_id)) ? a.first : "";end
-#   #  def pre_kinmukubun_name;(a=Hospital::Const::Kinmukubun.rassoc(pre_kinmukubun_id)) ? a.first : "";end
-  
-#   def roles
-#      @roles ||= hospital_roles.map{|role| [role.id,role.name]}.uniq #+ 
-#     #(shokui_id ? [shokui_id+100,shokui.name] : [])
-#   end
-#   def role_ids   ; @role_ids ||= roles.map{ |r| r[0]}
-#   end
-#   def roles_by_id
-#     Hospital::Role.roles_by_id # @rolls_by_id ||= Hash[*roles.flatten]
-#   end
-  
-#   def dddrole?(rolename)
-#     roles[hospital_roles.find_by(name: rolename).id]
-#   end
-  
-#   def role_id?(role_id);role_ids.include?(role_id) #.to_i);
-#   end
-# =======
-  def kinmukubun_id=(arg_id) 
-    if arg_id.blank? || !(role = Hospital::Role.find arg_id)
-      self.kinmukubun=[]
-    else
-      self.kinmukubun=[role]
-    end
-  end
 
   def busho_name ; busho ? busho.name : ""          ;end
   def pre_busho_name ; pre_busho ? pre_busho.name : "" ; end
