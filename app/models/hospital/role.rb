@@ -31,13 +31,16 @@ class Hospital::Role < ActiveRecord::Base
   end
 
   def self.shokui
-  #  all(:conditions => "bunrui = 1").map{ |obj| [obj.name,obj.id]}
+    where("bunrui = #{Bunrui2Id['職位']}").map{ |obj| [obj.name,obj.id]}
   end
   def self.shokushu
-   # all(:conditions => "bunrui = 2").map{ |obj| [obj.name,obj.id]}
+    where("bunrui =  #{Bunrui2Id['職種']}").map{ |obj| [obj.name,obj.id]}
   end
   def self.kinmukubun
-#    all(:conditions => "bunrui = 3").map{ |obj| [obj.name,obj.id]}
+    where("bunrui =  #{Bunrui2Id['勤務区分']}").map{ |obj| [obj.name,obj.id]}
+  end
+  def self.shikaku
+    where("bunrui =  #{Bunrui2Id['資格']}").map{ |obj| [obj.name,obj.id]}
   end
 
 
