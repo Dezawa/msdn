@@ -121,17 +121,24 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
         :column_labels => %w(日付 ピーク発電量), :column_format => %w(%s %.1f),
         :axis_labels   => { :xlabel => "日",:ylabel => "ピーク発電量/kW",:y2label => "一日発電量/kWh"},
         :title => "日間発電量推移" ,
-        :range => { :y => "[0:5]",:y2 => "[0:35]"},
-        :tics =>  { :xtics => "rotate by -90",
+        :set  => [ "xdata time", "timefmt '%Y-%m-%d'"      , "format x '%Y-%m-%d'"  ],
+        :range => { :y => "[0:5]",:y2 => "[0:35]",
+                  :x => "['2015-1-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
+        :tics =>  { :xtics => "'2015-1-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
           :ytics => "0,1 nomirror",:y2tics => "0,10"},
+        :type => "scatter",
         :point_type => [7,8],:with => ["","with line"],
         :set_key => "set key left horizontal bottom box autotitle columnheader width -7 samplen 1",
-        :xy => [[[2,3],[2,4]]], :by_tics => { 1 => "x1y2" }
+        :xy => [[[1,2],[1,3]]], :by_tics => { 1 => "x1y2" }
       }
 
       data_list = Sola::Dayly.all.order("date").pluck(:date, :peak_kw, :kwh_day).delete_if{ |a,b,c| !b}
+      max_day,max_peak,_ = data_list.max_by{ |date, peak_kw, kwh_day| peak_kw}
+      opt[:labels] = ["label 1 '最高 #{ max_day} #{'%.2f'%max_peak}kW' at '2015-01-10',4.5 left" ,
+                      "arrow 1 as 1 from '2015-05-01',4.3 to '#{max_day}',#{max_peak}"
+                     ]
       file = Rails.root+"tmp"+"Sola_peak.data"
-      data_file_output(file,data_list,"Daies 年月日 ピーク発電量 一日発電量")
+      data_file_output_with_date(file,data_list,"年月日 ピーク発電量 一日発電量")
       gnuplot_(file.to_s,opt)
     end
 
