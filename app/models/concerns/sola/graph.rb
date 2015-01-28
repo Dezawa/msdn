@@ -134,8 +134,8 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
 
       data_list = Sola::Dayly.all.order("date").pluck(:date, :peak_kw, :kwh_day).delete_if{ |a,b,c| !b}
       max_day,max_peak,_ = data_list.max_by{ |date, peak_kw, kwh_day| peak_kw}
-      opt[:labels] = ["label 1 '最高 #{ max_day} #{max_peak}kW' at '2015-01-10',4.5 left" ,
-                      "arrow 1 as 1 from '2015-05-01',4.3 to '#{max_day}',#{'%.2f'%max_peak}"
+      opt[:labels] = ["label 1 '最高 #{ max_day} #{'%.2f'%max_peak}kW' at '2015-01-10',4.5 left" ,
+                      "arrow 1 as 1 from '2015-05-01',4.3 to '#{max_day}',#{max_peak}"
                      ]
       file = Rails.root+"tmp"+"Sola_peak.data"
       data_file_output_with_date(file,data_list,"年月日 ピーク発電量 一日発電量")
