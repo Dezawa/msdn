@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class Hospital::KinmucodeTest < ActiveSupport::TestCase
-    fixtures :hospital_kinmucodes,:hospital_roles
+    fixtures "hospital/kinmucodes","hospital/roles"
 
   Kubun=  { }
   def setup
@@ -14,6 +14,10 @@ class Hospital::KinmucodeTest < ActiveSupport::TestCase
 
   must "勤務コード数" do
     assert_equal 82,Hospital::Kinmucode.count
+  end
+
+  must "定数 sanchoku" do
+    assert_equal 1,Hospital::Kinmucode.sanchoku
   end
 
   (1..80).each{|id|

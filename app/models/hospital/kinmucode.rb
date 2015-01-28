@@ -158,13 +158,13 @@ class Hospital::Kinmucode < ActiveRecord::Base
       when "2","3" ; return shift.to_i
       when "0"     ; return code(:Koukyu)
       when "L","M" ; 
-       # return Hospital::Kinmucode.find_by(code: {"L"=>"L2","M"=>"L3"}[sft_str], kinmukubun_id: sanchoku).id
+        return Hospital::Kinmucode.find_by(code: {"L"=>"L2","M"=>"L3"}[sft_str], kinmukubun_id: sanchoku).id
       when "N","O" ; 
         code = {"N"=>"夜","O"=>"明"}[sft_str]
         #puts code
-      #  return Hospital::Kinmucode.find_by(code: code).id
+        return Hospital::Kinmucode.find_by(code: code).id
       when "1","5"
-      #  Kubun[:kyoutuu] ||= (k=Hospital::Role.find_by(name: "共通")) ? k.id : nil 
+        Kubun[:kyoutuu] ||= (k=Hospital::Role.find_by(name: "共通")) ? k.id : nil 
         value = From0123[sft_str] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
      #   Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
                                 #                 " and nenkyuu=? and am=? and pm=? and "+
