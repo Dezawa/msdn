@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 require 'test_helper'
 # -*- coding: utf-8 -*-
 #require 'need'
 
 class Hospital::KinmuTest < ActiveSupport::TestCase
-  fixtures :hospital_kinmucodes
+  fixtures "hospital/kinmucodes"
   # Replace this with your real tests.
   def setup
 

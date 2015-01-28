@@ -13,15 +13,15 @@ class Hospital::KinmucodeTest < ActiveSupport::TestCase
   end
 
   must "勤務コード数" do
-    assert_equal 82,Hospital::Kinmucode.count
+    assert_equal 72,Hospital::Kinmucode.count
   end
 
   must "定数 sanchoku" do
-    assert_equal 1,Hospital::Kinmucode.sanchoku
+    assert_equal 8,Hospital::Kinmucode.sanchoku
   end
 
   (1..80).each{|id|
-    next if [56,57,58,62,63,64].include? id
+    next if [51,52,56,57,58,61,62,63,64,65,66].include? id
     must "勤務コードID #{id}の時間総計は 1.0" do
       kc = Hospital::Kinmucode.find(id)
 #puts kc["am"]
@@ -78,7 +78,7 @@ Id = {       #  0   1 2 3  5 L M N  O
 
  shifts.each_with_index{ |shift,idx| 
     kinmukubun = :nikkin; kinmukubun_id = Hospital::Kinmucode::Kubun[kinmukubun]
-    msg = "#{kinmukubun}=#{ kinmukubun_id}:#{shift}の勤務コード"
+    msg = "#{kinmukubun}=#{ kinmukubun_id}:shift=#{shift}の勤務コード"
     must msg do
       kinmukubun_id = Hospital::Kinmucode::Kubun[kinmukubun]
       assert_equal  Id[kinmukubun][idx],Hospital::Kinmucode.from_0123(shift,kinmukubun_id),

@@ -50,7 +50,7 @@ No7:
 
 No8:
   id: '9'
-  name: 二 交代
+  name: 二交代
   bunrui: 4
   need: 0
   comment: 
@@ -58,6 +58,13 @@ No8:
 No9:
   id: '10'
   name: パート
+  bunrui: 4
+  need: 0
+  comment: 
+  
+No11:
+  id: '11'
+  name: 共通
   bunrui: 4
   need: 0
   comment: 
