@@ -170,11 +170,12 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     @postTitleMsg = "
         発電量はソーラパネルメーカ提供oコントローラの日間発電量による。(手動転記なのでupdate遅れる事あり)<br>
         ピーク発電量は自前電力計による1分間平均発電量。<p>
-　　　　電池残量:%d　　 電波強度 %d
+　　　　電池残量:%d　　 電波強度 %d　(%s 現在)
 " 
-    status =  Status::TandD.where(base_name: "dezawa",group_name: "Dhome", group_remote_name: "power01" ).order("group_remote_ch_unix_time desc").first
+    status =  Status::TandD.where(base_name: "dezawa",group_name: "Dhome", group_remote_name: "power01" ).
+      order("group_remote_ch_unix_time desc").first
 
-    @postTitleMsg = @postTitleMsg%[:group_remote_ch_current_batt,:group_remote_rssi].
+    @postTitleMsg = @postTitleMsg%[:group_remote_ch_current_batt,:group_remote_rssi,:group_remote_ch_unix_time].
       map{ |sym| status[sym]}
   end
 
