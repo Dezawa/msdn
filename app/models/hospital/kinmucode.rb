@@ -86,10 +86,10 @@ class Hospital::Kinmucode < ActiveRecord::Base
   } 
   @@Code = { }
 
-  def name 
-    kubun = Hospital::Const::Kinmukubun.rassoc(kinmukubun_id)
-    kubun ? kubun[0] : ""
-  end
+  # def name 
+  #   kubun = Hospital::Const::Kinmukubun.rassoc(kinmukubun_id)
+  #   kubun ? kubun[0] : ""
+  # end
 
   def self.code(sym)
     @@Code[sym] ||= self.find_by(code: CodeSym[sym]).id rescue SymVal[sym]
@@ -216,7 +216,7 @@ class Hospital::Kinmucode < ActiveRecord::Base
     self.where( [Sql,%w(S A),Kubun[:kyoutuu]])
   end
   def self.code_nikkin
-    self.whre( [Sql,%w(4□ 管),Kubun[:nikkin]])
+    self.where( [Sql,%w(4□ 管),Kubun[:nikkin]])
   end
   def self.code_nikkin_all
     self.where( ["kinmukubun_id = ?",Kubun[:nikkin]])

@@ -1,7 +1,7 @@
 ---
 one:
   id: '1'
-  kinmukubun_id: 3交代
+  kinmukubun_id: '2'
   code: '1'
   name: 日勤
   color: 
@@ -25,7 +25,7 @@ one:
   sub_next: 
 two:
   id: '2'
-  kinmukubun_id: 3交代
+  kinmukubun_id: '2'
   code: '2'
   name: 準夜
   color: 青
@@ -49,7 +49,7 @@ two:
   sub_next: 
 No3:
   id: '3'
-  kinmukubun_id: 3交代
+  kinmukubun_id: '2'
   code: '3'
   name: 深夜
   color: 赤
@@ -73,7 +73,7 @@ No3:
   sub_next: 
 No4:
   id: '4'
-  kinmukubun_id: 3交代
+  kinmukubun_id: '2'
   code: L2
   name: L勤準夜(入り)
   color: 青
@@ -97,7 +97,7 @@ No4:
   sub_next: 
 No5:
   id: '5'
-  kinmukubun_id: 3交代
+  kinmukubun_id: '2'
   code: L3
   name: L勤深夜(明け)
   color: 赤
@@ -121,7 +121,7 @@ No5:
   sub_next: 
 No6:
   id: '6'
-  kinmukubun_id: 3交代
+  kinmukubun_id: '2'
   code: 会
   name: 1.5時間会議(3交代)
   color: 
@@ -145,7 +145,7 @@ No6:
   sub_next: 
 No7:
   id: '7'
-  kinmukubun_id: 3交代
+  kinmukubun_id: '2'
   code: 会1
   name: 1.0時間会議(3交代)
   color: 
@@ -169,7 +169,7 @@ No7:
   sub_next: 
 No8:
   id: '8'
-  kinmukubun_id: 3交代
+  kinmukubun_id: '2'
   code: □
   name: 早出7:00
   color: 
@@ -193,7 +193,7 @@ No8:
   sub_next: 
 No9:
   id: '9'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: △
   name: 遅出
   color: 
@@ -217,7 +217,7 @@ No9:
   sub_next: 
 No10:
   id: '10'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: ▲
   name: 遅出11:30
   color: 
@@ -241,7 +241,7 @@ No10:
   sub_next: 
 No11:
   id: '11'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: Z
   name: 年休/勤務
   color: 桃
@@ -265,7 +265,7 @@ No11:
   sub_next: 
 No12:
   id: '12'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: G
   name: 勤務/年休
   color: 桃
@@ -289,7 +289,7 @@ No12:
   sub_next: 
 No13:
   id: '13'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: R1
   name: 日勤応援
   color: 
@@ -313,7 +313,7 @@ No13:
   sub_next: 
 No14:
   id: '14'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: Z/R
   name: 午前応援/午後勤務
   color: 
@@ -337,7 +337,7 @@ No14:
   sub_next: 
 No15:
   id: '15'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: R/G
   name: 午前勤務/午後応援
   color: 
@@ -361,7 +361,7 @@ No15:
   sub_next: 
 No16:
   id: '16'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: R2
   name: 準夜応援
   color: 青
@@ -385,7 +385,7 @@ No16:
   sub_next: '0.5'
 No17:
   id: '17'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: R3
   name: 深夜応援
   color: 赤
@@ -409,7 +409,7 @@ No17:
   sub_next: '8'
 No18:
   id: '18'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: H1
   name: 一般→ハイケア応援日勤
   color: 
@@ -433,7 +433,7 @@ No18:
   sub_next: 
 No19:
   id: '19'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: H2
   name: 一般→ハイケア応援準夜
   color: 青
@@ -457,7 +457,7 @@ No19:
   sub_next: '0.2'
 No20:
   id: '20'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: H3
   name: 一般→ハイケア応援深夜
   color: 赤
@@ -481,7 +481,7 @@ No20:
   sub_next: '8'
 No21:
   id: '21'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: イ１
   name: ハイケア応援→一般日勤
   color: 
@@ -505,7 +505,7 @@ No21:
   sub_next: 
 No22:
   id: '22'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: イ２
   name: ハイケア応援→一般準夜
   color: 青
@@ -529,7 +529,7 @@ No22:
   sub_next: 
 No23:
   id: '23'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: イ３
   name: ハイケア応援→一般深夜
   color: 赤
@@ -553,7 +553,7 @@ No23:
   sub_next: 
 No24:
   id: '24'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: 1/セ
   name: 午前病棟/午後透析
   color: 
@@ -577,7 +577,7 @@ No24:
   sub_next: 
 No25:
   id: '25'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: 出
   name: 一日出張
   color: 
@@ -601,7 +601,7 @@ No25:
   sub_next: 
 No26:
   id: '26'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: 出/1
   name: 午前出張/午後勤務
   color: 
@@ -625,7 +625,7 @@ No26:
   sub_next: 
 No27:
   id: '27'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: 1/出
   name: 午前勤務/午後出張
   color: 
@@ -649,7 +649,7 @@ No27:
   sub_next: 
 No28:
   id: '28'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: 出/G
   name: 午前出張/午後年休
   color: 桃
@@ -673,7 +673,7 @@ No28:
   sub_next: 
 No29:
   id: '29'
-  kinmukubun_id: '8'
+  kinmukubun_id: '2'
   code: Z/出
   name: 午前年休/午後出張
   color: 桃
@@ -697,7 +697,7 @@ No29:
   sub_next: 
 No30:
   id: '30'
-  kinmukubun_id: 日勤
+  kinmukubun_id: '1'
   code: 4□
   name: 常日勤
   color: 
@@ -721,7 +721,7 @@ No30:
   sub_next: 
 No31:
   id: '31'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: 会□
   name: 1.5時間会議(常日勤)
   color: 
@@ -745,7 +745,7 @@ No31:
   sub_next: 
 No32:
   id: '32'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: 会１
   name: 1.0時間会議(常日勤)
   color: 
@@ -769,7 +769,7 @@ No32:
   sub_next: 
 No33:
   id: '33'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: 管
   name: 管理準夜
   color: 青
@@ -793,7 +793,7 @@ No33:
   sub_next: 
 No34:
   id: '34'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: 
   name: 早出7:00
   color: 
@@ -817,7 +817,7 @@ No34:
   sub_next: 
 No35:
   id: '35'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: Z□
   name: 年休/勤務
   color: 
@@ -841,7 +841,7 @@ No35:
   sub_next: 
 No36:
   id: '36'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: G
   name: 勤務/年休
   color: 
@@ -865,7 +865,7 @@ No36:
   sub_next: 
 No37:
   id: '37'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: R1□
   name: 日勤者応援
   color: 
@@ -889,7 +889,7 @@ No37:
   sub_next: 
 No38:
   id: '38'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: Z/R□
   name: 午前応援/午後日勤
   color: 
@@ -913,7 +913,7 @@ No38:
   sub_next: 
 No39:
   id: '39'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: R/G□
   name: 午前日勤/午後応援
   color: 
@@ -937,7 +937,7 @@ No39:
   sub_next: 
 No40:
   id: '40'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: J1
   name: 日勤介護助手応援
   color: 
@@ -961,7 +961,7 @@ No40:
   sub_next: 
 No41:
   id: '41'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: 出
   name: 一日出張
   color: 
@@ -985,7 +985,7 @@ No41:
   sub_next: 
 No42:
   id: '42'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: 出/1□
   name: 午前出張/午後勤務
   color: 
@@ -1009,7 +1009,7 @@ No42:
   sub_next: 
 No43:
   id: '43'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: 1/出
   name: 午前勤務/午後出張
   color: 
@@ -1033,7 +1033,7 @@ No43:
   sub_next: 
 No44:
   id: '44'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: 出/G
   name: 午前出張/午後年休
   color: 
@@ -1057,7 +1057,7 @@ No44:
   sub_next: 
 No45:
   id: '45'
-  kinmukubun_id: '7'
+  kinmukubun_id: '1'
   code: Z/出
   name: 午前年休/午後出張
   color: 
@@ -1081,7 +1081,7 @@ No45:
   sub_next: 
 No46:
   id: '46'
-  kinmukubun_id: '10'
+  kinmukubun_id: '3'
   code: P4
   name: パート4時間
   color: 
@@ -1105,7 +1105,7 @@ No46:
   sub_next: 
 No47:
   id: '47'
-  kinmukubun_id: '7'
+  kinmukubun_id: '3'
   code: P4.5
   name: パート4.5時間
   color: 
@@ -1129,7 +1129,7 @@ No47:
   sub_next: 
 No48:
   id: '48'
-  kinmukubun_id: '7'
+  kinmukubun_id: '3'
   code: P5
   name: パート5時間
   color: 
@@ -1153,7 +1153,7 @@ No48:
   sub_next: 
 No49:
   id: '49'
-  kinmukubun_id: '7'
+  kinmukubun_id: '3'
   code: P6
   name: パート6時間
   color: 
@@ -1177,7 +1177,7 @@ No49:
   sub_next: 
 No50:
   id: '50'
-  kinmukubun_id: '7'
+  kinmukubun_id: '3'
   code: P7
   name: パート7時間
   color: 
@@ -1202,7 +1202,7 @@ No50:
 
 No53:
   id: '53'
-  kinmukubun_id: '9'
+  kinmukubun_id: '4'
   code: '1'
   name: 日勤
   color: 
@@ -1226,7 +1226,7 @@ No53:
   sub_next: 
 No54:
   id: '54'
-  kinmukubun_id: '9'
+  kinmukubun_id: '4'
   code: L2
   name: L勤深夜(入り)
   color: 青
@@ -1250,7 +1250,7 @@ No54:
   sub_next: 
 No55:
   id: '55'
-  kinmukubun_id: '9'
+  kinmukubun_id: '4'
   code: L3
   name: L勤深夜(明け)
   color: 赤
@@ -1274,7 +1274,7 @@ No55:
   sub_next: 
 No56:
   id: '56'
-  kinmukubun_id: '9'
+  kinmukubun_id: '4'
   code: 拘/平
   name: 終日拘束(平日)
   color: 
@@ -1298,7 +1298,7 @@ No56:
   sub_next: 
 No57:
   id: '57'
-  kinmukubun_id: '9'
+  kinmukubun_id: '4'
   code: 拘/休
   name: 終日拘束(休日)
   color: 
@@ -1322,7 +1322,7 @@ No57:
   sub_next: 
 No58:
   id: '58'
-  kinmukubun_id: '9'
+  kinmukubun_id: '4'
   code: 夜/拘
   name: 夜間拘束
   color: 
@@ -1346,7 +1346,7 @@ No58:
   sub_next: 
 No59:
   id: '59'
-  kinmukubun_id: '9'
+  kinmukubun_id: '4'
   code: Z/R
   name: 午前応援/午後外来
   color: 
@@ -1370,7 +1370,7 @@ No59:
   sub_next: 
 No60:
   id: '60'
-  kinmukubun_id: '9'
+  kinmukubun_id: '4'
   code: R/G
   name: 午前外来/午後応援
   color: 
@@ -1395,7 +1395,7 @@ No60:
 
 No67:
   id: '67'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: '0'
   name: 公休
   color: 
@@ -1419,7 +1419,7 @@ No67:
   sub_next: 
 No68:
   id: '68'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: 遅
   name: 遅刻
   color: 
@@ -1443,7 +1443,7 @@ No68:
   sub_next: 
 No69:
   id: '69'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: 早
   name: 早退
   color: 
@@ -1467,7 +1467,7 @@ No69:
   sub_next: 
 No70:
   id: '70'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: 外
   name: 私用外出
   color: 
@@ -1491,7 +1491,7 @@ No70:
   sub_next: 
 No71:
   id: '71'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: N
   name: 年休
   color: 
@@ -1515,7 +1515,7 @@ No71:
   sub_next: 
 No72:
   id: '72'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: S
   name: 諸休暇
   color: 
@@ -1539,7 +1539,7 @@ No72:
   sub_next: 
 No73:
   id: '73'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: D
   name: 代休
   color: 
@@ -1563,7 +1563,7 @@ No73:
   sub_next: 
 No74:
   id: '74'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: C
   name: 育児休暇
   color: 
@@ -1587,7 +1587,7 @@ No74:
   sub_next: 
 No75:
   id: '75'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: C
   name: 介護休暇
   color: 
@@ -1611,7 +1611,7 @@ No75:
   sub_next: 
 No76:
   id: '76'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: B
   name: 病気休暇
   color: 
@@ -1635,7 +1635,7 @@ No76:
   sub_next: 
 No77:
   id: '77'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: K
   name: 公務欠勤
   color: 
@@ -1659,7 +1659,7 @@ No77:
   sub_next: 
 No78:
   id: '78'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: T
   name: 通勤途上欠勤
   color: 
@@ -1683,7 +1683,7 @@ No78:
   sub_next: 
 No79:
   id: '79'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: A
   name: 産前産後欠勤
   color: 
@@ -1707,7 +1707,7 @@ No79:
   sub_next: 
 No80:
   id: '80'
-  kinmukubun_id: '11'
+  kinmukubun_id: '0'
   code: X
   name: その他欠勤
   color: 

@@ -3,11 +3,9 @@ class Hospital::KinmucodesController < Hospital::Controller
   before_filter :set_instanse_variable
 
   Labels= [HtmlText.new(:id,"ID",:ro => true),
-           HtmlSelect.new(:kinmukubun_id ,"勤務"      ,
-                          :correction =>  Hospital::Role.kinmukubun),
+           HtmlSelect.new(:kinmukubun_id ,"勤務" , :correction => Hospital::Const::Kinmukubun),
            HtmlText.new(:code            ,"Code"      ,:size =>3),
            HtmlText.new(:name            ,"名称"                 ),
-           #           HtmlText.new(:shift           ,"シフト"        ,:size =>3),
            HtmlText.new(:color           ,"色"        ,:size =>3),
            HtmlText.new(:start           ,"開始"          ,:size =>3),
            HtmlText.new(:finish          ,"終了"          ,:size =>3),
@@ -34,7 +32,6 @@ class Hospital::KinmucodesController < Hospital::Controller
     @TYTLE = "記号一覧"
     @Domain= @Model.name.underscore
     @TableEdit = true
-    #@TableHeader = :kinmucode_header
     @TableHeaderDouble =  [5,[2,"勤務時間"],1,
            [9,"積算勤務日数"],[3,"所属部門勤務時間"],[3,"応援勤務時間"]
           ]

@@ -36,14 +36,11 @@ module Const
   ItemsDefineAll =  (ItemsDefine + ItemsDefine2).flatten
 
   Kinmukubun = [
+     [ "共通",  0 ],
      [ "日勤",  1 ],
      [ "三交代",2 ],
-     [ "二交代",8 ],
      [ "パート",3 ],
-     [ "透析",  4 ],
-     [ "L勤",   5 ],
-     [ "外来",  6 ],
-     [ "共通",  7 ]
+     [ "二交代",4 ],
   ]
 
 
