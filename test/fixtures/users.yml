@@ -1,26 +1,23 @@
----
-dezawa:
-  id:  1
-  email: dzw@aliadne.net
-  name: 出沢
-  subdomain: aliadne.net
+obj1:
+  id: 1
   username: dezawa
-  salt:                      356a192b7913b04c54574d18c28d46e6395428ab # SHA1('0')
-  crypted_password:          5d110a078c494f7abc467685383b37b11f2db1ed # 'monkey'
-  sign_in_count: 4
-  current_sign_in_at: 2013-12-01 11:56:53.000000000 Z
-  last_sign_in_at: 2013-12-01 11:53:46.000000000 Z
-  current_sign_in_ip: 127.0.0.1
-  last_sign_in_ip: 127.0.0.1
-  created_at: 2013-11-20 06:02:01.000000000 Z
-  updated_at: 2013-12-01 11:56:54.000000000 Z
-  confirmed_at: 2013-12-01 11:56:54.000000000 Z
-  lipscsvio: false
-  lipssizeoption: false
-  lipssizepro: 10
-  lipssizeope: 10
+  email: dezawa@aliadne.net
+  crypted_password: 254c557a9120cb5a5c02a63521463d4fb1d087e7
+  salt: 8b7ed3c791618f1d1c3206b296f943f80585995b
+  created_at: 2012-02-23 10:25:10.000000000 Z
+  updated_at: 2015-01-29 07:18:29.000000000 Z
+  lipscsvio: true
+  lipssizeoption: true
+  lipssizepro: 100
+  lipssizeope: 100
   lipslabelcode: default
+  lipsoptlink: to_ube_product
   state: passive
+  sign_in_count: 22
+  current_sign_in_at: 2015-01-29 07:18:29.000000000 Z
+  last_sign_in_at: 2015-01-22 11:38:16.000000000 Z
+  current_sign_in_ip: 192.168.1.5
+  last_sign_in_ip: 192.168.1.5
 quentin:
   id: 2
   email: dezawa@aliadne.net
@@ -153,3 +150,48 @@ testuser:
   lipssizeope: 10
   lipslabelcode: default
   state: passive
+obj4:
+  id: 10
+  username: trial
+  email: trial@aliadne.net
+  crypted_password: b4e7b2b39715e8f984a1be0bc1f3002e5f18efcd
+  salt: 60486766938dd7a599a9bb9b3a491e1d4e09db56
+  created_at: 2013-01-12 17:48:57.000000000 Z
+  updated_at: 2013-01-12 17:58:54.000000000 Z
+  lipscsvio: true
+  lipssizeoption: true
+  lipssizepro: 20
+  lipssizeope: 20
+  lipslabelcode: default
+  state: passive
+  sign_in_count: 0
+obj5:
+  id: 11
+  username: kosha
+  email: hkosha@gk2.so-net.ne.jp
+  crypted_password: aaf1e20a9260bafeae2d528494c9634c71671c78
+  salt: 623dbf4b61cbf6649d2c4e52bf2ea2b2561ac930
+  created_at: 2013-04-01 22:39:20.000000000 Z
+  updated_at: 2013-04-01 22:40:11.000000000 Z
+  lipscsvio: false
+  lipssizeoption: false
+  lipssizepro: 10
+  lipssizeope: 10
+  lipslabelcode: default
+  state: passive
+  sign_in_count: 0
+obj6:
+  id: 12
+  username: yakushima
+  email: dezawa@aliadne.net
+  crypted_password: 9ad59610a69950005ed9f1b8f8154c7c65ff92ff
+  salt: e086abc1d4eb31311ee9c3e10d9b7da53f121b0c
+  created_at: 2013-04-29 20:03:44.000000000 Z
+  updated_at: 2013-04-29 20:03:55.000000000 Z
+  lipscsvio: false
+  lipssizeoption: false
+  lipssizepro: 10
+  lipssizeope: 10
+  lipslabelcode: default
+  state: passive
+  sign_in_count: 0
