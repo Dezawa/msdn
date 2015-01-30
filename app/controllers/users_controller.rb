@@ -42,18 +42,17 @@ class UsersController < CommonController
    @Model= User
     @options   = UserOption.all.sort{|a,b| (a.order <=> b.order)*1000 + (a.label <=> b.label)}
    @TYTLE = "ユーザ"
-   #@labels=LabelsHead+LabelsPost
    @TableEdit = [[:form,"/users/new","新規登録",{ :method => :get}]]
    @tmplate  = true
    @Show = true
    @Edit = true
    @Delete=true
    @Domain= @Model.name.underscore
+    @labels=LabelsHead+LabelsPost
   end
 
   def index
     @page = params[:page] || 1 
-    @labels=LabelsHead+LabelsPost
     find_and
   end
 
