@@ -16,6 +16,11 @@ class Hospital::KinmucodeTest < ActiveSupport::TestCase
     assert_equal 2,Hospital::Kinmucode.sanchoku
   end
 
+  must "k_code" do
+    assert_equal %w(1 2 3 L2 L3 会 会1 □ △ ▲),
+    (1..10).map{ |kid| Hospital::Kinmucode.find(kid).code }
+  end
+
   (1..80).each{|id|
     next if [51,52,56,57,58,61,62,63,64,65,66].include? id
     must "勤務コードID #{id}の時間総計は 1.0" do

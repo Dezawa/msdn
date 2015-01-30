@@ -125,7 +125,7 @@ class Hospital::Kinmucode < ActiveRecord::Base
                                   
   From0123 = ToFrom0123.invert
 
-#  @@KCode = Hash[*self.all.map{ |kc| [kc.id,kc]}.flatten]
+  @@KCode = self.all.to_a.map{ |kc| [kc.id,kc]}.to_h
   def self.k_code(id)
     @@KCode[id] ||= self.find(id)
   end
