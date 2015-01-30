@@ -68,6 +68,7 @@ class Hospital::Kinmucode < ActiveRecord::Base
 # =======
   extend CsvIo
   include Hospital::Const
+  #extend Hospital::Const
   self.table_name = 'hospital_kinmucodes'
   #belongs_to :kinmukubun,:class_name => "Hospital::inmukubun"
 #>>>>>>> HospitalPower
@@ -95,11 +96,9 @@ class Hospital::Kinmucode < ActiveRecord::Base
     @@Code[sym] ||= self.find_by(code: CodeSym[sym]).id rescue SymVal[sym]
   end
 
-
-  Kubun=  { }
-  KK=Hash[:nikkin,"日勤",:sankoutai,"三交代",:part,"パート",:touseki,"透析",
-                   :l_kin,"L勤",:gairai,"外来",:kyoutuu,"共通"]#.
-   # each_pair{ |kinmu,name|  Kubun[kinmu] = (k=Hospital::Role.find_by(name: name)) ? k.id : nil }
+  Kubun =     [  [:nikkin,"日勤"], [:sankoutai,"三交代"], [:part, "パート"],
+        [:touseki,"透析"],[:l_kin, "L勤"], [:gairai,"外来"], [:kyoutuu,"共通"]].
+      map{ |kinmu,name|  [kinmu,KinmukubunHash[name]]}.to_h
 
 #Hospital::Kinmucode::From0123, To0123 の見直し
 #  例えば出張は1日n勤務だが病棟の勤務人数集計ではゼロ。これに対応する
@@ -137,7 +136,7 @@ class Hospital::Kinmucode < ActiveRecord::Base
   end
 
   def self.sanchoku
-    @@sanchoku ||= Hospital::Role.find_by(name: "三交代").id
+    @@sanchoku ||= Kubun[:sankoutai] #Hospital::Role.find_by(name: "三交代").id
   end
 
 
@@ -164,14 +163,13 @@ class Hospital::Kinmucode < ActiveRecord::Base
         #puts code
         return Hospital::Kinmucode.find_by(code: code).id
       when "1","5"
-        Kubun[:kyoutuu] ||= (k=Hospital::Role.find_by(name: "共通")) ? k.id : nil 
         value = From0123[sft_str] ||  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-     #   Hospital::Kinmucode.all(:conditions => ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
-                                #                 " and nenkyuu=? and am=? and pm=? and "+
-                                #                 "night=? and midnight=? and am2=? and "+
-                                #                 "pm2=? and night2=? and midnight2=? ",
-                                #                 kinmukubun_id,*value]
-                                # ).sort_by{ |k| k.id }[0].id
+        Hospital::Kinmucode.where( ["(kinmukubun_id=? or kinmukubun_id= #{Kubun[:kyoutuu]})"+
+                                                 " and nenkyuu=? and am=? and pm=? and "+
+                                                 "night=? and midnight=? and am2=? and "+
+                                                 "pm2=? and night2=? and midnight2=? ",
+                                                 kinmukubun_id,*value]
+                                 ).sort_by{ |k| k.id }[0].id
 
       else ; nil
       end
