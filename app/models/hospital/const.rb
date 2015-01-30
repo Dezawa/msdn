@@ -42,6 +42,7 @@ module Const
      [ "パート",3 ],
      [ "二交代",4 ],
   ]
+  KinmukubunHash = Kinmukubun.to_h
 
 
   LimitOfNurceCandidateList = 6
