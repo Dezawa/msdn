@@ -16,12 +16,18 @@ class UsersController < CommonController
              HtmlPasswd.new(:password_confirmation,"確認パスワード",:size => 20)
             ]
 
-  Labels0 = [
+  LabelsHead = [
              HtmlText.new(:name         ,"氏名",          :size => 20),
              HtmlText.new(:username     ,"ユーザ名",          :size => 20),
-             HtmlText.new(:email         ,"メール",            :size => 20),
+             HtmlText.new(:email         ,"メール",            :size => 20)
+            ]
+  LabelsPass = [
+             HtmlPasswd.new(:password    ,"パスワード",        :size => 20),
+             HtmlPasswd.new(:password_confirmation,"確認パスワード",:size => 20)
+            ]
              #HtmlPasswd.new(:password    ,"パスワード",        :size => 20),
              #HtmlPasswd.new(:password_confirmation,"確認パスワード",:size => 20),
+  LabelsPost = [
              HtmlRadio.new(:lipscsvio    ,"LiPS CSV IO option",
                             :correction => [["可",true],["不可",false]] ),
              HtmlRadio.new(:lipssizeoption    ,"size変更",
@@ -36,8 +42,8 @@ class UsersController < CommonController
    @Model= User
     @options   = UserOption.all.sort{|a,b| (a.order <=> b.order)*1000 + (a.label <=> b.label)}
    @TYTLE = "ユーザ"
-   @labels=Labels0
-   @TableEdit = [[:form,"/users/sign_in","新規登録",{ :method => :get}]]
+   #@labels=LabelsHead+LabelsPost
+   @TableEdit = [[:form,"/users/new","新規登録",{ :method => :get}]]
    @tmplate  = true
    @Show = true
    @Edit = true
@@ -47,6 +53,7 @@ class UsersController < CommonController
 
   def index
     @page = params[:page] || 1 
+    @labels=LabelsHead+LabelsPost
     find_and
   end
 
@@ -76,12 +83,14 @@ class UsersController < CommonController
     have_user_option
   end
   def new
-    flash[:return_to] = request.env["HTTP_REFERER"]
+    flash[:return_to] = request.env["HTTP_REFERER"] 
+    @labels = LabelsHead +  LabelsPass +  LabelsPost
     @user = User.new
     have_user_option
   end
  
   def create
+    @labels = LabelsHead +  LabelsPass +  LabelsPost
     @user = User.new(permit_attr)
     success = @user && @user.save
     logger.debug("UserCreate success? #{success}")

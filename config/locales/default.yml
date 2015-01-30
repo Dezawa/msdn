@@ -25,3 +25,33 @@ default:
                 one: 1 error prohibited this {{model}} from being saved
                 other: "{{count}} errors prohibited this {{model}} from being saved" 
 
+  coment:    "製品を一単位作るのに必要な稼働時間"
+  number:    "製造数"
+  pro_gain:  "製品当り利益"
+  message:   ""
+  plan_shozo_from: "抄造開始時間"
+
+
+  activerecord:
+    errors:
+      template:
+            body: 下記のフィールドで問題がでました
+            header: 
+                one: 1 error prohibited this {{model}} from being saved
+                other: "{{count}} errors prohibited this {{model}} from being saved" 
+  coment:    "製品を一単位作るのに必要な稼働時間"
+  number:    "製造数"
+  pro_gain:  "製品当り利益"
+  message:   ""
+  plan_shozo_from: "抄造開始時間"
+
+
+  activerecord:
+    errors:
+      template:
+            body: 下記のフィールドで問題がでました
+            header: 
+                one: 1 error prohibited this {{model}} from being saved
+                other: "{{count}} errors prohibited this {{model}} from being saved" 
+      messages:
+        taken: "はすでに存在します。"

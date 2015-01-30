@@ -76,6 +76,7 @@ Rails.application.routes.draw do
   ################## -ユーザ管理
   resources :user_options,:users
   get "/users/sign_in" => "devise/sessions#new"
+  post "/users/sign_up" => "users#create"
   %w(user_options users ).each{|controller| set_post(controller,@EditTable)    }
     
   ########### LiPS

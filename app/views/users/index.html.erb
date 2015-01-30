@@ -1,7 +1,7 @@
 <h3><%= @TYTLE  %> 一覧 <%= @TYTLE_post %></h3>
 <%= flash[:message] %>
 <%= @errors.call if @errors -%>
-<%= form_for :user, :url => "/users/sign_up" ,:method => :get do |f| %>
+<%= form_for :user, :url => new_user_path ,:method => :get do |f| %>
  <%= submit_tag("新規登録") %>
 <% end %>
 <%= action_buttom_table %>
