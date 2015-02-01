@@ -18,60 +18,25 @@
 # monthly(month=nil) を通して今処理している月の勤務データHospital::Monthlyのインスタンスを
 # @monmthに置く
 class Hospital::Nurce < ActiveRecord::Base
-  extend CsvIo
-#  extend Cost
-#  extend  Hospital::Cost::ClassMethod
-#  include Hospital::Cost
-#  include  Hospital::Reguration
-  
-  self.table_name = 'hospital_nurces'
+  include ActiveModel::Validations
 
+  extend CsvIo
   include Hospital::Const
   include Hospital::NurceCost
   include Hospital::Reguration
 
   has_and_belongs_to_many :hospital_roles,:class_name => "Hospital::Role"
-  has_and_belongs_to_many :shikaku,:class_name => "Hospital::Role",:conditions => "bunrui = 3"
-
+  # has_and_belongs_to_many :shokui,:class_name => "Hospital::Role",:conditions => "bunrui = 1"
+  # has_and_belongs_to_many :shokushu,:class_name => "Hospital::Role",:conditions => "bunrui = 2"
+  # has_and_belongs_to_many :kinmukubun,:class_name => "Hospital::Role",:conditions => "bunrui = 3"
   belongs_to :shokui,:class_name => "Hospital::Role"
   belongs_to :shokushu,:class_name => "Hospital::Role"
   belongs_to :kinmukubun,:class_name => "Hospital::Role"
   belongs_to :limit    ,:class_name => "Hospital::Limit"
+  belongs_to :pre_busho,:class_name => "Hospital::Busho"
   belongs_to :busho    ,:class_name => "Hospital::Busho"
-# <<<<<<< HEAD
-
-#   attr_reader :Reguration
-#   LimitDefault={:code0 => 8,:code1 => 20,:code2 => 4,:code3 => 4,:coden => 1}
-#   CheckFail = Class.new(StandardError)
-
-#   attr_accessor :month
-
-#   #def 
-#   after_find do
-#     set_check_regulation
-#   end 
-
-#   def set_check_regulation
-    
-#     @Reguration = 
-#       [
-#        {        },{ },
-#        {
-#          :junya => [/([2L5][^25]*){#{limit.code2+1}}/,nil,nil,"順夜が#{limit.code2}を越えた"]
-#        },{ 
-#          :shinya =>[/([3M6][^36]*){#{limit.code3+1}}/,nil,nil,"深夜が#{limit.code3}を越えた"] 
-#        }
-#       ]
-#     @Wants = [{},{},{},{}] 
-#     @Reguration_keys = (0..3).map{|shift| @Reguration[shift].keys + @Wants[shift].keys }
-#     [@Reguration ,    @Wants ,  @Reguration_keys] # retern for TDD
-#   end
-
-#   def check_regulation
-#     @check_regulation ||=
-#       [@Reguration ,@Wants,Reguration[ Hospital::Define.koutai3?],Wants[ Hospital::Define.koutai3?] ]
-# =======
   
+
   LimitDefault =
     { :code0 => 8,:code1 => 20,:code2 => 4,:code3 => 4,:coden => 1,
     :night_total => 9,:kinmu_total => 20
@@ -80,11 +45,21 @@ class Hospital::Nurce < ActiveRecord::Base
 
   attr_accessor :month,:shift_used
 
+  validate :shokui_must_be_shokui,:shokushu_must_be_shokushu, :kinmukubun_must_be_kinmukubun
+  def shokui_must_be_shokui
+    errors.add(:shokui,"職位でないrole") unless shokui.blank? || shokui.bunrui == Bunrui2Id['職位']
+  end
 
+  def shokushu_must_be_shokushu
+    errors.add(:shokushu,"職種でないrole") unless  shokushu.blank? || shokushu.bunrui == Bunrui2Id['職種']
+  end
+
+  def kinmukubun_must_be_kinmukubun
+    errors.add(:kinmukubun,"勤務区分でないrole") unless  kinmukubun.blank? || kinmukubun.bunrui ==  Bunrui2Id['勤務区分']
+  end
   def after_find
     set_check_reg 
   end
-
 
   class AssignPatern
     attr_accessor :patern, :reg, :back,:length,:checks,:target_days
@@ -127,10 +102,35 @@ class Hospital::Nurce < ActiveRecord::Base
     where( ["busho_id = ?",busho_id])
   end
   def self.correction(busho_id,option = {})
-    by_busho(busho_id).map{ |nurce| [nurce.name,nurce.id]}
+     by_busho(busho_id).map{ |nurce| [nurce.name,nurce.id]}
   end
 
+  def ddshokui_id     ; shokui.first ? shokui.first.id         : nil ;end
+  def ddshokushu_id   ; shokushu.first ? shokushu.first.id     : nil ;end
+  def ddkinmukubun_id ; kinmukubun.first ? kinmukubun.first.id : nil ;end
+  def ddshokui_id=(arg_id) 
+    if arg_id.blank? || !(role = Hospital::Role.find arg_id)
+      self.shokui=[]
+    else
+      self.shokui=[role]
+    end
+  end
 
+  def ddshokushu_id=(arg_id)
+    if arg_id.blank? || !(role = Hospital::Role.find arg_id.to_i)
+      self.shokushu=[]
+    else
+      self.shokushu=[role]
+    end
+  end
+
+  def ddkinmukubun_id=(arg_id) 
+    if arg_id.blank? || !(role = Hospital::Role.find arg_id)
+      self.kinmukubun=[]
+    else
+      self.kinmukubun=[role]
+    end
+  end
 
   def busho_name ; busho ? busho.name : ""          ;end
   def pre_busho_name ; pre_busho ? pre_busho.name : "" ; end
