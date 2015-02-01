@@ -135,14 +135,12 @@ module Hospital
     return @check_reg if @check_reg
     @check_reg = [{},{},{},{}] 
    @check_reg.each_with_index{ |reguration,idx|
-#pp [@Reguration[idx],@Wants[idx],Reguration[ Hospital::Define.koutai3?][idx],Wants[ Hospital::Define.koutai3?][idx]]
+  
       reguration.merge!(@Reguration[idx]).
       merge!(@Wants[idx]).
       merge!(Reguration[ Hospital::Define.koutai3?][idx]).
       merge!(Wants[ Hospital::Define.koutai3?][idx])
     }
-#pp @check_reg
-# [@Reguration ,@Wants,Reguration[ Hospital::Define.koutai3?],Wants[ Hospital::Define.koutai3?] ]
     @check_reg
   end
 
