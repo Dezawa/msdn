@@ -141,7 +141,6 @@ class Hospital::Nurce < ActiveRecord::Base
   def pre_shokushu_name;(a=Shokushu.rassoc(pre_shokushu_id)) ? a.first : "";end
   def kinmukubun_name;(a=Kinmukubun.rassoc(kinmukubun_id)) ? a.first : "";end
   def pre_kinmukubun_name;(a=Kinmukubun.rassoc(pre_kinmukubun_id)) ? a.first : "";end
-#>>>>>>> HospitalPower
 
   ########## 月度の割付状況
   # month が指定されていない場合は同じ月度情報を用いる
@@ -150,14 +149,9 @@ class Hospital::Nurce < ActiveRecord::Base
   #         指定されて居らずかつまだ月度を読んで居ないときは、来月
   def monthly(month=nil)
     return @monthly if @monthly && ( @monthly.month == month || !month)
-#<<<<<<< HEAD
-#    @month = month || Time.now.beginning_of_month.next_month.to_date
-#    @monthly = Hospital::Monthly.find_or_create_by(nurce_id: id, month: @month)
-#=======
     @month = month if month
     @monthly = Hospital::Monthly.
       find_or_create_by(nurce_id: id,month: month)
-#>>>>>>> HospitalPower
     @monthly.nurce=self
     @lastday=@month.end_of_month.day
     @monthly
@@ -166,6 +160,17 @@ class Hospital::Nurce < ActiveRecord::Base
   def shift(day) ;    monthly.shift[day,1] ;  end
   def shifts     ;    monthly.shift ;end #|| ""        ;  end
   def shifts=(shft) ; monthly.shift=shft   ;  end
+  def clear_assign
+#pp "Nurce#cleat_assign nurce=#{id} shifts =#{shift} "
+    (1..@lastday).each{|day|
+      if self.monthly.days[day].want.nil? || self.monthly.days[day].want<10
+        self.set_shift(day,"_")
+      end
+    }
+#pp "Nurce#cleat_assign nurce=#{id} shifts =#{shift} "
+
+
+  end
 
   def assigned?(day) ;  
     #logger.debug("FOR_DEBUG(#{__LINE__}) monthly.shift #{monthly.shift.size},day #{day},")
@@ -173,25 +178,14 @@ class Hospital::Nurce < ActiveRecord::Base
   end
   def days_not_assigned(month=nil)
     #puts monthly.shift  if id == 35 || id == 36 
-    monthly.shift.gsub(/[^_]/,"").size-1
+    monthly.shift.gsub(/[^_]/,"").size
   end
 
   def shift_with_last_month
     if !@lastmonth || @lastmonth.month + 1.month != monthly.month
-      @lastmonth = Hospital::Monthly.find_or_create_by(nurce_id: id ,month: @month-1.month)#.month)
+      @lastmonth = Hospital::Monthly.find_or_create_by(nurce_id: id,month: (@month-1.month) )
     end
     @lastmonth.shift[-5..-1]+monthly.shift[1..-1]
-  end
-
-  ########### 割付 #############
-  def clear_assign
-    #pp "Nurce#cleat_assign nurce=#{id} shifts =#{shift} "
-    (1..@lastday).each{|day|
-      if self.monthly.days[day].want.nil? || self.monthly.days[day].want == 0
-        self.set_shift(day,"_")
-      end
-    }
-    #pp "Nurce#cleat_assign nurce=#{id} shifts =#{shift} "
   end
 
   def set_shift_days(start_day,shift_list)
@@ -201,7 +195,7 @@ class Hospital::Nurce < ActiveRecord::Base
 
   def set_shift(day,sft_str)
     #logger.info("HOSPITAL:看護割付:#{day}日#{sft_str} #{id}:#{name}")
-    sft = sft_str.hex
+      sft = sft_str.hex
     
     role_shift[day]=role_shift_of(sft_str)
     case sft_str
@@ -213,42 +207,22 @@ class Hospital::Nurce < ActiveRecord::Base
     self
   end
 
-# <<<<<<< HEAD
-#   ########### 割付に当たっての評価 #########
-#   # return: {[role,shift] => 回数 }
-#   def role_used(recalc=false)
-#     return @role_used if @role_used && !recalc
-#     @role_used=Hash.new{|h,k| h[k]=0}
-#     #    role_shift.each{|day_rs| day_rs.each{|rs| @role_used[rs] += 1}}
-#     [/[^0]/,/[^1478]/,/[^25]/,/[^36]/].each_with_index{|reg,shift|
-#       used = shifts.gsub(reg,"").size
-#       role_ids.each{|role| @role_used[[role,shift.to_s]] = used }
-#     }
-#    @role_used
-#   end
-
-#   def role_remain(recalc=false)
-#     return @role_remain if @role_remain && !recalc
-#     @role_remain = Hash.new{|h,k| h[k]=0}
-#     assinable_roles.each_pair{|role_shift,assinable|
-#       @role_remain[role_shift] = assinable - role_used[role_shift]
-#     }
-#     @role_remain
-#   end
-
-#     # この看護師を選ぶに当たってのポイントを評価する。
-#     # 考慮するのは
-#     #   1 不足ロールと持ってるロールのマッチング、
-#     #   2 割り当てようとしている勤務の残り数
-#     #   3 未割り当ての日数
-#     #   4 リーダの 要否とリーダかどうか
-#     # 1,2 は100点満点、3は100～200点満点、4は場合による。
-# =======
   def update_remain(sft_str)
     shift_remain[sft_str] -= 1 
   end
 
-  def save_shift #; [shifts.dup  ,role_remain.dup,shift_remain.dup];end
+# -  def save_shift; [shifts.dup ,role_used.dup ,role_remain.dup,shift_remain.dup];end
+# -  def restore_shift(saved_shift)
+# -    #dbgout( "HP  restore_shift前 #{id}:#{shifts} #{role_shift.to_a.flatten.join(' ')}")
+# -    self.shifts = saved_shift[0]
+# -    role_used   = saved_shift[1]
+# -    @role_remain = saved_shift[2]
+# -    @shift_remain= saved_shift[3]
+# -
+# -    @role_shift=(self.shifts||"").split("").map{|sft_str|   role_shift_of(sft_str) }
+# -    self
+# -  end
+ def save_shift #; [shifts.dup  ,role_remain.dup,shift_remain.dup];end
   [shifts.dup  ,shift_remain.dup]
   end
   def restore_shift(saved_shift)
@@ -260,27 +234,16 @@ class Hospital::Nurce < ActiveRecord::Base
     self
   end
 
-  def shift(day) ;    monthly.shift[day,1] ;  end
-  def shifts     ;    monthly.shift ;end #|| ""        ;  end
-  def shifts=(shft) ; monthly.shift=shft   ;  end
-#>>>>>>> HospitalPower
-
-    def ddlimits
-      #limit ||= Hospital::Limit.crate
-    return limits if limits
+  def limits
+    #limit ||= Hospital::Limit.crate
+    return limit if limit
     create_limit(LimitDefault)
-    limits 
+    limit 
   end
 
   def assinable_roles
     return @assinable_roles if @assinable_roles
     @assinable_roles = Hash.new{|h,k| h[k]=0}
-# <<<<<<< HEAD
-#     [ [:code0,"0"],[:code1,"1"], [:code2,"2"], [:code3,"3"]].
-#       each{|sym,sft_str|
-#       roles.each{|role_id,name| 
-#         @assinable_roles[[role_id,sft_str]] = limit[sym]
-# =======
     [ [:code1,Sshift1], [:code2,Sshift2], [:code3,Sshift3]].
       each{|sym,sft_str|
       roles.each{|role_id,name| 
@@ -297,17 +260,13 @@ class Hospital::Nurce < ActiveRecord::Base
       roles.each{|role_id,name| 
         next unless Hospital::Need.roles.include?(role_id)
         @assinable_roles[[role_id,sft_str]] = limits[sym]
-#>>>>>>> HospitalPower
       }}
     @assinable_roles
   end
 
-
-
+  # 必要roleを少なくとも一つ持って居るか？
   def has_assignable_roles_atleast_one(sft_str,need_roles)
-    #logger.debug("### roles & role_ids(#{__LINE__}) #{roles} #{roles.class} & #{role_ids}#{role_ids.class}")
-      shift_remain[sft_str]>0 &&
-      (need_roles & role_ids).size > 0
+    shift_remain[sft_str]>0 && (need_roles & role_ids).size > 0
   end
 
 ####################################################################
@@ -315,22 +274,6 @@ class Hospital::Nurce < ActiveRecord::Base
     shift_remain true
   end
 
-# <<<<<<< HEAD
-
-#   def shift_remain(recalc=false)
-#     return @shift_remain if @shift_remain && !recalc
-#     @shift_remain = Hash[*%w(0 1 2 3).
-#                          zip([limit.code0,limit.code1,limit.code2,limit.code3]).flatten]
-#     [ /[^0]/,  /[^1478]/ , /[^25]/ , /[^36]/].
-#       each_with_index{|reg,shift| @shift_remain[shift.to_s] -= shifts.gsub(reg,"").size }
-#     @shift_remain["0"] -= shifts.gsub(/[^9ABC]/,"").size*0.5
-#     @shift_remain["1"] -= shifts.gsub(/[^9ABC]/,"").size*0.5
-#     @shift_remain
-#   end
-
-#   # 各日の [[role_id,shift],,,[]] が日数分
-#   #   何に使っているのだろう。。。わかるまでテストなし
-# =======
   def shift_used(recalc=false)
     return @shift_used if @shift_used && !recalc
     @shift_used=Hash.new{|h,k| h[k]=0}
@@ -359,11 +302,10 @@ class Hospital::Nurce < ActiveRecord::Base
 
   def roles
     @roles ||=
-      hospital_roles.map{|role| [role.id,role.name]}.uniq #+ 
-    #(shokui_id ? [shokui_id+100,shokui.name] : [])
+      (hospital_roles + [shokui,shokushu,kinmukubun]).compact.map{|role| [role.id,role.name]}.uniq
   end
   def role_ids 
-    @role_ids ||= (hospital_roles.map(&:id).uniq & Hospital::Need.roles)
+    @role_ids ||= ( roles.map{ |id,name| id}.uniq & Hospital::Need.roles)
   end
   def roles_by_id
     @rolls_by_id ||= Hash[*roles.flatten]
@@ -376,7 +318,6 @@ class Hospital::Nurce < ActiveRecord::Base
   def role_id?(role_id);role_ids.include?(role_id) #.to_i);
   end
 
-#>>>>>>> HospitalPower
   def role_shift(month=nil,reculc=false)
     return @role_shift if @role_shift  && !reculc && (!month ||month == monthly.month)
     #return @role_shift if @role_shift && month == monthly.month && !reculc
@@ -388,7 +329,6 @@ class Hospital::Nurce < ActiveRecord::Base
     r_s = role_ids.map{|role_id| [ role_id , sft_str] }.compact
   end
 
-  ############### 統計、集計 ############
   def shift_count(shift)
     case shift
     when 1 ;shifts.gsub(/[^1478]/,"").size + shifts.gsub(/[^9ABC]/,"").size * 0.5
@@ -399,16 +339,6 @@ class Hospital::Nurce < ActiveRecord::Base
 
   def shift1
     monthly.days.
-# <<<<<<< HEAD
-#       inject(0){|sum,kinmu| sum + [:am,:pm,:am2,:pm2].inject(0){|s,sym| s + kinmu.send(sym) }
-#       }
-#   end 
-#   def shift2
-#     monthly.days.inject(0){|sum,kinmu|  sum + kinmu.night+kinmu.night2     }
-#   end 
-#   def shift3
-#     monthly.days.inject(0){|sum,kinmu|  sum + kinmu.midnight+kinmu.midnight2     }
-# =======
       inject(0){|sum,kinmu| sum + kinmu.shift1 }
       #[:am,:pm,:am2,:pm2].inject(0){|s,sym| s +  kinmu.shift1 } #(kinmu.kinmucode ? kinmu.kinmucode[sym] : 0) }
       #}
@@ -420,7 +350,6 @@ class Hospital::Nurce < ActiveRecord::Base
   def shift3
     monthly.days.
       inject(0){|sum,kinmu| sum + kinmu.shift3 } #(kinmu.kinmucode ? kinmu.kinmucode.midnight + kinmu.kinmucode.midnight2 : 0)}
-#>>>>>>> HospitalPower
   end 
   def nenkyuu
     monthly.days.
@@ -446,6 +375,13 @@ class Hospital::Nurce < ActiveRecord::Base
   end 
 
   ##############################
+  KanriJunyaPatern =
+    [
+     /(^|[^2356])([25][25_]|[25_][25])[0_][3_]{2}[0_]/,
+     /(^|[^2356])[25_]{2}[0_](3[3_]|[3_]3)[0_]/,
+     /(^|[^2356])([25_][25_])[0_][3_]{2}[0_]/
+
+    ]
   def assign_1_cool(day0=1)
     return nil unless shokui_id == 2
     
@@ -514,20 +450,8 @@ class Hospital::Nurce < ActiveRecord::Base
     [ret.size == 0,ret]
   end
 
-  # 
   def check(day,sft_str,imidiate=true)
     ret = []
-# <<<<<<< HEAD
-#     check_regulation.each{|regulation|
-#       [0,sft_str.to_i].each{|s|
-#         regulation[s].each_pair{|item,reg_arry|
-#           d = check_sub(day,item,reg_arry)
-#           if d
-#             ret << [item,d]
-#             return ret if imidiate
-#           end
-#         }
-# =======
     [0,sft_str.to_i].each{|s|
       check_reg[s].each_pair{|item,regration|
         d = regration.check(day,shift_with_last_month)
@@ -535,7 +459,6 @@ class Hospital::Nurce < ActiveRecord::Base
           ret << [item,d]
           return ret if imidiate
         end
-#>>>>>>> HospitalPower
       }
     }
     ret
@@ -556,23 +479,12 @@ class Hospital::Nurce < ActiveRecord::Base
     end
   end
 
+  def save_month
+    monthly.restore_days_and_save
+  end
+
   def error_check
     ret = []
-# <<<<<<< HEAD
-#     #[@Reguration,@Wants,Reguration,Wants].each{|regulation|
-#     check_regulation.each{|regulation|
-#       regulation.each{|reg_hash| # { :after_nights =>  [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
-#         reg_hash.values.each{|reg_arry|  # [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
-#           reg,back,length,msg = reg_arry # 
-#           if back
-#             match = (reg =~ shift_with_last_month)
-#             ret <<  [name,msg,[match-4,1].max,shift_with_last_month] if match && match-4+back>0
-#           else
-#             match = (reg =~ shifts)
-#             ret <<  [name,msg,match,shift_with_last_month] if match
-#           end
-#         }
-# =======
     #[@Reguration,@Wants,Reguration,Wants].each{|reguretion|
     check_reg.each{|reg_hash| # { :after_nights =>  [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
       reg_hash.values.each{|regration|  # [/[2356]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
@@ -585,49 +497,9 @@ class Hospital::Nurce < ActiveRecord::Base
         #else
         #  ret <<  [name,msg,0,shift_with_last_month] if shifts.gsub(reg,"").size > length
         #end
-#>>>>>>> HospitalPower
       }
     }
     ret.uniq
-  end
-  def save_shift; [shifts.dup ,role_used.dup ,role_remain.dup,shift_remain.dup];end
-  def restore_shift(saved_shift)
-    #dbgout( "HP  restore_shift前 #{id}:#{shifts} #{role_shift.to_a.flatten.join(' ')}")
-    self.shifts = saved_shift[0]
-    role_used   = saved_shift[1]
-    @role_remain = saved_shift[2]
-    @shift_remain= saved_shift[3]
-
-    @role_shift=(self.shifts||"").split("").map{|sft_str|   role_shift_of(sft_str) }
-    self
-  end
-
-  def evaluate(short_role,shift)
-    # 必要なroleがあるか
-    role_match = (short_role & role_ids).size
-    return 0 if role_match == 0
-
-    
-    value = role_match*25 +       # ロールのマッチング ４つで100点
-      (limits[Hospital::Limit::Code[shift]]-shift_count(shift)) * 100 + # 勤務の残り数 ４つで200点
-      case [short_role.include?(1),!!role_id?(1)]
-      when [true,true] # リーダが必要でかつリーダである
-        days_not_assigned*200/30 + # 未割り当ての日数
-          0                      # リーダ
-      when [true,false] # リーダが必要でかつリーダではない
-        days_not_assigned*300/30
-      when [false,true] # リーダ不要でリーダである=>割り振りは優先度下げる
-        days_not_assigned*30/30
-      when [false,false] # リーダ不要でリーダではない
-        days_not_assigned*300/30      
-      end
-    #puts "EVAL:  #{id} #{value} <= #{role_match*25} #{limits[Hospital::Limit::Code[shift]] * 25} #{days_not_assigned*100/30}" if id == 35 || id == 36
-
-    adjust_by_shokui(value)
-  end
-
-  def adjust_by_shokui(value)
-    {1 => 0.2, 2 => 0.5 , 0 => 1, nil => 1}[shokui_id] * value
   end
 
 end
