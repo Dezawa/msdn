@@ -12,9 +12,9 @@ class Hospital::Nurce < ActiveRecord::Base
 end
 
 class Hospital::NurceTest < ActiveSupport::TestCase
-  fixtures :nurces,:hospital_roles,:nurces_roles,:hospital_limits
-  fixtures :holydays,:hospital_needs,:hospital_monthlies
-  fixtures :hospital_kinmucodes
+  fixtures "hospital/nurces","hospital/roles","hospital/nurces_roles","hospital/limits"
+  fixtures "holydays","hospital/needs","hospital/monthlies"
+  fixtures "hospital/kinmucodes"
   # Replace this with your real tests.
   def setup
     @nurces = Hospital::Nurce.all
@@ -64,12 +64,16 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     nrc =  nurce(40)
     assert_equal  shift_remain1, nurce(40).shift_remain,"割り振り前 remain"
     nrc.set_shift(2,"3")
-    assert_equal  shift_remain2, nurce(40).shift_remain(true),"割り振り後 remain"
+    assert_equal  shift_remain2, nrc.shift_remain,"割り振り後 remain save前"
+    nrc.save_month
+puts  nrc.shifts
+puts  nurce(40).shifts
+    assert_equal  shift_remain2, nurce(40).shift_remain,"割り振り後 remain"
   end
   must "石川トシ子さんの2/4 の [role,勤務]" do
-    assert_equal [ [4, "3"],  [10, "3"]],nurce(36).role_shift(@month)[4],"role_shift"
-    assert_equal [ [4, 3],[10, 3]],nurce(36).role_shift_of(3),"role_shift_of"
-    assert_equal [ [4, 2], [10, 2]],nurce(36).role_shift_of(2),"role_shift_of"
+    assert_equal [ [4, "3"],  [10, "3"]],nurce(36).role_shift(@month)[4].sort,"role_shift"
+    assert_equal [ [4, 3],[10, 3]],nurce(36).role_shift_of(3).sort,"role_shift_of"
+    assert_equal [ [4, 2], [10, 2]],nurce(36).role_shift_of(2).sort,"role_shift_of"
   end
 
 

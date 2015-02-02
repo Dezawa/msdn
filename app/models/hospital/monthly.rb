@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # 各看護師達の各月の勤務内容を登録する
-# month  ::  Date
+# month  ::  
 # nurce_id ::
 # day00～day31  ::  各日の勤務code(Hospital::Kinmucode#id)を nil,(1～80)+{0|1000|2000}
 #               ::  で登録する。+1000は弱い要望、+2000は強い要望。未割り当ては　nil
@@ -13,16 +13,13 @@ class Hospital::Monthly < ActiveRecord::Base
   extend CsvIo
   #extend Forwardable
 
-  self.table_name = 'hospital_monthlies'
   attr_writer :days
   attr_accessor :shift,:nurce
 
   #def_delegators @days,:[],:each,:map
-  #def 
-
   after_find do
     store_days
-  end
+   end
 
   # monthly_controller では直接 day\d\d にしまうことにする。
   #  よって before_save は不要
@@ -30,8 +27,8 @@ class Hospital::Monthly < ActiveRecord::Base
   #  :restore_days
   #end
   after_create do
-     store_days
-  end
+    store_days
+    end
 
   def store_days
     @days = ("day00".."day%02d"%lastday).
@@ -53,6 +50,11 @@ class Hospital::Monthly < ActiveRecord::Base
       #Hospital::Kinmucode.find(id%1000).to_0123 if id && (id%1000) > 0
       Hospital::Kinmucode.k_code(id%1000).to_0123 if id && (id%1000) > 0
     }
+  end
+
+  def restore_days_and_save
+    restore_days
+    save
   end
 
   def restore_days
@@ -80,6 +82,7 @@ class Hospital::Monthly < ActiveRecord::Base
       self[("day%02d"%day).to_sym] = 
      (days[day].kinmucode_id ? days[day].kinmucode_id + days[day].want*1000 : nil)
     }
+#print  day01+" "
     self
   end
 

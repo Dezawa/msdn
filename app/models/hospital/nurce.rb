@@ -35,7 +35,9 @@ class Hospital::Nurce < ActiveRecord::Base
   belongs_to :limit    ,:class_name => "Hospital::Limit"
   belongs_to :pre_busho,:class_name => "Hospital::Busho"
   belongs_to :busho    ,:class_name => "Hospital::Busho"
-  
+
+  after_find {  set_check_reg }
+  before_save { pp "BEFORE_SAVE";save_month }
 
   LimitDefault =
     { :code0 => 8,:code1 => 20,:code2 => 4,:code3 => 4,:coden => 1,
@@ -57,9 +59,7 @@ class Hospital::Nurce < ActiveRecord::Base
   def kinmukubun_must_be_kinmukubun
     errors.add(:kinmukubun,"勤務区分でないrole") unless  kinmukubun.blank? || kinmukubun.bunrui ==  Bunrui2Id['勤務区分']
   end
-  def after_find
-    set_check_reg 
-  end
+  
 
   class AssignPatern
     attr_accessor :patern, :reg, :back,:length,:checks,:target_days
