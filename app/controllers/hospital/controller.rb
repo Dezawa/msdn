@@ -42,7 +42,7 @@ class Hospital::Controller < CommonController #ApplicationController
               Menu.new("希望入力",:monthly,:action => :hope_regist),
               Menu.new("割付",:monthly,:action => :show_assign),
               Menu.new("様式9",:form9,:action => :calc),
-              Menu.new("休日",:holyday,:controller => "/holyday",:action => :index,:page=>1,:id => Time.now.year)
+              Menu.new("休日",:holydays,:controller => "/holydays",:action => :index,:page=>1,:id => Time.now.year)
              ]
     @busho_getudo = YAML.load(session[:hospital] ||= YAML.dump(BushoGetudo.new))
     # @busho_getudo = YAML.load( YAML.dump(BushoGetudo.new))

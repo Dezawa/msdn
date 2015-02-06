@@ -20,7 +20,7 @@ class HolydaysController < CommonController #ApplicationController
     @year = params[:year].to_i if params[:year] 
     @year ||= params[@Domain][:year].to_i if params[@Domain] && params[@Domain][:year]
     @year ||= params[:id].to_i if params[:id] 
-    @FindOption = ["year = ?",@year]
+    @Findwhere = ["year = ?",@year]
     @Findorder = "day" 
     @TableEdit = [ [:input_and_action,:add_on_table,"追加",
                     { :name => @Domain+"[add_no]",:hidden => :year,:hidden_value => @year,:value => 1,:size=>3}],
@@ -42,7 +42,7 @@ class HolydaysController < CommonController #ApplicationController
   end
   
   def index
-    @models = Holyday.all(:conditions => ["year =?",params[:id]],:order => "day")
+    @models = Holyday.where( ["year =?",params[:id]]).order( "day")
     @labels = Labels
     render  :file => 'application/index',:layout => 'application' 
   end

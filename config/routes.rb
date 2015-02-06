@@ -180,11 +180,20 @@ Rails.application.routes.draw do
   resources "power_ube_hospital_month" ,path:  "/power/ube_hospital/month" , controller: "power/ube_hospital/month"
   set_post( "power/ube_hospital/month",@EditTable)
 
-resources :holyday
+  set_post(:holydays,%w(years edit)+@EditTable)
+  set_get(:holydays,@EditTable)
+  resources :holydays
+
   ########## 病院勤務管理
+
+  set_get("hospital/meetings",@EditTable)
+  set_post("hospital/meetings",@EditTable)
+  
   namespace :hospital do
-    set_get(:roles,[:show_assign])
-    set_get(:monthly,[:show_assign,:hope_regist])
+    set_get(:roles,[:show_assign,:set_busho])
+    set_get(:meetings, %w(show_assign set_busho_month))
+    set_post(:roles,%w(assign))
+    set_get(:monthly,[:show_assign,:hope_regist,:hope_update,:assign,:clear_assign,:set_busho_month,:error_disp])
     set_get(:form9,[:calc])
     [:nurces,:needs].each{|model| set_get(model,[:set_busho]);set_post(model,[:set_busho])}
     [:bushos,:kinmucodes,:nurces, :roles, :avoid_combination,:needs].each{ |model| set_post(model,@EditTable)}

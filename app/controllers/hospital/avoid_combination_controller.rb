@@ -23,7 +23,7 @@ class Hospital::AvoidCombinationController < Hospital::Controller
   def update_on_table
     params[@Domain].each{ |id,model|
      model[:busho_id] = @current_busho_id if model[:busho_id].blank?
-    } if params[@Domain]
+    }
     super
   end
 

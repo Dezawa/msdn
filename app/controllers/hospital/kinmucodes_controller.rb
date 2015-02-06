@@ -3,7 +3,7 @@ class Hospital::KinmucodesController < Hospital::Controller
   before_filter :set_instanse_variable
 
   Labels= [HtmlText.new(:id,"ID",:ro => true),
-           HtmlSelect.new(:kinmukubun_id ,"勤務" , :correction => Hospital::Const::Kinmukubun),
+           HtmlSelect.new(:kinmukubun_id ,"勤務" , :correction => Hospital::Role.kinmukubun),
            HtmlText.new(:code            ,"Code"      ,:size =>3),
            HtmlText.new(:name            ,"名称"                 ),
            HtmlText.new(:color           ,"色"        ,:size =>3),

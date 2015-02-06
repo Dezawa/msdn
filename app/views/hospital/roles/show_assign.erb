@@ -1,8 +1,8 @@
-<% if @Links %> <%= links @Links  %><% end %>
+
 <h3>グループメンバー割り当て<%= @TYTLE_post %></h3>
 
 <%= need_warn -%>
-<%#=    form_tag(:action => :assign)+submit_tag('編集') %>
+<%=    form_tag(:action => :assign)+submit_tag('編集') %>
 <%= table_edit %>
 <table border=1><tr><td></td><td></td><td colspan=<%= @roles.size %>>役割・グループ</td>
 <td colspan=<%= @labels.size %>>割振り標準・上限 </td></tr>
@@ -19,4 +19,4 @@
 </tr><%}%>
 </table>
 
-</form>
+

@@ -9,6 +9,11 @@ class Role < ActiveRecord::Base
   Bunrui = [ ["職位", 1], ["職種", 2], ["資格", 3], ["勤務区分", 4] ]
   Bunrui2Id = Bunrui.to_h
  
+  @@kinmukubun = nil
+  def self.kinmukubun
+    @@kinmukubun ||= self.where(bunrui: 4).pluck(:id,:name)
+  end
+
   def self.names
     all.map{|obj| [obj.name,obj.id]}
   end

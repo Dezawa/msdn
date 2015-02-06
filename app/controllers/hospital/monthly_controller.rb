@@ -20,13 +20,13 @@ class Hospital::MonthlyController < Hospital::Controller
                           "Shift_%02d_%02d_"%[@current_busho_id,@month.month])
   end
   
-  # AssignCorrection = {}
-  # (1..6).each{|kinmukubun_id|
-  #   AssignCorrection[kinmukubun_id] = 
-  #   Hospital::Kinmucode.
-  #   where( ["kinmukubun_id = ? or kinmukubun_id = 7",kinmukubun_id]).
-  #   to_a.map{|kc| [kc.code,kc.id]}
-  # }
+  AssignCorrection = {}
+  (1..6).each{|kinmukubun_id|
+    AssignCorrection[kinmukubun_id] = 
+    Hospital::Kinmucode.
+    where(["kinmukubun_id = ? or kinmukubun_id = 7",kinmukubun_id]).
+    pluck(:code,:id)
+  }
 
   def hope_regist
     @must   = params[:must][:val].to_i rescue 1
@@ -61,7 +61,7 @@ class Hospital::MonthlyController < Hospital::Controller
     @files = Dir.glob(@basename+"[0-9][0-9][0-9][0-9]").sort 
     @assign.set_shifts_by_file(@basename+params[:no]) 
     @nurces =@assign.nurces
-    #@mult  = params[:mult]
+    @mult  = params[:mult]
     render :action => :show_assign 
   end
 
@@ -80,17 +80,24 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
   def assign_links
     @files = Dir.glob(@basename+"[0-9][0-9][0-9][0-9]").sort 
     @fine  = Dir.glob(@basename+"FINE")
-
-    @stop_time = Time.now
+    delayed_job = delayed_jobs[0]
+    @stop_time = delayed_job ? delayed_job.run_at + Hospital::Const::Timeout + 
+        Hospital::Const::TimeoutMult : Time.now
   end
   
   def show_assign
+    #@nurces = Hospital::Nurce.all(:conditions=>["busho_id = ?",@current_busho_id])
     @assign = Hospital::Assign.new(@current_busho_id,@month)
     @nurces =@assign.nurces
     @files = Dir.glob(@basename+"[0-9][0-9][0-9][0-9]").sort 
-    #@mult  = params[:mult]
+    @mult  = params[:mult]
     @wait  = params[:wait]
     @errors = params[:error]
+  end
+
+  def delayed_jobs
+    condition = "handler LIKE '%Hospital::Assign\nmethod: :create_assign\nargs: \n- #{@current_busho_id}\n- #{@month.strftime('%Y-%m-%d')}\n- 2\n%'"
+    Delayed::Job.all(:conditions => condition)
   end
 
   def assign
@@ -100,27 +107,35 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
       redirect_to :action => :show_assign,:mult => "20",:no => "0000"
   end
 
-
   def set_busho_month
-    session[:hospital] = 
-      @busho_getudo.set(params[:busho_getudo][:busho_id].to_i , 
-                        Time.parse(params[:busho_getudo][:yyyymm]+"-1").to_date 
-                        )
+    @month = session[:hospital_year] = Time.parse(params[@Domain][:month]+"/1 JST").to_date
+    @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
     redirect_to :action => :show_assign
   end
 
 
-  def set_busho
-    set_busho_sub
+  def set_busho_month
+    @month = session[:hospital_year] = Time.parse(params[@Domain][:month]+"/1 JST").to_date
+    @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
     redirect_to :action => :show_assign
   end
 
 
   def clear_assign
     @assign=Hospital::Assign.new(@current_busho_id,@month)
-    @assign.clear_assign_all.save
-    @nurces = @assign.nurces
-    redirect_to :action => :show_assign
+    condition = "handler LIKE '%Hospital::Assign\nmethod: :create_assign\nargs: \n- #{@current_busho_id}\n- #{@month.strftime('%Y-%m-%d')}\n- 2\n%'"
+    delayed_jobs = Delayed::Job.all(:conditions => condition)
+
+    if delayed_jobs.size ==0
+      @assign.clear_assign_all.save
+      @nurces = @assign.nurces
+      redirect_to :action => :show_assign
+      #render :action => :show_assign
+    else
+      redirect_to( :action => :show_assign,:mult => "20",
+                   :error => "実行中です。#{(delayed_jobs.first.run_at+5.minute).strftime('%H:%M')}ころまでお待ち下さい"
+                   )      
+    end
   end
 
   def error_disp
