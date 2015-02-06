@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 class Hospital::Limit < ActiveRecord::Base
-  include Hospital::Const
   extend CsvIo
-  
-#  has_one :nurce , :class_name => "Hospital::Nurce"
+  include Hospital::Const
 
-  self.table_name = 'hospital_limits'
   Code = [:code0,:code1,:code2,:code3,:coden]
   
   def after_find
-    self.kinmu_total = 31 - code0 - coden unless kinmu_total# && kinmu_total>0
+   # self.kinmu_total = 31 - code0 - coden unless kinmu_total# && kinmu_total>0
   end
   
   # 看護師  総数は足りるか [Kangosi,kinmu_total]
@@ -17,7 +14,7 @@ class Hospital::Limit < ActiveRecord::Base
   # 日勤者数は足りるか     [Kangosi,Sshift1]
   # 夜勤者数は足りるか     [Kangosi,night_total]
   def self.enough?(busho_id,month=nil)
-    $HP_DEF ||= Hospital::Define.create
+    Hospital::Define.define ||= Hospital::Define.create
     month ||= Time.local(2014,3,1) #標準的な休みの数な月
 
     arrowable = arrowable_roles(busho_id,month)
@@ -72,7 +69,7 @@ class Hospital::Limit < ActiveRecord::Base
     } 
     # 夜勤 必要role延べ数 { role => 延べ数 }。日勤は needs_all[role,shift]
     shift_role_nobe = needs_all.to_a.inject(Hash.new{ |h,k| h[k]=0}){ |sum,rs_need|
-      sum[[rs_need[0][0],:night_total]] += rs_need[1] if $HP_DEF.night.include?(rs_need[0][1])
+      sum[[rs_need[0][0],:night_total]] += rs_need[1] if Hospital::Define.define.night.include?(rs_need[0][1])
       sum
     } 
       

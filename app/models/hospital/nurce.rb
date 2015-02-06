@@ -99,7 +99,7 @@ class Hospital::Nurce < ActiveRecord::Base
 
 
   def self.by_busho(busho_id,option = {})
-    where( ["busho_id = ?",busho_id])
+    where( ["busho_id = ?",busho_id]).order("id")
   end
   def self.correction(busho_id,option = {})
      by_busho(busho_id).map{ |nurce| [nurce.name,nurce.id]}
@@ -305,7 +305,7 @@ class Hospital::Nurce < ActiveRecord::Base
       (hospital_roles + [shokui,shokushu,kinmukubun]).compact.map{|role| [role.id,role.name]}.uniq
   end
   def role_ids 
-    @role_ids ||= ( roles.map{ |id,name| id}.uniq & Hospital::Need.roles)
+    @role_ids ||= ( roles.map{ |id,name| id}.uniq & Hospital::Need.roles).sort
   end
   def roles_by_id
     @rolls_by_id ||= Hash[*roles.flatten]
@@ -431,9 +431,8 @@ class Hospital::Nurce < ActiveRecord::Base
     if long_patern.reg =~ shift_with_last_month[offset,len]
       shiftsave = shifts.dup#[day,long_patern.patern.size]
       shifts[day,long_patern.patern.size] = long_patern.patern
-
       ret,errors = long_check_sub(day,long_patern.checks,imidiate)
-      shifts= shiftsave #[day,long_patern.patern.size] = shiftsave
+      self.shifts= shiftsave #[day,long_patern.patern.size] = shiftsave
       if ret ;        return [long_patern ]
       else   ;        return [false ,errors]
       end

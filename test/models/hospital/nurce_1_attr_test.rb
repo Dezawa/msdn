@@ -4,12 +4,6 @@ require 'nurce_test_helper'
 
 #################
 # Nurce の属性関連のテスト
-class Hospital::Nurce < ActiveRecord::Base
-  # [0,0,0,1,3,0.....]
-  def day_store(shift_list)
-    shift_list.each_with_index{|shift,day|  set_shift(day+1,shift.to_s)}
-  end
-end
 class Hospital::NurceTest < ActiveSupport::TestCase
   fixtures "hospital/nurces","hospital/roles","hospital/nurces_roles","hospital/limits"
   fixtures "holydays","hospital/needs","hospital/monthlies"

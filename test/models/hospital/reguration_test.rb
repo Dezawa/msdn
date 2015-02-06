@@ -2,17 +2,7 @@
 require 'test_helper'
 
 #################
-class Hospital::Nurce < ActiveRecord::Base
-  # [0,0,0,1,3,0.....]
-  def day_store(shift_list)
-    shift_list.each_with_index{|shift,day|  set_shift(day+1,shift.to_s)}
-  end
-
-
-end
-
-
-class Hospital::NurceTest < ActiveSupport::TestCase
+class Hospital::RegurationTest < ActiveSupport::TestCase
   include Hospital::Reguration
   #fixtures :nurces,:hospital_roles,:nurces_roles,:hospital_limits
   #fixtures :holydays,:hospital_needs,:hospital_monthlies

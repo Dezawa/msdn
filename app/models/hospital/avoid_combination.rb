@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 class Hospital::AvoidCombination < ActiveRecord::Base
   extend CsvIo
-  self.table_name = 'hospital_avoid_combinations'
 
   belongs_to :nurce1,:class_name => "Hospital::Nurce"
   belongs_to :nurce2,:class_name => "Hospital::Nurce"

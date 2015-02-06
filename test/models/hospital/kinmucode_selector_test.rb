@@ -5,11 +5,15 @@ class Hospital::KinmucodeSelector_Test < ActiveSupport::TestCase
   fixtures "hospital/kinmucodes","hospital/roles"
   fixtures "hospital/defines"
 
+  Kubun=  { }
   def setup
+  Hash[:nikkin,"日勤",:sankoutai,"三交代",:part,"パート",:touseki,"透析",
+                   :l_kin,"L勤",:gairai,"外来",:kyoutuu,"共通"].
+    each_pair{ |kinmu,name|  Hospital::Kinmucode::Kubun[kinmu] = (k=Hospital::Role.find_by_name(name)) ? k.id : nil }
   end
 
   must "勤務区分 " do
-    assert_equal ({:part=>3,:nikkin=>1, :kyoutuu=>0, :sankoutai=>2,
+    assert_equal ({:part=>8, :nikkin=>6, :kyoutuu=>14, :sankoutai=>7,
                     :touseki=>nil, :l_kin=>nil, :gairai=>nil}
                   ),    Hospital::Kinmucode::Kubun
   end

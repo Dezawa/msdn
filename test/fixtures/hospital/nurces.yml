@@ -67,7 +67,7 @@ No8:
   number: 
   name: 関口三江
   busho_id: '3'
-  shokui_id:  '3'
+  shokui_id:  
   shokushu_id: '4'
   kinmukubun_id: '6'
   limit_id: '8'
@@ -76,7 +76,7 @@ No9:
   number: 
   name: 和田重子
   busho_id: '3'
-  shokui_id:  '3'
+  shokui_id: 
   shokushu_id: '4'
   kinmukubun_id: '7'
   limit_id: '9'
@@ -112,7 +112,7 @@ No13:
   number: 
   name: 矢野是子
   busho_id: '3'
-  shokui_id:  '3'
+  shokui_id: 
   shokushu_id: '4'
   kinmukubun_id: '7'
   limit_id: '13'
@@ -121,7 +121,7 @@ No14:
   number: 
   name: 奥津喜美江
   busho_id: '3'
-  shokui_id:  '3'
+  shokui_id: 
   shokushu_id: '4'
   kinmukubun_id: '7'
   limit_id: '14'
@@ -130,7 +130,7 @@ No15:
   number: 
   name: 茂野タイ
   busho_id: '3'
-  shokui_id:  '3'
+  shokui_id:
   shokushu_id: '4'
   kinmukubun_id: '7'
   limit_id: '15'

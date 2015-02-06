@@ -4,6 +4,4 @@ class Hospital::Busho < ActiveRecord::Base
   def self.names
     all.map{|obj| [obj.name,obj.id]}
   end
-
-  
 end

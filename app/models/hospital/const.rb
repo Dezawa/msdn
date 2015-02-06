@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 module Hospital
 module Const
-  HtmlCell
+  HtmlCell # rake test で HtmlText がnot defined にならなくするおまじない
   ItemsDefine =
       [HtmlText.new(  :hospital_name    ,"保険医療機関名"),
        HtmlSelect.new(:hospital_Koutai  ,"交代勤務",  :correction => %w(二交代 三交代)     ),
@@ -35,15 +35,6 @@ module Const
     ]
   ItemsDefineAll =  (ItemsDefine + ItemsDefine2).flatten
 
-  Kinmukubun = [
-     [ "共通",  0 ],
-     [ "日勤",  1 ],
-     [ "三交代",2 ],
-     [ "パート",3 ],
-     [ "二交代",4 ],
-  ]
-  KinmukubunHash = Kinmukubun.to_h
-
 
   LimitOfNurceCandidateList = 6
   Size_of_NurceCombinationList = 3
@@ -55,7 +46,8 @@ module Const
 
 
   Idou =  [["新人",1],["中途",2],["異動",3]]
-
+  Bunrui = Hash[1,'職位',2,'職種',3,'勤務区分',4,'資格']
+  Bunrui2Id = Bunrui.invert
   Weekday  = 2
   Weekend = 3
   Daytype = [ ["毎日",1],["平日",Weekday],["土日休",Weekend]]
@@ -63,7 +55,7 @@ module Const
   AvoidWeight = [ 1.0,  1.3,  1.7,  2.2,  2.9,  3.7,  4.8,   6.3,   8.2, 10.6, 13.8,
                  17.9, 23.3, 30.3, 39.4, 51.2, 66.5, 86.5, 112.5, 146.2, 190.0]
 
-  Timeout     = 4.minute
+  Timeout     = 2.minute
   TimeoutMult = 3.minute
   Sleep       = 30
 
@@ -83,9 +75,7 @@ module Const
                              [Leader  ,Sshift3]      ,1      
                            ] )        #  要員数警告
  else
-   Kangoshi,Leader = #%w(看護師 リーダー).
-   #   map{ |name| Hospital::Role.find_by(name: name).id}
-      1,2
+    Kangoshi,Leader = %w(看護師 リーダー).map{ |name| Hospital::Role.find_by_name(name).id}
     MarginLimit   = Hash.new{ |h,k| h[k] = 20}               # 夜、全 の余裕が
     MarginLimit.merge!(Hash[ [Kangoshi,:night_total],15  ,   #[10,10]できる
                              [Kangoshi,:kinmu_total],30  ,   #[8,10] も、まあまあ 28"

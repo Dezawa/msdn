@@ -3,13 +3,13 @@ class Hospital::Form9
   delegate :logger, :to=> "ActiveRecord::Base"
 
 require 'rubygems'
-#require 'spreadsheet'
+require 'spreadsheet'
 #require '9ns100'
 
 Sheet9ns    = File.join(Rails.root,"lib","hospital","9ns100.xls")
 Sheet9nsNew = File.join(Rails.root,"tmp","hospital","form9.xls")
 
-#Spreadsheet.client_encoding = 'UTF-8'
+Spreadsheet.client_encoding = 'UTF-8'
 
 Items = 
     { 
@@ -43,7 +43,7 @@ Items =
   attr_accessor :form9, :sheet
   def initialize(month)
     @month = month
-    #@form9 = Spreadsheet.open(Sheet9ns)
+    @form9 = Spreadsheet.open(Sheet9ns)
     @sheet = @form9.worksheet('NS100')
   end
 
@@ -77,6 +77,8 @@ Items =
   # 夜間急性期看護補助体制 看護職員夜間配置,看護補助 夜勤時間帯(16時間)
   def hospital_static(arg={ })
     args = {
+      #:night_stop => Hospital::Kinmucode.find_by_code(3).finish.split(/[^\d]+/)
+      #:night_from => Hospital::Kinmucode.find_by_code(2).start.split(/[^\d]+/),
      :hospital_ward_num => Hospital::Busho.count
     }.merge(arg)
 #pp args
@@ -199,9 +201,9 @@ __END__
 
 
 require 'rubygems'
-#require 'spreadsheet'
+require 'spreadsheet'
 
-#book = Spreadsheet.open('/tmp/9ns100.xls')
+book = Spreadsheet.open('/tmp/9ns100.xls')
 sheet = book.worksheet(0)
 
 puts sheet[45,14].class
@@ -209,7 +211,7 @@ sheet[45,14] = 7.5
 puts sheet[45,14].class
 book.write('/tmp/9ns2.xls')
 
-#book2 = Spreadsheet.open('/tmp/9ns2.xls')
+book2 = Spreadsheet.open('/tmp/9ns2.xls')
 sheet2 = book2.worksheet(0)
 
 puts sheet2[45,14].class

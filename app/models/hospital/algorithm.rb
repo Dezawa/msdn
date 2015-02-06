@@ -1,5 +1,31 @@
 # -*- coding: utf-8 -*-
 __END__
+
+コストでソートして低い方から選ぶが、
+  j準夜、深夜 のコストの算出は
+     tight_roles,勤務残  とも、 そのシフトでの か 夜間勤務計を用いるかぐちゃぐちゃ
+
+candidate_combination_for_night_selected_by_cost
+   candidate_combination_for_night(day)  # 準夜深夜の分をまとめて候補を作る
+      candidate_for_night(day)
+        short_role
+        assinable_nurces_by_cost_size_limited # (sft_str,day,short_roles_this_shift )
+          assinable_nurces
+          limit_of_nurce_candidate
+          if daytime nurce.cost
+          if night   gather_by_each_group_of_role(as_nurce,sft_str,short_roles_this_shift))
+             nurce.cost(@night_mode ? :night_total : Sshift1,tight_roles(sft_str))
+   cost_of_nurce_combination # 勤務残もタイトロールも 準夜深夜を使わず 夜勤計 を用いる
+
+assign_patern
+  assign_patern_if_possible   失敗 :cannot_assign_this_patern
+     assign_test_patern
+       Nurce#long_check
+        long_check_sub
+           check
+     nurce_set_patern
+  long_check_later_days
+  avoid_check
 # SHUNIN_SERIAL
 #  主任への1クール割り当てが同じ日にならないように
 #  1人目の終了日を次の人の探索開始日とした

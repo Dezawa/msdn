@@ -1,30 +1,41 @@
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
 require 'test_helper'
 require 'hospital/kinmu'
 class Hospital::MonthlyTest < ActiveSupport::TestCase
-  fixtures :hospital_monthlies,:hospital_kinmucodes, :hospital_roles
-  fixtures :nurces, :hospital_defines
+  fixtures "hospital/monthlies","hospital/kinmucodes", "hospital/roles"
+  fixtures "hospital/nurces", "hospital/defines"
   def setup
     @monthlies = Hospital::Monthly.all
     @monthly   = Hospital::Monthly.find(1)
   end
 
-  must "ID 57:看護師 id:37寺田輝子2月度" do
+  must "月ID 57は看護師 id:38 初めは2/3は割り当てなし" do
     monthly=month(57)
     assert_equal [nil, "_"],[monthly.days[3].shift,monthly.shift[3,1]]
+  end
+  must "看護師 id:38 寺田輝子2月度。初めは2/3は割り当てなし" do
     nrc = nurce(38)
     assert_equal ["_", nil, "_"],[nrc.shift(3),nrc.monthly.days[3].shift,nrc.monthly.shift[3,1]]
-   msg="3日に勤務2をsetする "
+   end
+  must "看護師 id:38 寺田輝子2月度。２月3日に勤務2をsetする " do
+    nrc = nurce(38)
     nrc.set_shift(3,"2")
-    assert_equal [msg, "2", nil, "2"],[msg,nrc.shift(3),nrc.monthly.days[3].shift,nrc.monthly.shift[3,1]]
-    assert_equal ["day03",0],["day03",nrc.monthly.day03]
+    assert_equal [ "2", nil, "2"],[nrc.shift(3),nrc.monthly.days[3].shift,nrc.monthly.shift[3,1]]
+  end
+
+  must "看護師 id:38 寺田輝子2月度。２月3日に勤務2をsetし]saveにそなえ restoreする " do
+    nrc = nurce(38)
+    nrc.set_shift(3,"2")
     nrc.monthly.restore_days
-    assert_equal ["restore_days:day03",2],["restore_days:day03",nrc.monthly.day03]
-    msg="saveして読み直す"
+    assert_equal ["day03",2],["day03",nrc.monthly.day03],"save"
+   end
+  must "看護師 id:38 寺田輝子2月度２月3日に勤務2をsetしsaveして読み直す " do
+    nrc = nurce(38)
+    nrc.set_shift(3,"2")
+    nrc.monthly.restore_days
     nrc.monthly.save
     monthly=month(57)
-    assert_equal  [msg,"2", "2"],[msg,monthly.days[3].shift,monthly.shift[3,1]]
+    assert_equal  ["2", "2"],[monthly.days[3].shift,monthly.shift[3,1]]
 
   end
 
@@ -88,4 +99,3 @@ class Hospital::MonthlyTest < ActiveSupport::TestCase
 
   
 end
-# -*- coding: utf-8 -*-

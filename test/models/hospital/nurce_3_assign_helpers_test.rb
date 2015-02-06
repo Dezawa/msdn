@@ -1,16 +1,8 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
+require 'nurce_test_helper'
 
 #################
-class Hospital::Nurce < ActiveRecord::Base
-  # [0,0,0,1,3,0.....]
-  def day_store(shift_list)
-    shift_list.each_with_index{|shift,day|  set_shift(day+1,shift.to_s)}
-  end
-
-
-end
-
 
 class Hospital::NurceTest < ActiveSupport::TestCase
   fixtures "hospital/nurces","hospital/roles","hospital/nurces_roles","hospital/limits"
@@ -23,28 +15,13 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     srand(1)
   end
 
-  def nurce(id); 
-    n = Hospital::Nurce.find id
-    @month  = Date.new(2013,2,1)
-    n.monthly(@month)
-    n
-  end
-
-  def set_code(nurce,day,code)
-    nurce.monthly.day10 = code
-    nurce.monthly.shift = nil
-    nurce.monthly.store_days
-  end
-
-
+  # 勤務コード 1～40 が shiftsではどう表されるか確認
   #123456789012345678901234567890123456789
   "12323111119A487564564564487CB111519A487".split("").each_with_index{|shift,code|
     must "To_123 of code #{code+1}" do
-      nurce41 = nurce(41)
+      nurce41 = nurce(41,[2013,3,1])
       set_code(nurce41,:day10,code+1); 
       assert_equal code+1,nurce41.monthly.day10
-      #assert_equal code+1,nurce41.monthly.days[10].id
-      #assert_equal shift,nurce41.monthly.days[10].to_0123
       assert_equal shift,nurce41.shifts[10,1],
       "code #{code+1} #{Hospital::Kinmucode.find(code+1).name} は#{shift}"
     end
@@ -52,7 +29,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
   #01234567890123456789012345678901234567890
   "4487CB1111111123FFF441FFF4401110000000000".split("").each_with_index{|shift,code|
     must "To_123 of code #{code+40}" do
-      nurce41 = nurce(41)
+      nurce41 = nurce(41,[2013,3,1])
       set_code(nurce41,:day10,code+40); 
       assert_equal code+40,nurce41.monthly.day10
       assert_equal code+40,nurce41.monthly.days[10].kinmucode_id
@@ -97,7 +74,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
        "______1_____________12____1__",
        {"0"=>8.0, "1"=>17.0, "2"=>4, "3"=>5, :kinmu_total =>18,  :night_total =>8}
       ]
-    nurce40 = nurce(40)
+    nurce40 = nurce(40)#,[2013,3,1])
     save_shift=nurce40.save_shift
     assert_equal ret,save_shift
     nurce40.set_shift(1,"2")
@@ -116,12 +93,12 @@ class Hospital::NurceTest < ActiveSupport::TestCase
                                     false,false,false
                                    ]).each{|role_shift,ret|
     must "Nurce 6 id 40 寺田輝子の#{role_shift}  has_assignable_roles_atleast_one" do
-      assert_equal ret,nurce(40).has_assignable_roles_atleast_one(role_shift[1],[role_shift[0]])
+      assert_equal ret,nurce(40,[2013,3,1]).has_assignable_roles_atleast_one(role_shift[1],[role_shift[0]])
     end
   }
   [[[3,4],true],[[5,10],false]].each{|roles,ret|
     must "Nurce 6 id 40 寺田輝子の#{roles} no has_assignable_roles_atleast_one" do
-      assert_equal ret,nurce(40).has_assignable_roles_atleast_one("2",roles)
+      assert_equal ret,nurce(40,[2013,3,1]).has_assignable_roles_atleast_one("2",roles)
     end
   }
 
@@ -134,7 +111,7 @@ pp nurce.shift_with_last_month
     end
   }
   must "set_shift_days" do
-    nurce = nurce(35)
+    nurce = nurce(35)#,[2013,3,1])
     #puts
     #puts nurce.shifts
     nurce.set_shift_days(2,"12357890")
@@ -142,7 +119,7 @@ pp nurce.shift_with_last_month
   end
 
   must "set_shift" do
-    nurce = nurce(35)
+    nurce = nurce(35)#,[2013,3,1])
     #puts
     #puts nurce.shifts
     nurce.set_shift_days(2,"12357890")
@@ -152,14 +129,14 @@ pp nurce.shift_with_last_month
 
   
   must "勤務設定のテスト" do
-    nurce=nurce(35)# 1 2 3 4 5 6 7 8
+    nurce=nurce(35,[2013,3,1])# 1 2 3 4 5 6 7 8
     nurce.day_store([0,0,0,1,3,0,0,0])
     #assert_equal [0,0,0,1,3,0,0,0
     #             ],(1..8).map{|day| nurce.monthly.days[day].shift}
     assert_equal "00013000",nurce.monthly.shift[1..8]
   end
   must "勤務設定のテスト nil" do
-    nurce=nurce(35)# 1 2 3 4 5 6 7 8
+    nurce=nurce(35,[2013,3,1])# 1 2 3 4 5 6 7 8
     nurce.day_store([0,0,nil,1,3,0,0,0])
     #assert_equal [0,0,nil,1,3,0,0,0
     #             ],(1..8).map{|day| nurce.monthly.days[day].shift}
@@ -207,7 +184,7 @@ assinable_roles = {
     [4, "3"]=>5, [4, "2"]=>5, [4, "1"]=>20, [4, :kinmu_total]=>22,[4, :night_total]=>9,
   }
   must "Nurce 40 cost" do
-    nurce40 = nurce(40)
+    nurce40 = nurce(40)#,[2013,3,1])
     assert_equal [3,4,9], nurce40.role_ids.sort,"nurce40.role_ids"
     assert_equal assinable_roles, nurce40.assinable_roles
     assert_equal ({:night_total=>8, "3"=>5, "2"=>4, "1"=>17.0, "0"=>8.0, :kinmu_total=>18.0}),

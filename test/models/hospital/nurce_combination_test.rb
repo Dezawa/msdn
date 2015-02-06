@@ -1,63 +1,65 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
+require 'nurce_test_helper'
 
 class Hospital::NurceCombinationTest < ActiveSupport::TestCase
-  fixtures :nurces,:hospital_roles,:nurces_roles,:hospital_limits
-  fixtures :holydays,:hospital_needs,:hospital_monthlies
-  fixtures :hospital_kinmucodes,:hospital_defines
+  fixtures "hospital/nurces","hospital/roles","hospital/nurces_roles","hospital/limits"
+  fixtures "holydays","hospital/needs","hospital/monthlies"
+  fixtures "hospital/kinmucodes","hospital/defines"
   # Replace this with your real tests.
 
-  Log2_4 = 
-"
-  HP ASSIGN 34 _220330_______________________
-  HP ASSIGN 35 _220330______________________ 4 9
-  HP ASSIGN 36 _220330______________________ 4 10
-  HP ASSIGN 37 _____________________________ 4 9
-  HP ASSIGN 38 _2___________________________ 3 4 9
-  HP ASSIGN 39 _3___________________________ 3 4 9
-  HP ASSIGN 40 _22__________________________ 3 4 9
-  HP ASSIGN 41 ___33________________________ 3 4 9
-  HP ASSIGN 42 _____2203____________________ 4 9 10
-  HP ASSIGN 43 _____2203____________________ 4 9 10
-  HP ASSIGN 44 _____3302____________________ 4 9 10
-  HP ASSIGN 45 _22033_______________________ 4 9 10
-  HP ASSIGN 46 _22033022____________________ 4   10
-  HP ASSIGN 47 _22033022____________________ 3 4   10
-  HP ASSIGN 48 _2203303303__________________ 3 4   10
-  HP ASSIGN 49 _2203302203__________________ 3 4   10
-  HP ASSIGN 50 _220330220330________________ 4 10
-  HP ASSIGN 51 _220330220330________________ 4 10
-  HP ASSIGN 52 __300____0_0___________0_____ 4 10
-"
+
   def setup
     @month  = Date.new(2013,2,1)
     @busho_id = 1
     @assign = Hospital::Assign.new(@busho_id,@month)
-    @nurces = extract_set_shifts(Log2_4)
-    srand(1)
+    @assign.nurces = extract_set_shifts(Log2_4)
     @assign.refresh
+    @assign.night_mode = true
+    @nurces = @assign.nurces
+    srand(1)
   end
 
-  def nurce_by_id(id,nurces)
-    nurces.select{ |n| n.id == id}[0]
+  # 割付なしのとき arrowable がどのくらいあるかは limit_test 参照
+   #   arrowable = { 
+  #   [ 3, "1"] => 200, [ 3, "2"] => 50, [ 3, "3"] => 50, [ 3, :kinmu_total] => 220, [ 3, :night_total] =>  90,
+  #   [ 4, "1"] => 360, [ 4, "2"] => 81, [ 4, "3"] => 81, [ 4, :kinmu_total] => 396, [ 4, :night_total] => 147,
+  #   [ 9, "1"] => 200, [ 9, "2"] => 47, [ 9, "3"] => 47, [ 9, :kinmu_total] => 220, [ 9, :night_total] =>  85, 
+  #   [10, "1"] => 240, [10, "2"] => 57, [10, "3"] => 57, [10, :kinmu_total] => 264, [10, :night_total] => 103,
+  # } 
+  
+  # 看護師が持っている role  limit_test 参照
+  # role 3,4,9,10 を持っていない 0、持っている 1
+  factors = [[0,1,0,0],[0,1,1,0],[0,1,0,1],[0,1,1,0]] + [[1,1,1,0]]*4 +
+    [[0,1,1,1]] * 4 + [[0,1,0,1]]+[[1,1,0,1]]*5 + [[1,0,0,1]]
+  # 
+  sft_str = "2"
+  must "割付が進んで、set_upの状態でのshift_remain" do
+    #             0, 0, 0, 5, 4, 5, 3, 5, 3, 3, 4, 3, 1, 1, 3, 1, 1, 1, 5
+    assert_equal [0, 0, 0, 5, 4, 5, 3, 5, 3, 3, 4, 3, 1, 1, 3, 1, 1, 1, 5],
+    @nurces.map{ |nurce| nurce.shift_remain(true)[sft_str]}
   end
 
-  def extract_set_shifts(string)
-    nurces=[]
-    string.each_line{|line|
-      hp,assign,id,data,dmy = line.split(nil,5)
-      case id
-      when /^\d+$/
-        nurces[id.to_i]=@assign.nurce_by_id(id.to_i)
-       @assign.nurce_set_patern(nurces[id.to_i],1,data[1..-1].chop)
-      when  /ENTRY/
-      end
+  must "割付が進んで、set_upの状態でどのくらいassignされたか" do
+    assigned = 
+      (0..@nurces.size-1).
+      inject([0,0,0,0]){ |sum,id| 
+
+      sum.add(factors[id].times(@nurces[id].shifts.gsub(/[^2]/,"").size)) # そのshiftに割り当てられた回数
     }
-    nurces.compact
+    
+    assigned = [[3,"2"],[4,"2"],[9,"2"],[10,"2"]].zip(assigned).to_h
+    assert_equal({[3, "2"]=>21, [4, "2"]=>38, [9, "2"]=>12, [10, "2"]=>31}, assigned)
   end
 
+  must "nurceのshift_remainは" do
+    assert_equal 29,@nurces.inject(0){ |sum,nurce| sum + ( nurce.role_ids.include?(3) ?  nurce.shift_remain(true)[sft_str] : 0) }
+  end
 
-
+  must "割付が進んで、set_upの状態でのrole_remain" do
+    assert_equal [29,43,35,26],
+                 [[3, "2"], [4, "2"], [9, "2"], [10, "2"]].map{ |r_s| @assign.role_remain[r_s]}
+  end
 
   day = 20
 
@@ -67,26 +69,73 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
       assert_equal [10, 3, 9],@assign.tight_roles(sft_str)
     end
   }
+
   must "2/20の夜勤割り当ての組み合わせ候補" do
     #            [37, 41, 44, 46, 52, 39, 42, 48, 38, 40, 43, 47]
   #  assert_equal 12 * 11 * 10 * 9 / (2*3*4),  # = 495 [37, 38, 39, 52, 40, 41, 44, 43, 42, 46, 47, 48],
   #  @assign.candidate_combination_for_night(day).map{ |comb| comb.map(&:id)}.size
   end
+  
+  must "2/20の準夜勤割り当ての不足role" do
+    assert_equal [3,4,9,10],@assign.short_role(20,"2")
+  end
+  must "2/20の準夜勤割り当ての可能看護師" do
+    assert_equal [37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52],
+    @assign.assinable_nurces(20,"2", [3,4,9,10]).map(&:id)
+  end
+
+  must "limit_of_nurce_candidate_night" do
+    assert_equal 6 ,@assign.limit_of_nurce_candidate_night(20)
+  end
+  must "shift 2,3のタイトロール" do
+    assert_equal [[10,3,9],[3, 10, 9]],%w(2 3).map{ |sft_str| @assign.tight_roles(sft_str)}
+  end
+
+  # タイトロールが [10, 3, 9] であるときの看護師のcost順  nurce_3_cost_test.rb 参照
+  # 35, 36,34, 37, 38, 39, 52, 40, 41, 44, 42, 43, 45, 46, 47, 48, 49, 50, 51
+  # 35,36,37はshift2使い切った。
+  #   4 9     1  37
+  #   4   10  2  46
+  # 3 4 9     1  38,39,40,41
+  # 3 4   10  2  42,43,44,45,47,48,49,50,51
+  # 3     10  3  52
+  # 
+  must "2/20の準夜勤割り当て看護師候補。コストで足切り" do
+    assert_equal [37, 39, 46, 42, 47, 52],
+    @assign.assinable_nurces_by_cost_size_limited("2",20, [3,4,9,10]).map(&:id)
+  end
+  
+  must "2/20の深夜勤割り当て看護師候補。コストで足切り" do #37, 46, 42, 38, 47, 52
+    assert_equal [37, 46, 42, 38, 47, 52],
+    @assign.assinable_nurces_by_cost_size_limited("3",20, [3,4,9,10]).map(&:id)
+  end
+  must "2/20の夜勤割り当て看護師候補。コスト順" do
+    assert_equal [37, 38, 39, 52, 42, 46, 47],@assign.candidate_for_night(20).map(&:id)
+  end
+
+  must "2/20の夜勤割り当て看護師組み合わせ候補最初の10個" do
+    #            
+    assert_equal [[37,38,39,52],[37,38,39,42],[37,38,39,46],[37,38,39,47],[37,38,52,42],[37,38,52,46],
+    #          
+                  [37,38,52,47],[37,38,42,46],[37,38,42,47],[37,38,46,47],[37,39,52,42],[37,39,52,46]
+                 ], @assign.candidate_combination_for_night(20).to_a[0,12].map{ |nurces| nurces.map(&:id) }
+  end
+  must "2/20の夜勤割り当て看護師組み合わせ候補最初の10個のコスト" do
+    #             1      2    5     3      7    10      4      8   11    12    6      9
+    assert_equal [2352, 2753, 3694, 4387, 2883, 3824, 4517, 4227, 4919, 5860, 2884, 3825
+                 ], @assign.candidate_combination_for_night(20).
+      to_a[0,12].
+      map{ |nurces| @assign.cost_of_nurce_combination(nurces,:night_total,@assign.tight_roles(:night_total)).to_i}
+  end
 
   must "2/20の夜勤割り当ての組み合わせ候補・costで選別" do
-    #            [37, 41, 44, 46, 52, 39, 42, 48, 38, 40, 43, 47]
-    srand(1)
-    assert_equal [[37, 38, 39, 52],
- [37, 38, 39, 41],
- [37, 38, 39, 40],
- [37, 38, 52, 40],
- [37, 39, 52, 41],
- [37, 38, 52, 41],
- [37, 39, 52, 40],
- [37, 38, 41, 40]
-  ] ,
-    @assign.candidate_combination_for_night_selected_by_cost(day).map{ |comb| comb.map(&:id)}
+    #assert_equal 6,@assign.limit_of_nurce_candidate_night(20)
+    assert_equal [[37,38,39,52],[37,38,39,42],[37,38,52,42],[37,39,52,42],[38,39,52,42],[37,38,39,46]
+                 ],@assign.candidate_combination_for_night_selected_by_cost(20).map{ |comb| comb.map(&:id)}
   end
+
+end
+__END__
 
   must "2/20のshift2,3の候補の組み合わせを作る。 数" do
     candidate_combination=@assign.candidate_combination_for_shift23(day)
@@ -108,23 +157,6 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
       candidate_combination.map{  |nurces_shift2,nurces_shift3| 
       [nurces_shift2.map(&:id),nurces_shift3.map(&:id)]
     }
-  end
-
- must "2233のとき全夜勤でのコスト" do
-    @month  = Date.new(2014,3,1)
-    @nurce = Hospital::Nurce.find 38 # 3,4,9
-    @nurce.monthly(@month)
-    @nurce.shifts = "02233___________________________"
-    assert_equal 1813,@nurce.cost(:night_total,[3,4,9]).to_i
-    assert_equal 1648,@nurce.cost(:night_total,[3,4,10]).to_i
-  end
-  must "2233のとき全勤務でのコスト" do
-    @month  = Date.new(2014,3,1)
-    @nurce = Hospital::Nurce.find 38 # 3,4,9
-    @nurce.monthly(@month)
-    @nurce.shifts = "02233___________________________"
-    assert_equal 59,@nurce.cost(:kinmu_total,[3,4,9]).to_i
-    assert_equal 54,@nurce.cost(:kinmu_total,[3,4,10]).to_i
   end
   must "月データ読み込み" do
     nurce = nurce_by_id(52,@assign.nurces)

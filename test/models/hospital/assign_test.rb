@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
 require 'test_helper'
 #require 'need'
 
 class Hospital::AssignTest < ActiveSupport::TestCase
-  fixtures :nurces,:hospital_roles,:nurces_roles,:hospital_limits
-  fixtures :holydays,:hospital_needs,:hospital_monthlies,:hospital_defines
-  fixtures :hospital_kinmucodes
+  fixtures "hospital/nurces","hospital/roles","hospital/nurces_roles","hospital/limits"
+  fixtures "holydays","hospital/needs","hospital/monthlies","hospital/defines"
+  fixtures "hospital/kinmucodes"
   # Replace this with your real tests.
   log2_4 = "
   HP ASSIGN 34 _1_1__11_____________1______1
@@ -91,22 +90,10 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
     assert_equal 4,@assign.Kangoshi
   end
   must " 看護師数" do
-    assert_equal 19,@assign.kangoshi.size
+    assert_equal 18,@assign.kangoshi.size
   end
   must "need_patarn" do
-    assert_equal [
-                  {  [3, "2"]=>[1, 1],  [3, "3"]=>[1, 1],  
-                    [4, "0"]=>[0, 6],  [4, "1"]=>[9, 11],  [4, "2"]=>[2, 2],  [4, "3"]=>[2, 2],  
-                    #[5, "1"]=>[0, 1],  [5, "2"]=>[0, 1],   [5, "3"]=>[0, 1],
-                    [9, "1"]=>[1, 2],  [9, "2"]=>[1, 2],   [9, "3"]=>[1, 2], 
-                    [10, "1"]=>[1, 2],  [10, "2"]=>[1, 2],  [10, "3"]=>[1, 2]
-                  },
-                  { [3, "2"]=>[1, 1],  [3, "3"]=>[1, 1],  
-                    [4, "0"]=>[0, 9], [4, "1"]=>[6, 7],   [4, "2"]=>[2, 2],  [4, "3"]=>[2, 2],
-                    #[5, "1"]=>[0, 1],  [5, "2"]=>[0, 1],   [5, "3"]=>[0, 1],
-                    [9, "1"]=>[1, 2],  [9, "2"]=>[1, 2],   [9, "3"]=>[1, 2],
-                    [10, "1"]=>[1, 2],  [10, "2"]=>[1, 2],  [10, "3"]=>[1, 2]
-                  }
+    assert_equal [{[3, "2"]=>[1, 1], [3, "3"]=>[1, 1], [4, "3"]=>[2, 2], [4, "2"]=>[2, 2], [4, "1"]=>[9, 11], [9, "3"]=>[1, 2], [9, "2"]=>[1, 2], [9, "1"]=>[1, 2], [10, "3"]=>[1, 2], [10, "2"]=>[1, 2], [10, "1"]=>[1, 2], [4, "0"]=>[0, 5]}, {[3, "2"]=>[1, 1], [3, "3"]=>[1, 1], [4, "3"]=>[2, 2], [4, "2"]=>[2, 2], [4, "1"]=>[6, 7], [9, "3"]=>[1, 2], [9, "2"]=>[1, 2], [9, "1"]=>[1, 2], [10, "3"]=>[1, 2], [10, "2"]=>[1, 2], [10, "1"]=>[1, 2], [4, "0"]=>[0, 8]}
                  ],@assign.need_patern
   end
 
@@ -114,27 +101,23 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
     sft_str = "2"
     newmonth(5)
     nurces = extract_set_shifts(log5_5)
-    assert_equal [4, 3, 9, 10] ,@assign.role_order_by_tightness(sft_str)
+    assert_equal [9, 3, 10, 4] ,@assign.role_order_by_tightness(sft_str)
   end
   must "5月の tight_roles" do
     sft_str = "2"
     newmonth(5)
     nurces = extract_set_shifts(log5_5)
-    assert_equal [4, 10, 9] ,@assign.tight_roles(sft_str)
+    assert_equal [9, 3, 10] ,@assign.tight_roles(sft_str)
   end
   must "5月の role_remain" do
     sft_str = "2"
     newmonth(5)
     nurces = extract_set_shifts(log5_5)
     assert_equal(
-                 {[10,"0"]=> 90 , [10,"1"]=>218, [10,"2"]=>50, [10,"3"]=>47, 
-                   [9,"0"]=> 74 , [ 9,"1"]=>193, [ 9,"2"]=>40, [ 9,"3"]=>38  , 
-                   [4,"0"]=>141 , [ 4,"1"]=>350, [ 4,"2"]=>73, [ 4,"3"]=>71  , 
-                   [3,"0"]=> 76 , [ 3,"1"]=>186, [ 3,"2"]=>44, [ 3,"3"]=>45, 
-                   [10, :night_total]=> 86, [10, :kinmu_total]=>225, 
-                   [ 9, :night_total]=> 69, [ 9, :kinmu_total]=>197,    
-                   [ 4, :night_total]=>128, [ 4, :kinmu_total]=>360,    
-                   [ 3, :night_total]=> 79, [ 3, :kinmu_total]=>195} ,
+                 {[4,"0"]=>135.0,[4,"1"]=>330.0,[4,"2"]=>70,[4,"3"]=>68,[4,:night_total]=>123,[4,:kinmu_total]=>342.0,
+                   [9,"0"]=>74.0,[9,"1"]=>193.0,[9,"2"]=>40,[9,"3"]=>38,[9,:night_total]=>69,[9,:kinmu_total]=>197.0,
+                   [10,"0"]=>90.0,[10,"1"]=>218.0,[10,"2"]=>50,[10,"3"]=>47,[10,:night_total]=>86,[10,:kinmu_total]=>225.0,
+                   [3,"0"]=>76.0,[3,"1"]=>186.0,[3,"2"]=>44,[3,"3"]=>45,[3,:night_total]=>79,[3,:kinmu_total]=>195.0},
                  @assign.role_remain(true)
                  )
   end
@@ -156,12 +139,7 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
   end
 
   must "不足role" do
-    ret = { 
-      [3, "3"]=>[1, 1], [3, "2"]=>[1, 1],
-      [4, "3"]=>[2, 2], [4, "2"]=>[2, 2], [4, "1"]=>[9, 11], [4, "0"]=>[-1, 5],
-      #[5, "3"]=>[0, 1], [5, "2"]=>[0, 1], [5, "1"]=>[0, 1],
-      [9, "3"]=>[1, 2], [9, "2"]=>[1, 2], [9, "1"]=>[1, 2],
-      [10, "3"]=>[1, 2], [10, "2"]=>[1, 2], [10, "1"]=>[1, 2]}
+    ret = {[3, "2"]=>[1, 1], [3, "3"]=>[1, 1], [4, "3"]=>[2, 2], [4, "2"]=>[2, 2], [4, "1"]=>[9, 11], [9, "3"]=>[1, 2], [9, "2"]=>[1, 2], [9, "1"]=>[1, 2], [10, "3"]=>[1, 2], [10, "2"]=>[1, 2], [10, "1"]=>[1, 2], [4, "0"]=>[0, 4]}
     assert_equal ret,@assign.short_role_shift_of(1)
   end
 
@@ -181,7 +159,7 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
     #assert_equal margin,
     #  @assign.margin_of_role.select{|k,v| k[1]==shift}.sort,
     #  "残りrole総数"
-    tight = [4,9,10]
+    tight = [3, 9, 10]
     assert_equal tight,@assign.tight_roles(shift).sort,"逼迫ロール"
     assert_equal [{"3"=>5, "2"=>5, "1"=>19.0, "0"=>6.0, :kinmu_total => 21, :night_total=>9}, 
                   {"3"=>5, "2"=>4, "1"=>18.0, "0"=>8.0, :kinmu_total => 19, :night_total=>8}], # 本当は[7,19,5,5] だが、初めからある0を二度引いてしまうから
@@ -200,9 +178,9 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
 
 
   must " 5/5 3の使用数の違う50,47のcostが同じなのはなぜ？" do
-    remain0= {[3,"2"]=>50,[4,"2"]=>86,[9,"2"]=>47,[10,"2"]=>57 }.to_a.sort
+    remain0= {[4, "0"]=>144.0, [4, "1"]=>360.0, [4, "2"]=>81, [4, "3"]=>81, [4, :night_total]=>147, [4, :kinmu_total]=>396.0, [9, "0"]=>80.0, [9, "1"]=>200.0, [9, "2"]=>47, [9, "3"]=>47, [9, :night_total]=>85, [9, :kinmu_total]=>220.0, [10, "0"]=>96.0, [10, "1"]=>240.0, [10, "2"]=>57, [10, "3"]=>57, [10, :night_total]=>103, [10, :kinmu_total]=>264.0, [3, "0"]=>80.0, [3, "1"]=>200.0, [3, "2"]=>50, [3, "3"]=>50, [3, :night_total]=>90, [3, :kinmu_total]=>220.0}.to_a.sort
 #,:kinmu_total =>18,:night_total =>8}
-    margin0= {[3,"2"]=>19,[4,"2"]=>24,[9,"2"]=>16,[10,"2"]=>26 }.to_a.sort
+    margin0= {[3,"2"]=>19,[4,"2"]=>19,[9,"2"]=>16,[10,"2"]=>26 }.to_a.sort
     require0={[3,"2"]=>31,[4,"2"]=>62,[9,"2"]=>31,[10,"2"]=>31 }.to_a.sort
     used   = {[3,"2"]=> 6,[4,"2"]=>10,[9,"2"]=> 5,[10,"2"]=> 5 }.to_a.sort
     remain = {[3,"2"]=>44,[4,"2"]=>76,[9,"2"]=>42,[10,"2"]=>52 }.to_a.sort
@@ -212,23 +190,22 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
     newmonth(5)
     shift = "2"
     assert_equal remain0  ,
-      @assign.role_remain #.select{|k,v| k[1]==shift}.sort,"開始前利用可能ロール総数"
+      @assign.role_remain.to_a.sort #.select{|k,v| k[1]==shift}.sort,"開始前利用可能ロール総数"
     assert_equal require0 ,
       @assign. roles_required.select{|k,v| k[1]==shift}.sort,"開始前必要ロール数"
     assert_equal margin0,
       @assign.margin_of_role.select{|k,v| k[1]==shift}.sort,  "開始前余裕ロール数"
-
-    #@nurces.each{|nurce| puts nurce.shifts+nurce.role_used[[1,3]].to_s }
+      # @nurces.each{|nurce| puts nurce.shifts+nurce.role_used[[1,3]].to_s }
     nurces = extract_set_shifts(log5_5)
-    #@nurces.each{|nurce| puts nurce.shifts+nurce.role_used[[1,3]].to_s }
-    @assign.role_used true
-    assert_equal used  ,
-      @assign.role_used.select{|k,v| k[1]==shift}.sort,
-      "使用ロール総数"
+    # @nurces.each{|nurce| puts nurce.shifts+nurce.role_used[[1,3]].to_s }
+    # @assign.role_used true
+    # assert_equal used  ,
+    #  @assign.role_used.select{|k,v| k[1]==shift}.sort,
+    #  "使用ロール総数"
     
-    assert_equal remain,
-      @assign.role_remain.select{|k,v| k[1]==shift}.sort,
-      "残りrole総数"
+    # assert_equal remain,
+    #  @assign.role_remain.select{|k,v| k[1]==shift}.sort,
+    #  "残りrole総数"
 
     tight = [3,9,10]
     assert_equal tight,@assign.tight_roles(shift).sort,"逼迫ロール"
@@ -249,4 +226,3 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
   #######
 
 end
-# -*- coding: utf-8 -*-

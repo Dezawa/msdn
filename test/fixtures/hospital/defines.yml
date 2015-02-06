@@ -8,10 +8,6 @@ no3:
   name: 保険医療機関名
   value: とある病院
   attri: hospital_name
-no4:
-  name: 交代勤務
-  value: 三交代
-  attri: hospital_Koutai
 no5:
   name: 病床数
   value: 57

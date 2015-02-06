@@ -1,16 +1,8 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
+require 'nurce_test_helper'
 
 #################
-class Hospital::Nurce < ActiveRecord::Base
-  # [0,0,0,1,3,0.....]
-  def day_store(shift_list)
-    shift_list.each_with_index{|shift,day|  set_shift(day+1,shift.to_s)}
-  end
-
-
-end
-
 class Hospital::NurceTest < ActiveSupport::TestCase
   fixtures "hospital/nurces","hospital/roles","hospital/nurces_roles","hospital/limits"
   fixtures "holydays","hospital/needs","hospital/monthlies"
@@ -21,16 +13,6 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     @month  = Date.new(2013,2,1)
   end
 
-  def nurce(id); 
-    n = Hospital::Nurce.find id
-    n.monthly(@month)
-    n
-  end
-
-  def set_code(nurce,day,code)
-    nurce.monthly.day10 = code
-    nurce.monthly.store_days
-  end
 
   shift_remain = [
                   {"3"=>5, "2"=>5, "1"=>20.0, "0"=>7.0, :kinmu_total =>22, :night_total =>9},
@@ -66,8 +48,6 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     nrc.set_shift(2,"3")
     assert_equal  shift_remain2, nrc.shift_remain,"割り振り後 remain save前"
     nrc.save_month
-puts  nrc.shifts
-puts  nurce(40).shifts
     assert_equal  shift_remain2, nurce(40).shift_remain,"割り振り後 remain"
   end
   must "石川トシ子さんの2/4 の [role,勤務]" do
@@ -75,6 +55,4 @@ puts  nurce(40).shifts
     assert_equal [ [4, 3],[10, 3]],nurce(36).role_shift_of(3).sort,"role_shift_of"
     assert_equal [ [4, 2], [10, 2]],nurce(36).role_shift_of(2).sort,"role_shift_of"
   end
-
-
 end

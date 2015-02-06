@@ -1,34 +1,31 @@
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
 require 'test_helper'
+   def sum(*args)
+     args.inject(0){|sum,v| sum + (v ? v : 0)}
+   end
 
 class Hospital::KinmucodeTest < ActiveSupport::TestCase
     fixtures "hospital/kinmucodes","hospital/roles"
 
+  Kubun=  { }
   def setup
+  Hash[:nikkin,"日勤",:sankoutai,"三交代",:part,"パート",:touseki,"透析",
+                   :l_kin,"L勤",:gairai,"外来",:kyoutuu,"共通"].
+    each_pair{ |kinmu,name|  Hospital::Kinmucode::Kubun[kinmu] = (k=Hospital::Role.find_by_name(name)) ? k.id : nil }
   end
 
   must "勤務コード数" do
-    assert_equal 72,Hospital::Kinmucode.count
-  end
-
-  must "定数 sanchoku" do
-    assert_equal 2,Hospital::Kinmucode.sanchoku
-  end
-
-  must "k_code" do
-    assert_equal %w(1 2 3 L2 L3 会 会1 □ △ ▲),
-    (1..10).map{ |kid| Hospital::Kinmucode.find(kid).code }
+    assert_equal 82,Hospital::Kinmucode.count
   end
 
   (1..80).each{|id|
-    next if [51,52,56,57,58,61,62,63,64,65,66].include? id
+    next if [56,57,58,62,63,64].include? id
     must "勤務コードID #{id}の時間総計は 1.0" do
       kc = Hospital::Kinmucode.find(id)
 #puts kc["am"]
       assert_equal 1.0,
       %w(nenkyuu am pm night midnight am2 pm2 night2 midnight2).
-        inject(0.0){|sum,item| sum + kc[item]}
+        inject(0.0){|sum,item| sum +( kc[item] || 0 )}
     end
   }
 
@@ -71,15 +68,15 @@ class Hospital::KinmucodeTest < ActiveSupport::TestCase
       "#{kinmukubun_id} #{shift}"
     end
   }
-shifts = %w(0 1 2 3 5 L M)
-Id = {       #  0   1 2 3  5 L M 
- :nikkin    => [67,30,2,3,33,4,5],
- :sankoutai => [67, 1,2,3,16,4,5]
+shifts = %w(0 1 2 3 5 L M N O)
+Id = {       #  0   1 2 3  5 L M N  O
+ :nikkin    => [67,30,2,3,33,4,5,81,82],
+ :sankoutai => [67, 1,2,3,16,4,5,81,82]
 }
 
  shifts.each_with_index{ |shift,idx| 
     kinmukubun = :nikkin; kinmukubun_id = Hospital::Kinmucode::Kubun[kinmukubun]
-    msg = "#{kinmukubun}=#{ kinmukubun_id}:shift=#{shift}の勤務コード"
+    msg = "#{kinmukubun}=#{ kinmukubun_id}:#{shift}の勤務コード"
     must msg do
       kinmukubun_id = Hospital::Kinmucode::Kubun[kinmukubun]
       assert_equal  Id[kinmukubun][idx],Hospital::Kinmucode.from_0123(shift,kinmukubun_id),
@@ -97,4 +94,3 @@ Id = {       #  0   1 2 3  5 L M
     }
     
 end
-# -*- coding: utf-8 -*-

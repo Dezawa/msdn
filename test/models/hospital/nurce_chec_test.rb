@@ -15,13 +15,7 @@ class Hospital::NurceChecTest < ActiveSupport::TestCase
     # @nurces.each_with_index{ |n,i| n.monthly(@month); n.shifts = @save[i]}
   end
 
-  #######
-  def nurce(id); 
-    n = Hospital::Nurce.find id
-    n.monthly(@month)
-    n
-  end
-  
+  #######  
 
   #"時廣眞弓さんの先月末月初は '12011__0___'
   # 2日から233勤務を埋め込んだとき、1日に勤務3を入れると:renkinのエラー

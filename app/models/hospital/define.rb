@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
 require "pp"
 
-srand(1)
- # name"
- # attri"
- # value"
- # comment"
 class Hospital::Define < ActiveRecord::Base
   include Hospital::Const
-
   class Define
     include Hospital::Const
     attr_reader *Hospital::Define.all.map{ |define| define.attri.to_sym}
@@ -17,7 +11,9 @@ class Hospital::Define < ActiveRecord::Base
 
     def initialize
       defines = Hospital::Define.all
-      defines.each{ |define|  instance_variable_set "@#{define.attri}",define }
+      defines.each{ |define|
+        instance_variable_set "@#{define.attri}",define.value
+      }
       set_attr
     end
     def set_attr
@@ -33,18 +29,17 @@ class Hospital::Define < ActiveRecord::Base
     end
   end
 
+
   attr_reader *Hospital::Define.all.map{ |define| define.attri.to_sym}
   attr_reader :koutai3,:shifts_int,:shifts ,:shifts123,:shiftsmx , :night , :shifts_night 
   attr_accessor :kangoshi,:leader
 
   @@define = nil
-  def self.define
-    @@define ||= Define.new
-  end
+  def self.define ;    @@define ||= Define.new ;  end
 
   def self.koutai3?
     #define=Hospital::Define.find_by_attribute("hospital_Koutai")
-    define=Hospital::Define.find_by( attri: "hospital_Koutai")
+    define=Hospital::Define.where(["attri = ?","hospital_Koutai"])[0]
     !!(define && define.value == "三交代")      
   end
   def nil ;"" ; end
@@ -61,11 +56,16 @@ class Hospital::Define < ActiveRecord::Base
     define.save
   end
 
+  def self.ddcreate
+    define = self.new
+    define.set_attr
+  end
+
   def set_attr
     self.class.all.each{ |df| instance_variable_set("@#{df.attri}",df.value)}
     @koutai3  = (@hospital_Koutai == "三交代") 
     @kangoshi = Hospital::Role.find_by(name: "看護師").id
-    @leader    = Hospital::Role.find_by(name: "リーダー").id
+    @leader   = Hospital::Role.find_by(name: "リーダー").id
     @shifts_int= @koutai3 ? Shift0123 : Shift0123[0..-2]
     @shifts = @koutai3    ? Sshift0123 : Sshift0123[0..-2]
     @shifts123 = @koutai3 ? Sshift123  : Sshift123[0..-2]
