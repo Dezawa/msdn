@@ -108,7 +108,7 @@ module HospitalHelper
     body = safe_join(Hospital::Const::ItemsDefine.map{ |item|
                        sym = item.symbol.to_s
                        logger.debug "=== #{sym} #{@instances.keys.join(',')}"
-                       model = @instances.select{ |attri,inst| inst.attri == sym }.first
+                       model = @instances[item] #.select{ |attri,inst| inst.attri == sym }.first
                        case show_or_edit 
                        when :show ;hospital_define_show_line(model)
                        when :edit ;hospital_define_edit_line(model,item)
@@ -193,20 +193,21 @@ module HospitalHelper
 
     body = "".html_safe
     name = "hospital_define[%d][value]".html_safe 
+    cmnt = "hospital_define[%d][comment]".html_safe 
     Hospital::Const::ItemsDefine.each_with_index{ |html_cell,idx|
       obj = @instances[html_cell.symbol]
+logger.debug("ItemsDefine: idx=#{idx} value = #{obj.value} #{html_cell.edit_field_with_id(:hospital_define,obj,controller,
+                                                :value => obj.value,:name => name%obj.id)}")
       body += 
-      safe_join( [TR,
-                  TD,
-                  "#{html_cell.label}".html_safe ,
-                  TDTD,
-                  html_cell.edit_field_with_id("hospital_define",obj,controller,
-                                            :value => obj.value,:name => name%obj.id) ,
-                  TDTD,
-                  @LabelsDefine[2].edit_field_with_id("hospital_define",obj,controller),
-                  TDend ,
-                  TDTD  ,
-                  hospital_define2_edit(idx)
+      safe_join( [ TR ,TD ,  "#{html_cell.label}".html_safe ,
+                   TDTD   ,
+                   #text_field_tag(name%obj.id , value = obj.value, options = {}) 
+                   html_cell.edit_field_with_id("hospital_define" ,obj,controller,
+                                                :value => obj.value,:name => name%obj.id) ,
+                   TDTD   ,
+                   @LabelsDefine[2].edit_field_with_id("hospital_define",obj,controller,
+                                                       :value => obj.comment,:name => cmnt%obj.id),
+                   TDend , TDTD  ,   hospital_define2_edit(idx)
                  ]
       )+
       TRend

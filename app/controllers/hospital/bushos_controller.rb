@@ -36,7 +36,7 @@ end
   end
 
   def edit_on_table
-    @instances = Hash[*Hospital::Define.all.map{ |model| [model.attri.to_sym,model]}.flatten]
+    @instances = Hospital::Define.all.map{ |model| [model.attri.to_sym,model]}.to_h
     super
   end
   def add_on_table
@@ -47,9 +47,11 @@ end
   def update_on_table
     defines = params[:hospital_define]
     defines.each{|i,hospital_define| id=i.to_i
-      value  = hospital_define
+      value   = hospital_define[:value]
+      comment = hospital_define[:comment]
       define = Hospital::Define.find(id)
-      define.update_attributes(:value => value[:value])
+      # define.update_attributes(hospital_define.permit(:value)) # => value[:value])
+      define.update_attributes(:value => value, :comment => comment )
     }
     super
   end
