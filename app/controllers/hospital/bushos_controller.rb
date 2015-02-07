@@ -16,7 +16,7 @@ class Hospital::BushosController < Hospital::Controller
                       HtmlText.new(:nil,"",:ro=>true),
                       HtmlText.new(:nil,"項目",:ro=>true),HtmlText.new(:nil,"値",:ro=>true)
                    ]
- 
+    @Delete =  true
 end
 
   def index
