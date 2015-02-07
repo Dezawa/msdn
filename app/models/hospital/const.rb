@@ -5,9 +5,8 @@ module Const
   ItemsDefine =
       [HtmlText.new(  :hospital_name    ,"保険医療機関名"),
        HtmlSelect.new(:hospital_Koutai  ,"交代勤務",  :correction => %w(二交代 三交代)     ),
-       HtmlText.new(  :hospital_bed_num ,"病床数"    ,:size =>3  ),
-       HtmlText.new(  :kubun            ,"届出区分"      ,:size =>3, 
-                      :comment => "対１入院基本料"),
+       HtmlText.new(  :hospital_bed_num ,"病床数"    ,:size =>3 ),
+       HtmlText.new(  :kubun            ,"届出区分"  ,:size =>3 , :comment => "対１入院基本料"),
        HtmlSelect.new(:KangoHaichi_addition,"看護配置加算の有無" ,
                       :correction => %w(有 無), :include_blank=> true),
        HtmlSelect.new(:Kyuuseiki_addition  ,"急性期看護補助体制加算の届出区分",
