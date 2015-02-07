@@ -8,7 +8,7 @@ class Hospital::RolesController < Hospital::Controller
     @Domain= @Model.name.underscore
     @TableEdit = [[:add_edit_buttoms],
                   ["　　　"],
-                  [:form,:show_assign,"所属メンバー"]]
+                  [:form,:show_assign,"所属メンバー",:method => :get]]
     @Edit = true
     @Delete=true
     @labels= [HtmlText.new(:name,"役割"),
