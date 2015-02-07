@@ -295,36 +295,47 @@ end
   end
 
   def and_action(input,action,label,opt={ })
-
     scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
+
     hidden = opt.delete(:hidden)
     hidden_value = opt.delete(:hidden_value)
+    opt[:hidden] = (hidden ? hidden_field(@Domain,hidden,:value => hidden_value) : "").html_safe
+
     if win_name = opt[:popup]
-      if @model
+      if @model ;and_input_with_model(input,action,label,opt)
+      else  ; and_input_without_model(input,action,label,opt)
+
+      end
+    else
+      and_input_no_popup(input,action,label,opt)
+    end
+  end
+
+  def and_input_no_popup(input,action,label,opt)
+      "<div>".html_safe+form_tag(:action => action) + 
+        "<input type='hidden' name='page' value='#{@page}'>".html_safe+
+        opt[:hidden] +
+        submit_tag(label)+
+        input +  "</form></div>".html_safe
+  end
+
+  def and_input_without_model(input,action,label,opt)
+       fmt =
+ "<div><form action='/%s/%s'>
+  <input name='authenticity_token' type='hidden' value='%s' />
+  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400%s'); target='%s'\">
+" + input +  "</form></div>"
+      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,scroll,win_name]
+  end
+
+  def and_input_with_model(input,action,label,opt)
       fmt =
- "<div><form action='/%s/%s' method='get'>
+ "<div><form action='/%s/%s'>
   <input name='authenticity_token' type='hidden' value='%s' />
   <input id='%s_id' name='%s[id]' type='hidden' value='%d' />
   <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' 'width=500,height=400%s'); target='%s'\">
 " + input +  "</form></div>"
       fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,win_name,scroll,win_name]
-      else
-      fmt =
- "<div><form action='/%s/%s' method='get'>
-  <input name='authenticity_token' type='hidden' value='%s' />
-  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400%s'); target='%s'\">
-" + input +  "</form></div>"
-      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,scroll,win_name]
-      end
-    else
-      "<div>"+form_tag({ :action => action},method: :get) + 
-        "<input type='hidden' name='page' value='#{@page}'>"+
-        (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
-         else;"";end
-         )+
-        submit_tag(label)+
-        input +  "</form></div>"
-    end
   end
 
   def input_and_action(action,label,opt={ })
