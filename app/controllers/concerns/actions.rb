@@ -229,11 +229,16 @@ module Actions
     #find_and
     
     @add_no = params[@Domain][:add_no].to_i
-    @maxid    = @models.size == 0 ? 1 : @Model.maximum(:id)+1
-    @new_models = @add_no.times.map{model = @Model.new }
-    @new_models.each_with_index{|model,id| model.id = id + @maxid}
+    @new_models = new_models
     @models += @new_models
     render  :file => 'application/edit_on_table',:layout => 'application'
+  end
+
+  def new_models
+    @maxid    = @models.size == 0 ? 1 : @Model.maximum(:id)+1
+    models = @add_no.times.map{model = @Model.new }
+    models.each_with_index{|model,id| model.id = id + @maxid}
+    models
   end
 
   def cell_update
