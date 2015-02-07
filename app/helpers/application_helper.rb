@@ -387,9 +387,9 @@ end
   end
 
   def option_tags(tags)
-    tags.map{|tag,domain,action,opt|
+    safe_join( tags.map{|tag,domain,action,opt|
       send(tag,domain,action,opt)
-    }.join
+    })
   end
   # ラベル定義のArryを元に、一覧表の表題行を出す
   # * (普通は) index.erb から呼ばれる。

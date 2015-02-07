@@ -180,8 +180,9 @@ Rails.application.routes.draw do
   resources "power_ube_hospital_month" ,path:  "/power/ube_hospital/month" , controller: "power/ube_hospital/month"
   set_post( "power/ube_hospital/month",@EditTable)
 
+  ######### 休日登録
   set_post(:holydays,%w(years edit)+@EditTable)
-  set_get(:holydays,@EditTable)
+  set_get(:holydays,%w(years)+@EditTable)
   resources :holydays
 
   ########## 病院勤務管理

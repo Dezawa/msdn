@@ -34,7 +34,8 @@ class HolydaysController < CommonController #ApplicationController
   # 
   def years
     @labels=[[HtmlText.new(:year,"年")]]
-    @models=Holyday.all.map{|hldy| hldy.year}.uniq
+    @models=Holyday.order( "day").map{|hldy| hldy.year}.uniq
+    @Edit = false
   end
 
   def show 
@@ -48,9 +49,10 @@ class HolydaysController < CommonController #ApplicationController
   end
 
   def destroy
-    if params[:id] =~ /^year:(\d{4})/
+    if params[:id] =~ /^year:(\d+)/
       year = $1
-      mm=@Model.all(:conditions => ["year = ?",year]).each{|m| m.destroy }
+      mm=@Model.delete_all( ["year = ?",year])# .each{|m| m.destroy }
+      @models=Holyday.all.map{|hldy| hldy.year}.uniq
       redirect_to :action => :years
     else
       model=@Model.find(params[:id])
@@ -62,15 +64,16 @@ class HolydaysController < CommonController #ApplicationController
 
   def new_year
     year = params[:holyday][:new_year].to_i
-    unless (@models = Holyday.all(:conditions => ["year = ?",year])).size>0
+    unless (@models = Holyday.where( ["year = ?",year])).size>0
       @models = Holyday.create_newyear(year)
     end 
     render  :file => 'application/edit_on_table',:layout => 'application'
   end
+
   def edit_on_table
     year = params[:new_year] ? params[:new_year].to_i : @year
     @TYTLE_post_edit="　#{year}年"
-    unless (@models = Holyday.all(:conditions => ["year = ?",year])).size>0
+    unless (@models = Holyday.where( ["year = ?",year])).size>0
       @models = Holyday.create_newyear(year)
     end 
     @option_tags = [[:hidden_field,@Domain,:year,{:value => year,:name => :year}]]
