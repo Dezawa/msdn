@@ -7,7 +7,7 @@ class Hospital::AvoidCombinationController < Hospital::Controller
     @Model= Hospital::AvoidCombination
     @TYTLE = "避ける組み合わせ"
     @Domain= @Model.name.underscore
-    #@FindOption = {:conditions => ["busho_id = ?",@current_busho_id] }
+    @FindWhere =  ["busho_id = ?",@current_busho_id] 
     @TableEdit = true
     @Delete=true
     @labels= 
@@ -20,6 +20,11 @@ class Hospital::AvoidCombinationController < Hospital::Controller
                   #
                   #             ]
   end
+
+  def new_models
+    super.each{|model| model.busho = @current_busho }
+  end
+
   def update_on_table
     params[@Domain].each{ |id,model|
      model[:busho_id] = @current_busho_id if model[:busho_id].blank?
