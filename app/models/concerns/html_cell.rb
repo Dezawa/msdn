@@ -113,9 +113,12 @@ end
 
 class HtmlText  < HtmlCell
   def edit_field_with_id(domain,object,controller,opt={},htmlopt="")
-    opt[:size] = size if size
-    text_field_tag(opt.delete(:name) || "#{domain}[#{object.id}][#{symbol}]", 
-                   value = (opt.delete(:value) || object.send(symbol)), opt) 
+    if ro(controller) ;disp(object)
+    else
+      opt[:size] = size if size
+      text_field_tag(opt.delete(:name) || "#{domain}[#{object.id}][#{symbol}]", 
+                     value = (opt.delete(:value) || object.send(symbol)), opt) 
+    end
   end
   def edit(domain,obj,controller,opt)
     text_field(domain,symbol,opt)
