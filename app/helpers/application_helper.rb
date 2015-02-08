@@ -631,14 +631,12 @@ end
   def disp_errors(objects)
     # [ AR.Error, AR.Error ,,,]
     
-    msg=objects.map{|obj|
-      next if obj.errors.size == 0
-      id=obj.id
-      #obj.errors.map{|attr,e| "ID=#{id}:#{er.full_messages}}" }.compact.join("<br>\n")
-      "ID=#{id}:#{obj.errors.full_messages}" 
-    }.compact.join("<br>\n")
-    "<font color=Red>#{msg}</font>".html_safe
-  end
+    "<font color=Red>".html_safe +
+      safe_join( objects.map{|obj|
+                   next if obj.errors.size == 0
+                   "ID=#{obj.id}:#{obj.errors.full_messages}" 
+                 }.compact,"<br>\n".html_safe)+"</font>".html_safe
+    end
 
   def t(sym,lang=nil)
     I18n.locale(lang) if lang
