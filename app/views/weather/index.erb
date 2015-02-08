@@ -3,7 +3,7 @@
 <%# end %>
 <h3><%= @TYTLE  %> 一覧 <%= @TYTLE_post %></h3>
 <%= flash[:message] %>
-<%= @errors.call if @errors -%>
+<%= disp_errors(@errors) if @errors -%>
 <%= case @TableEdit
  when TrueClass ; add_edit_buttoms(@Domain) 
  when String; @TableEdit 
