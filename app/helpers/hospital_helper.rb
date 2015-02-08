@@ -61,8 +61,8 @@ module HospitalHelper
     id   = "#{domain}_#{nurce.id}_#{role.id}"
     checked = (roles[role.id] ? "checked='checked'" : "" )
 
-    "<input #{checked} id='#{id}' name='#{name}' type='checkbox' value='1'  />"+
-      "<input  id='#{id}' name='#{name}' type='hidden' value='0' />"
+    "<input #{checked} id='#{id}' name='#{name}' type='checkbox' value='1'  />".html_safe+
+      "<input  id='#{id}' name='#{name}' type='hidden' value='0' />".html_safe
   end
   def nurce_total(nurce)
     ([:shift1,:shift3,:shift2].zip([:code1,:code3,:code2]).map{|sym,code|
