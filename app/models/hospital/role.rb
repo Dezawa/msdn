@@ -6,7 +6,7 @@ class Role < ActiveRecord::Base
 
   has_and_belongs_to_many :nurces
 
-  Bunrui = [ ["職位", 1], ["職種", 2], ["資格", 3], ["勤務区分", 4] ]
+  Bunrui = [ ["職位", 1], ["職種", 2], ["勤務区分", 3], ["資格", 4] ]
   Bunrui2Id = Bunrui.to_h
  
   @@kinmukubun = nil
