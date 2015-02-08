@@ -4,7 +4,7 @@ require 'spec_helper'
 TEST_DATA =
   { 
   42 => {
-    role_ids: [2,4,5],
+    need_role_ids: [2,4,5],
     roles:    [[2, "看護師"], [4, "Aチーム"], [5, "Bチーム"]],
     role_id:  [false,true,false,true,true],
     limit_id: 42,
@@ -47,7 +47,7 @@ TEST_DATA =
   },
   
   1 => {
-    role_ids: [2],
+    need_role_ids: [2],
     roles:    [[2, "看護師"]],
     role_id:  [false,true,false,false,false],
     limit_id: 1,
@@ -97,7 +97,7 @@ TEST_DATA.each{|id,td|
     end
     
     it "ID=#{id} が持つロールのID" do
-      expect(@nurce.role_ids).to eq td[:role_ids]
+      expect(@nurce.need_role_ids).to eq td[:role_ids]
     end
 
     it "ID=#{id} が持つロール" do

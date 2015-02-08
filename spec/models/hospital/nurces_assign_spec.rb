@@ -19,7 +19,7 @@ describe "20人職場の、roleが[2,5]の人のコスト" do
         # まだ割付ていないから、@nurce.assinable_roles は{[2, "0"]=>8,[2, "1"]=>20, [2, "2"]=>5, [2, "3"]=>5}
         # ので、shift_remain は  {"0"=>8.0, "1"=>20, "2"=>5, "3"=>5}
         ### tightness は 部署全体による値
-        expect(@nurce.role_ids).to eq [2,5]
+        expect(@nurce.need_role_ids).to eq [2,5]
         expect(@nurce.cost("2",tightness)).to eq cost # tightness の上下2roleなのでCost[5]、残り5
 
       end
@@ -43,7 +43,7 @@ describe "20人職場の、roleが[2,5]の人のコスト" do
         # まだ割付ていないから、@nurce.assinable_roles は{[2, "0"]=>8,[2, "1"]=>20, [2, "2"]=>5, [2, "3"]=>5}
         # ので、shift_remain は  {"0"=>8.0, "1"=>20, "2"=>5, "3"=>5}
         ### tightness は 部署全体による値
-        expect(@nurce.role_ids).to eq [2,5]
+        expect(@nurce.need_role_ids).to eq [2,5]
         expect(@nurce.cost("2",tightness)).to eq cost # tightness の上下2roleなのでCost[5]、残り5
       
     end

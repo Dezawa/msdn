@@ -266,7 +266,7 @@ class Hospital::Nurce < ActiveRecord::Base
 
   # 必要roleを少なくとも一つ持って居るか？
   def has_assignable_roles_atleast_one(sft_str,need_roles)
-    shift_remain[sft_str]>0 && (need_roles & role_ids).size > 0
+    shift_remain[sft_str]>0 && (need_roles & need_role_ids).size > 0
   end
 
 ####################################################################
@@ -304,9 +304,19 @@ class Hospital::Nurce < ActiveRecord::Base
     @roles ||=
       (hospital_roles + [shokui,shokushu,kinmukubun]).compact.map{|role| [role.id,role.name]}.uniq
   end
-  def role_ids 
-    @role_ids ||= ( roles.map{ |id,name| id}.uniq & Hospital::Need.roles).sort
+
+  def need_roles
+    @need_roles ||= roles.select{ |id,name| Hospital::Need.roles.include?(id) }
   end
+
+  def role_ids 
+    @role_ids ||= roles.map{ |id,name| id}.uniq .sort
+  end
+
+  def need_role_ids
+    @need_role_ids ||= need_roles.map{ |id,name| id}.uniq.sort
+  end
+
   def roles_by_id
     @rolls_by_id ||= Hash[*roles.flatten]
   end
@@ -315,7 +325,7 @@ class Hospital::Nurce < ActiveRecord::Base
     roles[hospital_roles.find_by(name: rolename).id]
   end
 
-  def role_id?(role_id);role_ids.include?(role_id) #.to_i);
+  def role_id?(role_id);need_role_ids.include?(role_id) #.to_i);
   end
 
   def role_shift(month=nil,reculc=false)
@@ -326,7 +336,7 @@ class Hospital::Nurce < ActiveRecord::Base
     @role_shift
   end
   def role_shift_of(sft_str)
-    r_s = role_ids.map{|role_id| [ role_id , sft_str] }.compact
+    r_s = need_role_ids.map{|role_id| [ role_id , sft_str] }.compact
   end
 
   def shift_count(shift)

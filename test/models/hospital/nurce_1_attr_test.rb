@@ -28,8 +28,8 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     assert_equal 2,nurce(1).limit.code2
   end
 
-  must "看護婦Id=40のrole_ids " do
-    assert_equal [3,4,9],nurce(40).role_ids.sort
+  must "看護婦Id=40のneed_role_ids " do
+    assert_equal [3,4,9],nurce(40).need_role_ids.sort
   end
 
   must "看護婦Id=40のroles " do

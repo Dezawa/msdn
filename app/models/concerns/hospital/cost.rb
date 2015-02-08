@@ -75,8 +75,8 @@ module Hospital::Cost
   # tight   :: [role_id, role_id,role_id]  タイトなロールのトップ３（または２）
   def cost(sft_str,tight)
     case tight.size
-    when 3 ;self.class.cost_table[tight][(tight & role_ids).sort][shift_remain[sft_str]]
-    when 2 ;self.class.cost_table2[tight][(tight & role_ids).sort][shift_remain[sft_str]]
+    when 3 ;self.class.cost_table[tight][(tight & need_role_ids).sort][shift_remain[sft_str]]
+    when 2 ;self.class.cost_table2[tight][(tight & need_role_ids).sort][shift_remain[sft_str]]
     else
       dbgout("Nurce#cost sft_str #{sft_str} tight #{tight}")
       raise

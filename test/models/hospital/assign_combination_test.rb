@@ -121,7 +121,7 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
     nurce = @assign.nurce_by_id(24)
     assert_equal [3,4],@assign.short_role(day,sft_str).map{|r,mi_max| r }
     assert_equal 3 , nurce.shift_remain[sft_str]
-    assert_equal [4,9,10],nurce.role_ids
+    assert_equal [4,9,10],nurce.need_role_ids
     has_role = nurce.has_assignable_roles_atleast_one(sft_str, @assign.short_role(day,Sshift2).map{|r,mi_max| r })
     assert  has_role
   end

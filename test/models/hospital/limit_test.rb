@@ -17,7 +17,7 @@ class Hospital::RoleTest < ActiveSupport::TestCase
 
   must "部署１の看護師の roleとlimitは " do
     nurces = Hospital::Nurce.by_busho(1)
-    roles  = nurces.map{ |nurce| nurce.role_ids}
+    roles  = nurces.map{ |nurce| nurce.need_role_ids}
     limits = nurces.map{ |nurce|  [:code1,:code2,:code3,:kinmu_total,:night_total].map{ |sym| nurce.limit.send(sym)}}
 
     assert_equal [[4], [4, 9], [4, 10], [4, 9],   [3, 4, 9], [3, 4, 9], [3, 4, 9], [3, 4, 9],

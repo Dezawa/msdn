@@ -185,11 +185,11 @@ assinable_roles = {
   }
   must "Nurce 40 cost" do
     nurce40 = nurce(40)#,[2013,3,1])
-    assert_equal [3,4,9], nurce40.role_ids.sort,"nurce40.role_ids"
+    assert_equal [3,4,9], nurce40.need_role_ids.sort,"nurce40.need_role_ids"
     assert_equal assinable_roles, nurce40.assinable_roles
     assert_equal ({:night_total=>8, "3"=>5, "2"=>4, "1"=>17.0, "0"=>8.0, :kinmu_total=>18.0}),
     nurce40.shift_remain
-    assert_equal [3,4,9],    nurce40.role_ids.sort
+    assert_equal [3,4,9],    nurce40.need_role_ids.sort
     assert_equal 5,nurce40.shift_remain["3"],"role remain5"
     cost = Hospital::Nurce::Cost[6][5]
     assert_equal cost, nurce40.cost("3",[3,9,10]).to_i ," tight 3,9,10"

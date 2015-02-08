@@ -776,7 +776,7 @@ class Hospital::Assign
   end
 
   def gather_by_each_group_of_role(as_nurce,sft_str,short_role_of_this_shift)
-    nurces_group_by = as_nurce.group_by{ |nurce| (nurce.role_ids & short_role_of_this_shift).sort}
+    nurces_group_by = as_nurce.group_by{ |nurce| (nurce.need_role_ids & short_role_of_this_shift).sort}
     logger.debug("GATHER_BY_EACH_GROUP_OF_ROLE shift=#{sft_str}:as_nurce = #{as_nurce.map(&:id).join(',')}")
     nurces =  nurces_group_by.to_a.  # 持ってるroleで層別し
       sort_by{ |roles,nurce_list|  roles_cost(roles,tight_roles(sft_str))}.
@@ -1082,7 +1082,7 @@ class Hospital::Assign
       nurce.set_shift(day,shift_str)
     count_role_shift[day] = count_role_shift_of(day)
     short_role_shift[day] = short_role_shift_of(day)
-    nurce.role_ids.each{|role_id,name| 
+    nurce.need_role_ids.each{|role_id,name| 
       role_remain[[role_id,shift_str]] -= 1
       #      margin_of_role[[role_id,shift_str.to_i]] -= 1
     }
@@ -1161,7 +1161,7 @@ class Hospital::Assign
     return @role_remain if @role_remain && !recalc
     @role_remain = Hash.new{|h,k| h[k]=0}
     @nurces.each{|nurce| 
-      nurce.role_ids.each{ |role_id|
+      nurce.need_role_ids.each{ |role_id|
         nurce.shift_remain.keys.each{ |sft_str|
           @role_remain[[role_id,sft_str]] += nurce.shift_remain(recalc)[sft_str]
         }
@@ -1305,7 +1305,7 @@ class Hospital::Assign
 
   def role_count(nurces)
     ret = Hash.new{|h,k| h[k]=0}
-    nurces.each{|nurce|  nurce.role_ids.each{|role_id| ret[role_id] += 1}}
+    nurces.each{|nurce|  nurce.need_role_ids.each{|role_id| ret[role_id] += 1}}
     ret
   end
 
@@ -1343,7 +1343,7 @@ class Hospital::Assign
 
   # 与えられた看護師群が持つroleのidのリスト。
   def roles_of(nurces)
-    nurces.map{|nurce|  nurce.role_ids}.flatten.uniq.sort
+    nurces.map{|nurce|  nurce.need_role_ids}.flatten.uniq.sort
   end
 
 
