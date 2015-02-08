@@ -37,7 +37,7 @@ class Hospital::Nurce < ActiveRecord::Base
   belongs_to :busho    ,:class_name => "Hospital::Busho"
 
   after_find {  set_check_reg }
-  before_save { pp "BEFORE_SAVE";save_month }
+  #before_save { pp "BEFORE_SAVE";save_month }
 
   LimitDefault =
     { :code0 => 8,:code1 => 20,:code2 => 4,:code3 => 4,:coden => 1,
