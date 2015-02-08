@@ -634,7 +634,8 @@ end
     msg=objects.map{|obj|
       next if obj.errors.size == 0
       id=obj.id
-      obj.errors.map{|er| "ID=#{id}:#{er[0]} #{er[1]}" }.compact.join("<br>\n")
+      #obj.errors.map{|attr,e| "ID=#{id}:#{er.full_messages}}" }.compact.join("<br>\n")
+      "ID=#{id}:#{obj.errors.full_messages}" 
     }.compact.join("<br>\n")
     "<font color=Red>#{msg}</font>".html_safe
   end
