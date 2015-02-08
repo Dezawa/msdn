@@ -44,7 +44,8 @@ module HospitalHelper
       edit_field_with_id(domain,nurce,@controller, :value => kinmucode_id,
                          :name => name(domain,nurce.id,day)) 
   end
- def kinmucode_selector_for_hope(domain,day,nurce,monthly)
+
+  def kinmucode_selector_for_hope(domain,day,nurce,monthly)
     kinmukubun_id = nurce.kinmukubun_id
     kinmu  = monthly.days[day]
     kinmucode_id  = kinmu.kinmucode_id
@@ -54,7 +55,11 @@ module HospitalHelper
                    ).
       edit_field_with_id(domain,nurce,@controller, :value => kinmucode_id,
                          :name => name(domain,nurce.id,"day%02d"%day)) 
- end
+  end
+
+  def disp_hase_role?(nurce,role_id)
+    nurce.role_id?(role_id) ? "◯" : "&nbsp;".html_safe
+  end
 
   def role_checkbox(domain,role,nurce,roles)
     name = "#{domain}[#{nurce.id}][#{role.id}]"

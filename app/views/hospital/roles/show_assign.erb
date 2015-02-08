@@ -12,7 +12,7 @@
 <% @nurces.each{|nurce| roles= nurce.roles_by_id %>
 
 <tr><td><%= nurce.id %></td><td><nobr><%= nurce.name %></td>
-   <% @roles.each{|role|  %> <td><%= nurce.role_id?(role.id) ? "○":  "&nbsp;".html_safe %> <%}%>
+   <% @roles.each{|role|  %> <td><%= disp_hase_role?(nurce,role.id) %> <%}%>
    <% @labels.each{|html_cell| -%>
   <%= html_cell.td %><%= html_cell.disp_field nurce.limit %></td><% }%>
 </tr><%}%>

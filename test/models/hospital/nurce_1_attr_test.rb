@@ -36,9 +36,9 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     assert_equal [[3, "リーダー"],[4, "看護師"], [7, "三交代"],[9, "Aチーム"]], nurce(40).roles.sort
   end
 
-  must "看護婦Id=40のrole_id? " do
+  must "看護婦Id=40のneed_role_id? " do
     [[3,true],[4,true],[5,false],[9,true],[10,false]].each{|id,rsrt|
-      assert_equal rsrt,nurce(40).role_id?(id), "role_id? #{id}"
+      assert_equal rsrt,nurce(40).need_role_id?(id), "need_role_id? #{id}"
     }
   end
 

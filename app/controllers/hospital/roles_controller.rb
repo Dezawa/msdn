@@ -59,8 +59,8 @@ class Hospital::RolesController < Hospital::Controller
         nurce.save
       end
       roles.each_pair{|role_id,assigned|
-        logger.debug("RoleUpdateAssign Nurce #{nurce_id},role #{role_id}=>#{nurce.role_id?(role_id)},#{assigned}")
-        case [!!nurce.role_id?(role_id.to_i),assigned]
+        logger.debug("RoleUpdateAssign Nurce #{nurce_id},role #{role_id}=>#{nurce.need_role_id?(role_id)},#{assigned}")
+        case [!!nurce.need_role_id?(role_id.to_i),assigned]
         when [false,"1"] ; nurce.hospital_roles << Hospital::Role.find(role_id)
         when [true ,"0"] ; nurce.hospital_roles.delete(Hospital::Role.find(role_id))
         end  # [true,"1"],[false,"0"] ; # do notheig

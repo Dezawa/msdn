@@ -13,7 +13,7 @@ class Hospital::NurcePaterningTest < ActiveSupport::TestCase
     @assign=Hospital::Assign.new(@busho_id,@month)
     @nurces=@assign.nurces
  end
-# @nurces.each{|n| p [n.id,!!n.role_id?(1),n.shift_count(3),n.evaluate([1,2,4,5],3)]};1
+# @nurces.each{|n| p [n.id,!!n.need_role_id?(1),n.shift_count(3),n.evaluate([1,2,4,5],3)]};1
   #######
 
   #################

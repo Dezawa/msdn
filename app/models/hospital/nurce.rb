@@ -325,7 +325,9 @@ class Hospital::Nurce < ActiveRecord::Base
     roles[hospital_roles.find_by(name: rolename).id]
   end
 
-  def role_id?(role_id);need_role_ids.include?(role_id) #.to_i);
+  def need_role_id?(role_id);need_role_ids.include?(role_id) #.to_i);
+  end
+  def role_id?(role_id);role_ids.include?(role_id) #.to_i);
   end
 
   def role_shift(month=nil,reculc=false)
