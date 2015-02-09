@@ -12,7 +12,7 @@ two:
 No3:
   id: '3'
   name: "リーダー"
-  bunrui: '4'
+  bunrui: '1'
   need: '1'
 No4:
   id: '4'
@@ -49,8 +49,3 @@ No10:
   name: Bチーム
   bunrui: '4'
   need: '1'
-No11:
-  id: '14'
-  name: "共通"
-  bunrui: '3'
-  need: 
