@@ -107,19 +107,6 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
       redirect_to :action => :show_assign,:mult => "20",:no => "0000"
   end
 
-  def set_busho_month
-    @month = session[:hospital_year] = Time.parse(params[@Domain][:month]+"/1 JST").to_date
-    @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
-    redirect_to :action => :show_assign
-  end
-
-
-  def set_busho_month
-    @month = session[:hospital_year] = Time.parse(params[@Domain][:month]+"/1 JST").to_date
-    @current_busho_id = session[:hospital_busho] = params[@Domain][:current_busho_id].to_i
-    redirect_to :action => :show_assign
-  end
-
 
   def clear_assign
     @assign=Hospital::Assign.new(@current_busho_id,@month)

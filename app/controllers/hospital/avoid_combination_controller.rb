@@ -8,7 +8,7 @@ class Hospital::AvoidCombinationController < Hospital::Controller
     @TYTLE = "避ける組み合わせ"
     @Domain= @Model.name.underscore
     @FindWhere =  ["busho_id = ?",@current_busho_id] 
-    @TableEdit = true
+    @TableEdit =  _TableAddEditChangeBusho #true
     @Delete=true
     @labels= 
       [ HtmlText.new(:busho_name,"部署",:ro => true),
