@@ -31,7 +31,7 @@ class Hospital::RolesController < Hospital::Controller
      ]
 
   def show_assign
-    @roles  = Hospital::Role.where( "bunrui <> 3")
+    @roles_by_bunrui = Hospital::Role.order(:id).group_by{ |role| role.bunrui}
     @labels = AssignLabel 
     @nurces = Hospital::Nurce.by_busho(@current_busho_id)
     @TableEdit = [[:form,:assign,"編集"],
@@ -45,7 +45,7 @@ class Hospital::RolesController < Hospital::Controller
   end
 
   def assign
-    @roles=Hospital::Role.all
+    @roles_by_bunrui = Hospital::Role.order(:id).group_by{ |role| role.bunrui}
     @labels = AssignLabel 
     @nurces = Hospital::Nurce.by_busho(@current_busho_id)
   end
@@ -58,14 +58,13 @@ class Hospital::RolesController < Hospital::Controller
         nurce.limit.update_attributes(limit) 
         nurce.save
       end
-      roles.each_pair{|role_id,assigned|
-        logger.debug("RoleUpdateAssign Nurce #{nurce_id},role #{role_id}=>#{nurce.need_role_id?(role_id)},#{assigned}")
-        case [!!nurce.need_role_id?(role_id.to_i),assigned]
-        when [false,"1"] ; nurce.hospital_roles << Hospital::Role.find(role_id)
-        when [true ,"0"] ; nurce.hospital_roles.delete(Hospital::Role.find(role_id))
+      Hospital::Role.shikaku.map{ |role_name,role_id|
+        logger.debug("Hospital::Role UPDATE_ASSIGN role_id=#{role_id} nurce.role_id?(role_id)=#{nurce.role_id?(role_id)},roles[role_id.to_s]=#{roles[role_id.to_s]}")
+        case [!!nurce.role_id?(role_id),roles[role_id.to_s]=="1"]
+        when [true ,false] ; nurce.remove_role(role_id)
+        when [false,true] ; nurce.add_role(role_id)
         end  # [true,"1"],[false,"0"] ; # do notheig
-      }
-      
+      }.compact.size > 0      
     }
     redirect_to :action => :show_assign
   end

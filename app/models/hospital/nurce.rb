@@ -341,6 +341,26 @@ class Hospital::Nurce < ActiveRecord::Base
     r_s = need_role_ids.map{|role_id| [ role_id , sft_str] }.compact
   end
 
+  def add_role(role_id)
+logger.debug("=== ADD_ROLE user #{id} role #{role_id} bunrui #{Hospital::Role.find(role_id).bunrui}")
+    case (role = Hospital::Role.find(role_id) ).bunrui
+    when 1 ; self.shokui_id = role_id         ; save
+    when 2 ; self.shokushu_id = role_id       ; save
+    when 3 ; self.kinmukubun_id = role_id       ; save
+    when 4 ; self.hospital_roles << role
+    end
+  end
+  def remove_role(role_id)
+ logger.debug("=== REMOVE_ROLE user #{id} role #{role_id} bunrui #{Hospital::Role.find(role_id).bunrui}")
+   case (role = Hospital::Role.find(role_id) ).bunrui
+    when 1 ; self.shokui = nil     if self.shokui == role       ; save
+    when 2 ; self.shokushu = nil   if self.shokushu == role       ; save
+    when 3 ; self.kinmukubun = nil if self.kinmukubun == role       ; save
+    when 4 ; self.hospital_roles.delete(role)
+    end
+  end
+
+
   def shift_count(shift)
     case shift
     when 1 ;shifts.gsub(/[^1478]/,"").size + shifts.gsub(/[^9ABC]/,"").size * 0.5

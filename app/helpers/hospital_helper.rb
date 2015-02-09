@@ -61,13 +61,15 @@ module HospitalHelper
     nurce.role_id?(role_id) ? "◯" : "&nbsp;".html_safe
   end
 
-  def role_checkbox(domain,role,nurce,roles)
-    name = "#{domain}[#{nurce.id}][#{role.id}]"
-    id   = "#{domain}_#{nurce.id}_#{role.id}"
-    checked = (roles[role.id] ? "checked='checked'" : "" )
-
-    "<input #{checked} id='#{id}' name='#{name}' type='checkbox' value='1'  />".html_safe+
-      "<input  id='#{id}' name='#{name}' type='hidden' value='0' />".html_safe
+  def role_checkbox(domain,role,nurce,opt={ })
+    name = if opt[:ro]  && opt.delete(:ro)
+             opt[:onclick] = "return false;" 
+             ""
+           else
+             "#{domain}[#{nurce.id}][#{role.id}]"
+           end
+    check_box_tag(name,"1",nurce.role_id?(role.id), opt)
+    #"<input #{checked} id='#{id}' name='#{name}' type='checkbox' value='1'  />".html_safe
   end
   def nurce_total(nurce)
     ([:shift1,:shift3,:shift2].zip([:code1,:code3,:code2]).map{|sym,code|
