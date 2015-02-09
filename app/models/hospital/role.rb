@@ -28,17 +28,18 @@ class Role < ActiveRecord::Base
     @@id2name ||= Hash[*all.map{|obj| [obj.id,obj.name]}.flatten]
   end
 
+  @@shokui = @@shokushu = @@kinmukubun = @@shikaku = nil
   def self.shokui
-    where("bunrui = #{Bunrui2Id['職位']}").map{ |obj| [obj.name,obj.id]}
+    @@shokui ||= where("bunrui = #{Bunrui2Id['職位']}").map{ |obj| [obj.name,obj.id]}
    end
    def self.shokushu
-    where("bunrui =  #{Bunrui2Id['職種']}").map{ |obj| [obj.name,obj.id]}
+    @@shokushu ||= where("bunrui =  #{Bunrui2Id['職種']}").map{ |obj| [obj.name,obj.id]}
    end
    def self.kinmukubun
-    where("bunrui =  #{Bunrui2Id['勤務区分']}").map{ |obj| [obj.name,obj.id]}
+    @@kinmukubun ||= where("bunrui =  #{Bunrui2Id['勤務区分']}").map{ |obj| [obj.name,obj.id]}
   end
   def self.shikaku
-    where("bunrui =  #{Bunrui2Id['資格']}").map{ |obj| [obj.name,obj.id]}
+    @@shikaku ||= where("bunrui =  #{Bunrui2Id['資格']}").map{ |obj| [obj.name,obj.id]}
   end
  
 
