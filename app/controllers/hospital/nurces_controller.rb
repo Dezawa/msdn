@@ -92,4 +92,9 @@ class Hospital::NurcesController <  Hospital::Controller
       render  :file => 'application/edit_on_table',:layout => 'application'
     end
   end
+
+  def set_busho
+    set_busho_sub
+    redirect_to :action => :index
+  end
 end

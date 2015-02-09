@@ -31,5 +31,9 @@ class Hospital::AvoidCombinationController < Hospital::Controller
     }
     super
   end
-
+  
+  def set_busho
+    super
+    redirect_to :action => :index
+  end
 end

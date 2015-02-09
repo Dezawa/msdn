@@ -15,18 +15,21 @@ class Hospital::Controller < CommonController #ApplicationController
       @month    = arg_month    || Time.now.beginning_of_month.next_month.to_date
       self
     end
+    def to_s
+      "部署id=#{busho_id} month=#{yyyymm}"
+    end
     def yyyymm ; month.strftime("%Y-%m"); end
   end
 
   def _TableAddEditChangeBusho 
     [[:add_edit_buttoms], ["　　　"],
-     [:form,:set_busho,"部署変更",:input_busho]
+     [:form,:set_busho,"部署変更",:input_busho,:method => :post]
     ]
   end
 
   def  _TableEditChangeBusho 
     [[:edit_bottom],      ["　　　"],
-     [:form,:set_busho,"部署変更",:input_busho]]
+     [:form,:set_busho,"部署変更",:input_busho,:method => :post]]
   end
 
   def set_instanse_variable
@@ -44,9 +47,10 @@ class Hospital::Controller < CommonController #ApplicationController
               Menu.new("様式9",:form9,:action => :calc),
               Menu.new("休日",:holydays,:controller => "/holydays",:action => :index,:page=>1,:id => Time.now.year)
              ]
+    #session[:hospital]=nil
     @busho_getudo = YAML.load(session[:hospital] ||= YAML.dump(BushoGetudo.new))
-    # @busho_getudo = YAML.load( YAML.dump(BushoGetudo.new))
-    @month = @busho_getudo.month 
+    #logger.debug("HospitalController::busho_getudo = #{@busho_getudo.to_s}")
+    @month = @busho_getudo.month
     if @busho_getudo.busho_id 
       @current_busho_id = @busho_getudo.busho_id #session[:hospital_busho] || 1
       @current_busho    = Hospital::Busho.find(@current_busho_id)
@@ -54,18 +58,15 @@ class Hospital::Controller < CommonController #ApplicationController
     end
   end
 
+  def set_busho_sub
+    @busho_getudo.busho_id = params[:busho_getudo][:busho_id].to_i 
+    session[:hospital] = YAML.dump @busho_getudo
+  end
 
-  def set_busho_sub
-    @busho_getudo.busho_id = params[:busho_getudo][:busho_id].to_i 
+  def set_busho_month_sub
+    @month = Time.parse(params[:busho_getudo][:yyyymm]+"-1")
+    @busho_getudo.month = @month
+    #logger.debug("HospitalController::set_busho_month_sub  params=#{params[:busho_getudo][:yyyymm]} busho_getudo = #{@busho_getudo.to_s}")
     session[:hospital] = YAML.dump @busho_getudo
-    #logger.debug "session[:hospital]: #{session[:hospital].busho_id}"
-  end
-  def set_busho_sub
-    @busho_getudo.busho_id = params[:busho_getudo][:busho_id].to_i 
-    session[:hospital] = YAML.dump @busho_getudo
-  end
-  def set_busho
-    set_busho_sub
-    redirect_to :action => :index #show_assign
   end
 end

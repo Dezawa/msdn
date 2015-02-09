@@ -128,6 +128,9 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
   def error_disp
     @error_days,@error_nurces = Hospital::Assign.new(@current_busho_id,@month).error_check
     render :layout => "hospital_error_disp"
-    
   end
+  def set_busho_month
+    set_busho_month_sub
+    redirect_to :action => :show
+  end    
 end

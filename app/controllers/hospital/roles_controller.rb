@@ -69,8 +69,10 @@ class Hospital::RolesController < Hospital::Controller
     redirect_to :action => :show_assign
   end
 
-  def index
-    find_and
-  end
+  def index ;    find_and ;  end
 
+  def set_busho
+    set_busho_sub
+    redirect_to :action => :index
+  end
 end
