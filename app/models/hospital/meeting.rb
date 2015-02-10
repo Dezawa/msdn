@@ -3,7 +3,16 @@ class Hospital::Meeting < ActiveRecord::Base
 
   attr_writer :startday
 
-  def startday   ; start.strftime("%d");end
+    # t.integer  "busho_id"
+    # t.date     "month"
+    # t.integer  "number"
+    # t.string   "name"
+    # t.datetime "start"
+    # t.float    "length",   limit: 24
+    # t.boolean  "kaigi",  default: true
+
+  def startday   #; logger.debug("### MEETING startday=#{startday}")
+    start.strftime("%d");end
   def day_column ; start.strftime("day%02d");end
-  def day        ;start.day ;end
+  def day        ; start.day ;end
 end
