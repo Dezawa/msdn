@@ -32,8 +32,7 @@ class Hospital::MeetingsController < Hospital::Controller
               HtmlText.new(:length  ,"所要時間",:size => 3)
              ]
 
-    @FindWhere = ["busho_id = ? and month = ? ",
-                                         @current_busho_id, @month]
+    @FindWhere = ["busho_id = ? and month = ? ", @current_busho_id, @month.to_date]
     @Findorder = "start"
   end
 
@@ -43,6 +42,14 @@ class Hospital::MeetingsController < Hospital::Controller
     params[@Domain][:busho_id] = @current_busho_id
     params[@Domain][:start]    = make_datetime(params[@Domain][:startday],params[@Domain][:start])
     super
+  end
+  def new_models
+logger.debug("Hospital busho_getudo=#{@busho_getudo.month} #{@busho_getudo.month.to_time}")
+    @TYTLE_post_edit = @month.to_s + @month.strftime(" %H:%M ") + @month.strftime("%d")
+    super.each{ |meeting|
+      meeting.month = @month 
+      meeting.start = @month+16.hour
+    }
   end
   def update_on_table
     params[@Domain].each_pair{|i,model|
@@ -73,8 +80,7 @@ class Hospital::MeetingsController < Hospital::Controller
     @correction = AssignCorrection
     @nurces = Hospital::Nurce.where(["busho_id = ?",@current_busho_id])
     @meetings = @Model.
-      where( ["busho_id = ? and month = ? ",@current_busho_id,@month],
-          :order => "start")
+      where( ["busho_id = ? and month = ? ",@current_busho_id,@month]).order("start")
  end 
  def assign
     @correction = AssignCorrection
@@ -97,4 +103,8 @@ logger.debug("会議時間"+@month.strftime("%Y-%m-")+day_str +" "+time_string)
       end
     end
   end
+  def set_busho_month
+    set_busho_month_sub
+    redirect_to :action => :index
+  end    
 end
