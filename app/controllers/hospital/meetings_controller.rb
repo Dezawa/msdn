@@ -44,8 +44,6 @@ class Hospital::MeetingsController < Hospital::Controller
     super
   end
   def new_models
-logger.debug("Hospital busho_getudo=#{@busho_getudo.month} #{@busho_getudo.month.to_time}")
-    @TYTLE_post_edit = @month.to_s + @month.strftime(" %H:%M ") + @month.strftime("%d")
     super.each{ |meeting|
       meeting.month = @month 
       meeting.start = @month+16.hour
