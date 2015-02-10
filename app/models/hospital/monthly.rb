@@ -97,7 +97,7 @@ class Hospital::Monthly < ActiveRecord::Base
   
   def kinmucode(day)
     kinmucode_id = days[day].kinmucode_id
-    return "&nbsp;" unless kinmucode_id && (kinmucode_id%1000)>0
+    return nil unless kinmucode_id && (kinmucode_id%1000)>0
     Hospital::Kinmucode.k_code(kinmucode_id%1000).code rescue nil
   end
 

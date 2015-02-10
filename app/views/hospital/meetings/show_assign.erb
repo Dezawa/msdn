@@ -10,11 +10,10 @@
 <% @nurces.each{|nurce| monthly= nurce.monthly(@month);id=monthly.id %>
 
 <tr><td><%= nurce.name %></td>
-   <% @meetings.each{|meeting| day = meeting.day %>
-    <td <%= monthly.color(day)%>>
-    <%= monthly.kinmucode(day) %>
-    <%}%>
-</tr><%}%>
+<%- @meetings.each{|meeting| day = meeting.day %>
+<td <%= monthly.color(day)%>><%= monthly.kinmucode(day) || "&nbsp;".html_safe -%></td>
+    <%- } -%>
+</tr><%- }%>
 </table>
 
 </form>
