@@ -16,7 +16,7 @@ class Hospital::Controller < CommonController #ApplicationController
       self
     end
     def to_s
-      "部署id=#{busho_id} month=#{yyyymm}"
+      "部署id=#{busho_id} month=#{month}"
     end
     def yyyymm ; month.strftime("%Y-%m"); end
   end
