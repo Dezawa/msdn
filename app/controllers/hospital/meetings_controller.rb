@@ -19,7 +19,7 @@ class Hospital::MeetingsController < Hospital::Controller
     @TYTLE = "会議"
     @TYTLE_post_edit = @month.strftime("%Y/%m　")+@current_busho_id_name 
     @Domain= @Model.name.underscore
-    @TableEdit = [[:add_edit_buttoms],[:form,:show_assign,"担当割振り"],
+    @TableEdit = [[:add_edit_buttoms],[:form,:show_assign,"担当割振り",:method => :get],
                   ["　　　"],
                   [:form,:set_busho_month,"部署・年月変更",:input_busho_month]]
     @Edit  = true
