@@ -9,11 +9,6 @@ class Role < ActiveRecord::Base
   Bunrui = [ ["職位", 1], ["職種", 2], ["勤務区分", 3], ["資格", 4] ]
   Bunrui2Id = Bunrui.to_h
  
-  @@kinmukubun = nil
-  def self.kinmukubun
-    @@kinmukubun ||= self.where(bunrui: 4).pluck(:id,:name)
-  end
-
   def self.names
     all.map{|obj| [obj.name,obj.id]}
   end
@@ -36,7 +31,7 @@ class Role < ActiveRecord::Base
     @@shokushu ||= where("bunrui =  #{Bunrui2Id['職種']}").map{ |obj| [obj.name,obj.id]}
    end
    def self.kinmukubun
-    @@kinmukubun ||= where("bunrui =  #{Bunrui2Id['勤務区分']}").map{ |obj| [obj.name,obj.id]}
+    @@kinmukubun ||= where("bunrui =  #{Bunrui2Id['勤務区分']} and name <>'共通'").map{ |obj| [obj.name,obj.id]}
   end
   def self.shikaku
     @@shikaku ||= where("bunrui =  #{Bunrui2Id['資格']}").map{ |obj| [obj.name,obj.id]}
