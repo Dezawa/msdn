@@ -111,7 +111,7 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
   def clear_assign
     @assign=Hospital::Assign.new(@current_busho_id,@month)
     condition = "handler LIKE '%Hospital::Assign\nmethod: :create_assign\nargs: \n- #{@current_busho_id}\n- #{@month.strftime('%Y-%m-%d')}\n- 2\n%'"
-    delayed_jobs = Delayed::Job.all(:conditions => condition)
+    delayed_jobs = [] #Delayed::Job.all(:conditions => condition)
 
     if delayed_jobs.size ==0
       @assign.clear_assign_all.save
@@ -131,6 +131,6 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
   end
   def set_busho_month
     set_busho_month_sub
-    redirect_to :action => :show
+    redirect_to :action => :show_assign
   end    
 end
