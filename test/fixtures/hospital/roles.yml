@@ -49,3 +49,9 @@ No10:
   name: Bチーム
   bunrui: '4'
   need: '1'
+No11:
+  id: '14'
+  name: 共通
+  bunrui: 4
+  need: 0
+  comment: 

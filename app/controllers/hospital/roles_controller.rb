@@ -31,7 +31,7 @@ class Hospital::RolesController < Hospital::Controller
      ]
 
   def show_assign
-    @roles_by_bunrui = Hospital::Role.order(:id).group_by{ |role| role.bunrui}
+    @roles_by_bunrui = Hospital::Role.where("name <> '共通'").order(:id).group_by{ |role| role.bunrui}
     @labels = AssignLabel 
     @nurces = Hospital::Nurce.by_busho(@current_busho_id)
     @TableEdit = [[:form,:assign,"編集"],
@@ -45,7 +45,7 @@ class Hospital::RolesController < Hospital::Controller
   end
 
   def assign
-    @roles_by_bunrui = Hospital::Role.order(:id).group_by{ |role| role.bunrui}
+    @roles_by_bunrui = Hospital::Role.where("name <> '共通'").order(:id).group_by{ |role| role.bunrui}
     @labels = AssignLabel 
     @nurces = Hospital::Nurce.by_busho(@current_busho_id)
   end
