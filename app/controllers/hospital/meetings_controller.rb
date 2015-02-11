@@ -2,17 +2,7 @@
 class Hospital::MeetingsController < Hospital::Controller
   before_filter :set_instanse_variable
   attr_accessor :month,:current_busho_id
-  
-  AssignCorrection = {
-    #勤務区分、会議|出張,所要時間
-    [1,true,1.0] => [["会1",32]],
-    [1,true,1.5] => [["会□",31]],
-    [2,true,1.0] => [["会1",7]],
-    [2,true,1.5] => [["会",6]],
-    [1,false,nil] => %w(出 出/1□ 1/出 出/G Z/出).zip([41,42,43,44,45]),
-    [2,false,nil] => %w(出 出/1 1/出 出/G Z/出).zip([25,26,27,28,29])
-  }
-
+ 
   def set_instanse_variable
     super
     @Model= Hospital::Meeting
@@ -75,23 +65,20 @@ class Hospital::MeetingsController < Hospital::Controller
  end
 
  def show_assign
-    @correction = AssignCorrection
     @nurces = Hospital::Nurce.where(["busho_id = ?",@current_busho_id])
     @meetings = @Model.
       where( ["busho_id = ? and month = ? ",@current_busho_id,@month]).order("start")
  end 
  def assign
-    @correction = AssignCorrection
     @nurces = Hospital::Nurce.where(["busho_id = ?",@current_busho_id])
     @meetings = @Model.
-      where( ["busho_id = ? and month = ? ",@current_busho_id,@month],
-          :order => "start"
-          )
+     where( ["busho_id = ? and month = ? ",@current_busho_id,@month]).
+     order("start"  )
   end
 
   def make_datetime(day_str,time_string,opt = nil)
     begin
-logger.debug("会議時間"+@month.strftime("%Y-%m-")+day_str +" "+time_string) 
+logger.debug("会議時間"+@month.strftime("%Y-%m-")+day_str +" "+time_string+" JST") 
       Time.parse(@month.strftime("%Y-%m-")+day_str +" "+time_string) 
     rescue 
       if opt
