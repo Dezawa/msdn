@@ -193,10 +193,10 @@ Rails.application.routes.draw do
   namespace :hospital do
     set_get(:roles,[:show_assign,:set_busho])
     set_get(:meetings, %w( show_assign set_busho_month))
-    set_post(:meetings, %w(set_busho_month assign))
+    set_post(:meetings, %w(set_busho_month assign update_assign))
     set_post(:roles,%w(assign update_assign))
     set_get(:monthly,[:show_assign,:hope_regist,:hope_update,:assign,:clear_assign,:set_busho_month,:error_disp])
-    set_post(:monthly,%w( set_busho_month))
+    set_post(:monthly,%w( set_busho_month hope_update))
     set_post(:avoid_combination,%w(set_busho))
     set_get(:form9,[:calc])
     [:nurces,:needs].each{|model| set_get(model,[:set_busho]);set_post(model,[:set_busho])}
