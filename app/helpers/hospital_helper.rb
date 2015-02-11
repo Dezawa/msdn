@@ -23,7 +23,9 @@ module HospitalHelper
     monthly = nurce.monthly
 
     select(@Domain,meeting.day_column,meeting.assign_correction(nurce),
-           :selected => kinmucode_id, :include_blank =>  true )
+           { :selected => kinmucode_id, :include_blank =>  true },
+                       :name => name(@Domain,nurce.id,meeting.id)
+           )
   end
 
   def kinmucode_selector(domain,day,nurce,monthly)
