@@ -1,46 +1,46 @@
 ---
 one:
-  id: '7'
-  busho_id: '1'
-  month: '2013-02-01'
-  number: 
-  name: 会議5
-  start: '2013-2-05 16:00:00'
-  length: '1.5'
-  kaigi: false
-two:
   id: '1'
   busho_id: '1'
   month: '2013-02-01'
   number: 
-  name: 会議6
-  start: '2013-2-06 16:00:00'
+  name: 会議1
+  start: '2013-2-05 16:00:00'
   length: '1.5'
-  kaigi: false
-No3:
+  kaigi: true
+two:
   id: '2'
   busho_id: '1'
   month: '2013-02-01'
   number: 
-  name: 会議7
-  start: '2013-2-07 16:00:00'
+  name: 会議2
+  start: '2013-2-06 16:00:00'
   length: '1.5'
-  kaigi: false
-No4:
-  id: '12'
+  kaigi: true
+No3:
+  id: '3'
   busho_id: '1'
   month: '2013-02-01'
   number: 
-  name: 会議12
-  start: '2013-2-12 16:00:00'
+  name: 会議3
+  start: '2013-2-07 16:00:00'
   length: '1.0'
+  kaigi: true
+No4:
+  id: '4'
+  busho_id: '1'
+  month: '2013-02-01'
+  number: 
+  name: 出張4
+  start: '2013-2-12 16:00:00'
+  length: '1.5'
   kaigi: false
 No5:
   id: '5'
   busho_id: '1'
   month: '2013-02-01'
   number: 
-  name: 会議13
+  name: 出張5
   start: '2013-2-13 16:00:00'
   length: '1.0'
   kaigi: false
@@ -49,7 +49,7 @@ No6:
   busho_id: '1'
   month: '2013-02-01'
   number: 
-  name: 会議14
+  name: 出張14
   start: '2013-2-14 16:00:00'
   length: '1.0'
   kaigi: false
@@ -90,7 +90,7 @@ No10:
   length: '1.5'
   kaigi: false
 No11:
-  id: '3'
+  id: '53'
   busho_id: '1'
   month: '2013-02-01'
   number: 
@@ -126,7 +126,7 @@ No14:
   length: '1.5'
   kaigi: false
 No15:
-  id: '4'
+  id: '44'
   busho_id: '1'
   month: '2013-02-01'
   number: 
