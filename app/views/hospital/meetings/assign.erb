@@ -10,9 +10,9 @@
 <% @nurces.each{|nurce| monthly= nurce.monthly(@month);id=monthly.id %>
 
 <tr><td><nobr><%= nurce.name %></td>
-   <% @meetings.each{|meeting| %>
-    <td width=15>
-    <%= kinmucode_selector_for_meeting(@Domain,meeting,nurce) %>
+<% @meetings.each{|meeting| %>
+<td width=15>
+      <%= kinmucode_selector_for_meeting(@Domain,meeting,nurce) %>
     <%}%>
 </tr><%}%>
 </table>

@@ -17,21 +17,14 @@ module HospitalHelper
   end
 
   def kinmucode_selector_for_meeting(domain,meeting,nurce)
-    kinmukubun_id = nurce.kinmukubun_id
-    kaigi         = meeting.kaigi
-    length        = kaigi ? meeting.length : nil
-    day    = meeting.day
-    val  = nurce.monthly(@month).days[day].kinmucode_id
+    val  = nurce.monthly(@month).days[meeting.day].kinmucode_id
     kinmucode_id  = val ? val % 1000 : nil
     color_code    = val ? val/1000   : nil
-    HtmlSelectWithBlank.new(day.to_sym ,"",
-                   :correction => HospitalMeetingController::AssignCorrection[[kinmukubun_id,
-                                                                               kaigi,length]]
-                   ).
-      edit_field_with_id(@Domain,nurce,@controller,:value => kinmucode_id,
-                         :name => name(@Domain,nurce.id,meeting.id))
-  end
+    monthly = nurce.monthly
 
+    select(@Domain,meeting.day_column,meeting.assign_correction(nurce),
+           :selected => kinmucode_id, :include_blank =>  true )
+  end
 
   def kinmucode_selector(domain,day,nurce,monthly)
     kinmukubun_id = nurce.kinmukubun_id
