@@ -1,3 +1,4 @@
+  def roles2factor(roles);[3,4,9,10].map{ |r| roles.include?(r) ? 1 : 0 } ;end
 
   def nurce(id,month = nil); 
     n = Hospital::Nurce.find id

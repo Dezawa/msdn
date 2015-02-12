@@ -13,8 +13,6 @@ class Hospital::RoleTest < ActiveSupport::TestCase
     #                  4*31 = 124         124 = 370
   end
 
-  def roles2factor(roles);[3,4,9,10].map{ |r| roles.include?(r) ? 1 : 0 } ;end
-
   must "部署１の看護師の roleとlimitは " do
     nurces = Hospital::Nurce.by_busho(1)
     roles  = nurces.map{ |nurce| nurce.need_role_ids}
