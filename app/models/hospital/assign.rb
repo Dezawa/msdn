@@ -681,7 +681,7 @@ class Hospital::Assign
     nurces.each{ |nurce| nurce.refresh }
     role_remain true
     margin_of_role
-    roles_required
+    roles_required_total
     short_role_shift true
     count_role_shift true
   end
@@ -1177,20 +1177,20 @@ class Hospital::Assign
     @margin_of_role=Hash.new{|h,k| h[k]=0}
     
     @RoleShift.each{|role_sftstr| 
-      @margin_of_role[role_sftstr] = role_remain[role_sftstr]  - roles_required[role_sftstr]
+      @margin_of_role[role_sftstr] = role_remain[role_sftstr]  - roles_required_total[role_sftstr]
     }
     @margin_of_role
   end
 
-  def roles_required
-    return @roles_required  if @roles_required 
-    @roles_required = Hash.new{|h,k| h[k] =0 }
+  def roles_required_total
+    return @roles_required_total  if @roles_required_total 
+    @roles_required_total = Hash.new{|h,k| h[k] =0 }
     needs_all_days[1..-1].each{|need_of_day|
-      @RoleShift.each{|key|    @roles_required[key] += (need_of_day[key] || [0])[0]
+      @RoleShift.each{|key|    @roles_required_total[key] += (need_of_day[key] || [0])[0]
       }
     }
     
-    @roles_required 
+    @roles_required_total 
   end
   # 各日の [role,shift] を得る
   # [ { [role,sft_srt]=>[min,max], , ,}, { day_data }, { day_data },,, ] 
