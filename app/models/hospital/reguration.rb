@@ -5,8 +5,8 @@ module Hospital
     def check(day,shift_with_last_month)
       reg_expression =~ shift_with_last_month[day-back+4,length]
     end
-    def error_check(day,shift_with_last_month)
-      day = (reg_expression =~ shift_with_last_month)
+    def error_check(shift_with_last_month)
+      day = (reg_expression =~ shift_with_last_month[5-back .. -1])
       day ? [day-4,1].max : nil
     end
   end
@@ -14,7 +14,7 @@ module Hospital
     def check(day,shift_with_last_month)
       shift_with_last_month[5,31].gsub(reg_expression,"").size > length
     end
-    def error_check(day,shift_with_last_month)
+    def error_check(shift_with_last_month)
       day = shift_with_last_month[5,31].gsub(reg_expression,"").size > length
       day ? 0 : nil
     end
@@ -23,21 +23,18 @@ module Hospital
   class Regrate
     include Hospital::Const
     attr_accessor :comment,:reg_expression,:back,:length,:method
-    def initialize(arg_reg,arg_back,arg_length,arg_comment,arg_method = nil)
-      @comment = arg_comment
+    def initialize(arg_reg,opt={ }) #arg_back,arg_length,arg_comment,arg_method = nil)
+      @comment = opt.delete(:comment)
       @reg_expression = arg_reg
-      @back = arg_back
-      @length = arg_length
-      @method = arg_method
+      @back = opt.delete(:back)
+      @length = opt.delete(:length)
+      @method = opt.delete(:method)
     end
-    def self.create(arg_reg,arg_back,arg_length,arg_comment,arg_method = nil)
-      reg = self.new(arg_reg,arg_back,arg_length,arg_comment,arg_method)
-      case reg.method
-      when :through
-        reg.extend Hospital::Total      
-      else
-        reg.extend Hospital::Default
-      end
+    def self.create(arg_reg,opt={ })
+      opt = { method: Hospital::Default}.merge opt
+      reg = self.new(arg_reg,opt)
+      reg.extend reg.method
+
       reg
     end
   end
@@ -50,31 +47,49 @@ module Hospital
      true =>  #三交代  #              正規表現を削除した 残りが max 以下かどうか
        [ #0 全シフト   #
          {   # 
-          :renkin       => Hospital::Regrate.create(/[1-8LM]{6,}/,5,11,"連続勤務5日まで"),### 半日勤務をどうするか未定
-          :after_nights => Hospital::Regrate.create(/[2L3M56]{2}[^0_]/,2,5,"連続夜勤明けは休み")
+          :renkin       => Hospital::Regrate.
+                                  create(/[1-8LM]{6,}/,
+                                         back: 5, length: 11,
+                                         comment: "連続勤務5日まで"),### 半日勤務をどうするか未定
+          :after_nights => Hospital::Regrate.
+                                  create(/[2L3M56]{2}[^0_]/,
+                                         back: 2, length:  5,
+                                         comment: "連続夜勤明けは休み")
           },
          # 1 日勤
           { },
          # 2 準夜
         {
-          :yakinrenzoku => Hospital::Regrate.create(/([2L5]{2}.[2L5])/,3,5,"22022は避ける")
+          :yakinrenzoku => Hospital::Regrate.
+                                  create(/([2L5]{2}[0_][2L5])/,
+                                         back: 3, length: 5,
+                                         comment: "2202 は避ける")
          },
         # 3 深夜
         {
-          :yakinrenzoku => Hospital::Regrate.create(/([36]{2}.[36])/,3,5,"33033,22022は避ける")
+          :yakinrenzoku => Hospital::Regrate.
+                                  create(/([36]{2}[0_][36])/,
+                                         back: 3,  length: 5,
+                                         comment: "3303 は避ける")
         }
        ],
     false => #二交代
       [ #0 全シフト
        {   # item  => [[正規表現,何日前から見るか,何日分見るか]
-         :renkin   => Hospital::Regrate.create(/[1-8]{6,}/,5,11,"連続勤務5日まで") ### 半日勤務をどうするか未定
+         :renkin   => Hospital::Regrate.create(/[1-8]{6,}/,
+                                               bsack: 5, length: 11,
+                                               comment: "連続勤務5日まで") ### 半日勤務をどうするか未定
        },
        # 1 日勤
        { },
        # 2 準夜
        {
-         :yakinrenzoku => Hospital::Regrate.create(/([25]{2}.[25])/,3,5,"22022は避ける"),
-         :nine_nights  => Hospital::Regrate.create(/[^25]/,nil,4, "夜勤は72時間 計4回まで",:through)
+         :yakinrenzoku => Hospital::Regrate.create(/([25]{2}.[25])/,
+                                                   bsck: 3, length: 5,
+                                                   comment: "22022は避ける"),
+         :nine_nights  => Hospital::Regrate.create(/[^25]/,
+                                                   length: 4,method: Hospital::Total,
+                                                   comment: "夜勤は72時間 計4回まで")
       },{ }
       ]
   }
@@ -84,15 +99,21 @@ module Hospital
       {},  
       #1
       {
-         :interval => Hospital::Regrate.create(/([2L5][14])|([14][3M6])/,1,3,"勤務間隔12時間以上")
+         :interval => Hospital::Regrate.create(/([2L5][14])|([14][3M6])/,
+                                               back: 1, length: 3,
+                                               comemnt: "勤務間隔12時間以上")
        },
        #2
        {
-         :interval => Hospital::Regrate.create(/([2L5][14])/,1,3,"勤務間隔12時間以上")
+         :interval => Hospital::Regrate.create(/([2L5][14])/,
+                                               back: 1, length: 3,
+                                               comment: "勤務間隔12時間以上")
        },
        #3
        {
-         :interval => Hospital::Regrate.create(/([14][3M6])/,1,3,"勤務間隔12時間以上")
+         :interval => Hospital::Regrate.create(/([14][3M6])/,
+                                               back: 1, length: 3,
+                                               comment: "勤務間隔12時間以上")
        }
       ],
     false => #三交代
@@ -100,12 +121,18 @@ module Hospital
        {},  
        #1
        {
-         :interval => Hospital::Regrate.create(/[25][14]/,1,3,"勤務間隔12時間以上")
+         :interval => Hospital::Regrate.create(/[25][14]/,
+                                               back: 1, length: 3,
+                                               comment: "勤務間隔12時間以上")
        },
        #2
        {
-         :interval => Hospital::Regrate.create(/([25][14])/,1,3,"勤務間隔12時間以上"),
-         :after_nights   => Hospital::Regrate.create(/[25]{2}[^0_]/ ,2,5," 夜勤連続の翌日公休")
+         :interval => Hospital::Regrate.create(/([25][14])/,
+                                               back: 1, length: 3,
+                                               comment: "勤務間隔12時間以上"),
+         :after_nights   => Hospital::Regrate.create(/[25]{2}[^0_]/ ,
+                                                     back: 2, length: 5,
+                                                     comment: " 夜勤連続の翌日公休")
        },
        { }
       ]
@@ -116,14 +143,24 @@ module Hospital
     
     @Reguration = 
       [
-       { :kinmu_total => Hospital::Regrate.create(/[^1-8LM]/,nil,limits.kinmu_total, "勤務は22日まで",:through)
+       { :kinmu_total => Hospital::Regrate.create(/[^1-8LM]/,
+                                                  length: limits.kinmu_total,method: Hospital::Total,
+                                                  comment: "勤務は22日まで")
        },{
        }, {
-         :junya =>Hospital::Regrate.create( /[^25L]/,nil,limits.code2,"順夜が#{limit.code2}を越えた",:through),
-         :nine_nights => Hospital::Regrate.create(/[^2356LM]/,nil,limit.night_total, "夜勤は72時間 計9回まで",:through)
+         :junya =>Hospital::Regrate.create( /[^25L]/,
+                                            length: limits.code2,method: Hospital::Total,
+                                            comment: "順夜が#{limit.code2}を越えた"),
+         :nine_nights => Hospital::Regrate.create(/[^2356LM]/,
+                                                  length: limit.night_total,method: Hospital::Total,
+                                                  comment: "夜勤は72時間 計9回まで")
        },{ 
-         :shinya =>Hospital::Regrate.create(/[^3M6]/,nil,limits.code3,"深夜が#{limit.code3}を越えた",:through) ,
-         :nine_nights => Hospital::Regrate.create(/[^2356LM]/,nil,limit.night_total, "夜勤は72時間 計9回まで",:through)
+         :shinya =>Hospital::Regrate.create(/[^3M6]/,
+                                            length: limits.code3,method: Hospital::Total,
+                                            comment: "深夜が#{limit.code3}を越えた") ,
+         :nine_nights => Hospital::Regrate.create(/[^2356LM]/,
+                                                  length: limit.night_total,method: Hospital::Total,
+                                                  comment: "夜勤は72時間 計9回まで",)
        }
       ]
     @Wants = [{},{},{},{}] 
