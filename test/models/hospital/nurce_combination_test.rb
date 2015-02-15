@@ -30,9 +30,14 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
   
   # 看護師が持っている role  limit_test 参照
   # role 3,4,9,10 を持っていない 0、持っている 1
-  factors = [[0,1,0,0],[0,1,1,0],[0,1,0,1],[0,1,1,0]] + [[1,1,1,0]]*4 +
-    [[0,1,1,1]] * 4 + [[0,1,0,1]]+[[1,1,0,1]]*5 + [[1,0,0,1]]
+  factors = [[0,1,0,0,0],[0,1,0,1,0],[0,1,0,0,1],[0,1,0,1,0]] + [[1,1,0,1,0]]*4 +
+    [[0,1,0,1,1]] * 4 + [[0,1,0,0,1]]+[[1,1,0,0,1]]*5 + [[1,0,1,0,1]]
   # 
+
+  must "持ってるロールのパターン" do
+    assert_equal factors,@nurces.map(&:have_need_role_patern)
+  end
+
   sft_str = "2"
   must "割付が進んで、set_upの状態でのshift_remain" do
     #             0, 0, 0, 5, 4, 5, 3, 5, 3, 3, 4, 3, 1, 1, 3, 1, 1, 1, 5
@@ -43,7 +48,7 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
   must "割付が進んで、set_upの状態でどのくらいassignされたか" do
     assigned = 
       (0..@nurces.size-1).
-      inject([0,0,0,0]){ |sum,id| 
+      inject([0,0,0,0,0]){ |sum,id| 
 
       sum.add(factors[id].times(@nurces[id].shifts.gsub(/[^2]/,"").size)) # そのshiftに割り当てられた回数
     }

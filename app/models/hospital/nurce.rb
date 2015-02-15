@@ -313,6 +313,10 @@ class Hospital::Nurce < ActiveRecord::Base
     @role_ids ||= roles.map{ |id,name| id}.uniq .sort
   end
 
+  def have_need_role_patern
+    @role_patern ||= Hospital::Need.need_role_ids.map{ |role_id| role_ids.include?(role_id) ? 1 : 0 }
+  end
+
   def need_role_ids
     @need_role_ids ||= need_roles.map{ |id,name| id}.uniq.sort
   end
