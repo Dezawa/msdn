@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 __END__
 
+準夜、深夜 のコストの算出
+  
 コストでソートして低い方から選ぶが、
-  j準夜、深夜 のコストの算出は
+  準夜、深夜 のコストの算出は
      tight_roles,勤務残  とも、 そのシフトでの か 夜間勤務計を用いるかぐちゃぐちゃ
 
 candidate_combination_for_night_selected_by_cost
@@ -711,3 +713,71 @@ Hospital::Kinmucode::From0123, To0123 の見直し
 ############### 解析 7/24
 HP ASSIGN(580) 1:2 tight:145 [[49:162,37:70],[39:212,46:50],[49:162,44:133],[34:206,44:133],[39:212,44:133],[39:212,49:162]]
 HP ASSIGN(580) 1:3 tight:145 [[37:70,48:162],[45:133,48:162],[48:162,44:163],[45:133,39:212],[45:133,40:212],[48:162,40:212],[48:162,39:212],[44:163,40:212],[44:163,39:212],[37:70,36:500],[45:133,36:500],[44:163,36:500],[39:212,36:500],[40:212,36:500]]
+
+############ branch HospitalPower 2015/2/15 時点での呼び出し関係
+create_assign(busho_id,month,all=nil)
+  self.new(busho_id,month)
+  assign_month_mult(all)
+      assign_mult(all)
+         set_instance_valiables_for_assign_loop
+         size_of_combinations_of_first_day(day)
+
+         nurce_combination_shift23{ 
+            ready_for_day_reentrant
+            assign_day_reentrant
+               save_shift
+               assign_shift_by_reentrant
+                  when true; return true # 全割付成功
+                  when false;            # この看護師組み合わせでは破綻したので次の組み合わせへ"HP 
+                  else      ; raise 
+            assign_shift1
+               assign_tight_daies_first
+               assign_shift1_by_re_entrant(day)
+     
+ready_for_day_reentrant
+    need_nurces_roles
+      need_nurces_roles_night
+         need_nurces_of_night
+         short_roles_of_night
+         nurces_selected_of_night
+             assinable_nurces_by_cost_size_limited
+         assignable_nurces_enough_for_needs
+   
+ nurce_combination_shift23
+
+
+    assign_shift_by_reentrant        
+       long_plan_combination{ 
+          save_shift
+          assign_patern
+              assign_patern_if_possible
+                 assign_test_patern
+                 nurce_set_patern
+              long_check_later_days
+          assign_shift_by_reentrant
+          assign_night_by_re_entrant
+          assign_shift1_by_re_entrant
+       }
+            
+       
+            
+       
+            
+       
+            
+       
+            
+       
+            
+       
+            
+
+
+
+
+
+
+
+
+
+

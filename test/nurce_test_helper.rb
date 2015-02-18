@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
   def roles2factor(roles);[3,4,9,10].map{ |r| roles.include?(r) ? 1 : 0 } ;end
 
   def nurce(id,month = nil); 
@@ -43,6 +44,18 @@
     ids.map{|id| @nurces.select{|nurce| nurce.id == id }.first}
   end
 
+  def combination_ids(ary_of_combination)
+    ary_of_combination.map{ |combination| combination.map(&:id)}
+  end
+  def combination_combination_ids(ary_of_combination)
+    ary_of_combination.map{ |combination_ary| combination_ary.
+      map{ |combination| combination.map(&:id)}}
+  end
+  def hash_combination_ids(ary_of_hash_of_combination)
+    ary_of_hash_of_combination.map{ |hash_of_combination|
+      hash_of_combination.to_a.map{ |sft,combination| combination.map(&:id)}}
+  end
+
 class Hospital::Nurce < ActiveRecord::Base
   # [0,0,0,1,3,0.....]
   def day_store(shift_list)
@@ -54,6 +67,8 @@ class Array
   def add(other) ;  self.zip(other).map{ |a,b| a+b } ;end
   def mult(other) ;  self.zip(other).map{ |a,b| a*b } ;end
   def times(other) ;  self.map{ |a| a*other } ;end
+  def diff(other)  ; [ self - other,other-self] ;end
+
 end
 
   Log2_3 = 
@@ -76,6 +91,31 @@ end
   HP ASSIGN 50 __11_2______2___00____0_33_1_
   HP ASSIGN 51 _103___________00____________
   HP ASSIGN 52 __300____0_0___________0_____
+"
+  Log2_3 = "
+  HP ASSIGN 34 _1_1__11_____________1______1
+  HP ASSIGN 35 _110___250330_0______________
+  HP ASSIGN 36 _2503300_______0____________0
+  HP ASSIGN 37 _200_______________________10
+  HP ASSIGN 38 _1____0______________________
+  HP ASSIGN 39 _112_________________________
+  HP ASSIGN 40 _311__1_____________12____1__
+  HP ASSIGN 41 __330________________________
+  HP ASSIGN 42 ________0_______________0____
+  HP ASSIGN 43 _1_______00____1_0_1__1_2__1_
+  HP ASSIGN 44 _12_______1______0____3______
+  HP ASSIGN 45 _311_____________0________2__
+  HP ASSIGN 46 _1_2203300_____________0_____
+  HP ASSIGN 47 _011________1__00___1________
+  HP ASSIGN 48 __01________________1________
+  HP ASSIGN 49 _12__________________10______
+  HP ASSIGN 50 __11_2______2___00____0_33_1_
+  HP ASSIGN 51 _103___________00____________
+  HP ASSIGN 52 __300____0_0___________0_____
+HP ASSIGN  4:2 [] [] ENTRY  必要看護師数 1 不足role[1,2,4] 可能看護師[34,35,37,38,39,40,42,43,44,45,47,48,49,50]
+HP ASSIGN  4:3 [] [] ENTRY  必要看護師数 1 不足role[2,4] 可能看護師[37,38,39,42,43,44,49,51]
+HP ASSIGN 4:2  [[39:1.0],[38:1.0],[40:1.25],[35:3.0]]
+HP ASSIGN 4:3  [[37:0.5],[42:0.5],[43:0.83],[39:1.0],[38:1.0],[44:1.0]]
 "
 
   Log2_4 = 

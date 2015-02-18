@@ -82,5 +82,8 @@ module Hospital::Cost
       raise
     end
   end
- 
+
+  def id_and_cost_to_s(sft_str,tight_roles)
+    "%d:%d"%[id, cost(sft_str,tight_roles)]
+  end 
 end

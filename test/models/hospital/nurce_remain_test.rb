@@ -50,8 +50,8 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     nrc.save_month
     assert_equal  shift_remain2, nurce(40).shift_remain,"割り振り後 remain"
   end
-  must "石川トシ子さんの2/4 の [role,勤務]" do
-    assert_equal [ [4, "3"],  [10, "3"]],nurce(36).role_shift(@month)[4].sort,"role_shift"
+  must "奥津俊子さんの2/5 の [role,勤務]" do
+    assert_equal [ [4, "3"],  [10, "3"]],nurce(36).role_shift(@month)[5].sort,"role_shift"
     assert_equal [ [4, 3],[10, 3]],nurce(36).role_shift_of(3).sort,"role_shift_of"
     assert_equal [ [4, 2], [10, 2]],nurce(36).role_shift_of(2).sort,"role_shift_of"
   end

@@ -17,8 +17,15 @@ module Hospital::NurceCombination
   #     needs2、need3 に分ける組み合わせを作り
   #       シフト残数ベースのコストでソートし
   #         必要roleを満たせる看護師の組み合わせの時、blockを呼ぶ
-  # 
-  def nurce_combination_shift23(combinations,need_nurces,short_roles,day,&block)
+  #
+  def nurce_combination_shift23(candidate_combination_for_shift23,need_nurces,short_roles,day,&block)
+    pp ["########### NURCE_COMBINATION_SHIFT23 ",candidate_combination_for_shift23.class,candidate_combination_for_shift23.first.class]
+    candidate_combination_for_shift23.each{ |combs| 
+      pp ["########### NURCE_COMBINATION_SHIFT23 ",combs.class,combs.size]
+ block.call(combs ) }
+  end 
+
+  def nurce_combination_shift23_origi(combinations,need_nurces,short_roles,day,&block)
     @msg = nil
     dbgout("FOR_DEBUG(#{__LINE__}) Shift2:#{need_nurces_shift(day,Sshift2)} [#{short_roles[Sshift2].join(',')}]"+
            "  Shift2:#{need_nurces[Sshift3]}] [#{short_roles[Sshift3].join(',')}] 三直:#{@koutai3} ")
@@ -70,6 +77,49 @@ module Hospital::NurceCombination
       }
     end
   end
+
+  # day日のshift2,3の看護師組み合わせの候補。
+  #  [ [shift2_候補,shift3_候補],[shift2_候補,shift3_候補],,,]
+  # 以下が考慮されている
+  #   shift2_候補,shift3_候補に重複はない
+  #   各々のshiftの必要roleは満たされる
+  #   そのシフトに割り当てても、各看護師の勤務制約に抵触しない
+  #   コストの少ない方から選んでいる
+  def candidate_combination_for_shift23_selected_by_cost(day)
+    return :fill unless short?(day,:night_total)
+
+    candidate_combinations = candidate_combination_for_shift23(day)
+    return nil unless candidate_combinations.size > 0
+    candidate_combinations.
+      sort_by{ |hash_of_combination| 
+      cost_of_nurce_combination(hash_of_combination["2"],Sshift2,tight_roles(Sshift2)) +
+      cost_of_nurce_combination(hash_of_combination["3"],Sshift3,tight_roles(Sshift3))
+    }[0,limit_of_nurce_candidate_night(day)]
+  end
+
+  def candidate_combination_for_shift23(day)
+    need2 = need_nurces_shift(day,Sshift2)
+    candidate = 
+      candidate_combination_for_night(day).map{ |comb2,comb3|
+          { "2" => comb2, "3" => comb3 }
+    }
+  end
+
+  def candidate_combination_for_night(day)
+    comb=Hospital::Define.define.night.map{  |sft_str|
+      short = short_role(day,sft_str)
+      assinable_nurces_by_cost_size_limited(sft_str,day, short).
+      combination(need_nurces_shift(day,sft_str))
+    }
+    comb.first.to_a.product(comb.last.to_a).
+      select{ |comb2,comb3| 
+      (comb2 & comb3).empty? && 
+      enough?(day,"2",comb2) && enough?(day,"3",comb3)}.
+      sort_by{ |comb2,comb3|  cost_of_nurce_combination_of_combination(comb2,comb3)}
+  end
+
+
+
   # 最適化を行うとどの位のコストとなるのか？
   # ５Fを例にとると、
   #  limit_of_nurce_candidate_night = (4+3)*2 = 14
@@ -91,55 +141,46 @@ module Hospital::NurceCombination
           return if count < 1
       }
   end
-
-  def candidate_for_night(day)
-    nurces_short = Hospital::Define.define.night.inject([[],[]]){ 
-      |n_s,sft_str|
-      short = short_role(day,sft_str)
-      n_s[0] += assinable_nurces_by_cost_size_limited(sft_str,day, short)
-      n_s[1] += short
-      n_s
-    }
-    short = nurces_short[1].uniq
-    nurces = nurces_short[0].uniq.
-      sort_by{ |nurce| nurce.cost(:night_total,tight_roles(:night_total))}
+  def enough?(day,sft_str,nurces)
+    is_assignables?(sft_str,nurces) && 
+      roles_filled?(day,sft_str,nurces)
   end
 
-  def candidate_combination_for_night(day)
-    candidate_for_night(day).combination(need_nurces_shift(day,Sshift2)+need_nurces_shift(day,Sshift3))
+  def is_assignables?(sft_str,nurces)
+    @assignable_nurce[sft_str] and nurces == nurces
   end
 
-  def candidate_combination_for_night_selected_by_cost(day)
-    candidate_combination_for_night(day).
-      sort_by{ |nurces| 
-        cost_of_nurce_combination(nurces,:night_total,tight_roles(:night_total))
-      }[0,limit_of_nurce_candidate_night(day)]
+  def  roles_filled?(day,sft_str,nurces)
+    return true if nurces.size == 0
+    roles_count_short(day,sft_str).sub(roles_count_assigned(nurces)). #(nurces)).
+      map{ |count| count < 0 ? 0 : count }
   end
 
-  def candidate_combination_for_shift23(day)
-    need2 = need_nurces_shift(day,Sshift2)
-    candidate_combination_for_night_selected_by_cost(day).map{ |comb|
-      comb.combination(need2).map{ |nurce_shift2|
-        [nurce_shift2, comb - nurce_shift2]
-      }
-    }.flatten(1)
-  end
-
-  def candidate_combination_for_shift23_selected_by_cost(day)
-    candidate_combination_for_shift23(day).
-      select{  |nurces_shift2,nurces_shift3| 
-      nurces_shift2.all?{ |nurce| nurce.shift_remain[Sshift2] > 0 } &&
-      nurces_shift3.all?{ |nurce| nurce.shift_remain[Sshift3] > 0 }
-
-    }.
-      sort_by{ |nurces_shift2,nurces_shift3| 
-      cost_of_nurce_combination(nurces_shift2,Sshift2,tight_roles(Sshift2)) +
-      cost_of_nurce_combination(nurces_shift3,Sshift3,tight_roles(Sshift3))
-    }[0,limit_of_nurce_candidate_night(day)]
+  def roles_count_assigned(nurces)
+    nurces.map(&:have_need_role_patern).inject{ |sum,roles| sum.add roles }
   end
 
   def nurce_combination_for_shift23(day)
 
+  end
+
+  # 指定された日、shiftに割付可能な看護師の配列
+  # その日割付まだされておらず、かつそのshiftを割り付けても勤務制約を越えず
+  # 足りないroleを少なくとも一つ持っている
+  # 足りないroleが無いとき（既に満たされている)は空を返す
+  def assinable_nurces(day,sft_str,short_roles,reculc=false)
+    logger.debug("ASSINABLE_NURCES check_at_assign of id 11,17,20 "+
+                 "#{nurce_by_id([11,17,20]).map{ |nurce| nurce.check_at_assign(day,sft_str)}.join(',')}"
+                 ) if day==1 && @busho_id == 3 
+    return [] if roles_count_short(day,sft_str).max == 0
+    nurce_not_assigned(day).
+      select{|nurce| !nurce.check_at_assign(day,sft_str) && 
+      nurce.has_assignable_roles_atleast_one(sft_str,short_roles.map{|r,mi_max| r })
+    }
+  end
+
+  def nurce_not_assigned(day)
+    @nurces.select{|nurce| nurce.monthly.shift[day,1] == "_" }
   end
 
 end

@@ -33,7 +33,7 @@ logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sor
      @@need_roles ||= Hospital::Role.where( "need = true") 
   end
   def self.need_role_ids
-   @@need_role_ids ||= need_roles.map(&:id)
+   @@need_role_ids ||= need_roles.map(&:id).sort
   end
 
   def self.names

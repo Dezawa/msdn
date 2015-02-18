@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
 require 'test_helper'
 
 class Hospital::Form9Test < ActiveSupport::TestCase
-  fixtures :nurces,:hospital_roles,:nurces_roles,:hospital_limits
-  fixtures :holydays,:hospital_needs,:hospital_monthlies
-  fixtures :hospital_kinmucodes,:bushos,:hospital_defines
+  fixtures "hospital/nurces","hospital/roles","hospital/nurces_roles","hospital/limits"
+  fixtures "holydays","hospital/needs","hospital/monthlies"
+  fixtures "hospital/kinmucodes","hospital/bushos","hospital/defines"
   Items = Hospital::Form9::Items
   # Replace this with your real tests.
   def setup
@@ -74,4 +73,3 @@ pp [:column_Joukin,Items[:column_Joukin]]
     assert_equal 1,@sheet[ @row+5,Items[:column_Joukin]+2]
  end
 end
-# -*- coding: utf-8 -*-

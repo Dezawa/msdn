@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
+require 'nurce_test_helper'
 #require 'need'
 
 class Hospital::AssignTest < ActiveSupport::TestCase
@@ -7,31 +8,6 @@ class Hospital::AssignTest < ActiveSupport::TestCase
   fixtures "holydays","hospital/needs","hospital/monthlies","hospital/defines"
   fixtures "hospital/kinmucodes"
   # Replace this with your real tests.
-  log2_4 = "
-  HP ASSIGN 34 _1_1__11_____________1______1
-  HP ASSIGN 35 _110___250330_0______________
-  HP ASSIGN 36 _2503300_______0____________0
-  HP ASSIGN 37 _200_______________________10
-  HP ASSIGN 38 _1____0______________________
-  HP ASSIGN 39 _112_________________________
-  HP ASSIGN 40 _311__1_____________12____1__
-  HP ASSIGN 41 __330________________________
-  HP ASSIGN 42 ________0_______________0____
-  HP ASSIGN 43 _1_______00____1_0_1__1_2__1_
-  HP ASSIGN 44 _12_______1______0____3______
-  HP ASSIGN 45 _311_____________0________2__
-  HP ASSIGN 46 _1_2203300_____________0_____
-  HP ASSIGN 47 _011________1__00___1________
-  HP ASSIGN 48 __01________________1________
-  HP ASSIGN 49 _12__________________10______
-  HP ASSIGN 50 __11_2______2___00____0_33_1_
-  HP ASSIGN 51 _103___________00____________
-  HP ASSIGN 52 __300____0_0___________0_____
-HP ASSIGN  4:2 [] [] ENTRY  必要看護師数 1 不足role[1,2,4] 可能看護師[34,35,37,38,39,40,42,43,44,45,47,48,49,50]
-HP ASSIGN  4:3 [] [] ENTRY  必要看護師数 1 不足role[2,4] 可能看護師[37,38,39,42,43,44,49,51]
-HP ASSIGN 4:2  [[39:1.0],[38:1.0],[40:1.25],[35:3.0]]
-HP ASSIGN 4:3  [[37:0.5],[42:0.5],[43:0.83],[39:1.0],[38:1.0],[44:1.0]]
-"
   log5_5 = "
   HP ASSIGN 34 _1111___________________________
   HP ASSIGN 35 _250330_________________________
@@ -151,7 +127,7 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
   Cost = Hospital::Nurce::Cost
   must " 2/4:2 2の使用数の違う38,39のcostが同じなのはなぜ？" do
     #pp @assign.nurce_by_id([38,39]).map(&:shift_remain)
-    nurces = extract_set_shifts(log2_4)
+    nurces = extract_set_shifts(Log2_3)
     #pp @assign.nurce_by_id([38,39]).map(&:shift_remain)
     shift = "2"
     margin = {[1, 2]=>14, [2, 2]=>23, [3, 2]=>0, [4, 2]=>15, [5, 2]=>24 }.to_a.sort
@@ -223,6 +199,11 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
                     #  nurces[39].
   end
 
-  #######
+  must " shortのてすと 2/1 の、1,2,3,:night" do
+    nurces = extract_set_shifts(Log2_3)
+    assert_equal [false,true,false,true] ,["1","2","3",:night_total].map{ |sft_str| @assign.short?(1,sft_str)}
+    assert_equal [false,false,false,false] ,["1","2","3",:night_total].map{ |sft_str| @assign.short?(3,sft_str)}
+  end
+   #######
 
 end

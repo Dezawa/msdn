@@ -71,13 +71,13 @@ class Hospital::Nurce < ActiveRecord::Base
     true => {
       Sshift3 => [  # patern, reg, back,length,[調べるshift],[ [0の割り当て数見る日],[1の][2の],[3の]]
            AssignPatern.new(["330"    , /^[^3M6][0_]_[3_][0_]/,2,5,[Sshift3],[[2],[],[],[1]] ]),
-           AssignPatern.new(["30"     , /^[2LM356]_[0_]/       ,1,3,[Sshift3],[[1],[],[],[1]] ]),
-           AssignPatern.new(["3"      , /^_/,0,1,["3"],[[],[],[],[]]])
+           AssignPatern.new(["30"     , /^[2LM3560_]_[0_]/    ,1,3,[Sshift3],[[1],[],[],[1]] ]),
+           AssignPatern.new(["3"      , /^_/                  ,0,1,["3"],[[],[],[],[]]])
            ],
       Sshift2 => [ #  patern, reg,                back,length,[調べるshift],[ [2の割り当て数見る日],[3の]]
             AssignPatern.new(["220330",/^[^2L5][0_]_[2_][0_][3_]{2}[0_]/,2,8,[Sshift3,Sshift2],[[2,5],[],[1],[3,4]]]),
             AssignPatern.new(["220"   , /^[^2L5][0_]_[2_][0_]/,2,5,[Sshift2],[[2],[],[1],[]] ]),
-            AssignPatern.new(["20"    , /^[2L3M56]_[0_]/      ,1,3,[Sshift2],[[1],[],[1],[]] ]),
+            AssignPatern.new(["20"    , /^_[0_]/      ,0,2,[Sshift2],[[1],[],[1],[]] ]),
             AssignPatern.new(["2"     , /^_/                 ,0,1,[Sshift2],[[],[],[],[]]])
            ],
        Sshift1 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
@@ -105,24 +105,6 @@ class Hospital::Nurce < ActiveRecord::Base
      by_busho(busho_id).map{ |nurce| [nurce.name,nurce.id]}
   end
 
-  def ddshokui_id     ; shokui.first ? shokui.first.id         : nil ;end
-  def ddshokushu_id   ; shokushu.first ? shokushu.first.id     : nil ;end
-  def ddkinmukubun_id ; kinmukubun.first ? kinmukubun.first.id : nil ;end
-  def ddshokui_id=(arg_id) 
-    if arg_id.blank? || !(role = Hospital::Role.find arg_id)
-      self.shokui=[]
-    else
-      self.shokui=[role]
-    end
-  end
-
-  def ddshokushu_id=(arg_id)
-    if arg_id.blank? || !(role = Hospital::Role.find arg_id.to_i)
-      self.shokushu=[]
-    else
-      self.shokushu=[role]
-    end
-  end
 
   def ddkinmukubun_id=(arg_id) 
     if arg_id.blank? || !(role = Hospital::Role.find arg_id)

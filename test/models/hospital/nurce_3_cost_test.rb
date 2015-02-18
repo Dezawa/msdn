@@ -7,12 +7,13 @@ class Hospital::NurceCostTest < ActiveSupport::TestCase
   fixtures "holydays","hospital/needs","hospital/monthlies"
   fixtures "hospital/kinmucodes","hospital/defines"
   # Replace this with your real tests.
+
   def setup
     srand(1)
-    @month  = Date.new(2013,2,1)
+    @month  = Date.new(2014,2,1)
     @busho_id = 1
     @nurces = extract_set_shifts(Log2_4)
-   end
+  end
 
  must "2233のとき全夜勤でのコスト" do
     @month  = Date.new(2014,3,1)
@@ -114,6 +115,6 @@ sft_str = :night_total
     #                  1    2    4     2   9    5    5   10    10    7   12      13   14   14   8
     # need_role_ids   [[],[9],[A],[9],[3,9],[3,9],[3,9],[3,9],[A,9],[A,9],[A,9],[A,9],[A],[A,3],[A,3],[A,3],[A,3],[A,3],[A,3]
     assert_equal [0,0,0,1023,1362,1771,1362,2302,1948,1948,2533,2533,2093,2786,0,3622,4708,4708,2143],
-     @nurces.map{|n| n.cost("3",[10,3,9]).to_i }
+    @nurces.map{|n| n.cost("3",[10,3,9]).to_i }
   end
 end

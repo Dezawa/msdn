@@ -113,7 +113,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     nurce = nurce(50)
     nurce.monthly(@month-1.month)
     nurce.monthly(@month)
-    assert_equal "33111____2______2___00____0_33_1_",nurce.shift_with_last_month
+    assert_equal "33111___3__2____2___00____0__3_1_",nurce.shift_with_last_month
   end
 
   # 加藤照子さんの 割り当て済み勤務
@@ -141,7 +141,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     nurce = nurce(44)
     nurce.monthly(@month-1.month)
     nurce.monthly(@month)
-    assert_equal "11020_________1______0____3______",nurce.shift_with_last_month
+    assert_equal "11020___3_____1______0___________",nurce.shift_with_last_month
   end
 
   must "時廣眞弓さんの先月からの勤務状況" do

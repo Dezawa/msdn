@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
+require 'nurce_test_helper'
 #require 'need'
-require 'test/unit/hospital/make_comb_testdata'
+require './test/unit/hospital/make_comb_testdata'
 
-class Hospital::AssignCombinationTest < ActiveSupport::TestCase
+class Hospital::MakeCombTest < ActiveSupport::TestCase
   include Hospital::Const
-  fixtures :nurces,:hospital_roles,:nurces_roles,:hospital_limits,:hospital_defines
-  fixtures :holydays,:hospital_needs,:hospital_monthlies
-  fixtures :hospital_kinmucodes
+  
+  fixtures "hospital/nurces","hospital/roles","hospital/nurces_roles","hospital/limits","hospital/defines"
+  fixtures "holydays","hospital/needs","hospital/monthlies"
+  fixtures "hospital/kinmucodes"
   # Replace this with your real tests.
   def setup
     update
@@ -19,126 +21,19 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
     srand(1)
   end
 
-
-  def nurce_set(ids)
-    ids.map{ |id| Hospital::Nurce.find id}
-  end
-
-  def extract_set_shifts(string)
-    nurces=[]
-    string.each_line{|line|
-      hp,assign,id,data,dmy = line.split(nil,5)
-      case id
-      when /^\d+$/
-        nurces[id.to_i]=@assign.nurce_by_id(id.to_i)
-        @assign.nurce_set_patern(nurces[id.to_i],1,data[1..-1].chop)
-      when  /ENTRY/
-      end
-    }
-    #@assign.refresh
-    #nurces.compact
-  end
-
-  def id_dump_of(ary_of_combination)
-    "[" + ary_of_combination.map{ |comb| comb.map(&:id).join(",")}.join("],[")+"]"
-  end
-  
-  def id_map_of(ary_of_combination)
-    ary_of_combination.map{ |comb| comb.map(&:id)}
-  end
-   
-  def id_map_of_ary_of_combination_of_combination(ary_of_combination)
-    ary_of_combination.map{ |combs| combs.map{ |comb| comb.map(&:id)}}
-  end
-  
-   
-  def nurce_by_id(id,nurces)
-    nurces.select{ |n| n.id == id}[0]
-  end
-
-  must "update" do
-    assert_equal [4, 6],Hospital::Nurce.find(1).hospital_roles.map(&:id)
-  end
-
- Expects = 
-    { 1 => 
-    { "3" => [
-            [3,9,10],    #tight_role
-            [5,6,7,8,9,10,11,12,13,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30], #assinable_nurces
-            [[20, 19, 21, 18, 22, 23, 15, 16, 17], #  4 10    gather_by_each_group_of_role
-             [29, 9, 30],                          #  49
-             [26, 24, 28, 27, 25],                 #  4910
-             [12, 13, 11],                         # 34 10
-             [7, 8, 5, 6],                         # 349
-             [10]                                  # 34910
-            ],    
-            [20, 29, 26, 12, 7, 10, 19, 9, 24, 13, 8, 21, 30, 28], #   assinable_nurces_by_cost_size_limited
-              [5,5,4,5,5,5,5,5,5], # remain          ],
-              ["1023.4", "1023.7", "1330.0", "1023.3", "1023.1","1023.1", "1023.2", "1023.3", "1023.4"]  #cost
-             ],
-      "2" => [
-            [3,9,10],    #tight_role
-            [5,6,7,8,9,10,11,12,13,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30], #assinable_nurces
-
-            [[20, 19, 21, 18, 22, 23, 15, 16, 17],   #  4 10    #gather_by_each_group_of_role
-             [29, 9, 30],                            #  49
-             [26, 24, 28, 27, 25],                   #  4910
-             [12, 13, 11],                           # 34 10
-             [7, 8, 5, 6],                           # 349
-             [10]                                   # 34910  8324.37115197942]
-            ],    
-            [20, 29, 26, 12, 7, 10, 19, 9, 24, 13, 8, 21, 30, 28] , #   assinable_nurces_by_cost_size_limited
-              [5,5,4,5,5,5,5,5,5], # remain          ],
-              ["1023.4","1023.7", "1330.0", "1023.3", "1023.1", "1023.1", "1023.2", "1023.3", "1023.4"] #cost
-
-             ]
-
-    },
-    2 => 
-    { "3" => [
-            [3,9,10],    #tight_role
-            [5,6,7,8,9,10,11,12,13,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30], #assinable_nurces
-            [ [15, 16, 23,   18, 22, 20, 21, 19, 17],   #  4 10    gather_by_each_group_of_role
-              [ 9, 29, 30],                             #  49
-              [24, 25, 26,   27, 28],                   #  4910
-              [11, 12,      13],                        # 34 10
-              [ 5,  6,       7,   8],                   # 349
-              [10]                                      # 34910
-            ],    
-            [15, 9, 24, 11, 5, 10, 16, 29, 25, 12, 6, 23, 30, 26], #   assinable_nurces_by_cost_size_limited
-              [3,3,4,5,5,5,5,5,3], # remain          ],
-              [1730, 1730, 1330, 1023, 1023, 1023, 1023, 1023, 1730]  #cost
-             ],
-   "2" => [
-            [3,9,10],    #tight_role
-            [5,6,7,8,9,10,11,12,13,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30], #assinable_nurces
-            [[15, 20, 22, 18, 19, 21, 23, 16, 17],  #  4 10    gather_by_each_group_of_role 
-             [29, 30, 9],                            #  49
-             [26, 25, 27, 28, 24],                   #  4910
-             [11, 13, 12],                           # 34 10
-             [6, 7, 8, 5],                           # 349
-             [10]                                    # 34910
-            ],    
-            [15, 9, 24, 11, 5, 10, 16, 29, 25, 12, 6, 23, 30, 26] , #   assinable_nurces_by_cost_size_limited
-              [5,3,4,5,5,5,5,5,3], # remain          ],
-              [1023, 1730, 1330, 1023, 1023, 1023, 1023, 1023, 1730]  #cost
-
-          ]
-    }
-  }
-  
-
-  ["2","3"].each{ | sft_str|
-
+ 
+  ["2","3"].each{ | sft_str|   
     must "3/1の#{sft_str}のtight_role" do
       day = 1
-      extract_set_shifts(Log3[1])
+      @assign.nurces = @nurces = extract_set_shifts(Log3[1])
       assert_equal Expects[day][sft_str][0],@assign.tight_roles(sft_str)
     end
-
+  }
+end
+__END__
     must "3/1の shift #{sft_str},id [15, 16, 23, 18, 22, 20, 21, 19, 17] のshift残がおかしい" do
     day = 1
-    extract_set_shifts(Log3[1])
+    @assign.nurces = @nurces = extract_set_shifts(Log3[1])
     remain = [15, 16, 17, 18, 19, 20, 21, 22, 23].map{ |id|
       @assign.nurce_by_id(id).shift_remain(true)[sft_str]
     }
@@ -147,7 +42,7 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
 
     must "3/1の shift #{sft_str},id [15, 16, 23, 18, 22, 20, 21, 19, 17] のコストがおかしい" do
     day = 1
-    extract_set_shifts(Log3[1])
+    @assign.nurces = @nurces = extract_set_shifts(Log3[1])
     cost = [15, 16, 17, 18, 19, 20, 21, 22, 23].map{ |id|
       "%.1f"%@assign.nurce_by_id(id).cost(sft_str,@assign.tight_roles(sft_str)) 
     }
@@ -156,14 +51,14 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
     
     must "3/1の#{sft_str}の可能看護師" do
       day = 1
-      extract_set_shifts(Log3[1])
+      @assign.nurces = @nurces = extract_set_shifts(Log3[1])
       assert_equal  Expects[day][sft_str][1],
       @assign.assinable_nurces(day,sft_str, @assign.short_role(day,sft_str)).map(&:id)
     end
 
     must "3/1の#{sft_str}のgather_by_each_group_of_role可能看護師" do
       day = 1
-      extract_set_shifts(Log3[1])
+     @assign.nurces = @nurces =  extract_set_shifts(Log3[1])
       assert_equal Expects[day][sft_str][2],
       @assign.gather_by_each_group_of_role( @assign.assinable_nurces(day,sft_str, @assign.short_role(day,sft_str)),
                                           sft_str, @assign.short_role(day,sft_str)).map{ |ns| ns.map(&:id)}
@@ -171,13 +66,15 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
 
     must "3/1の#{sft_str}の選ばれし可能看護師" do
       day = 1
-      extract_set_shifts(Log3[1])
+      @assign.nurces = @nurces = extract_set_shifts(Log3[1])
       assert_equal Expects[day][sft_str][3],
       @assign.assinable_nurces_by_cost_size_limited(sft_str, day,@assign.short_role(day,sft_str)
                                                     ).map(&:id)
     end
   }
 
+end
+__END__
   must "3/1のshift2,3の組み合わせの組み合わせ" do
     day = 1
     combinations,need_nurces,short_roles = @assign.ready_for_day_reentrant(day)
@@ -216,20 +113,20 @@ __END__
   ["2","3"].each{ | sft_str|
     must "3/3の#{sft_str}のtight_role" do
       day = 3
-      extract_set_shifts(Log3[3]
+      @assign.nurces = @nurces = extract_set_shifts(Log3[3]
       assert_equal Expects[day][sft_str][0],@assign.tight_roles(sft_str)
     end
     
     must "3/3の#{sft_str}の可能看護師" do
       day = 3
-      extract_set_shifts(Log3[3])
+      @assign.nurces = @nurces = extract_set_shifts(Log3[3])
       assert_equal  Expects[day][sft_str][1],
       @assign.assinable_nurces(day,sft_str, @assign.short_role(day,sft_str)).map(&:id)
     end
 
     must "3/3の#{sft_str}のgather_by_each_group_of_role可能看護師" do
       day = 3
-      extract_set_shifts(Log3[3])
+      @assign.nurces = @nurces = extract_set_shifts(Log3[3])
       assert_equal Expects[day][sft_str][2],
       @assign.gather_by_each_group_of_role( @assign.assinable_nurces(day,sft_str, @assign.short_role(day,sft_str)),
                                           sft_str, @assign.short_role(day,sft_str)).map{ |ns| ns.map(&:id)}
@@ -237,7 +134,7 @@ __END__
 
     must "3/3の#{sft_str}の選ばれし可能看護師" do
       day = 3
-      extract_set_shifts(Log3[3])
+      @assign.nurces = @nurces = extract_set_shifts(Log3[3])
       assert_equal Expects[day][sft_str][3],
       @assign.assinable_nurces_by_cost_size_limited(sft_str, day,@assign.short_role(day,sft_str)
                                                     ).map(&:id)
@@ -245,7 +142,7 @@ __END__
 
     must "3/3の shift #{sft_str},id [15, 16, 23, 18, 22, 20, 21, 19, 17] のコストがおかしい" do
     day = 3
-    extract_set_shifts(Log3[3])
+    @assign.nurces = @nurces = extract_set_shifts(Log3[3])
     cost = [15, 16, 17, 18, 19, 20, 21, 22, 23].map{ |id|
       @assign.nurce_by_id(id).cost(sft_str,@assign.tight_roles(sft_str)) 
     }
@@ -254,7 +151,7 @@ __END__
 
     must "3/3の shift #{sft_str},id [15, 16, 23, 18, 22, 20, 21, 19, 17] のshift残がおかしい" do
     day = 3
-    extract_set_shifts(Log3[3])
+    @assign.nurces = @nurces = extract_set_shifts(Log3[3])
     remain = [15, 16, 17, 18, 19, 20, 21, 22, 23].map{ |id|
       @assign.nurce_by_id(id).shift_remain(true)[sft_str]
     }
