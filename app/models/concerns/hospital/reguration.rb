@@ -1,38 +1,96 @@
 # -*- coding: utf-8 -*-
-module Hospital::Reguration
-  Reguration = 
-    { 
-     true =>  #三交代
-       [ #0 全シフト
-         {   # item  => [[正規表現,何日前から見るか,何日分見るか]
-          :renkin   => [/[1-8LM]{6,}/,5,11,"連続勤務5日まで"] , ### 半日勤務をどうするか未定
-          :after_nights =>  [/[2L3M56]{2}[^0_]/,2,5,"連続夜勤明けは休み"]
+module Hospital
+
+  module Default
+    def check(day,shift_with_last_month)
+      reg_expression =~ shift_with_last_month[day-back+4,length]
+    end
+    def error_check(shift_with_last_month)
+      day = (reg_expression =~ shift_with_last_month[5-back .. -1])
+      day ? [day-4,1].max : nil
+    end
+  end
+  module Total
+    def check(day,shift_with_last_month)
+      shift_with_last_month[5,31].gsub(reg_expression,"").size > length
+    end
+    def error_check(shift_with_last_month)
+      day = shift_with_last_month[5,31].gsub(reg_expression,"").size > length
+      day ? 0 : nil
+    end
+  end
+
+  class Regrate
+    include Hospital::Const
+    attr_accessor :comment,:reg_expression,:back,:length,:method
+    def initialize(arg_reg,opt={ }) #arg_back,arg_length,arg_comment,arg_method = nil)
+      @comment = opt.delete(:comment)
+      @reg_expression = arg_reg
+      @back = opt.delete(:back)
+      @length = opt.delete(:length)
+      @method = opt.delete(:method)
+    end
+    def self.create(arg_reg,opt={ })
+      opt = { method: Hospital::Default}.merge opt
+      reg = self.new(arg_reg,opt)
+      reg.extend reg.method
+
+      reg
+    end
+  end
+
+  module Reguration
+  include Hospital::Const
+
+  Reguration =         # item  => [[正規表現,何日前から見るか,何日分見るか]
+    {                  #item  => [[正規表現,nil,max]  その月全体を調べる
+     true =>  #三交代  #              正規表現を削除した 残りが max 以下かどうか
+       [ #0 全シフト   #
+         {   # 
+          :renkin       => Hospital::Regrate.
+                                  create(/[1-8LM]{6,}/,
+                                         back: 5, length: 11,
+                                         comment: "連続勤務5日まで"),### 半日勤務をどうするか未定
+          :after_nights => Hospital::Regrate.
+                                  create(/[2L3M56]{2}[^0_]/,
+                                         back: 2, length:  5,
+                                         comment: "連続夜勤明けは休み")
           },
          # 1 日勤
           { },
          # 2 準夜
         {
-          :yakinrenzoku => [/([2L5]{2}.[2L5])/,3,5,"22022は避ける"],
-          :nine_nights => [/([2L3M56][^2356]*){10}/,nil,nil, "夜勤は72時間 計9回まで"]
-        },
+          :yakinrenzoku => Hospital::Regrate.
+                                  create(/([2L5]{2}[0_][2L5])/,
+                                         back: 3, length: 5,
+                                         comment: "2202 は避ける")
+         },
         # 3 深夜
         {
-          :yakinrenzoku => [/([36]{2}.[36])/,3,5,"33033,22022は避ける"],
-          :nine_nights => [/([2L3M56][^2356]*){10}/,nil,nil, "夜勤は72時間 計9回まで"]
+          :yakinrenzoku => Hospital::Regrate.
+                                  create(/([36]{2}[0_][36])/,
+                                         back: 3,  length: 5,
+                                         comment: "3303 は避ける")
         }
        ],
     false => #二交代
       [ #0 全シフト
        {   # item  => [[正規表現,何日前から見るか,何日分見るか]
-         :renkin   => [/[1-8]{6,}/,5,11,"連続勤務5日まで"] ### 半日勤務をどうするか未定
+         :renkin   => Hospital::Regrate.create(/[1-8]{6,}/,
+                                               bsack: 5, length: 11,
+                                               comment: "連続勤務5日まで") ### 半日勤務をどうするか未定
        },
        # 1 日勤
        { },
        # 2 準夜
        {
-         :yakinrenzoku => [/([25]{2}.[25])/,3,5,"22022は避ける"],
-         :nine_nights => [/([25][^25]*){5}/,nil,nil, "夜勤は72時間 計4回まで"]
-       }
+         :yakinrenzoku => Hospital::Regrate.create(/([25]{2}.[25])/,
+                                                   bsck: 3, length: 5,
+                                                   comment: "22022は避ける"),
+         :nine_nights  => Hospital::Regrate.create(/[^25]/,
+                                                   length: 4,method: Hospital::Total,
+                                                   comment: "夜勤は72時間 計4回まで")
+      },{ }
       ]
   }
   Wants = { 
@@ -41,15 +99,21 @@ module Hospital::Reguration
       {},  
       #1
       {
-         :interval => [/([2L5][14])|([14][3M6])/,1,3,"勤務間隔12時間以上"]
+         :interval => Hospital::Regrate.create(/([2L5][14])|([14][3M6])/,
+                                               back: 1, length: 3,
+                                               comemnt: "勤務間隔12時間以上")
        },
        #2
        {
-         :interval => [/([2L5][14])/,1,3,"勤務間隔12時間以上"]
+         :interval => Hospital::Regrate.create(/([2L5][14])/,
+                                               back: 1, length: 3,
+                                               comment: "勤務間隔12時間以上")
        },
        #3
        {
-         :interval => [/([14][3M6])/,1,3,"勤務間隔12時間以上"]
+         :interval => Hospital::Regrate.create(/([14][3M6])/,
+                                               back: 1, length: 3,
+                                               comment: "勤務間隔12時間以上")
        }
       ],
     false => #三交代
@@ -57,21 +121,71 @@ module Hospital::Reguration
        {},  
        #1
        {
-         :interval => [/[25][14]/,1,3,"勤務間隔12時間以上"]
+         :interval => Hospital::Regrate.create(/[25][14]/,
+                                               back: 1, length: 3,
+                                               comment: "勤務間隔12時間以上")
        },
        #2
        {
-         :interval => [/([25][14])/,1,3,"勤務間隔12時間以上"],
-         :after_nights   => [/[25]{2}[^0_]/ ,2,5," 夜勤連続の翌日公休"]
-       }
+         :interval => Hospital::Regrate.create(/([25][14])/,
+                                               back: 1, length: 3,
+                                               comment: "勤務間隔12時間以上"),
+         :after_nights   => Hospital::Regrate.create(/[25]{2}[^0_]/ ,
+                                                     back: 2, length: 5,
+                                                     comment: " 夜勤連続の翌日公休")
+       },
+       { }
       ]
   }
 
+
+  def set_check_reg 
+    
+    @Reguration = 
+      [
+       { :kinmu_total => Hospital::Regrate.create(/[^1-8LM]/,
+                                                  length: limits.kinmu_total,method: Hospital::Total,
+                                                  comment: "勤務は22日まで")
+       },{
+       }, {
+         :junya =>Hospital::Regrate.create( /[^25L]/,
+                                            length: limits.code2,method: Hospital::Total,
+                                            comment: "順夜が#{limit.code2}を越えた"),
+         :nine_nights => Hospital::Regrate.create(/[^2356LM]/,
+                                                  length: limit.night_total,method: Hospital::Total,
+                                                  comment: "夜勤は72時間 計9回まで")
+       },{ 
+         :shinya =>Hospital::Regrate.create(/[^3M6]/,
+                                            length: limits.code3,method: Hospital::Total,
+                                            comment: "深夜が#{limit.code3}を越えた") ,
+         :nine_nights => Hospital::Regrate.create(/[^2356LM]/,
+                                                  length: limit.night_total,method: Hospital::Total,
+                                                  comment: "夜勤は72時間 計9回まで",)
+       }
+      ]
+    @Wants = [{},{},{},{}] 
+    @Reguration_keys = (Shift0..Shift3).map{|shift| @Reguration[shift].keys + @Wants[shift].keys }
+    [@Reguration ,    @Wants ,  @Reguration_keys] # retern for TDD
+  end
+
+  def check_reg
+    return @check_reg if @check_reg
+    @check_reg = [{},{},{},{}] 
+   @check_reg.each_with_index{ |reguration,idx|
+  
+      reguration.merge!(@Reguration[idx]).
+      merge!(@Wants[idx]).
+      merge!(Reguration[ Hospital::Define.koutai3?][idx]).
+      merge!(Wants[ Hospital::Define.koutai3?][idx])
+    }
+    @check_reg
+  end
+
   Raguration_keys = { 
     true => 
-    (0..3).map{|shift| Reguration[true][shift].keys +  Wants[true][shift].keys },
+    (Shift0..Shift3).map{|shift| Reguration[true][shift].keys +  Wants[true][shift].keys },
     false => 
-    (0..2).map{|shift| Reguration[false][shift].keys +  Wants[false][shift].keys }
+    (Shift0..Shift2).map{|shift| Reguration[false][shift].keys +  Wants[false][shift].keys }
     }
 
   
@@ -80,51 +194,13 @@ module Hospital::Reguration
       true => 
     [
      {
-       :koukyuu => [/(0[^0]*){7}/, nil,nil,"公休6以上、年休１以上"],
-       :renkyuu => [/00/         , nil,nil,"連休がある"]
+       #:koukyuu => [/^0/, nil,6,"公休6以上、年休１以上"],
+       #:renkyuu => [/00/         , nil,nil,"連休がある"]
      },{},{},{}
     ],
       false =>
       []
     }
 
-  LongPatern = { 
-    true => {
-      "3"=> [  # patern, reg, back,length,[調べるshift],[ [0の割り当て数見る日],[1の][2の],[3の]]
-            ["330"    , /^[^3M6][0_]_[3_][0_]/,2,5,["3"],[[2],[],[],[1]] ],
-            ["30"     , /^[2LM356]_[0_]/       ,1,3,["3"],[[1],[],[],[1]] ],
-            ["3"      , /^_/,0,1,["3"],[[],[],[],[]]]
-           ],
-      "2"=> [ #  patern, reg,                back,length,[調べるshift],[ [2の割り当て数見る日],[3の]]
-            ["220330" , /^[^2L5][0_]_[2_][0_][3_]{2}[0_]/,2,8,["3","2"],[[2,5],[],[1],[3,4]]
-            ],
-            ["220"    , /^[^2L5][0_]_[2_][0_]/,2,5,["2"],[[2],[],[1],[]] ],
-            ["20"     , /^[2L3M56]_[0_]/      ,1,3,["2"],[[1],[],[1],[]] ],
-            ["2"      , /^_/                 ,0,1,["2"],[[],[],[],[]]]
-           ],
-       "1" => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
-             ["1"         , /^_/                 ,0,1,["1"],[[],[],[],[]]]
-            ]
-       },
-     false => { 
-       "2" => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
-             ["220"       , /^[^25][0_]_[2_][0_]/,2,5,["2"],[[2],[],[1],[]] ],
-             ["2"         , /^_/                 ,0,1,["2"],[[],[],[],[]]]
-            ],
-        "1" => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]  
-             ["1"         , /^_/                 ,0,1,["1"],[[],[],[],[]]]
-             ]
-      }     
-
-  }
-
-  KanriJunyaPatern =
-    [
-     /(^|[^2356])([25][25_]|[25_][25])[0_][3_]{2}[0_]/,
-     /(^|[^2356])[25_]{2}[0_](3[3_]|[3_]3)[0_]/,
-     /(^|[^2356])([25_][25_])[0_][3_]{2}[0_]/
-
-    ]
-  
-
+end
 end
