@@ -24,3 +24,10 @@ module Msdn
     config.active_record.default_timezone = :local
   end
 end
+class Array
+  def mult(other) ;  self.zip(other).map{ |a,b| a*b } ;end
+  def add(other) ;  self.zip(other).map{ |a,b| a+b } ;end
+  def sub(other) ;  self.zip(other).map{ |a,b| a-b } ;end
+  def times(other) ;  self.map{ |a| a*other } ;end
+end
+
