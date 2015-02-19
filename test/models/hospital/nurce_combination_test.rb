@@ -134,18 +134,27 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
 
   must "2/20の夜勤割り当て看護師組み合わせ候補最初の10個" do
     #            
-    assert_equal [[[39, 52], [37, 38]], [[37, 39], [38, 52]], [[37, 39], [42, 38]],
-                  [[37, 39], [42, 52]], [[39, 52], [37, 42]], [[39, 42], [37, 38]],
-                  [[37, 52], [42, 38]], [[39, 42], [37, 52]], [[37, 42], [38, 52]],
-                  [[42, 52], [37, 38]], [[39, 52], [42, 38]], [[39, 42], [38, 52]]
+    assert_equal [[[39, 42], [46, 38]], [[39, 46], [42, 38]], [[37, 47], [42, 38]],
+                  [[39, 42], [37, 47]], [[39, 47], [42, 38]], [[39, 42], [38, 47]],
+                  [[37, 47], [46, 38]], [[39, 46], [37, 47]], [[39, 47], [46, 38]],
+                  [[39, 46], [38, 47]], [[42, 47], [46, 38]], [[39, 46], [42, 47]]
                  ], combination_combination_ids(@assign.candidate_combination_for_night(20).to_a[0,12])
   end
   must "2/20の夜勤割り当て看護師組み合わせ候補最初の10個のコスト" do
     #             1      2    5     3      7    10      4      8   11    12    6      9
-    assert_equal [2416, 2415, 2714, 2782, 2781, 2817, 2845, 2884, 2948, 2947, 3105, 3209
+    assert_equal [4363, 4448, 4880, 4922, 5141, 5246, 5734, 5863, 5996, 6188, 6527, 6553
                  ], @assign.candidate_combination_for_night(20).
       to_a[0,12].
       map{ |nurces| @assign.cost_of_nurce_combination_of_combination(*nurces).to_i }
+  end
+
+
+  must "[52, 35]がroles_filled?" do
+    day,sft_str ,nurces = 15,"2",[52, 35].map{ |id| nurce_by_id(id,@nurces)}
+    #roles_count_short,roles_count_assigned = 
+    #  @assign.roles_count_short(day,sft_str),@assign.roles_count_assigned(nurces)
+    #pp [roles_count_short,roles_count_assigned,roles_count_short.sub(roles_count_assigned)]
+    assert_equal [0,1,0,0,0],@assign.roles_filled?(day,sft_str ,nurces)
   end
 
 end

@@ -143,7 +143,7 @@ module Hospital::NurceCombination
   end
   def enough?(day,sft_str,nurces)
     is_assignables?(sft_str,nurces) && 
-      roles_filled?(day,sft_str,nurces)
+      roles_filled?(day,sft_str,nurces).max == 0
   end
 
   def is_assignables?(sft_str,nurces)
