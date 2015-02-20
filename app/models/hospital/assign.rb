@@ -846,7 +846,7 @@ log_stat_and_save_result
     @shifts.each{|sft_str|  
       daily_checks[sft_str.to_i].each{|d|
         next if day+d > @lastday
-        return false unless too_many_assigned?(day+d,shift_str)
+        return false unless too_many_assigned?(day+d,sft_str)
       }
     }
     return false unless shift1_is_enough?(day,shift_str)
@@ -889,6 +889,8 @@ log_stat_and_save_result
           return false 
         end
       end
+    when 1 ; dbgout("FOR_DEBUG(#{__LINE__}) 長割後日チェック割り当て最大値以下(#{day}日,shift:#{sft_str})")
+
     end
     true
   end
@@ -898,7 +900,8 @@ log_stat_and_save_result
   def too_many?(day,sft_str)
     #指定日のシフトは人の余裕あるか
     case sft_str
-    when Sshift0,Sshift2,Sshift3 ;    short_role_shift[day][[@Kangoshi,sft_str]][1] <=> 0
+    when Sshift0,Sshift2,Sshift3 ; 
+       needs_all_days[day][[@Kangoshi,sft_str]][1] <=> count_role_shift[day][[@Kangoshi,sft_str]]
     when Sshift1         ;    
     end
   end
