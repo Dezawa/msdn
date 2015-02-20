@@ -106,19 +106,24 @@ module Hospital::NurceCombination
   end
 
   def candidate_combination_for_night(day)
-    comb=Hospital::Define.define.night.map{  |sft_str|
-      short = short_role(day,sft_str)
-      assinable_nurces_by_cost_size_limited(sft_str,day, short).
-      combination(need_nurces_shift(day,sft_str))
+    combary = Hospital::Define.define.night.map{  |sft_str|
+      candidate_combination_for_shift_with_enough_role(day,sft_str)
     }
-    comb.first.to_a.product(comb.last.to_a).
-      select{ |comb2,comb3| 
-      (comb2 & comb3).empty? && 
-      enough?(day,"2",comb2) && enough?(day,"3",comb3)}.
-      sort_by{ |comb2,comb3|  cost_of_nurce_combination_of_combination(comb2,comb3)}
+    combary.first.to_a.product(combary.last.to_a).                      # 225
+      select{ |comb2,comb3| (comb2 & comb3).empty? }.
+      sort_by{ |comb2,comb3|  cost_of_nurce_combination_of_combination(comb2,comb3)}    
+  end
+  
+  def candidate_combination_for_shift_with_enough_role(day,sft_str)
+    candidate_combination_for_shift(day,sft_str). 
+      select{ |comb| roles_filled?(day,sft_str,comb).max == 0 }.
+      sort_by{ |comb| cost_of_nurce_combination(comb,sft_str)}
   end
 
-
+  def candidate_combination_for_shift(day,sft_str)
+    assinable_nurces_by_cost_size_limited(sft_str,day,short_role(day,sft_str)).
+      combination(need_nurces_shift(day,sft_str))                 # 15
+  end
 
   # 最適化を行うとどの位のコストとなるのか？
   # ５Fを例にとると、
@@ -128,7 +133,6 @@ module Hospital::NurceCombination
   #  各々の limit_of_nurce_candidate_night = (4+3)*2 = 14 を選び oprduct
   #  14 * 14 = 196
   #
-
   def nurce_combination_shift1(combinations,need_nurces,short_roles,day,&block)
     tight = tight_roles(Sshift1)
     count=2
@@ -151,7 +155,7 @@ module Hospital::NurceCombination
   end
 
   def  roles_filled?(day,sft_str,nurces)
-    return true if nurces.size == 0
+    return [0]  if nurces.size == 0
     roles_count_short(day,sft_str).sub(roles_count_assigned(nurces)). #(nurces)).
       map{ |count| count < 0 ? 0 : count }
   end
