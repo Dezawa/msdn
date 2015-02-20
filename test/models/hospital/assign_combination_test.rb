@@ -65,7 +65,7 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
   must "3/15の nurces_selected_of_night" do
     setup_5F
     short_roles = @assign.short_roles_of_night(day)
-    assert_equal( [[25, 6, 26, 5, 19, 7], []] , 
+    assert_equal( [[26, 5, 25, 6, 20, 7], []] , 
                   @assign.nurces_selected_of_night(day,short_roles).map{ |sft,nurces| nurces.map(&:id)} )
   end
 
@@ -106,13 +106,13 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
     assinable_nurces=@assign.nurce_by_id([5, 6, 7, 11, 12, 16, 17, 18, 19, 20, 21, 22,24, 25, 26])
     gather_by_each_group_of_role = @assign.gather_by_each_group_of_role(assinable_nurces,"2",[3,4])
     
-    assert_equal [[25, 26, 19, 22, 21, 20, 18, 24, 17], [6, 5, 7, 16, 11, 12]
+    assert_equal [[26, 25, 20, 19, 18, 22, 21, 24, 17], [5, 6, 7, 11, 16, 12]
                  ] , gather_by_each_group_of_role.map{ |g| g.map(&:id)}
   end
 
   must "3/15のneed_nurces_roles(day)のas_nurces_selected" do
     setup_5F
-    assert_equal [[25, 6, 26, 5, 19, 7],[] ],
+    assert_equal [[26, 5, 25, 6, 20, 7],[] ],
     @assign.need_nurces_roles(day)[0].map{ |cmb| cmb[1].map(&:id)}
   end
 
@@ -167,7 +167,7 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
     sft_str ="2"
     day = 15
     as_nurces_selected,need_nurces, short_roles = @assign.need_nurces_roles(day)
-    assert_equal [[5], [7], [6]],
+    assert_equal [[5], [6], [7]],
                  # [[1, 22, 2, 6],   #  1 2 3 5 6 10 11 22 24 25
                  #  [1, 5, 22, 2],   #  9 9 2 2 1  4  3  2  2  2   36
                  #  [1, 10, 24, 2],
