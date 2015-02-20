@@ -124,7 +124,7 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
 
   end
 
-  Cost = Hospital::Nurce::Cost
+  Cost = Hospital::NurceCost::ClassMethods::Cost
   must " 2/4:2 2の使用数の違う38,39のcostが同じなのはなぜ？" do
     #pp @assign.nurce_by_id([38,39]).map(&:shift_remain)
     nurces = extract_set_shifts(Log2_3)

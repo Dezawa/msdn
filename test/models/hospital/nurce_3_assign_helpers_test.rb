@@ -14,7 +14,7 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     @month  = Date.new(2013,2,1)
     srand(1)
   end
-
+  Cost = Hospital::NurceCost::ClassMethods::Cost
   # 勤務コード 1～40 が shiftsではどう表されるか確認
   #123456789012345678901234567890123456789
   "12323111119A487564564564487CB111519A487".split("").each_with_index{|shift,code|
@@ -175,7 +175,7 @@ pp nurce.shift_with_last_month
                   [10, 9, 4]],  Hospital::Nurce.cost_table.keys.sort,"keys of Nurce:Const"
     assert_equal [[3,9,10],[3,9],[3,10],[9,10],[3],[9],[10]].sort,
     Hospital::Nurce.cost_table[[3,10,9]].keys.sort,"keys of key 3109 Nurce:Const"
-    assert_equal Hospital::Nurce::Cost[7], Hospital::Nurce.cost_table[[3,10,9]][[3,9,10]],"valu of key 1109 Nurce:Const"
+    assert_equal Cost[7], Hospital::Nurce.cost_table[[3,10,9]][[3,9,10]],"valu of key 1109 Nurce:Const"
   end
   
 assinable_roles = { 
@@ -191,20 +191,20 @@ assinable_roles = {
     nurce40.shift_remain
     assert_equal [3,4,9],    nurce40.need_role_ids.sort
     assert_equal 5,nurce40.shift_remain["3"],"role remain5"
-    cost = Hospital::Nurce::Cost[6][5]
+    cost = Cost[6][5]
     assert_equal cost, nurce40.cost("3",[3,9,10]).to_i ," tight 3,9,10"
-    assert_equal Hospital::Nurce::Cost[5][5], nurce40.cost("3",[3,10,9]).to_i ," tight 3,10,9"
-    assert_equal Hospital::Nurce::Cost[7][5], nurce40.cost("3",[3,9,4]).to_i ,"shft 3 is remains 5 before set\shift"
+    assert_equal Cost[5][5], nurce40.cost("3",[3,10,9]).to_i ," tight 3,10,9"
+    assert_equal Cost[7][5], nurce40.cost("3",[3,9,4]).to_i ,"shft 3 is remains 5 before set\shift"
     saved = nurce40.save_shift
     #pp saved[2]
     #pp nurce40.role_remain[[2,3]]
     nurce40.set_shift(20,"3")
     #pp saved[2]
-    assert_equal Hospital::Nurce::Cost[7][4], nurce40.cost("3",[3,9,4]).to_i ,"shft 3 is remains 4 after set\shift"
+    assert_equal Cost[7][4], nurce40.cost("3",[3,9,4]).to_i ,"shft 3 is remains 4 after set\shift"
     nurce40.restore_shift(saved)
     #pp nurce40.role_remain
     #pp nurce40.role_remain[[2,3]]
-    assert_equal Hospital::Nurce::Cost[7][5], nurce40.cost("3",[3,9,4]).to_i ,"shft 3 is remains 5 after restore"
+    assert_equal Cost[7][5], nurce40.cost("3",[3,9,4]).to_i ,"shft 3 is remains 5 after restore"
   end
 
   
