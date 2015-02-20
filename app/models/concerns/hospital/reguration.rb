@@ -46,24 +46,21 @@ module Hospital
       :renkin => Hospital::Regrate.create(/[1-8LM]{6,}/,
                                           back: 5, length: 11,
                                           comment: "連続勤務5日まで"),### 半日勤務をどうするか未定
-      :after_nights => Hospital::Regrate.
-                                  create(/[2L3M56]{2}[^0_]/,
-                                         back: 2, length:  5,
-                                         comment: "連続夜勤明けは休み"),
-         :nine_nights  => Hospital::Regrate.create(/[^25]/,
-                                                   length: 4,method: Hospital::Total,
-                                                   comment: "夜勤は72時間 計4回まで"),
-          :junyarenzoku => Hospital::Regrate.
-                                  create(/([2L5]{2}[0_][2L5])/,
-                                         back: 3, length: 5,
-                                         comment: "2202 は避ける"),
-          :sinyarenzoku => Hospital::Regrate.
-                                  create(/([36]{2}[0_][36])/,
-                                         back: 3,  length: 5,
-                                         comment: "3303 は避ける"),
-         :interval => Hospital::Regrate.create(/([2L5][14])|([14][3M6])/,
-                                               back: 1, length: 3,
-                                               comemnt: "勤務間隔12時間以上")
+      :after_nights => Hospital::Regrate.create(/[2L3M56]{2}[^0_]/,
+                                                back: 2, length:  5,
+                                                comment: "連続夜勤明けは休み"),
+      :nine_nights  => Hospital::Regrate.create(/[^25]/,
+                                                length: 4,method: Hospital::Total,
+                                                comment: "夜勤は72時間 計4回まで"),
+      :junyarenzoku => Hospital::Regrate.create(/([2L5]{2}[0_][2L5])/,
+                                                back: 3, length: 5,
+                                                comment: "2202 は避ける"),
+      :sinyarenzoku => Hospital::Regrate.create(/([36]{2}[0_][36])/,
+                                                back: 3,  length: 5,
+                                                comment: "3303 は避ける"),
+      :interval => Hospital::Regrate.create(/([2L5][14])|([14][3M6])/,
+                                            back: 1, length: 3,
+                                            comemnt: "勤務間隔12時間以上")
       
       
     }
