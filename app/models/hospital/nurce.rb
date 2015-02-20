@@ -70,15 +70,15 @@ class Hospital::Nurce < ActiveRecord::Base
   LongPatern = { 
     true => {
       Sshift3 => [  # patern, reg, back,length,[調べるshift],[ [0の割り当て数見る日],[1の][2の],[3の]]
-           AssignPatern.new(["330"    , /^[^3M6][^3M6]_[3_][0_]/,2,5,[Sshift3],[[2],[],[],[1]] ]),
-           AssignPatern.new(["30"     , /^[^M356]_[0_]/    ,1,3,[Sshift3],[[1],[],[],[1]] ]),
-           AssignPatern.new(["3"      , /^_/                  ,0,1,["3"],[[],[],[],[]]])
+                  AssignPatern.new(["330"    , /^[^2L3M56]_[3_][0_]/,1,4,[Sshift3],[[2],[],[],[1]] ]),
+           AssignPatern.new(["30"     , /^_[0_]/           ,0,2,[Sshift3],[[1],[],[],[1]] ]),
+           AssignPatern.new(["3"      , /^_/               ,0,1,["3"],[[],[],[],[]]])
            ],
       Sshift2 => [ #  patern, reg,                back,length,[調べるshift],[ [2の割り当て数見る日],[3の]]
-            AssignPatern.new(["220330",/^[^2L5][^2L5]_[2_][0_][3_]{2}[0_]/,2,8,[Sshift3,Sshift2],[[2,5],[],[1],[3,4]]]),
-            AssignPatern.new(["220"   , /^[^2L5][^2L5]_[2_][0_]/,2,5,[Sshift2],[[2],[],[1],[]] ]),
-            AssignPatern.new(["20"    , /^_[0_]/      ,0,2,[Sshift2],[[1],[],[1],[]] ]),
-            AssignPatern.new(["2"     , /^_/                 ,0,1,[Sshift2],[[],[],[],[]]])
+            AssignPatern.new(["220330",/^[^2L3M56]_[2_][0_][3_]{2}[0_]/,1,7,[Sshift3,Sshift2],[[2,5],[],[1],[3,4]]]),
+            AssignPatern.new(["220"   , /^_[2_][0_]/          ,0,3,[Sshift2],[[2],[],[1],[]] ]),
+            AssignPatern.new(["20"    , /^_[0_]/              ,0,2,[Sshift2],[[1],[],[1],[]] ]),
+            AssignPatern.new(["2"     , /^_/                  ,0,1,[Sshift2],[[],[],[],[]]])
            ],
        Sshift1 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
              AssignPatern.new(["1"    , /^_/                 ,0,1,[Sshift1],[[],[],[],[]]])
