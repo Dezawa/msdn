@@ -19,9 +19,9 @@ module Hospital::NurceCombination
   #         必要roleを満たせる看護師の組み合わせの時、blockを呼ぶ
   #
   def nurce_combination_shift23(candidate_combination_for_shift23,need_nurces,short_roles,day,&block)
-    pp ["########### NURCE_COMBINATION_SHIFT23 ",candidate_combination_for_shift23.class,candidate_combination_for_shift23.first.class]
+    #pp ["########### NURCE_COMBINATION_SHIFT23 ",candidate_combination_for_shift23.class,candidate_combination_for_shift23.first.class]
     candidate_combination_for_shift23.each{ |combs| 
-      pp ["########### NURCE_COMBINATION_SHIFT23 ",combs.class,combs.size]
+      #pp ["########### NURCE_COMBINATION_SHIFT23 ",combs.class,combs.size]
  block.call(combs ) }
   end 
 
@@ -178,8 +178,9 @@ module Hospital::NurceCombination
                  ) if day==1 && @busho_id == 3 
     return [] if roles_count_short(day,sft_str).max == 0
     nurce_not_assigned(day).
-      select{|nurce| !nurce.check_at_assign(day,sft_str) && 
-      nurce.has_assignable_roles_atleast_one(sft_str,short_roles.map{|r,mi_max| r })
+      select{|nurce| 
+        !nurce.check_at_assign(day,sft_str) && 
+        nurce.has_assignable_roles_atleast_one(sft_str,short_roles.map{|r,mi_max| r })
     }
   end
 

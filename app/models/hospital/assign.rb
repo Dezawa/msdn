@@ -345,7 +345,7 @@ log_stat_and_save_result
       
       refresh
       combinations,need_nurces,short_roles = ready_for_day_reentrant(day)
-pp ["########## combinations ",combinations.class,combinations.first.class]
+#pp ["########## combinations ",combinations.class,combinations.first.class]
 
       begin 
         if assign_day_reentrant(day,combinations,need_nurces,Sshift2) &&
@@ -402,7 +402,7 @@ pp ["########## combinations ",combinations.class,combinations.first.class]
 
   def assign_day_reentrant(day,nurce_combinations,need_nurces,sft_str)
     ################## RE_ENTRANT START ###################
-pp ["############## assign_day_reentrant 現状保存 ",nurce_combinations]
+#pp ["############## assign_day_reentrant 現状保存 ",nurce_combinations]
     # 現状保存
     shifts_short_role = save_shift(nurce_combinations,day)
 
@@ -440,7 +440,7 @@ pp ["############## assign_day_reentrant 現状保存 ",nurce_combinations]
     # この長い割付が可能か                                                # [0,2]
     list_of_long_patern = 
       assign_test_patern(nurces,day,sft_str,idx_list_of_long_patern)
-pp ["pp list_of_long_patern",idx_list_of_long_patern,list_of_long_patern]
+#pp ["pp list_of_long_patern",idx_list_of_long_patern,list_of_long_patern]
     return false unless list_of_long_patern
     (0..nurces.size-1).each{|idx|
       nurce_set_patern(nurces[idx],day,list_of_long_patern[idx].patern)
@@ -783,6 +783,7 @@ pp ["pp list_of_long_patern",idx_list_of_long_patern,list_of_long_patern]
   def  assign_test_patern(nurce_list,day,sft_str,idx_set_of_long_patern)
     #[ LongPatern,LongPatern]
     paterns = (0..nurce_list.size-1).map{|idx|
+    #pp [@koutai3,sft_str,nurce_list.map(&:id),idx_set_of_long_patern,idx]
       long_patern,errorlist =  
       nurce_list[idx].
       long_check(day,sft_str,
@@ -791,7 +792,7 @@ pp ["pp list_of_long_patern",idx_list_of_long_patern,list_of_long_patern]
         long_patern # ,daily_checks]
       else
         # このとき、daily_checkは[item,正規表現の配列
-pp [errorlist]
+#pp [errorlist]
         errorlist.each{|item,reg| @count_cause[item][sft_str]+=1 }
         return false
       end
@@ -804,7 +805,7 @@ pp [errorlist]
   def avoid_check(nurces,sft_str,first_day,list_of_long_patern)
     return true 
     return true if sft_str == "1"
-pp [first_day,list_of_long_patern]
+#pp [first_day,list_of_long_patern]
     last_day = first_day+list_of_long_patern.map{ |long_patern| long_patern.patern.size}.max-1
     logger.debug("#### AVOID_CHECK first_day,last_day=#{ first_day},#{last_day} @avoid_list=#{@avoid_list.flatten.join(',')}")
     @shifts_night.each{ |sft_str|
@@ -845,37 +846,52 @@ pp [first_day,list_of_long_patern]
     @shifts.each{|sft_str|  
       daily_checks[sft_str.to_i].each{|d|
         next if day+d > @lastday
-        #pp("FOR_DEBUG(#{__LINE__}) 長割後日チェック too_many?(#{day+d}日,shift:#{sft_str}) #{too_many?(day+d,sft_str)}")
-        dbgout("FOR_DEBUG(#{__LINE__}) 長割後日チェック too_many?(#{day+d}日,shift:#{sft_str}) #{too_many?(day+d,sft_str)}")
-        case too_many?(day+d,sft_str)
-        when -1 ; return false
-        when 0
-          case sft_str
-          when Sshift2,Sshift3
-            s_r = short_role(day+d,sft_str).size ==0 ? "なし" :  short_role(day+d,sft_str).join
-            #pp("長割後日チェック(#{__LINE__}) (#{ day}+#{d}):#{sft_str} ロール不足#{ s_r }")
-            dbgout("長割後日チェック(#{__LINE__}) (#{ day}+#{d}):#{sft_str} ロール不足#{ s_r }")
-            return false if short_role(day+d,sft_str).size >0
-          end
-        end
+        return false unless too_many_assigned?(day+d,shift_str)
       }
     }
-    #   当日、前日のシフト１は看護師が足りるか
-    unless shift_str == "1"
-      #pp("長割後日チェック(#{__LINE__}) (#{ day})への割付で日勤要員不足ありや #{assinable_nurces(day,"1",short_role(day,'1')).size }")
-      #pp("長割後日チェック(#{__LINE__}) (#{ day-1})への割付で日勤要員不足ありや #{assinable_nurces(day-1,"1",short_role(day-1,'1')).size }")
-      dbgout("長割後日チェック(#{__LINE__}) (#{ day})への割付で日勤要員不足ありや #{assinable_nurces(day,"1",short_role(day,'1')).size }")
-      dbgout("長割後日チェック(#{__LINE__}) (#{ day-1})への割付で日勤要員不足ありや #{assinable_nurces(day-1,"1",short_role(day-1,'1')).size }")
-      if short_role_shift[day][[@Kangoshi,Sshift1]][0] > assinable_nurces(day,Sshift1,short_role(day,Sshift1)).size ||
-          short_role_shift[day-1][[@Kangoshi,Sshift1]][0] > assinable_nurces(day-1,Sshift1,short_role(day-1,Sshift1)).size 
-        dbgout("長割後日チェック(#{__LINE__}) (#{ day})への割付で日勤要員不足")
-        #pp("長割後日チェック(#{__LINE__}) (#{ day})への割付で日勤要員不足")
+    return false unless shift1_is_enough?(day,shift_str)
+    true
+  end
+
+  #   当日、前日のシフト１は看護師が足りるか
+  def shift1_is_enough?(theday,shift_str)
+    return true if  shift_str == "1"
+    days = theday == 1 ? [0] : [0,1]
+    days.all?{ |d|
+      day = theday - d
+      short     = short_role_shift[day][[@Kangoshi,Sshift1]][0] 
+      assinable = assinable_nurces(day,Sshift1,short_role(day,Sshift1)).size
+      if short - assinable > 0
+        dbgout("長割後日チェック(#{__LINE__}) #{theday}日への割付で#{day}日の日勤要員不足発生する")
+        dbgout("　　　　　　　　　　　#{short}人必要な所可能なのは#{assinable}人")
         return false
+      else
+        true
+      end
+    }
+    dbgout("長割後日チェック(#{__LINE__}) #{theday}日への割付で日勤要員不足発生せず")
+    true
+  end
+
+  def too_many_assigned?(day,sft_str)
+    case too_many?(day,sft_str)
+    when -1 ; 
+      dbgout("FOR_DEBUG(#{__LINE__}) "+
+             "長割後日チェック(#{day}日,shift:#{sft_str}) 割り当て最大値を越えた")
+      return false
+    when 0
+      case sft_str
+      when Sshift2,Sshift3
+        s_r = short_role(day,sft_str).size ==0 ? "なし" :  short_role(day,sft_str).join
+        #pp("長割後日チェック(#{__LINE__}) (#{ day}):#{sft_str} ロール不足#{ s_r }")
+        if short_role(day,sft_str).size >0
+          dbgout("長割後日チェック(#{__LINE__}) (#{ day}):#{sft_str} ロール不足#{ s_r }")
+          return false 
+        end
       end
     end
     true
   end
-
 
   # shiftの割り付けがmaxを越えていないか。needs_all_days[day][key][1] - role_shift[day][key]
   #  key == [ role, sft_str ]
@@ -911,7 +927,8 @@ pp [first_day,list_of_long_patern]
     tight.inject(0){ |cost,role| cost * 2 + (roles.include?(role) ? 1 : 0 )}
   end
   # 看護師群のcostの総計
-  def cost_of_nurce_combination(nurces,sft_str,tight)
+  def cost_of_nurce_combination(nurces,sft_str,tight = nil)
+    tight ||= tight_roles(sft_str)
     nurces.inject(2.0){|cost,nurce| cost + nurce.cost(@night_mode ? :night_total : Sshift1,tight) }*
       AvoidWeight[[nurces_have_avoid_combination?(nurces),AvoidWeight.size-1].min]
   end
@@ -936,25 +953,12 @@ pp [first_day,list_of_long_patern]
     }
   end
 
-
-  # Hospital::Nurce::LongPatern に定義されたpaternはshiftによって数が異なる
-  # また処理時間との兼ね合いなどで変化する可能性も高い。
-  # 看護師の人数分のパターンの組み合わせについて割付を試すにあたり、その
-  # 組み合わせを都度作るのはコストがかかる。
-  # しかしパターンの数に応じてパターンをプログラムで定義するのも間違いの元となる。
-  # そこで、パターンの組み合わせをメモ化することにした。
   # [number_of_nurce] 看護師の人数
   # [number_of_plan]  LongPaternの数
   # 戻り値            [ [0,0,0],[0,0,1],,,,[1,1,1] ]
   def long_plan_combination(number_of_nurce,number_of_plan)
-    @long_plan_combination ||= {}
-    return @long_plan_combination[[number_of_nurce,number_of_plan]] if @long_plan_combination[[number_of_nurce,number_of_plan]]
-    
     work = (0..number_of_plan-1).to_a
-    combination = work.map{|w| [w] }
-    (number_of_nurce-1).times{ combination = combination.product(work)}
-    @long_plan_combination[[number_of_nurce,number_of_plan]] = 
-      combination.map{|c| c.flatten}
+    work.product( *[work]*(number_of_plan-1))
   end
 
 

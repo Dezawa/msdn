@@ -10,7 +10,7 @@ module Hospital::ReEntrant
       dbgout dump("  HP ASSIGN ")
 
     if opt[:dipth] 
-pp ["opt[:dipth]",opt[:dipth]]
+#pp ["opt[:dipth]",opt[:dipth]]
       return true  if opt[:dipth] ==0
        opt[:dipth] -= 1
     end
@@ -26,7 +26,7 @@ pp ["opt[:dipth]",opt[:dipth]]
         # 現状保存
         shifts_short_role = save_shift(nurces,day)
 
-        night.each{ |sft_str| assign_night_shift(day,sft_str,nurce_combinations[sft_str]) }
+        next unless night.all?{ |sft_str| assign_night_shift(day,sft_str,nurce_combinations[sft_str]) }
         return true if assign_night(day+1,opt)
         restore_shift(nurces,day,shifts_short_role)
       }
@@ -39,7 +39,7 @@ pp ["opt[:dipth]",opt[:dipth]]
   # 与えられた combination にしたがって、day の shiftを割り付ける
   # long_patern も試みる
   def assign_night_shift(day,sft_str,nurce_combination)
-pp [day,sft_str,nurce_combination.map(&:id)]
+#pp [day,sft_str,nurce_combination.map(&:id)]
     # 長い割付が可能なら割り付ける
     long_plan_combination(need_nurces_shift(day,sft_str),Hospital::Nurce::LongPatern[@koutai3][sft_str].size).
       each{|idx_list_of_long_patern|  # [0,2]
@@ -47,7 +47,7 @@ pp [day,sft_str,nurce_combination.map(&:id)]
       shifts_short_role = save_shift(nurce_combination,day)
 
       ret = assign_patern(nurce_combination,day,sft_str,idx_list_of_long_patern)
-      pp ret
+      #pp ret
       case ret
       when :cannot_assign_this_patern
         restore_shift(nurce_combination,day,shifts_short_role)
@@ -57,10 +57,11 @@ pp [day,sft_str,nurce_combination.map(&:id)]
         #@count_cause[:long][sft_str] += 1
         restore_shift(nurce_combination,day,shifts_short_role)
         next # long_patern
-       else  # 成功 long_patern [0,0,0] は必ず成功する
-        return
+       else  # 成功: ここに入っても、shift1不足でダメなこともある 
+        return true
        end
     }
+    false
   end
 
   def assign_night_reentrant(day)
@@ -86,7 +87,7 @@ pp [day,sft_str,nurce_combination.map(&:id)]
  #pp ["########## assign_shift_by_reentrant",need_nurces]
    @entrant_count += 1
     # 長い割付が可能なら割り付ける
-pp ["長い割付が可能なら割り付ける",day,need_nurces,sft_str]
+#pp ["長い割付が可能なら割り付ける",day,need_nurces,sft_str]
     dbgout("FOR_DEBUG(#{__LINE__}): shift=#{sft_str} need_nurces[sft_str] #{need_nurces[sft_str]}"+
            "Hospital::Nurce::LongPatern[@koutai3][Sshift2].size",
            Hospital::Nurce::LongPatern[@koutai3][Sshift2].size

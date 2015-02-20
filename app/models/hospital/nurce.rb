@@ -456,7 +456,7 @@ logger.debug("=== ADD_ROLE user #{id} role #{role_id} bunrui #{Hospital::Role.fi
       end
     end
     #    errors.each{|item,d| @count_cause[item] += 1
-    pp [long_patern.back,long_patern.length,long_patern.reg,offset,len,shift_with_last_month[offset,len]]
+    #p [long_patern.back,long_patern.length,long_patern.reg,offset,len,shift_with_last_month[offset,len]]
     [false,[[:no_space]]]
   end
 

@@ -61,8 +61,6 @@ module Hospital
       :interval => Hospital::Regrate.create(/([2L5][14])|([14][3M6])/,
                                             back: 1, length: 3,
                                             comemnt: "勤務間隔12時間以上")
-      
-      
     }
     Reguration =         # item  => [[正規表現,何日前から見るか,何日分見るか]
     {                  #item  => [[正規表現,nil,max]  その月全体を調べる

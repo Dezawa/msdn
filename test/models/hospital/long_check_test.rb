@@ -54,6 +54,7 @@ class Hospital::LongCheckTest < ActiveSupport::TestCase
     [45,1,"3",0,:no_space,1,"3",1,"30"],[45,1,"3",2,"3"],
     [34,1,"2",0,:no_space],[34,1,"2",1,:renkin],[34,1,"2",2,"20"],[34,1,"2",3,"2"],
     [46,1,"2",0,:renkin],[46,1,"2",1,:renkin],[46,1,"2",2,"20"],[46,1,"2",3,"2"],
+    [51,1,"2",0,:no_space],[51,1,"2",1,:no_space],[51,1,"2",2,"20"],[51,1,"2",3,"2"],
   ].each{ |nurce,day,sft,pat_id,ret|
     long_pat = long_patern(sft,pat_id)
     pat = long_pat.patern
