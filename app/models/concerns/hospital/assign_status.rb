@@ -53,13 +53,22 @@ module Hospital::AssignStatus
     @margin_of_role
   end
 
+  def roles_assignable
+    return @roles_assignable if @roles_assignable
+    @roles_assignable = Hash.new{|h,k| h[k]=0}
+    @nurces.each{|nurce| 
+      nurce.assinable_roles.each{ |role_sft,v| @roles_assignable[role_sft] += v  }
+    }
+    @roles_assignable    
+  end
+
   def roles_assigned(recalc=false)
     return @roles_assigned if @roles_assigned && !recalc
     @roles_assigned = Hash.new{|h,k| h[k]=0}
     @nurces.each{|nurce| 
       nurce.need_role_ids.each{ |role_id|
-        nurce.shift_remain.keys.each{ |sft_str|
-          @roles_assigned[[role_id,sft_str]] += nurce.shift_remain(recalc)[sft_str]
+        nurce.shift_used.keys.each{ |sft_str|
+          @roles_assigned[[role_id,sft_str]] += nurce.shift_used(recalc)[sft_str]
         }
       }
     }
@@ -147,11 +156,14 @@ module Hospital::AssignStatus
   end
 
   def short_role(day,sft_str,reculc=false)
-    #short_role_shift(true) if recalc || ! @short_role
-    #@short_role[day]
+    short_role_shift(true) if reculc || ! @short_role
+    @short_role ||= []
+    @short_role[day] ||= { }
     #logger.debug("short_role_shift(reculc)[day].to_a #{short_role_shift(reculc)[day].to_a.join(',')}")
-    short_role_shift(reculc)[day].to_a.map{|role_shift,min_max| 
-      role_shift.first if min_max.first>0 && role_shift.last == sft_str}.compact.sort
+    @short_role[day][sft_str] ||= 
+      short_role_shift(reculc)[day].to_a.
+      map{|role_shift,min_max| role_shift.first if min_max.first>0 && role_shift.last == sft_str}.
+      compact.sort
   end
   def short?(day,sft_str)
     sfts = sft_str == :night_total ? @night : [sft_str]
