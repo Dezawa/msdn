@@ -206,8 +206,8 @@ RoleRemain =
                   [48, 44], [36, 40], [45, 40], [48, 40], [44, 40]]]
                 ).each{ |sft_str,comb|
     must "シフト#{sft_str}でのロールを満たす組み合わせ" do
-      assert_equal comb,
-      combination_ids(@assign.candidate_combination_for_shift_with_enough_role(day,sft_str))
+      assert_equal comb.sort,
+      combination_ids(@assign.candidate_combination_for_shift_with_enough_role(day,sft_str)).sort
     end
   }
 
@@ -239,10 +239,13 @@ RoleRemain =
     assert_equal require[15,15], result[15,15]
   end
 
-  selected_comb = [[[51, 35], [36, 39]], [[38, 46], [36, 39]], [[51, 45], [36, 39]],
-                   [[51, 38], [36, 39]], [[35, 49], [36, 39]], [[51, 35], [45, 39]],
-
-                   [[51, 35], [45, 48]], [[36, 38], [45, 39]]]
+  selected_comb = [# [[51, 35], [36, 39]], [[38, 46], [36, 39]], [[51, 45], [36, 39]],
+                   # [[51, 38], [36, 39]], [[35, 49], [36, 39]], [[51, 35], [45, 39]],
+                   # [[51, 35], [45, 48]], [[36, 38], [45, 39]]]
+                   [[51, 35], [36, 39]], [[38, 46], [36, 39]], [[51, 45], [36, 39]],
+                   [[35, 49], [36, 39]], [[51, 38], [36, 39]], [[51, 35], [45, 39]], 
+                   [[36, 38], [45, 39]], [[45, 38], [36, 39]]
+                  ]
   must "shift2,3の選ばれた組み合わせ1日" do
     combination = hash_combination_ids(@assign.candidate_combination_for_shift23_selected_by_cost(day))
     assert_equal 8,combination.size
@@ -301,8 +304,7 @@ RoleRemain =
    must " 4日 夜の組み合わせ候補" do
      combinations = combination_combination_ids(@assign.candidate_combination_for_night(day4))
    
-     assert_equal [ [[51, 35], []],[[36, 38], []], [[51, 42], []], [[51, 38], []],
-                   [[42, 38], []]
+     assert_equal [[[36, 38], []], [[51, 35], []], [[51, 42], []], [[51, 38], []], [[42, 38], []]
                   ], combinations[0,8]
    end
 

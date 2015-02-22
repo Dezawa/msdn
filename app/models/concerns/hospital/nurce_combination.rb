@@ -72,8 +72,8 @@ module Hospital::NurceCombination
     }
     if shifts.size == 2
       combary.first.to_a.product(combary.last.to_a).                      # 225
-        select{ |comb2,comb3| (comb2 & comb3).empty? }.
-        sort_by{ |comb2,comb3|  cost_of_nurce_combination_of_combination(comb2,comb3)}
+        select{ |comb2,comb3| (comb2 & comb3).empty? }#.
+        #sort_by{ |comb2,comb3|  cost_of_nurce_combination_of_combination(comb2,comb3)}
     elsif  shifts.size == 1
       return [] unless combary.first.first
       combary.sort_by{ |comb|  cost_of_nurce_combination(comb.first,shifts.first,tight_roles(shifts.first))}
@@ -84,8 +84,7 @@ module Hospital::NurceCombination
   
   def candidate_combination_for_shift_with_enough_role(day,sft_str)
     candidate_combination_for_shift(day,sft_str). 
-      select{ |comb| roles_filled?(day,sft_str,comb).max == 0 }.
-      sort_by{ |comb| cost_of_nurce_combination(comb,sft_str)}
+      select{ |comb| roles_filled?(day,sft_str,comb).max == 0 }#.      sort_by{ |comb| cost_of_nurce_combination(comb,sft_str)}
   end
 
   def candidate_combination_for_shift(day,sft_str)
