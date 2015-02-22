@@ -5,11 +5,8 @@ module Hospital::ReEntrant
 
   def assign_night(day,opt = { })
     return true if day > lastday
+    raise TimeoutError,"timed out"  if @limit_time < Time.now
     #refresh
-    logger.debug("HOSPITAL ASIGN:(#{__LINE__})10日の必要ロール数："+
-                 night.map{ |sft| sft+":["+roles_count_short(10,sft).join(",")}.join("] ")+
-                 "]"
-                 )
       dbgout("HP ASSIGN #{day}日entry-1")
       dbgout dump("  HP ASSIGN ")
 
@@ -141,6 +138,7 @@ module Hospital::ReEntrant
 
   def assign_shift1_by_re_entrant(day,opt = { })
     return true if day > lastday
+    raise TimeoutError,"timed out"  if @limit_time < Time.now
 
       dbgout("HP ASSIGN #{day}日entry-1")
       dbgout dump("  HP ASSIGN ")
@@ -185,10 +183,7 @@ module Hospital::ReEntrant
     long_plan_combination(need_nurces,Hospital::Nurce::LongPatern[@koutai3][sft_str].size).
       each{|idx_list_of_long_patern|  # [0,2]
 
-    logger.debug("HOSPITAL ASIGN:(#{__LINE__})10日の必要ロール数:loop long_patern："+
-                 night.map{ |sft| sft+":["+roles_count_short(10,sft).join(",")}.join("] ")+
-                 "]"
-                 )
+
       shifts_short_role = save_shift(nurce_combination,day)
 
       ret = assign_patern(nurce_combination,day,sft_str,idx_list_of_long_patern)
@@ -201,10 +196,6 @@ module Hospital::ReEntrant
         @count_fail[sft_str] += 1
         #@count_cause[:long][sft_str] += 1
         restore_shift(nurce_combination,day,shifts_short_role)
-    logger.debug("HOSPITAL ASIGN:(#{__LINE__})10日の必要ロール数:loop long_patern restore_shift ："+
-                 night.map{ |sft| sft+":["+roles_count_short(10,sft).join(",")}.join("] ")+
-                 "]"
-                 )
         next # long_patern
        else  # 成功: ここに入っても、shift1不足でダメなこともある 
         return true
