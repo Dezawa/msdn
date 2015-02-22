@@ -213,13 +213,13 @@ module Hospital::AssignStatus
     short_role_shift_of(day)[[@Kangoshi,sft_str]][0]
   end
 
-  def need_nurces_roles(day)
-    if @night_mode
-      need_nurces_roles_night(day)
-    else 
-      need_nurces_roles_daytime(day)
-    end
-  end
+  # def need_nurces_roles(day)
+  #   if @night_mode
+  #     need_nurces_roles_night(day)
+  #   else 
+  #     need_nurces_roles_daytime(day)
+  #   end
+  # end
 
   def need_nurces_roles_night(day)
     # この日のこのshiftの看護師の必要数と不足role

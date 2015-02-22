@@ -84,10 +84,10 @@ class Hospital::AssignTest < ActiveSupport::TestCase
     assert_equal ret,@assign.short_role_shift_of(1)
   end
 
-  must "必要看護師ロール" do
-    assert_equal [{"1"=>9},{"1"=>[4, 9, 10]}],@assign.need_nurces_roles(1)[1..2]
+  # must "必要看護師ロール" do
+  #   assert_equal [{"1"=>9},{"1"=>[4, 9, 10]}],@assign.need_nurces_roles(1)[1..2]
 
-  end
+  # end
 
   Cost = Hospital::NurceCost::ClassMethods::Cost
   must " 2/4:2 2の使用数の違う38,39のcostが同じなのはなぜ？" do

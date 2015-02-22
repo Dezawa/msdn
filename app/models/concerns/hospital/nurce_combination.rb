@@ -18,10 +18,10 @@ module Hospital::NurceCombination
   #       シフト残数ベースのコストでソートし
   #         必要roleを満たせる看護師の組み合わせの時、blockを呼ぶ
   #
-  def ddnurce_combination_shift23(candidate_combination_for_shift23,need_nurces,short_roles,day,&block)
-    candidate_combination_for_shift23.each{ |combs| 
-      block.call(combs ) }
-  end 
+  # def ddnurce_combination_shift23(candidate_combination_for_shift23,need_nurces,short_roles,day,&block)
+  #   candidate_combination_for_shift23.each{ |combs| 
+  #     block.call(combs ) }
+  # end 
 
   # day日のshift2,3の看護師組み合わせの候補。
   #  [ [shift2_候補,shift3_候補],[shift2_候補,shift3_候補],,,]
@@ -62,13 +62,6 @@ module Hospital::NurceCombination
 
   def candidate_combination_for_night(day)
     candidate_combination_for_shifts(day,Hospital::Define.define.night)
-# combary = Hospital::Define.define.night.map{  |sft_str|
-#       candidate_combination_for_shift_with_enough_role(day,sft_str)
-#     }
-#     combary.first.to_a.product(combary.last.to_a).                      # 225
-#       select{ |comb2,comb3| (comb2 & comb3).empty? }.
-#       sort_by{ |comb2,comb3|  cost_of_nurce_combination_of_combination(comb2,comb3)}  
-    
   end
 
 
@@ -140,9 +133,9 @@ module Hospital::NurceCombination
     nurces.map(&:have_need_role_patern).inject{ |sum,roles| sum.add roles }
   end
 
-  def nurce_combination_for_shift23(day)
+  # def nurce_combination_for_shift23(day)
 
-  end
+  # end
 
   # 指定された日、shiftに割付可能な看護師の配列
   # その日割付まだされておらず、かつそのshiftを割り付けても勤務制約を越えず

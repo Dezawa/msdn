@@ -69,11 +69,11 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
                   @assign.nurces_selected_of_night(day,short_roles).map{ |sft,nurces| nurces.map(&:id)} )
   end
 
-  must "3/15のneed_nurces_roles(day)のneed_nurces" do
-    setup_5F
-    assert_equal [ {"3"=>0, "2"=>1},  {"2"=>[3,4], "3"=>[3]}
-                 ], @assign.need_nurces_roles(day)[1,2] # [as_nurces_selected,need_nurces, short_roles] 
-  end
+  # must "3/15のneed_nurces_roles(day)のneed_nurces" do
+  #   setup_5F
+  #   assert_equal [ {"3"=>0, "2"=>1},  {"2"=>[3,4], "3"=>[3]}
+  #                ], @assign.need_nurces_roles(day)[1,2] # [as_nurces_selected,need_nurces, short_roles] 
+  # end
   
   must "3/15のshort_role(day)" do
     setup_5F
@@ -110,11 +110,11 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
                  ] , gather_by_each_group_of_role.map{ |g| g.map(&:id)}
   end
 
-  must "3/15のneed_nurces_roles(day)のas_nurces_selected" do
-    setup_5F
-    assert_equal [[26, 5, 25, 6, 20, 7],[] ],
-    @assign.need_nurces_roles(day)[0].map{ |cmb| cmb[1].map(&:id)}
-  end
+  # must "3/15のneed_nurces_roles(day)のas_nurces_selected" do
+  #   setup_5F
+  #   assert_equal [[26, 5, 25, 6, 20, 7],[] ],
+  #   @assign.need_nurces_roles(day)[0].map{ |cmb| cmb[1].map(&:id)}
+  # end
 
   must "3/15のID 24は、kchrecはOKだが" do
     setup_5F
@@ -162,30 +162,30 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
     assert_equal [space]*8,check
   end
 
-  must "3/15のnurce_combination_by_tightness shift2" do
-    setup_5F
-    sft_str ="2"
-    day = 15
-    as_nurces_selected,need_nurces, short_roles = @assign.need_nurces_roles(day)
-    assert_equal [[5], [6], [7]],
-                 # [[1, 22, 2, 6],   #  1 2 3 5 6 10 11 22 24 25
-                 #  [1, 5, 22, 2],   #  9 9 2 2 1  4  3  2  2  2   36
-                 #  [1, 10, 24, 2],
-                 #  [1, 2, 25, 11],
-                 #  [1, 24, 2, 11],
-                 #  [1, 3, 10, 2],
-                 #  [1, 10, 2, 25],
-                 #  [1, 3, 2, 11],
-                 #  [1, 5, 10, 2]],
-    @assign.nurce_combination_by_tightness(as_nurces_selected[sft_str],#[0..SelectedMax],
-                                           need_nurces[sft_str], #@assign.need_nurces_shift(day,sft_str),
-                                           short_roles[sft_str],sft_str)[0,6].
-      map{ |nurces| 
-      #@assign.cost_of_nurce_combination(nurces,sft_str,@assign.tight_roles(sft_str))
-      nurces.map(&:id)
-    }[0,9]
+  # must "3/15のnurce_combination_by_tightness shift2" do
+  #   setup_5F
+  #   sft_str ="2"
+  #   day = 15
+  #   as_nurces_selected,need_nurces, short_roles = @assign.need_nurces_roles(day)
+  #   assert_equal [[5], [6], [7]],
+  #                # [[1, 22, 2, 6],   #  1 2 3 5 6 10 11 22 24 25
+  #                #  [1, 5, 22, 2],   #  9 9 2 2 1  4  3  2  2  2   36
+  #                #  [1, 10, 24, 2],
+  #                #  [1, 2, 25, 11],
+  #                #  [1, 24, 2, 11],
+  #                #  [1, 3, 10, 2],
+  #                #  [1, 10, 2, 25],
+  #                #  [1, 3, 2, 11],
+  #                #  [1, 5, 10, 2]],
+  #   @assign.nurce_combination_by_tightness(as_nurces_selected[sft_str],#[0..SelectedMax],
+  #                                          need_nurces[sft_str], #@assign.need_nurces_shift(day,sft_str),
+  #                                          short_roles[sft_str],sft_str)[0,6].
+  #     map{ |nurces| 
+  #     #@assign.cost_of_nurce_combination(nurces,sft_str,@assign.tight_roles(sft_str))
+  #     nurces.map(&:id)
+  #   }[0,9]
     
-  end
+  # end
   
 end
 __END__
