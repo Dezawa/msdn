@@ -34,13 +34,15 @@ module Const
     ]
   ItemsDefineAll =  (ItemsDefine + ItemsDefine2).flatten
 
-
   LimitOfNurceCandidateList = 6
   Size_of_NurceCombinationList = 3
-  Factor_of_safety_NurceCandidateList = 1.1
+  Factor_of_safety_NurceCandidateList = 1.8
 
-  MultiSolution  = 2        #  3 複数解求める。最初の解も求める。これは save する
-  SingleSolution = 3        #  1 解を一つだけ求める
+  Timeout     = 30 #.minute
+  TimeoutMult = 3.minute
+  Sleep       = 30
+  MultiSolution  = 1        #  3 複数解求める。最初の解も求める。これは save する
+  SingleSolution = 1        #  1 解を一つだけ求める
   SecondAndLater = false    #  2 複数求めるが、最初の解は求めない。これは別のルーチンで求める
 
 
@@ -54,9 +56,6 @@ module Const
   AvoidWeight = [ 1.0,  1.3,  1.7,  2.2,  2.9,  3.7,  4.8,   6.3,   8.2, 10.6, 13.8,
                  17.9, 23.3, 30.3, 39.4, 51.2, 66.5, 86.5, 112.5, 146.2, 190.0]
 
-  Timeout     = 2.minute
-  TimeoutMult = 3.minute
-  Sleep       = 30
 
   Shift0 ,Shift1 ,Shift2 ,Shift3  = Shift0123 = [0,1,2,3]
   Sshift0,Sshift1,Sshift2,Sshift3 = Sshift0123 = %w(0 1 2 3)

@@ -29,8 +29,8 @@ class Hospital::ReentrantTest < ActiveSupport::TestCase
   end
 
   must "2/1 夜の看護師候補" do
-    assert_equal [[[51, 35], [36, 39]], [[51, 45], [36, 39]], [[51, 38], [36, 39]],
-                  [[51, 35], [45, 39]], [[51, 35], [48, 45]], [[45, 38], [36, 39]]
+    assert_equal [[[51, 35], [36, 39]], [[38, 46], [36, 39]], [[51, 45], [36, 39]], [[51, 38], [36, 39]],
+                  [[35, 49], [36, 39]], [[51, 35], [45, 39]], [[51, 35], [45, 48]], [[36, 38], [45, 39]]
                  ],hash_combination_ids(@assign.candidate_combination_for_shift23_selected_by_cost(1))
   end
   must "2/1 夜の看護師候補の割付" do
@@ -66,8 +66,9 @@ class Hospital::ReentrantTest < ActiveSupport::TestCase
     @assign.assign_night(1,:dipth => 1)
     day = 2
     sft_str = "2"
-    assert_equal [34, 46, 38, 49, 52, 45
-                 ], @assign.assinable_nurces_by_cost_size_limited(sft_str,day,@assign.short_role(day,sft_str)).map(&:id)
+    assert_equal [34, 36, 38, 49, 52, 46
+                 ], @assign.assinable_nurces_by_cost_size_limited(sft_str,day,
+                                                                  @assign.short_role(day,sft_str)).map(&:id)
 
     assert_equal [1, 1, 0, 0, 1],@assign.roles_count_short(day,sft_str),
     "2/1割り付けたのち、2/2のshift#{sft_str}不足ロール"
