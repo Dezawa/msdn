@@ -8,31 +8,6 @@ class Hospital::AssignTest < ActiveSupport::TestCase
   fixtures "holydays","hospital/needs","hospital/monthlies","hospital/defines"
   fixtures "hospital/kinmucodes"
   # Replace this with your real tests.
-  log5_5 = "
-  HP ASSIGN 34 _1111___________________________
-  HP ASSIGN 35 _250330_________________________
-  HP ASSIGN 36 _1111__250330___________________
-  HP ASSIGN 37 __1_220330______________________
-  HP ASSIGN 38 __220___________________________
-  HP ASSIGN 39 ___3____________________________
-  HP ASSIGN 40 _1______________________________
-  HP ASSIGN 41 ___11___________________________
-  HP ASSIGN 42 _330____________________________
-  HP ASSIGN 43 ___3____________________________
-  HP ASSIGN 44 ________________________________
-  HP ASSIGN 45 _11_1____3_2____________________
-  HP ASSIGN 46 _1111___________________________
-  HP ASSIGN 47 _11_1___________________________
-  HP ASSIGN 48 _1112___________________________
-  HP ASSIGN 49 _111____________________________
-  HP ASSIGN 50 _330____________________________
-  HP ASSIGN 51 _112____________________________
-  HP ASSIGN 52 _220330_________________________
-HP ASSIGN  5:1 [] [] ENTRY  必要看護師数 6 不足role[2,4,5] 可能看護師[34,36,38,39,40,41,42,43,44,45,46,47,49,50,51]
-HP ASSIGN  5:2 [] [] ENTRY  必要看護師数 1 不足role[1,2,5] 可能看護師[34,36,39,40,41,42,43,44,45,46,47,48,49,50,51]
-HP ASSIGN  5:3 [] [] ENTRY  必要看護師数 0 不足role[] 可能看護師[]
-HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
-"
   def setup
     @month  = Date.new(2013,2,1)
     @busho_id = 1
@@ -51,7 +26,8 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
   def extract_set_shifts(string)
     nurces=[]
     string.each_line{|line|
-      hp,assign,id,data = line.split(nil,4)
+      hp,assign,id,data,dmy = line.split(nil,5)
+      next unless hp == "HP"
       case id
       when /^\d+$/
         nurces[id.to_i]=@assign.nurce_by_id(id.to_i)
@@ -59,7 +35,7 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
       when  /ENTRY/
       end
     }
-    nurces
+    nurces#.compact
   end
 
   must "Kangoshi定数" do
@@ -76,31 +52,20 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
   must "5月の role_order_by_tightness" do
     sft_str = "2"
     newmonth(5)
-    nurces = extract_set_shifts(log5_5)
+    @assign.nurces = extract_set_shifts(Log5_5)
     assert_equal [9, 3, 10, 4] ,@assign.role_order_by_tightness(sft_str)
   end
   must "5月の tight_roles" do
     sft_str = "2"
     newmonth(5)
-    nurces = extract_set_shifts(log5_5)
+    @assign.nurces = extract_set_shifts(Log5_5)
     assert_equal [9, 3, 10] ,@assign.tight_roles(sft_str)
   end
-  must "5月の role_remain" do
-    sft_str = "2"
-    newmonth(5)
-    nurces = extract_set_shifts(log5_5)
-    assert_equal(
-                 {[4,"0"]=>135.0,[4,"1"]=>330.0,[4,"2"]=>70,[4,"3"]=>68,[4,:night_total]=>123,[4,:kinmu_total]=>342.0,
-                   [9,"0"]=>74.0,[9,"1"]=>193.0,[9,"2"]=>40,[9,"3"]=>38,[9,:night_total]=>69,[9,:kinmu_total]=>197.0,
-                   [10,"0"]=>90.0,[10,"1"]=>218.0,[10,"2"]=>50,[10,"3"]=>47,[10,:night_total]=>86,[10,:kinmu_total]=>225.0,
-                   [3,"0"]=>76.0,[3,"1"]=>186.0,[3,"2"]=>44,[3,"3"]=>45,[3,:night_total]=>79,[3,:kinmu_total]=>195.0},
-                 @assign.role_remain(true)
-                 )
-  end
+
   must "5月の shift_remain" do
     sft_str = "2"
     newmonth(5)
-    nurces = extract_set_shifts(log5_5)
+    nurces = extract_set_shifts(Log5_5)
     assert_equal( [2, 1, 1, 3, 3, 5, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 5, 4, 3],
                   @assign.nurces.map{ |n| n.shift_remain[sft_str]}
                   )
@@ -108,7 +73,7 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
   must "5月の shift_remain 看護師合計 の" do
     sft_str = "2"
     newmonth(5)
-    nurces = extract_set_shifts(log5_5)
+    nurces = extract_set_shifts(Log5_5)
     assert_equal( 75,
                   @assign.nurces.inject(0){ |s,n| s + n.shift_remain[sft_str]}
                   )
@@ -172,7 +137,7 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
     assert_equal margin0,
       @assign.margin_of_role.select{|k,v| k[1]==shift}.sort,  "開始前余裕ロール数"
       # @nurces.each{|nurce| puts nurce.shifts+nurce.role_used[[1,3]].to_s }
-    nurces = extract_set_shifts(log5_5)
+    nurces = extract_set_shifts(Log5_5)
     # @nurces.each{|nurce| puts nurce.shifts+nurce.role_used[[1,3]].to_s }
     # @assign.role_used true
     # assert_equal used  ,
@@ -200,7 +165,7 @@ HP ASSIGN 5:2  [[50:0.67],[47:0.67],[49:0.67],[48:0.8],[36:2.0]]
   end
 
   must " shortのてすと 2/1 の、1,2,3,:night" do
-    nurces = extract_set_shifts(Log2_3)
+    @assign.nurces = extract_set_shifts(Log2_3)
     assert_equal [false,true,false,true] ,["1","2","3",:night_total].map{ |sft_str| @assign.short?(1,sft_str)}
     assert_equal [false,false,false,false] ,["1","2","3",:night_total].map{ |sft_str| @assign.short?(3,sft_str)}
   end
