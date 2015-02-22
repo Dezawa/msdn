@@ -96,6 +96,13 @@ module Hospital::AssignStatus
     @roles_required
   end
 
+  def missing_roles(sft_str,m_roles)
+    m_roles.each{ |role_id|  @missing_roles[[role_id,sft_str]] += 1 }
+  end
+
+  def roles_cost(roles,tight)
+    tight.inject(0){ |cost,role| cost * 2 + (roles.include?(role) ? 1 : 0 )}
+  end
   # 各日の [role,shift] を得る
   # [ { [role,sft_srt]=>[min,max], , ,}, { day_data }, { day_data },,, ] 
   def short_role_shift(reculc=false)

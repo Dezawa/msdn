@@ -209,10 +209,6 @@ class Hospital::Assign
     @missing_roles= Hash.new{|h,k| h[k] = 0 }
   end
 
-  def missing_roles(sft_str,m_roles)
-    m_roles.each{ |role_id|  @missing_roles[[role_id,sft_str]] += 1 }
-  end
-
   def nurce_by_id(id)
     case id
     when Integer ;    @nurces.select{|n| n.id == id}.shift
@@ -842,13 +838,10 @@ log_stat_and_save_result
     combinations #(2)Dで削除
   end
  
-  def roles_enough?(nurces,need_roles) 
+  def roles_enough?(nurces,need_roles) # 削除
     (need_roles - (need_roles & roles_of(nurces))).size <= 0
   end
 
-  def roles_cost(roles,tight)
-    tight.inject(0){ |cost,role| cost * 2 + (roles.include?(role) ? 1 : 0 )}
-  end
   # 看護師群のcostの総計
   def cost_of_nurce_combination(nurces,sft_str,tight = nil)
     tight ||= tight_roles(sft_str)
