@@ -209,7 +209,7 @@ class Hospital::Nurce < ActiveRecord::Base
   end
   def restore_shift(saved_shift)
     #dbgout( "HP  restore_shift前 #{id}:#{shifts} #{role_shift.to_a.flatten.join(' ')}")
-    self.shifts = saved_shift[0]
+    self.shifts = saved_shift[0].dup
     @shift_remain= saved_shift[1]
 
     @role_shift=(self.shifts||"").split("").map{|sft_str|   role_shift_of(sft_str) }

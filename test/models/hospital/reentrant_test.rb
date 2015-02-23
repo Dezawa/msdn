@@ -126,6 +126,22 @@ class Hospital::ReentrantTest < ActiveSupport::TestCase
 
  
   end
+
+  must "combinationを引数で渡す" do
+    pre = @assign.dump.split("\n")
+    @assign.assign_night(1,:dipth => 1,:nurce_combinations => @assign.candidate_combination_for_shift23_selected_by_cost(1))
+    assert_equal [["35 ___0__________0______________",
+                   "36 _____3_0_______0____________0",
+                   "39 _____________________________",
+                   "51 __0____________00____________"],
+                  ["35 _220__________0______________",
+                   "36 _3___3_0_______0____________0",  # 深夜２回まで
+                   "39 _330_________________________",
+                   "51 _20____________00____________"]
+                 ],pre.diff(@assign.dump.split("\n"))
+
+  end
+
    must "2/14まで割付" do
      pre = @assign.dump.split("\n")
      @assign.assign_night(1,:dipth => 18)
