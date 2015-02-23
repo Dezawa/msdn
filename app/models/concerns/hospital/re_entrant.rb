@@ -7,7 +7,7 @@ module Hospital::ReEntrant
     return true if day > lastday
     raise TimeToLongError,"timed out"  if @limit_time < Time.now
     #refresh
-      dbgout("HP ASSIGN #{day}日entry-1")
+      dbgout("### Hospital ASSIGN #{day}日 entry ###")
       dbgout dump("  HP ASSIGN ")
     save_log
 
@@ -17,7 +17,7 @@ module Hospital::ReEntrant
        opt[:dipth] -= 1
     end
 
-    logger.debug("HOSPITAL ASIGN:(#{__LINE__})必要ロール数："+
+    logger.debug("  HOSPITAL ASIGN:(#{__LINE__})必要ロール数："+
                  night.map{ |sft| sft+":["+roles_count_short(day,sft).join(",")}.join("] ")+
                  "]"
                  )
@@ -28,26 +28,34 @@ module Hospital::ReEntrant
 
     if nurce_combinations_for_shift23 != :fill 
     
-      logger.debug("HOSPITAL ASIGN:(#{__FILE__}:#{__LINE__})看護師組み合わせ"+
+      logger.debug("  HOSPITAL ASIGN:(#{__FILE__}:#{__LINE__})看護師組み合わせ"+
                    nurce_combinations_for_shift23.map{ |nurce_combinations|
                      night.map{ |sft| sft+":["+nurce_combinations[sft].map(&:id).join(",")
-                     }.join("] ")+ "]"
-                   }.join("///")
-                   )
+                     }.join("] ")+ "]"    }.join("///")      )
       nurce_combinations_for_shift23.each{ |nurce_combinations|
         nurces = nurce_combinations.values.flatten.uniq
         # 現状保存
         shifts_short_role = save_shift(nurces,day)
         
-        logger.debug("HOSPITAL::ASSIGN(#{__LINE__})割付試行 "+
+        logger.debug("  HOSPITAL::ASSIGN(#{__LINE__})#{day}日割付試行 "+
                      "#{night.map{ |sft| sft+':'+ nurce_list(nurce_combinations[sft])}.join('/')} ")
         next unless night.all?{ |sft_str| assign_night_shift(day,sft_str,nurce_combinations[sft_str]) }
+
+        logger.debug("    HOSPITAL ASIGN:(#{__LINE__})#{day}日 看護師組み合わせ ["+
+                     nurce_combinations.values.map{ |comb| comb.map(&:id).join(",")}.join("][") +
+                     "] は成功")
         return true if assign_night(day+1,opt)
+        logger.debug("    HOSPITAL ASIGN:(#{__LINE__})#{day}日 看護師組み合わせ ["+
+                     nurce_combinations.values.map{ |comb| comb.map(&:id).join(",")}.join("][") +
+                     "] は成功したが、後ろの日ができないのでやり直し")
+        
         restore_shift(nurces,day,shifts_short_role)
       }
-    else ;return true if assign_night(day+1,opt)
+    else 
+      logger.debug("    HOSPITAL ASIGN:(#{__LINE__}) #{day}日は既にOK")
+      return true if assign_night(day+1,opt)
     end
-    
+    logger.debug("    ＃HOSPITAL::ASSIGN(#{__LINE__})#{day}日 割付候補終了。#{day-1}日に戻る ")    
     return false
   end
 
@@ -188,9 +196,9 @@ module Hospital::ReEntrant
 
       shifts_short_role = save_shift(nurce_combination,day)
 
-      ret = assign_patern(nurce_combination,day,sft_str,idx_list_of_long_patern)
+      list_of_long_patern = assign_patern(nurce_combination,day,sft_str,idx_list_of_long_patern)
       #pp ret
-      case ret
+      case list_of_long_patern
       when :cannot_assign_this_patern
         restore_shift(nurce_combination,day,shifts_short_role)
         next
@@ -200,10 +208,154 @@ module Hospital::ReEntrant
         restore_shift(nurce_combination,day,shifts_short_role)
         next # long_patern
        else  # 成功: ここに入っても、shift1不足でダメなこともある 
+        logger.debug("    HOSPITAL::ASSIGN(#{__LINE__}) パターン"+
+                     "[#{list_of_long_patern.map(&:patern).join(',')}]は成功")
         return true
        end
     }
     false
+  end
+
+
+  # 看護師の勤務制限は満たしていても、2日目以降の日々の制限は確認していない。
+  # 長い勤務を割り当てたときに、二日目以降に重大な支障が有るか否かを確認する。
+  # [day] Integer 割付の最初の日付。
+  # [sft_str]  1,2,3。割り付けるsft_str
+  # [list_of_long_patern_and_dayly_check]   #assigned: [ [LongPatern,daily_checks],[LongPatern,daily_checks],[] ]
+  #                       『Hospital::Nurce::LongPatern[sft_str][patern_番号]』
+  def assign_patern(nurces,day,sft_str,idx_list_of_long_patern)
+    return :done if nurces == true
+    @count_eval[sft_str] += 1
+    unless list_of_long_patern = assign_patern_if_possible(nurces,day,sft_str,idx_list_of_long_patern)
+      #logger.debug("    HOSPITAL ASIGN:(#{__LINE__})看護師組み合わせ")
+      return :cannot_assign_this_patern
+    end
+    unless long_check_later_days(day,merged_patern(list_of_long_patern),sft_str)
+             logger.debug("      HOSPITAL::ASSIGN(#{__LINE__}) パターン"+
+                          "[#{list_of_long_patern.map(&:patern).join(',')}]は取り消し")
+      return false
+    end
+    unless  avoid_check(nurces,sft_str,day,list_of_long_patern)
+        logger.debug("      HOSPITAL::ASSIGN(#{__LINE__}) パターン"+
+                          "[#{list_of_long_patern.map(&:patern).join(',')}]は 組み合わせ禁忌。取り消し")
+        return false
+    end
+    list_of_long_patern #true
+  end
+
+  def assign_patern_if_possible(nurces,day,sft_str,idx_list_of_long_patern)
+    # この長い割付が可能か                                                # [0,2]
+    list_of_long_patern = 
+      assign_test_patern(nurces,day,sft_str,idx_list_of_long_patern)
+#pp ["pp list_of_long_patern",idx_list_of_long_patern,list_of_long_patern]
+    return false unless list_of_long_patern
+    (0..nurces.size-1).each{|idx|
+      nurce_set_patern(nurces[idx],day,list_of_long_patern[idx].patern)
+    }
+    list_of_long_patern
+  end
+
+
+  # 評価する看護師組み合わせはその日の分は制限をみたしているが、
+  # その日を起点とした長い割付を行う場合2日目以降は確認していない。
+  # assign_test_paternで その看護師の勤務制限を満たしているか調べ
+  # 満たしているものについてassign_paternで割付を試みる。
+  # 
+  # 元々は3日以上の割付パターンについて行う予定であったが、プログラムの
+  # 簡潔化のために、1日の割付もここで行うことにした。
+  # [long_patern]  『Hospital::Nurce::LongPatern[shift]』の何番目を試すのか、を
+  #                 看護師分用意した配列。要素はInteger [0,2]
+  def  assign_test_patern(nurce_list,day,sft_str,idx_set_of_long_patern)
+    #[ LongPatern,LongPatern]
+    paterns = (0..nurce_list.size-1).map{|idx|
+    #pp [@koutai3,sft_str,nurce_list.map(&:id),idx_set_of_long_patern,idx]
+      long_patern,errorlist =  
+      nurce_list[idx].long_check(day,sft_str,
+                                 Hospital::Nurce::LongPatern[@koutai3][sft_str][idx_set_of_long_patern[idx]])
+      if long_patern
+        long_patern # ,daily_checks]
+      else
+        # このとき、daily_checkは[item,正規表現の配列
+#pp [errorlist]
+        errorlist.each{|item,reg| @count_cause[item][sft_str]+=1 }
+        return false
+      end
+    }
+    #return paterns if avoid_check(nurce_list,sft_str,day,paterns)
+    #false
+  end
+  
+  # 2日目以降に重大な支障が出ないか調べる。
+  # 調べるshiftと調べるべき日は daily_checksに格納されている
+  # [daily_checks] Hospital::Nurce::LongPaternの第６項目、調べるべきshiftと調べるべき日(のofset)
+  # 
+  # 現在のチェック項目
+  #   roleの割り当てすぎ：roleを使いすぎると以降の日の割付が厳しくなる
+  #   休日の入りすぎ：休を入れすぎるとその日の看護師が足りなくなる
+  #   当日、前日のシフト１は看護師が足りるか
+  def long_check_later_days(day,daily_checks,shift_str)
+    @shifts.each{|sft_str|  
+      daily_checks[sft_str.to_i].each{|d|
+        next if day+d > @lastday
+        return false unless too_many_assigned?(day+d,sft_str)
+      }
+    }
+    return false unless shift1_is_enough?(day,shift_str)
+    true
+  end
+
+  #   当日、前日のシフト１は看護師が足りるか
+  def shift1_is_enough?(theday,shift_str)
+    return true if  shift_str == "1"
+    days = theday == 1 ? [0] : [0,1]
+    days.all?{ |d|
+      day = theday - d
+      short     = short_role_shift[day][[@Kangoshi,Sshift1]][0] 
+      assinable = assinable_nurces(day,Sshift1,short_role(day,Sshift1)).size
+      if short - assinable > 0
+        dbgout("      長割後日チェック(#{__LINE__}) #{theday}日への割付で#{day}日の日勤要員不足発生する。" +
+               "　　#{short}人必要な所可能なのは#{assinable}人\n" +
+               "    この割付は取り消し")
+        return false
+      else
+        true
+      end
+    }
+    dbgout("      長割後日チェック(#{__LINE__}) #{theday}日への割付で日勤要員不足発生せず")
+    true
+  end
+
+  def too_many_assigned?(day,sft_str)
+    case too_many?(day,sft_str)
+    when -1 ; 
+      dbgout("      FOR_DEBUG(#{__LINE__}) "+
+             "長割後日チェック(#{day}日,shift:#{sft_str}) 割り当て最大値を越えた")
+      return false
+    when 0
+      case sft_str
+      when Sshift2,Sshift3
+        s_r = short_role(day,sft_str).size ==0 ? "なし" :  short_role(day,sft_str).join
+        #pp("長割後日チェック(#{__LINE__}) (#{ day}):#{sft_str} ロール不足#{ s_r }")
+        if short_role(day,sft_str).size >0
+          dbgout("      長割後日チェック(#{__LINE__}) (#{ day}):#{sft_str} ロール不足#{ s_r }")
+          return false 
+        end
+      end
+    when 1 ; dbgout("      FOR_DEBUG(#{__LINE__}) 長割後日チェック割り当て最大値以下(#{day}日,shift:#{sft_str})")
+
+    end
+    true
+  end
+
+  # shiftの割り付けがmaxを越えていないか。needs_all_days[day][key][1] - role_shift[day][key]
+  #  key == [ role, sft_str ]
+  def too_many?(day,sft_str)
+    #指定日のシフトは人の余裕あるか
+    case sft_str
+    when Sshift0,Sshift2,Sshift3 ; 
+       needs_all_days[day][[@Kangoshi,sft_str]][1] <=> count_role_shift[day][[@Kangoshi,sft_str]]
+    when Sshift1         ;    
+    end
   end
 
 end
