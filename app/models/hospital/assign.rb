@@ -7,6 +7,16 @@ require 'extentions'
 #
 LogPuts,LogDebug,LogInfo = 1,2,4
 
+
+  # 未使用トライアル中な、combination_combination_tightness にて使われる、
+  # 低コスト割付優先すべき看護師群の shift2,3の組み合わせを実際に作ってコストで
+  # sortする、という場合に、top何組ずつで組み合わせるか、を決める
+  Top = 3
+  SelectedMax = 20-1 #(2) assign可能な看護師が多数居るとき、コストからみて最初の何人かで組み合わせを作る
+  # 指定された時間  Hospital::Const::Timeout 経過したとき発生させるエラー
+  class TimeToLongError < StandardError
+  end
+
 # ARではない
 # 割付を行うためのclass. 
 # 一職場の全職員とその一月分の勤務状況を取り込んで、表示、割付を行う
@@ -139,20 +149,11 @@ class Hospital::Assign
   attr_accessor :nurces,:kangoshi,:Kangoshi,:needs,:nurce_assignd,:need_patern,:error,:roles
   attr_accessor :restore_count, :entrant_count, :loop_count, :shortcut
   attr_accessor :exit_confition,:month
-  attr_accessor :night_mode, :avoid_list
+  attr_accessor :night_mode, :avoid_list,:limit_time
 
   attr_accessor  :koutai3, :shifts_int, :shifts, :shifts123, :shiftsmx, :night, :shifts_night
   attr_accessor  :busho_id, :lastday,  :needs,   :basename
   attr_accessor  :night_mode
-
-  # 未使用トライアル中な、combination_combination_tightness にて使われる、
-  # 低コスト割付優先すべき看護師群の shift2,3の組み合わせを実際に作ってコストで
-  # sortする、という場合に、top何組ずつで組み合わせるか、を決める
-  Top = 3
-  SelectedMax = 20-1 #(2) assign可能な看護師が多数居るとき、コストからみて最初の何人かで組み合わせを作る
-  # 指定された時間  Hospital::Const::Timeout 経過したとき発生させるエラー
-  class TimeoutError < StandardError
-  end
 
   def self.create_assign(busho_id,month,all=nil)
     assign = self.new(busho_id,month)
@@ -195,95 +196,53 @@ class Hospital::Assign
     @avoid_list = Hospital::AvoidCombination.all.map{ |ab| [[ab.nurce1_id,ab.nurce2_id],ab.weight]}
     clear_stat
   end
-
-  def clear_stat
-    # 統計
-    #  復元回数           再帰回数          評価回数
-    @restore_count = @entrant_count = @loop_count = 0
-
-    #  shift毎の、評価回数、失敗数、失敗原因
-    @count_back  = Hash.new{|h,k| h[k] = 0 }
-    @count_eval  = Hash.new{|h,k| h[k] = 0 }
-    @count_fail  = Hash.new{|h,k| h[k] = 0 }
-    @count_cause = Hash.new{|h,k| h[k] = Hash.new{|h,k| h[k] = 0 } }
-    @missing_roles= Hash.new{|h,k| h[k] = 0 }
-  end
-
-  def nurce_by_id(id)
-    case id
-    when Integer ;    @nurces.select{|n| n.id == id}.shift
-    when Array    ;   id.map{|i|  @nurces.select{|n| n.id == i}.shift }
-    end
-  end
-
-  # 自動割付分を削除する。このmethodではDBにまでは反映しない。
-  def clear_assign
-    #@nurces.each{|nurce| nurce.clear_assign }
-    #self
-    @nurces.each{|nurce|
-      (1..@lastday).each{|day|
-        nurce.set_shift(day,"_") if nurce.monthly.days[day].want.nil? || nurce.monthly.days[day].want<1
-      }
-      nurce.shifts.gsub!(/L/,Sshift2)
-      nurce.shifts.gsub!(/M/,Sshift3)
-      #dbgout("Nurce#clear_assign nurce=#{ nurce.id} shifts =#{ nurce.shifts} ") 
-    }
-    
-    #@nurces.each{|nurce| 
-    #dbgout("clear_assign nurce #{nurce.id}")
-    #    nurce.clear_assign }
-    self
-  end
-
-  def clear_assign_all
-    clear_assign
-    unlink_mults("clear_assign_all")
-    self
-  end
-
-
-  #######################################################################
-  # 一番深くまで割り付けた時の状態を保存する
-  def longest ;  @longest ||=  [0,0] ;end
-
-  ############################################################
-  def unlink_mults(msg)
-    File.unlink(*Dir.glob(@basename+"*"))
-    dbgout("HOSPITAL ASSIGN Delete #{@basename} by #{msg}")
-  end
-
-  def assign_month_mult(all=nil)
-    unlink_mults("assign_month_mul")
-    dbgout("HOSPITAL ASSIGN MULT START ON "+Time.now.to_s)
-    logger.info("HOSPITAL ASSIGN MULT IS STARTED ON "+Time.now.to_s)
-    begin
-      assign_mult(all)
-      logger.info("HOSPITAL ASSIGN MULT IS FINISHED ON "+Time.now.to_s)
-    rescue TimeoutError
-      logger.info("HOSPITAL FINISHED BY TIMED OUT Finaly================================")
-      restore_shift(nurces,1,@longest[1])
-      @fine = Time.now;log_stat(:head => "=== Timed Out ===")
-      save
-    end      
-    self
-  end 
-
-
   # 一月の割付を行う
   # OPT  :nurce_combinations => #candidate_combination_for_shift23_selected_by_cost(day)
   def assign_month(day=1,opt={ })
     @count = 0
     @start = Time.now
-    @limit_time = @start + Hospital::Const::Timeout
     logger.info("HOSPITAL ASSIGN START ON "+Time.now.to_s)
     @basename = File.join( Rails.root,"tmp","hospital",
                           "Shift_%02d_%02d_"%[@busho_id,@month.month])
     File.unlink(*Dir.glob(@basename+"*"))
     dbgout("HOSPITAL ASSIGN Delete #{@basename} by assign_month")
+    
+    @initial_state = save_shift(@nurces,1)
+    save_log
+    candidate_combination = candidate_combination_for_shift23_selected_by_cost(1)
+    candidate_combination.unshift(nil)
 
-    assign_night(1,opt)
-    assign_shift1(1,opt)
-log_stat_and_save_result
+dbgout "########################################"
+      dbgout dump("  HP START  ")
+    save_log
+
+    while candidate_combination.size > 1
+      candidate_combination.shift
+
+      dbgout dump("  HP BEFORE ")
+    save_log
+
+      restore_shift(@nurces,1,@initial_state) 
+
+      dbgout dump("  HP AFFTER ")
+    save_log
+
+      @limit_time = Time.now + 1 #Hospital::Const::Timeout
+      
+      begin
+        next unless assign_night(1,:nurce_combinations => candidate_combination)
+        if assign_shift1(1,opt)
+          log_stat_and_save_result
+          return true
+        end
+      rescue TimeToLongError # => evar
+        #TimeoutError
+        logger.info("HOSPITAL FINISHED BY TIMED OUT Finaly================================")
+        logger.debug("####Timeout#### ")
+        next
+      end
+    end
+    raise StandardError
   end
 
   # 複数解を求めるルーチ*ン
@@ -510,9 +469,8 @@ log_stat_and_save_result
     paterns = (0..nurce_list.size-1).map{|idx|
     #pp [@koutai3,sft_str,nurce_list.map(&:id),idx_set_of_long_patern,idx]
       long_patern,errorlist =  
-      nurce_list[idx].
-      long_check(day,sft_str,
-                 Hospital::Nurce::LongPatern[@koutai3][sft_str][idx_set_of_long_patern[idx]])
+      nurce_list[idx].long_check(day,sft_str,
+                                 Hospital::Nurce::LongPatern[@koutai3][sft_str][idx_set_of_long_patern[idx]])
       if long_patern
         long_patern # ,daily_checks]
       else
@@ -778,6 +736,80 @@ log_stat_and_save_result
   def kangoshi_arrow;Hospital::Limit.arrowable_roles(@busho_id,@month)[[Hospital::Define.define.kangoshi,:kinmu_total]];end
 
 
+  def clear_stat
+    # 統計
+    #  復元回数           再帰回数          評価回数
+    @restore_count = @entrant_count = @loop_count = 0
+
+    #  shift毎の、評価回数、失敗数、失敗原因
+    @count_back  = Hash.new{|h,k| h[k] = 0 }
+    @count_eval  = Hash.new{|h,k| h[k] = 0 }
+    @count_fail  = Hash.new{|h,k| h[k] = 0 }
+    @count_cause = Hash.new{|h,k| h[k] = Hash.new{|h,k| h[k] = 0 } }
+    @missing_roles= Hash.new{|h,k| h[k] = 0 }
+  end
+
+  def nurce_by_id(id)
+    case id
+    when Integer ;    @nurces.select{|n| n.id == id}.shift
+    when Array    ;   id.map{|i|  @nurces.select{|n| n.id == i}.shift }
+    end
+  end
+
+  # 自動割付分を削除する。このmethodではDBにまでは反映しない。
+  def clear_assign
+    #@nurces.each{|nurce| nurce.clear_assign }
+    #self
+    @nurces.each{|nurce|
+      (1..@lastday).each{|day|
+        nurce.set_shift(day,"_") if nurce.monthly.days[day].want.nil? || nurce.monthly.days[day].want<1
+      }
+      nurce.shifts.gsub!(/L/,Sshift2)
+      nurce.shifts.gsub!(/M/,Sshift3)
+      #dbgout("Nurce#clear_assign nurce=#{ nurce.id} shifts =#{ nurce.shifts} ") 
+    }
+    
+    #@nurces.each{|nurce| 
+    #dbgout("clear_assign nurce #{nurce.id}")
+    #    nurce.clear_assign }
+    self
+  end
+
+  def clear_assign_all
+    clear_assign
+    unlink_mults("clear_assign_all")
+    self
+  end
+
+
+  #######################################################################
+  # 一番深くまで割り付けた時の状態を保存する
+  def longest ;  @longest ||=  [0,0] ;end
+
+  ############################################################
+  def unlink_mults(msg)
+    File.unlink(*Dir.glob(@basename+"*"))
+    dbgout("HOSPITAL ASSIGN Delete #{@basename} by #{msg}")
+  end
+
+  def assign_month_mult(all=nil)
+    unlink_mults("assign_month_mul")
+    dbgout("HOSPITAL ASSIGN MULT START ON "+Time.now.to_s)
+    logger.info("HOSPITAL ASSIGN MULT IS STARTED ON "+Time.now.to_s)
+    begin
+      assign_mult(all)
+      logger.info("HOSPITAL ASSIGN MULT IS FINISHED ON "+Time.now.to_s)
+    rescue TimeToLongError
+      logger.info("HOSPITAL FINISHED BY TIMED OUT Finaly================================")
+      restore_shift(nurces,1,@longest[1])
+      @fine = Time.now;log_stat(:head => "=== Timed Out ===")
+      save
+    end      
+    self
+  end 
+
+
+
 
 
   def log_stat(opt ={ })
@@ -865,6 +897,10 @@ def dbgout(msg,sw=(LogPuts|LogInfo))
     logger.info  msg 
   elsif sw & LogDebug
     logger.debug msg  
+  end
+
+  def save_log
+    #logger.debug( [0,2,5].map{ |id| @initial_state[0][id][0] })
   end
 
 

@@ -5,10 +5,11 @@ module Hospital::ReEntrant
 
   def assign_night(day,opt = { })
     return true if day > lastday
-    raise TimeoutError,"timed out"  if @limit_time < Time.now
+    raise TimeToLongError,"timed out"  if @limit_time < Time.now
     #refresh
       dbgout("HP ASSIGN #{day}日entry-1")
       dbgout dump("  HP ASSIGN ")
+    save_log
 
     if opt[:dipth] 
 #pp ["opt[:dipth]",opt[:dipth]]
@@ -20,7 +21,7 @@ module Hospital::ReEntrant
                  night.map{ |sft| sft+":["+roles_count_short(day,sft).join(",")}.join("] ")+
                  "]"
                  )
-    nurce_combinations_for_shift23 = opt[:nurce_combinations] ||
+    nurce_combinations_for_shift23 = opt.delete(:nurce_combinations) ||
       candidate_combination_for_shift23_selected_by_cost(day)
 
     return false unless nurce_combinations_for_shift23
@@ -138,10 +139,11 @@ module Hospital::ReEntrant
 
   def assign_shift1_by_re_entrant(day,opt = { })
     return true if day > lastday
-    raise TimeoutError,"timed out"  if @limit_time < Time.now
+    raise TimeToLongError  if @limit_time < Time.now
 
       dbgout("HP ASSIGN #{day}日entry-1")
       dbgout dump("  HP ASSIGN ")
+    save_log
 
     if opt[:dipth] 
 #pp ["opt[:dipth]",opt[:dipth]]
