@@ -13,6 +13,7 @@ class Hospital::ReentrantTest < ActiveSupport::TestCase
     @month  = Date.new(2013,2,1)
     @busho_id = 1
     @assign=Hospital::Assign.new(@busho_id,@month)
+    @assign.limit_time = Time.now + 10
     @nurces=@assign.nurces
     srand(1)
   end

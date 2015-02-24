@@ -157,7 +157,6 @@ class Hospital::Assign
 
   def self.create_assign(busho_id,month,all=nil)
     assign = self.new(busho_id,month)
-    #begin
     assign.assign_month#_mult(all)
     #rescue => a
     #  logger(a)
@@ -194,57 +193,72 @@ class Hospital::Assign
                            "Shift_%02d_%02d_"%[@busho_id,@month.month]) if @month
 
     @avoid_list = Hospital::AvoidCombination.all.map{ |ab| [[ab.nurce1_id,ab.nurce2_id],ab.weight]}
+    @assign_start_at = Time.now
     clear_stat
   end
   # 一月の割付を行う
   # OPT  :nurce_combinations => #candidate_combination_for_shift23_selected_by_cost(day)
   def assign_month(day=1,opt={ })
+    log_statistics("",:header => @assign_start_at.strftime("%m/%d-%H:%M"))
     @count = 0
-    @start = Time.now
-    logger.info("HOSPITAL ASSIGN START ON "+Time.now.to_s)
-    @basename = File.join( Rails.root,"tmp","hospital",
-                          "Shift_%02d_%02d_"%[@busho_id,@month.month])
-    File.unlink(*Dir.glob(@basename+"*"))
-    dbgout("HOSPITAL ASSIGN Delete #{@basename} by assign_month")
+    logger.info("HOSPITAL ASSIGN START ON  部署 #{busho_id}, #{@month.strftime('%Y/%m')} "+Time.now.to_s)
     
     @initial_state = save_shift(@nurces,1)
-    save_log
+
     candidate_combination = candidate_combination_for_shift23_selected_by_cost(1)
     candidate_combination.unshift(nil)
 
-dbgout "########################################"
-      dbgout dump("  HP START  ")
-    save_log
-
+    dbgout "########################################"
+    dbgout dump("  HP START  ")
     while candidate_combination.size > 1
       candidate_combination.shift
+      restore_shift(@nurces,1,@initial_state)
+      refresh
 
-      dbgout dump("  HP BEFORE ")
-    save_log
-
-      restore_shift(@nurces,1,@initial_state) 
-
-      dbgout dump("  HP AFFTER ")
-    save_log
-
-      @limit_time = Time.now + 20 #Hospital::Const::Timeout
-      
-      begin
-        next unless assign_night(1,:nurce_combinations => candidate_combination)
-        if assign_shift1(1,opt)
-          log_stat_and_save_result
-          return true
-        end
-      rescue TimeToLongError # => evar
-        #TimeoutError
-        logger.info("HOSPITAL FINISHED BY TIMED OUT Finaly================================")
-        logger.debug("####Timeout#### ")
-        next
-      end
+      @stat = ""
+      next unless assign_night_untile_success_or_timeout(candidate_combination)
+      assign_daytime_untile_success_or_timeout
+      next
+      return true
     end
-    raise StandardError
+      restore_shift(@nurces,1,@longest[1])
+      save
+    #raise StandardError
   end
 
+  def assign_night_untile_success_or_timeout(candidate_combination,opt ={ })
+      @start      = Time.now 
+      @limit_time = @start + Hospital::Const::Timeout
+      begin
+        if assign_night(1,:nurce_combinations => candidate_combination)
+          @stat = "%5.2f(成功),"%(Time.now - @start)
+        else
+          log_statistics( "%5.2f(失敗)"%(Time.now - @start))
+          return false
+        end
+      rescue TimeToLongError # => evar
+        log_statistics( "時間切れ")
+        return false
+      end
+  end
+
+  def assign_daytime_untile_success_or_timeout(opt ={ })
+      @start      = Time.now 
+      @limit_time = @start + Hospital::Const::Timeout
+      begin
+        if assign_shift1(1,opt)
+          log_stat_and_save_result
+          log_statistics( @stat + "%5.2f(成功)"%(Time.now - @start))
+        return true
+        else
+          log_statistics( @stat + "%5.2f(失敗)"%(Time.now - @start))
+        return false
+        end
+      rescue TimeToLongError # => evar
+        log_statistics( @stat + "時間切れ")
+        return false
+      end
+  end
   # 複数解を求めるルーチ*ン
   # 3つのケースがある
   #  1 解を一つだけ求める                                          
@@ -760,6 +774,17 @@ def logout_stat(msg)
   }
 end
 
+def log_statistics(msg,opt={ })
+  open( File.join( Rails.root,"tmp","hospital","log","statistics"),"a"){ |fp|
+    if opt[:header] 
+      fp.puts opt[:header] 
+    else
+      fp.puts "部署 #{busho_id} #{month.strftime('%Y/%m')} #{msg}"
+    end
+  }
+end
+  
+
 def dbgout(msg,sw=(LogPuts|LogInfo))
   #puts msg         if sw & LogPuts
   if sw & LogInfo
@@ -768,8 +793,13 @@ def dbgout(msg,sw=(LogPuts|LogInfo))
     logger.debug msg  
   end
 
-  def save_log
+  def save_log()
     #logger.debug( [0,2,5].map{ |id| @initial_state[0][id][0] })
+  end
+
+  def save_shift_log(save_shift = nil)
+    save_shift ||= @initial_state
+    #logger.debug( [0,2,5].map{ |id| @initial_state[1,3]})
   end
 
 

@@ -43,7 +43,9 @@ module Hospital::ReEntrant
 
         logger.debug("    HOSPITAL ASIGN:(#{__LINE__})#{day}日 看護師組み合わせ ["+
                      nurce_combinations.values.map{ |comb| comb.map(&:id).join(",")}.join("][") +
-                     "] は成功")
+                     "] は成功") 
+        save_longhest(day,:night)
+
         return true if assign_night(day+1,opt)
         logger.debug("    HOSPITAL ASIGN:(#{__LINE__})#{day}日 看護師組み合わせ ["+
                      nurce_combinations.values.map{ |comb| comb.map(&:id).join(",")}.join("][") +
@@ -66,37 +68,6 @@ module Hospital::ReEntrant
     dbgout("HP ASSIGN (#{__LINE__})return from assign_tight_daies_first with #{tight}")
     tight && assign_shift1_by_re_entrant(day,opt)
   end
-
-
-  def ddassign_shift1_by_re_entrant(day)
-    #@day = day
-    return true     if day > @lastday 
-    raise TimeoutError,"timed out"  if @limit_time < Time.now
-
-    ### Begin  New Day ###########
-    log_newday_entrant(day)
-    combinations ,need_nurces, short_roles = ready_for_day_reentrant(day)
-    return false unless combinations
-
-    ncm = nCm(combinations[Sshift1].size,need_nurces_shift(day,Sshift1).size)
-    comb ,need =  combinations[Sshift1].size,need_nurces_shift(day,Sshift1).size
-    try = 0 
-    nurce_combination_shift1(combinations,need_nurces,short_roles,day){|nurce_combinations| 
-      unless nurce_combinations
-        assign_log(day,Sshift1,nil,__LINE__, @msg)
-        return false
-      end
-      #return false if @night_mode && not_enough_for_shift1(nurce_combinations,need_nurces,short_roles,day)
-
-      dbgout("HP AASIGN #{day}:#{Sshift1} Try #{try += 1} of #{ncm} need #{comb}C#{need}")
-      return true if assign_day_reentrant(day,nurce_combinations,need_nurces,Sshift1)
-    }
-    # 全組み合わせを調べてうまく行かないときは、前の日に戻る
-    #     restore_shift(comb_nurces,day,shifts_short_role,shift)
-    assign_log(day,Sshift1,nil,__LINE__,nil,"BACK: hk全候補終了")
-    false
-  end
-
 
   def assign_tight_daies_first #Hospital::Assign.create_assign(1,Date.new(2013,2,1))
     dbgout("HP AASIGN TIGHT_DAY FIRST")
@@ -170,7 +141,8 @@ module Hospital::ReEntrant
         # 現状保存
         shifts_short_role = save_shift(nurces,day)
 
-        assign_shift_daytime(day,nurces)
+        next unless assign_shift_daytime(day,nurces)
+        save_longhest(day,:daytime)
         return true if assign_shift1_by_re_entrant(day+1,opt)
         restore_shift(nurces,day,shifts_short_role)
       }
@@ -358,4 +330,9 @@ module Hospital::ReEntrant
     end
   end
 
+  def  save_longhest(day,day_or_night = :daytime)
+    #     31日のshift3より 1日のshift1の方が大きくなるようにする
+    new_longest = (day_or_night == :night ? 0 : 100)  + day 
+    @longest = [new_longest,save_shift(@nurces,day)] if new_longest > longest[0]
+  end
 end
