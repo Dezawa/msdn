@@ -180,7 +180,7 @@ RoleRemain =
       assert_equal 8,@assign.limit_of_nurce_candidate(sft_str,day)
     end
   }
-["2","3"].zip([[34, 36, 51, 35, 45, 38, 46, 49],[36, 45, 37, 39, 48, 44, 40]]).each{ |sft_str,an| 
+["2","3"].zip([[34, 36, 51, 35, 45, 38, 46, 49],[36, 45, 39, 37, 44, 48, 40]]).each{ |sft_str,an| 
     must " 割り当て可能看護師数制限 #assinable_nurces_by_cost_size_limited  Shift #{sft_str}" do
       short_roles_this_shift = @assign.short_role(day,sft_str)
       assert_equal an,
@@ -249,7 +249,7 @@ RoleRemain =
   must "shift2,3の選ばれた組み合わせ1日" do
     combination = hash_combination_ids(@assign.candidate_combination_for_shift23_selected_by_cost(day))
     assert_equal 8,combination.size
-    assert_equal selected_comb,combination
+    assert_equal selected_comb.sort,combination.sort
   end
 
   #################
@@ -318,11 +318,11 @@ RoleRemain =
 
    selected_comb4 = [
                      [[51, 35], []], [[36, 38], []], [[51, 42], []], [[51, 38], []], [[42, 38], []]
-                   ]
+                   ].sort
   must "shift2,3の選ばれた組み合わせ 4日。shift3はfilles" do
      combination = hash_combination_ids(@assign.candidate_combination_for_shift23_selected_by_cost(4))
      #ssert_equal 6,combination.size
-     assert_equal selected_comb4,combination
+     assert_equal selected_comb4,combination.sort
    end
 
 
