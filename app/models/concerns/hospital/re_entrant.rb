@@ -142,7 +142,7 @@ module Hospital::ReEntrant
         shifts_short_role = save_shift(nurces,day)
 
         next unless assign_shift_daytime(day,nurces)
-        save_longhest(day,:daytime)
+        save_longhest(day,:daytime) unless opt[:dipth]
         return true if assign_shift1_by_re_entrant(day+1,opt)
         restore_shift(nurces,day,shifts_short_role)
       }
@@ -333,6 +333,9 @@ module Hospital::ReEntrant
   def  save_longhest(day,day_or_night = :daytime)
     #     31日のshift3より 1日のshift1の方が大きくなるようにする
     new_longest = (day_or_night == :night ? 0 : 100)  + day 
-    @longest = [new_longest,save_shift(@nurces,day)] if new_longest > longest[0]
+    if new_longest > longest[0]
+      @longest = [new_longest,save_shift(@nurces,day)]
+      logger.debug("    ## set longest #{day} #{day_or_night} #{new_longest}")
+    end
   end
 end
