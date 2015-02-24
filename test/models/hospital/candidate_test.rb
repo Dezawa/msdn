@@ -180,11 +180,11 @@ RoleRemain =
       assert_equal 8,@assign.limit_of_nurce_candidate(sft_str,day)
     end
   }
-["2","3"].zip([[34, 36, 51, 35, 45, 38, 46, 49],[36, 45, 39, 37, 44, 48, 40]]).each{ |sft_str,an| 
+["2","3"].zip([[34, 36, 51, 35, 45, 38, 46, 49],[36, 45, 37, 39, 48, 44, 40]]).each{ |sft_str,an| 
     must " 割り当て可能看護師数制限 #assinable_nurces_by_cost_size_limited  Shift #{sft_str}" do
       short_roles_this_shift = @assign.short_role(day,sft_str)
-      assert_equal an,
-       @assign.assinable_nurces_by_cost_size_limited(sft_str,day,short_roles_this_shift ).map(&:id)
+      assert_equal an.sort ,
+       @assign.assinable_nurces_by_cost_size_limited(sft_str,day,short_roles_this_shift ).map(&:id).sort
     end
   }
   # shift2
