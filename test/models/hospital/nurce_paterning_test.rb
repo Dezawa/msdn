@@ -77,7 +77,7 @@ pp "bofore ret = @assign.assign_patern"
 ret = @assign.assign_patern(comb_nurces[0,2],day,shift,[0,0])#assigned) #####  二人に割り振る
 pp ["after ret = @assign.assign_patern",ret]
 puts @assign.dump
-    assert_equal true ,ret,"2/13 330はOK"
+    assert_equal %w(330 330) ,ret.map(&:patern),"2/13 330はOK"
     @assign.long_check_later_days(day,[[2],[],[],[1]],"3")
 
     #assert_equal  [-5,1],@assign.short_role_shift[15][[2,0]],"330を入れたので0のshort"
