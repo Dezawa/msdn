@@ -217,11 +217,13 @@ class Hospital::Assign
 
       @stat = ""
       next unless assign_night_untile_success_or_timeout(candidate_combination)
-      assign_daytime_untile_success_or_timeout
-      next
+      next unless assign_daytime_untile_success_or_timeout
+      @count += 1
+      log_stat_and_save_result
+      #next
       return true
     end
-      restore_shift(@nurces,1,@longest[1])
+      restore_shift(@nurces,1,longest[1])
       save
     #raise StandardError
   end
@@ -247,7 +249,6 @@ class Hospital::Assign
       @limit_time = @start + Hospital::Const::Timeout
       begin
         if assign_shift1(1,opt)
-          log_stat_and_save_result
           log_statistics( @stat + "%5.2f(成功)"%(Time.now - @start))
         return true
         else
@@ -667,7 +668,7 @@ class Hospital::Assign
 
   #######################################################################
   # 一番深くまで割り付けた時の状態を保存する
-  def longest ;  @longest ||=  [0,0] ;end
+  def longest ;  @longest ||=  [0,[[]]] ;end
 
   ############################################################
   def unlink_mults(msg)
