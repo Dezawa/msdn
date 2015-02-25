@@ -216,7 +216,9 @@ class Hospital::Assign
       refresh
 
       @stat = ""
+      @night_mode = true
       next unless assign_night_untile_success_or_timeout(candidate_combination)
+      @night_mode = false
       next unless assign_daytime_untile_success_or_timeout
       @count += 1
       log_stat_and_save_result
