@@ -66,6 +66,7 @@ class Hospital::Controller < CommonController #ApplicationController
   def set_busho_month_sub
     @month = Time.parse(params[:busho_getudo][:yyyymm]+"-1").to_date
     @busho_getudo.month = @month
+    @busho_getudo.busho_id = params[:busho_getudo][:busho_id].to_i 
     session[:hospital] = YAML.dump @busho_getudo
   end
 end
