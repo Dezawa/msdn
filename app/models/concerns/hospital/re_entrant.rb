@@ -23,8 +23,10 @@ module Hospital::ReEntrant
                  )
     nurce_combinations_for_shift23 = opt.delete(:nurce_combinations) ||
       candidate_combination_for_shift23_selected_by_cost(day)
-
-    return false unless nurce_combinations_for_shift23
+    unless nurce_combinations_for_shift23
+      logger.debug("  HOSPITAL ASIGN:(#{__LINE__}) #{day}日.看護師の組み合わせができない")
+      return false 
+    end
 
     if nurce_combinations_for_shift23 != :fill 
     
@@ -71,7 +73,7 @@ module Hospital::ReEntrant
 
   def assign_tight_daies_first #Hospital::Assign.create_assign(1,Date.new(2013,2,1))
     dbgout("HP AASIGN TIGHT_DAY FIRST")
-    while (tight_daies = shift1_tight_days) && tight_daies.first && tight_daies.first.first < 4
+    while (tight_daies = shift_tight_days) && tight_daies.first && tight_daies.first.first < 4
       most_tight_daies = tight_daies.map{ |c,day| "#{day}:#{c} " if c<4 }.compact.join(',')
       dbgout("HP ASSIGN MOST TIGHT_DAYs are #{most_tight_daies}")
       if tight_daies[0].first < 0
@@ -93,13 +95,22 @@ module Hospital::ReEntrant
     true
   end
 
-  def shift1_tight_days
+  def shift_tight_days(sft_str = Sshift1)
     (1..@lastday).
       map{|day|
-      needs = short_role_shift[day][[@Kangoshi,Sshift1]].first
-      [ assinable_nurces(day,Sshift1,[[@Kangoshi,Sshift1]]).size - needs ,
+      needs = short_role_shift[day][[@Kangoshi,sft_str]].first
+      [ assinable_nurces(day,sft_str,[[@Kangoshi,sft_str]]).size - needs ,
         day  ]  if  needs > 0
     }.compact.sort_by{ |c,day| c }
+  end
+
+  def night_tight_days
+    (1..@lastday).
+      map{|day|
+      needs = @night.map{ |sft_str| short_role_shift[day][[@Kangoshi,sft_str]].first}
+      assignable = @night.map{ |sft_str|  assinable_nurces(day,sft_str,[[@Kangoshi,sft_str]]).size}
+     [ assignable.sub(needs).min, day ] if needs.max>0
+     }.compact.sort_by{ |c,day| c }
   end
 
 
