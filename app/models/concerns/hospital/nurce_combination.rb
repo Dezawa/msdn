@@ -75,7 +75,7 @@ module Hospital::NurceCombination
         select{ |comb2,comb3| (comb2 & comb3).empty? }#.
         #sort_by{ |comb2,comb3|  cost_of_nurce_combination_of_combination(comb2,comb3)}
     elsif  shifts.size == 1
-      return [] unless combary.first.first
+      return [[]] unless combary.first.first
       combary.sort_by{ |comb|  cost_of_nurce_combination(comb.first,shifts.first,tight_roles(shifts.first))}
     else
       raise "Hospital#candidate_combination_for_shifts シフト数が1,2以外"
