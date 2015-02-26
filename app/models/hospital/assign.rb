@@ -199,7 +199,10 @@ class Hospital::Assign
   # 一月の割付を行う
   # OPT  :nurce_combinations => #candidate_combination_for_shift23_selected_by_cost(day)
   def assign_month(day=1,opt={ })
-    log_statistics("",:header => @assign_start_at.strftime("%m/%d-%H:%M"))
+    log_statistics("",:header => @assign_start_at.strftime("%m/%d-%H:%M "+
+                                                           "Timeout #{Hospital::Const::Timeout} "+
+                                                           "List Min=#{Hospital::Const::LimitOfNurceCandidateList}"+
+                                                           " 係数=#{Hospital::Const::Factor_of_safety_NurceCandidateList}"))
     @count = 0
     logger.info("HOSPITAL ASSIGN START ON  部署 #{busho_id}, #{@month.strftime('%Y/%m')} "+Time.now.to_s)
     
@@ -222,7 +225,7 @@ class Hospital::Assign
       next unless assign_daytime_untile_success_or_timeout
       @count += 1
       log_stat_and_save_result
-      #next
+      next
       return true
     end
       restore_shift(@nurces,1,longest[1])
