@@ -89,8 +89,8 @@ module Hospital::NurceCombination
 
   def candidate_combination_for_shift(day,sft_str)
     need_nurces = need_nurces_shift(day,sft_str)
-    #assinable_nurces = assinable_nurces_by_cost_size_limited(sft_str,day,short_role(day,sft_str))
-    assinable_nurces = assinable_nurces(day,sft_str,short_role(day,sft_str))
+    assinable_nurces = assinable_nurces_by_cost_size_limited(sft_str,day,short_role(day,sft_str))
+    #assinable_nurces = assinable_nurces(day,sft_str,short_role(day,sft_str))
     assinable_nurces.combination(need_nurces)
   end
 

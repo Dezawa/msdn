@@ -34,9 +34,9 @@ module Const
     ]
   ItemsDefineAll =  (ItemsDefine + ItemsDefine2).flatten
 
-  LimitOfNurceCandidateList = 6
+  LimitOfNurceCandidateList = 10
   Size_of_NurceCombinationList = 3
-  Factor_of_safety_NurceCandidateList = 1.8
+  Factor_of_safety_NurceCandidateList = 1.5
 
   Timeout     = 30 #.minute
   TimeoutMult = 3.minute
