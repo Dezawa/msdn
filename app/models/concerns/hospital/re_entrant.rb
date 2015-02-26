@@ -71,33 +71,37 @@ module Hospital::ReEntrant
 
   def assign_tight_daies_first #Hospital::Assign.create_assign(1,Date.new(2013,2,1))
     dbgout("HP AASIGN TIGHT_DAY FIRST")
-    tight_daies = (1..@lastday).
-      map{|day| 
-      [assinable_nurces(day,Sshift1,[[@Kangoshi,Sshift1]]).size-short_role_shift[day][[@Kangoshi,Sshift1]].first,day] }.
-      sort_by{ |c,day| c }
-
-    most_tight_daies = tight_daies.map{ |c,day| "#{day}:#{c} " if c<4 }.compact.join(',')
-    dbgout("HP ASSIGN MOST TIGHT_DAYs are #{most_tight_daies}")
-
-    return false if tight_daies[0].first < 0
-    dbgout("HP AASIGN TIGHT_DAY FIRST do tight days ")
-    ret = true
-    tight_daies.each{ |yoyuu,day|
-      dbgout("HP AASIGN TIGHT_DAY FIRST do #{day}日 余裕#{yoyuu} ")
-      if  yoyuu > 3
-        ret= true
-        break
-      else 
-        unless assign_shift1_by_re_entrant(day,:dipth => 1) #assign_single_day(day,"1")
-          ret= false
-          break
-        end
+    while (tight_daies = shift1_tight_days) && tight_daies.first && tight_daies.first.first < 4
+      most_tight_daies = tight_daies.map{ |c,day| "#{day}:#{c} " if c<4 }.compact.join(',')
+      dbgout("HP ASSIGN MOST TIGHT_DAYs are #{most_tight_daies}")
+      if tight_daies[0].first < 0
+        dbgout("HP AASIGN TIGHT_DAY FIRST 失敗 ")
+        return false 
       end
-    }
+      dbgout("HP AASIGN TIGHT_DAY FIRST do tight days ")
+      yoyuu,day = tight_daies.first
+      ret = true
+      #tight_daies.each{ |yoyuu,day|
+      dbgout("HP AASIGN TIGHT_DAY FIRST do #{day}日 余裕#{yoyuu} ")
+      unless assign_shift1_by_re_entrant(day,:dipth => 1)
+        dbgout("HP AASIGN TIGHT_DAY FIRST 失敗 ")
+        return false
+      end
+    end
     dbgout("HP AASIGN TIGHT_DAY FIRST exit ")
     #@longest =  [0,0]
-    ret
+    true
   end
+
+  def shift1_tight_days
+    (1..@lastday).
+      map{|day|
+      needs = short_role_shift[day][[@Kangoshi,Sshift1]].first
+      [ assinable_nurces(day,Sshift1,[[@Kangoshi,Sshift1]]).size - needs ,
+        day  ]  if  needs > 0
+    }.compact.sort_by{ |c,day| c }
+  end
+
 
   def assign_single_day(day,sft_str)
     dbgout("HP ASSIGN #{day}日entry-0")
@@ -283,7 +287,7 @@ module Hospital::ReEntrant
     days.all?{ |d|
       day = theday - d
       short     = short_role_shift[day][[@Kangoshi,Sshift1]][0] 
-      assinable = assinable_nurces(day,Sshift1,short_role(day,Sshift1)).size
+      assinable = assinable_nurces(day,Sshift1,[[@Kangoshi,Sshift1]]).size
       if short - assinable > 0
         dbgout("      長割後日チェック(#{__LINE__}) #{theday}日への割付で#{day}日の日勤要員不足発生する。" +
                "　　#{short}人必要な所可能なのは#{assinable}人\n" +
