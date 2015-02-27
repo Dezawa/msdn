@@ -189,7 +189,6 @@ Rails.application.routes.draw do
 
   set_get("hospital/meetings",@EditTable)
   set_post("hospital/meetings",@EditTable)
-  
   namespace :hospital do
     set_get(:roles,[:show_assign,:set_busho])
     set_get(:meetings, %w( show_assign set_busho_month))
