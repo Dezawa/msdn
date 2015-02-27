@@ -53,8 +53,8 @@ class Hospital::AssignStatusTest < ActiveSupport::TestCase
     [3,"3"]=>[1,1],[4,"3"]=>[1, 1],[9,"3"]=>[0,1],[10,"3"]=>[1,2]
   }
 
-  CountRoleShift7 = { # 5/7 ??? 
-    #[4,"_"]=>16,[9,"_"]=>9,[4,"2"]=>1,[10,"2"]=>1,[4,"3"]=>1,[9,"3"]=>1,[3,"_"]=>10,[10,"_"]=>11
+  CountRoleShift7 = { 
+    [4,"_"]=>16,[9,"_"]=>9,[4,"2"]=>1,[10,"2"]=>1,[4,"3"]=>1,[9,"3"]=>1,[3,"_"]=>10,[10,"_"]=>11
   }
   ShortRole7 = [ [3,4,9],[3,4,10] ]
   RolesCountShort7 = [ [1,1,0,1,0],[1,1,0,0,1]]
@@ -89,7 +89,8 @@ class Hospital::AssignStatusTest < ActiveSupport::TestCase
   end
 
   must "5月7日の count_role_shift" do
-    assert_equal CountRoleShift7,  @assign.count_role_shift[7]#(true)
+    #pp @assign.nurces.map{ |nurce| nurce.role_shift(@month)[7]}    
+    assert_equal CountRoleShift7,  @assign.count_role_shift_of(7)#[7]#(true)
   end
   must "5月7日の short_role" do
     assert_equal ShortRole7,  %w(2 3).map{ |sft| @assign.short_role(7,sft) }

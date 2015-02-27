@@ -30,7 +30,7 @@ class Hospital::AssignCombination201404Test < ActiveSupport::TestCase
 
    must "4/1の nurces_selected_of_night" do
        short_roles = @assign.short_roles_of_night(day)
-     assert_equal( [[34, 46, 47, 52, 37, 42, 38, 36], [34, 46, 47, 52, 37, 42, 38, 36]],
+     assert_equal( [[34, 46, 47, 52, 37, 42, 38, 36, 48, 35], [34, 46, 47, 52, 37, 42, 38, 36, 48, 35]],
                    @assign.nurces_selected_of_night(day,short_roles).map{ |sft,nurces| nurces.map(&:id)} )
    end
 
@@ -65,7 +65,8 @@ class Hospital::AssignCombination201404Test < ActiveSupport::TestCase
                  ], hash_combination_ids(@assign.candidate_combination_for_shift_selected_by_cost(day,sft_str))
   end
   must "4/1のcandidate_combination_for_shift_selected_by_cost" do
-    assert_equal [[[47, 37]], [[46, 38]], [[47, 42]], [[47, 38]], [[42, 38]], [[38, 36]]
+    assert_equal [[[37, 48]], [[47, 37]], [[46, 38]], [[42, 48]], [[47, 42]], [[47, 38]],
+                  [[38, 48]], [[42, 38]], [[38, 36]], [[47, 35]]
                  ], hash_combination_ids(@assign.candidate_combination_for_shift_selected_by_cost(day,"3"))
   end
 

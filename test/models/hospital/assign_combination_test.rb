@@ -65,7 +65,7 @@ class Hospital::AssignCombinationTest < ActiveSupport::TestCase
   must "3/15の nurces_selected_of_night" do
     setup_5F
     short_roles = @assign.short_roles_of_night(day)
-    assert_equal( [[26, 5, 25, 6, 20, 7], []] , 
+    assert_equal( [[26, 5, 25, 6, 20, 7, 19, 11, 18, 16], []],
                   @assign.nurces_selected_of_night(day,short_roles).map{ |sft,nurces| nurces.map(&:id)} )
   end
 

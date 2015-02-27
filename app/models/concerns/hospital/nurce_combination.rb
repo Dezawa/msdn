@@ -114,7 +114,7 @@ module Hospital::NurceCombination
       return candidate_combination if candidate_combination.size > 0
 
       logger.debug("    HOSPITAL ASSIGN NoCandidate Dup: shift2,3で同じ看護師が重なるものばかり #{day}日 ")
-      raise 
+      raise NoCandidateError,"shift2,3で同じ看護師が重なるものばかり"
 
     elsif  shifts.size == 1
       return [[]] unless combary.first.first

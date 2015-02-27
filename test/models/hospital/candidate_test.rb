@@ -177,10 +177,10 @@ RoleRemain =
   }
   ["2","3"].each{ |sft_str| 
     must "limit_of_nurce_candidate Shift #{sft_str}" do
-      assert_equal 8,@assign.limit_of_nurce_candidate(sft_str,day)
+      assert_equal 10,@assign.limit_of_nurce_candidate(sft_str,day)
     end
   }
-["2","3"].zip([[34, 36, 51, 35, 45, 38, 46, 49],[36, 45, 37, 39, 48, 44, 40]]).each{ |sft_str,an| 
+["2","3"].zip([[34, 35, 36, 37, 38, 44, 45, 46, 49, 51],[36, 37, 39, 40, 44, 45, 48]]).each{ |sft_str,an| 
     must " 割り当て可能看護師数制限 #assinable_nurces_by_cost_size_limited  Shift #{sft_str}" do
       short_roles_this_shift = @assign.short_role(day,sft_str)
       assert_equal an.sort ,
@@ -201,13 +201,16 @@ RoleRemain =
   # 45, 39, 44               => 49A  349 49A              39
   # 39, 44                   => 349  49A                  44
 
-  ["2","3"].zip([[[51, 35], [36, 38], [38, 46], [51, 45], [51, 38], [35, 49], [45, 38], [45, 49], [38, 49]],
-                 [[36, 39], [45, 39], [45, 48], [37, 48], [39, 48], [39, 44],
-                  [48, 44], [36, 40], [45, 40], [48, 40], [44, 40]]]
+  ["2","3"].zip([[[35, 49], [36, 38], [38, 44], [38, 46], [38, 49], [45, 38], [45, 49],
+                  [49, 37], [49, 44], [51, 35], [51, 37], [51, 38], [51, 44], [51, 45]],
+                 [[36, 39], [36, 40], [37, 48], [39, 44], [39, 48], [44, 40], [44, 48],
+                  [45, 39], [45, 40], [45, 48], [48, 40]]
+                 ].map{ |comb_ary| comb_ary.map(&:sort)}
                 ).each{ |sft_str,comb|
     must "シフト#{sft_str}でのロールを満たす組み合わせ" do
       assert_equal comb.sort,
-      combination_ids(@assign.candidate_combination_for_shift_with_enough_role(day,sft_str)).sort
+      combination_ids(@assign.candidate_combination_for_shift_with_enough_role(day,sft_str)).
+        map{ |ary| ary.sort}.sort
     end
   }
 
@@ -224,16 +227,16 @@ RoleRemain =
 
   must "夜の組み合わせ候補" do
     combinations = (@assign.candidate_combination_for_night(day))
-    require =    [[[35, 49], [36, 39]], [[35, 49], [36, 40]], [[35, 49], [37, 48]], [[35, 49], [39, 44]],
-                  [[35, 49], [39, 48]], [[35, 49], [44, 40]], [[35, 49], [45, 39]],
-                  [[35, 49], [45, 40]], [[35, 49], [45, 48]], [[35, 49], [48, 40]], [[35, 49], [48, 44]],
-                  [[36, 38], [37, 48]], [[36, 38], [39, 44]], [[36, 38], [39, 48]], [[36, 38], [44, 40]],
-                  [[36, 38], [45, 39]], [[36, 38], [45, 40]], [[36, 38], [45, 48]], [[36, 38], [48, 40]],
-                  [[36, 38], [48, 44]], [[38, 46], [36, 39]], [[38, 46], [36, 40]], [[38, 46], [37, 48]],
-                  [[38, 46], [39, 44]], [[38, 46], [39, 48]], [[38, 46], [44, 40]], [[38, 46], [45, 39]],
-                  [[38, 46], [45, 40]], [[38, 46], [45, 48]], [[38, 46], [48, 40]]
-                ].sort
-    result  = combination_combination_ids(combinations).sort
+    require =    [[[35, 49], [36, 39]], [[35, 49], [36, 40]], [[35, 49], [37, 48]],
+                  [[35, 49], [39, 44]], [[35, 49], [39, 45]], [[35, 49], [39, 48]], [[35, 49], [40, 44]],
+                  [[35, 49], [40, 45]], [[35, 49], [40, 48]], [[35, 49], [44, 48]], [[35, 49], [45, 48]], 
+                  [[35, 51], [36, 39]], [[35, 51], [36, 40]], [[35, 51], [37, 48]], [[35, 51], [39, 44]],
+                  [[35, 51], [39, 45]], [[35, 51], [39, 48]], [[35, 51], [40, 44]], [[35, 51], [40, 45]],
+                  [[35, 51], [40, 48]], [[35, 51], [44, 48]], [[35, 51], [45, 48]], [[36, 38], [37, 48]],
+                  [[36, 38], [39, 44]], [[36, 38], [39, 45]], [[36, 38], [39, 48]], [[36, 38], [40, 44]],
+                  [[36, 38], [40, 45]], [[36, 38], [40, 48]], [[36, 38], [44, 48]]
+                ].map{ |comb_of_comb| comb_of_comb.map(&:sort)}.sort
+    result  = combination_combination_ids(combinations).map{ |comb_of_comb| comb_of_comb.map(&:sort)}.sort
     assert_equal require[0, 7], result[0, 7]
     assert_equal require[7, 8], result[7, 8]
     assert_equal require[15,15], result[15,15]
@@ -242,14 +245,12 @@ RoleRemain =
   selected_comb = [# [[51, 35], [36, 39]], [[38, 46], [36, 39]], [[51, 45], [36, 39]],
                    # [[51, 38], [36, 39]], [[35, 49], [36, 39]], [[51, 35], [45, 39]],
                    # [[51, 35], [45, 48]], [[36, 38], [45, 39]]]
-                   [[51, 35], [36, 39]], [[38, 46], [36, 39]], [[51, 45], [36, 39]],
-                   [[35, 49], [36, 39]], [[51, 38], [36, 39]], [[51, 35], [45, 39]], 
-                   [[36, 38], [45, 39]], [[45, 38], [36, 39]]
-                  ]
+                   [[36, 38], [45, 39]], [[38, 46], [36, 39]], [[38, 46], [39, 48]], [[38, 46], [45, 39]], [[45, 38], [36, 39]], [[51, 35], [36, 39]], [[51, 35], [45, 39]], [[51, 38], [36, 39]], [[51, 38], [45, 39]], [[51, 45], [36, 39]]
+                  ].map{ |comb_of_comb| comb_of_comb.map(&:sort)}.sort
   must "shift2,3の選ばれた組み合わせ1日" do
     combination = hash_combination_ids(@assign.candidate_combination_for_shift23_selected_by_cost(day))
-    assert_equal 8,combination.size
-    assert_equal selected_comb.sort,combination.sort
+    assert_equal 10,combination.size
+    assert_equal selected_comb.sort,combination.map{ |comb_of_comb| comb_of_comb.map(&:sort)}.sort
   end
 
   #################
@@ -285,10 +286,10 @@ RoleRemain =
    }
    ["2","3"].each{ |sft_str| 
      must "limit_of_nurce_candidate Shift 4日  #{sft_str}" do
-       assert_equal 6,@assign.limit_of_nurce_candidate(sft_str,day4)
+       assert_equal 10,@assign.limit_of_nurce_candidate(sft_str,day4)
      end
    }
- ["2","3"].zip([[34, 36, 51, 35, 42, 38],[]]).each{ |sft_str,an| 
+ ["2","3"].zip([[34, 36, 51, 35, 42, 38, 46, 48, 37, 45],[]]).each{ |sft_str,an| 
      must "#assinable_nurces_by_cost_size_limited  Shift  4日 #{sft_str}" do
        short_roles_this_shift = @assign.short_role(day4,sft_str)
        assert_equal an,
@@ -304,11 +305,14 @@ RoleRemain =
    must " 4日 夜の組み合わせ候補" do
      combinations = combination_combination_ids(@assign.candidate_combination_for_night(day4))
    
-     assert_equal [[[36, 38], []], [[51, 35], []], [[51, 42], []], [[51, 38], []], [[42, 38], []]
+     assert_equal [[[36, 38], []], [[51, 35], []], [[51, 42], []], [[51, 38], []], [[51, 37], []],
+                   [[51, 45], []], [[35, 48], []], [[42, 38], []]
                   ], combinations[0,8]
    end
 
-   comb4 = [[[36, 38], []], [[42, 38], []], [[51, 35], []], [[51, 38], []], [[51, 42], []]
+   comb4 = [[[35, 48], []], [[36, 38], []], [[38, 45], []], [[38, 46], []], [[38, 48], []],
+            [[42, 38], []], [[42, 48], []], [[48, 37], []], [[48, 45], []], [[51, 35], []],
+            [[51, 37], []], [[51, 38], []], [[51, 42], []], [[51, 45], []]
            ]
    must " 4日 shift 2 3 に分ける" do
      combination = hash_combination_ids(@assign.candidate_combination_for_shift23(day4))
@@ -316,8 +320,9 @@ RoleRemain =
      assert_equal comb4,    combination.sort
    end
 
-   selected_comb4 = [
-                     [[51, 35], []], [[36, 38], []], [[51, 42], []], [[51, 38], []], [[42, 38], []]
+   selected_comb4 = [ [[], [35, 48]], [[], [36, 38]], [[], [38, 45]], [[], [38, 46]],
+                      [[], [42, 38]], [[], [42, 48]],
+                      [[], [51, 35]], [[], [51, 38]], [[], [51, 42]], [[], [51, 45]]
                    ].sort
   must "shift2,3の選ばれた組み合わせ 4日。shift3はfilles" do
      combination = hash_combination_ids(@assign.candidate_combination_for_shift23_selected_by_cost(4))
