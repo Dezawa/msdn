@@ -322,7 +322,9 @@ module Hospital::ReEntrant
   def roles_able_be_filled?(day,sft_str)
     return true if sft_str == "0"
     roles_count = roles_count_short(day,sft_str)
-    roles_count.max <= roles_count[@kangoshi_idx_of_need_roles]
+    return true if roles_count.max <= roles_count[@kangoshi_idx_of_need_roles]
+    logger.debug("    HOSPITAL ASSIGN: ロール不足数>看護師必要数 [#{roles_count.join(',')}]")
+    false
   end
 
   def too_many_assigned?(day,sft_str)
