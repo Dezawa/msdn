@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 # 
+
+class NoCandidateError < StandardError
+end
+
 module Hospital::NurceCombination
   include Hospital::Const
 
@@ -31,31 +35,65 @@ module Hospital::NurceCombination
   #   そのシフトに割り当てても、各看護師の勤務制約に抵触しない
   #   コストの少ない方から選んでいる
   def candidate_combination_for_shift23_selected_by_cost(day)
-    return :fill unless short?(day,:night_total)
+    #return :fill unless short?(day,:night_total)
+    fill = @night.map{ |sft_str| !short?(day,sft_str)}
+    begin
+      candidate_combinations = 
+        case fill
+        when  [true,true]  ; return :fill 
+        when [true,false]  ; candidate_combination_for_shift_selected_by_cost(day,Sshift3,:null => Sshift2)
+        when [false,true]  ; candidate_combination_for_shift_selected_by_cost(day,Sshift2,:null => Sshift3)
+        else               ; candidate_combination_for_shift23(day)
+        end
 
-    candidate_combinations = candidate_combination_for_shift23(day)
-    return nil unless candidate_combinations.size > 0
-    candidate_combinations.
-      sort_by{ |hash_of_combination| 
-      cost_of_nurce_combination(hash_of_combination["2"],Sshift2,tight_roles(Sshift2)) +
-      cost_of_nurce_combination(hash_of_combination["3"],Sshift3,tight_roles(Sshift3))
-    }[0,limit_of_nurce_candidate_night(day)]
+      return nil unless candidate_combinations
+      return :fill if candidate_combinations == :fill
+      candidate_combinations.
+        sort_by{ |hash_of_combination| 
+        cost_of_nurce_combination(hash_of_combination["2"],Sshift2,tight_roles(Sshift2)) +
+        cost_of_nurce_combination(hash_of_combination["3"],Sshift3,tight_roles(Sshift3))
+      }[0,limit_of_nurce_candidate_night(day)]
+   rescue NoCandidateError
+      return nil
+   end
+  #     candidate_combinations = candidate_combination_for_shift23(day)
+  #     candidate_combinations = candidate_combination_for_shift_selected_by_cost(day,Sshift3,:null => Sshift2)
+  #     return nil unless candidate_combinations
+  #     candidate_combinations.
+  #       sort_by{ |hash_of_combination| cost_of_nurce_combination(hash_of_combination[Sshift3],Sshift3,tight_roles(Sshift3))
+  #     }[0,limit_of_nurce_candidate_night(day)]
+  #   else
+  #     candidate_combinations = candidate_combination_for_shift23(day)
+  #     return nil unless candidate_combinations
+  #     candidate_combinations.
+  #       sort_by{ |hash_of_combination| 
+  #       cost_of_nurce_combination(hash_of_combination["2"],Sshift2,tight_roles(Sshift2)) +
+  #       cost_of_nurce_combination(hash_of_combination["3"],Sshift3,tight_roles(Sshift3))
+  #     }[0,limit_of_nurce_candidate_night(day)]
+  #   end
   end
-  def candidate_combination_for_shift_selected_by_cost(day,shift)
-    return :fill unless short?(day,shift)
 
+  def candidate_combination_for_shift_selected_by_cost(day,shift,opt={ })
+    return :fill unless short?(day,shift)
     candidate_combinations = candidate_combination_for_shifts(day,shift)
-    return nil unless candidate_combinations.size > 0
-    candidate_combinations.first.sort_by{ |combination| 
+    unless candidate_combinations.size > 0
+      return nil 
+    end
+    combinations = 
+      candidate_combinations.first.sort_by{ |combination| 
       cost_of_nurce_combination(combination,shift,tight_roles(shift))
-    }[0,limit_of_nurce_candidate(shift,day)].
-      map{ |comb| { shift => comb}}
+    }[0,limit_of_nurce_candidate(shift,day)]
+
+    case null_sft = opt[:null]
+    when nil     ; combinations.map{ |comb| { shift => comb}}
+    else         ; combinations.map{ |comb| { null_sft => [], shift => comb}}
+    end
   end
 
   def candidate_combination_for_shift23(day)
     need2 = need_nurces_shift(day,Sshift2)
     candidate = 
-      candidate_combination_for_night(day).map{ |comb2,comb3|
+      candidate_combination_for_shifts(day,Hospital::Define.define.night).map{ |comb2,comb3|
           { "2" => comb2, "3" => comb3 }
     }
   end
@@ -71,9 +109,13 @@ module Hospital::NurceCombination
       candidate_combination_for_shift_with_enough_role(day,sft_str)
     }
     if shifts.size == 2
-      combary.first.to_a.product(combary.last.to_a).                      # 225
+      candidate_combination = combary.first.to_a.product(combary.last.to_a).                      # 225
         select{ |comb2,comb3| (comb2 & comb3).empty? }#.
-        #sort_by{ |comb2,comb3|  cost_of_nurce_combination_of_combination(comb2,comb3)}
+      return candidate_combination if candidate_combination.size > 0
+
+      logger.debug("    HOSPITAL ASSIGN NoCandidate Dup: shift2,3で同じ看護師が重なるものばかり #{day}日 ")
+      raise 
+
     elsif  shifts.size == 1
       return [[]] unless combary.first.first
       combary.sort_by{ |comb|  cost_of_nurce_combination(comb.first,shifts.first,tight_roles(shifts.first))}
@@ -83,8 +125,13 @@ module Hospital::NurceCombination
   end
   
   def candidate_combination_for_shift_with_enough_role(day,sft_str)
-    candidate_combination_for_shift(day,sft_str). 
-      select{ |comb| roles_filled?(day,sft_str,comb).max == 0 }#.      sort_by{ |comb| cost_of_nurce_combination(comb,sft_str)}
+    candidate = candidate_combination_for_shift(day,sft_str). 
+      select{ |comb| roles_filled?(day,sft_str,comb).max == 0 }
+    if candidate.size == 0
+      logger.debug("    HOSPITAL ASSIGN NoCandidate ROLE:#{day}日 shift#{sft_str}：ロールを満たす組み合わせがない")
+      raise NoCandidateError
+    end
+    return candidate
   end
 
   def candidate_combination_for_shift(day,sft_str)
