@@ -284,7 +284,7 @@ module Hospital::ReEntrant
     @shifts.each{|sft_str|  
       daily_checks[sft_str.to_i].each{|d|
         next if day+d > @lastday
-        return false unless roles_able_be_filled?(day+d)
+        return false unless roles_able_be_filled?(day+d,sft_str)
         return false unless too_many_assigned?(day+d,sft_str)
       }
     }
@@ -318,8 +318,9 @@ module Hospital::ReEntrant
   # すなわち
   #   残り看護師数 < 足りないロール数
   # ということはないか
-  def roles_able_be_filled?(day)
-    candidate_combination_for_shift23_selected_by_cost(day)
+  # とりあえず、不足人数分の看護師が居るかどうかだけみる。shift2,3での潰し合いは見ない
+  def roles_able_be_filled?(day,sft_str)
+    roles_count_short(day,sft_str).max <= needs_all_days[day][[@Kangoshi,sft_str]][1]
   end
 
   def too_many_assigned?(day,sft_str)
