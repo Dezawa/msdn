@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # 
 
-class NoCandidateError < StandardError
-end
+class NoCandidateError < StandardError ; end
 
 module Hospital::NurceCombination
   include Hospital::Const

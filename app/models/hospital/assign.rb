@@ -13,9 +13,9 @@ LogPuts,LogDebug,LogInfo = 1,2,4
   # sortする、という場合に、top何組ずつで組み合わせるか、を決める
   Top = 3
   SelectedMax = 20-1 #(2) assign可能な看護師が多数居るとき、コストからみて最初の何人かで組み合わせを作る
+
   # 指定された時間  Hospital::Const::Timeout 経過したとき発生させるエラー
-  class TimeToLongError < StandardError
-  end
+  class TimeToLongError < StandardError ;  end
 
 # ARではない
 # 割付を行うためのclass. 
