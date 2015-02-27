@@ -15,6 +15,7 @@ class Hospital::ReentrantTest < ActiveSupport::TestCase
     @assign=Hospital::Assign.new(@busho_id,@month)
     @assign.limit_time = Time.now + 10
     @nurces=@assign.nurces
+    @assign.night_mode = true
     srand(1)
   end
 
@@ -251,5 +252,74 @@ class Hospital::ReentrantTest < ActiveSupport::TestCase
     assert_equal :fill,candidate_combination
    end
 
+  #####################################
+  Log2_1_1 =
+"### Hospital ASSIGN 2日 entry ###
+  HP ASSIGN 34 ______11_____________1______1
+  HP ASSIGN 35 ___0__________0______________
+  HP ASSIGN 36 _3___3_0_______0____________0
+  HP ASSIGN 37 __00_______________________10
+  HP ASSIGN 38 _2____0______________________
+  HP ASSIGN 39 _330_________________________
+  HP ASSIGN 40 ______1_____________12____1__
+  HP ASSIGN 41 _____________________________
+  HP ASSIGN 42 ________0_______________0____
+  HP ASSIGN 43 _________00____1_0_1__1_2__1_
+  HP ASSIGN 44 ____3_____1______0___________
+  HP ASSIGN 45 _2_______________0________2__
+  HP ASSIGN 46 _________0_____________0_____
+  HP ASSIGN 47 _0__________1__00___1________
+  HP ASSIGN 48 __0_________________1________
+  HP ASSIGN 49 _____________________10______
+  HP ASSIGN 50 ____3__2____2___00____0__3_1_
+  HP ASSIGN 51 __0____________00____________
+  HP ASSIGN 52 ___00____0_0___________0_____
+"
+  def log2_1_1_set
+    @assign.nurces = extract_set_shifts(Log2_1_1)
+    @assign.refresh
+    @nurce_pair = nurce_by_ids([41,49],@assign.nurces)
+  end
+
+  must "log2_1_1にて、41,49に2,220330 を割り当てると,assign_patern_if_possibleは成功" do 
+    #2/5の必要ロールが00010になり割り当て不能 " do
+    log2_1_1_set
+    day ,sft_str,idx_list_of_long_patern = 2,"2",[2,0]
+
+    assert_equal ["2","220330"],
+    @assign.assign_patern_if_possible(@nurce_pair,day,sft_str,idx_list_of_long_patern).map(&:patern)
+  end
+  must "log2_1_1にて、41,49に2,220330 を割り当てると,merged_paternは" do 
+    #2/5の必要ロールが00010になり割り当て不能 " do
+    log2_1_1_set
+    day ,sft_str,idx_list_of_long_patern = 2,"2",[2,0]
+    list_of_long_patern = @assign.assign_patern_if_possible(@nurce_pair,day,sft_str,idx_list_of_long_patern)
+    #          shift 0   1    2    3
+   assert_equal [[2, 5], [], [1], [3, 4]], @assign.merged_patern(list_of_long_patern)
+  end
+  must "log2_1_1にて、41,49に2,220330 を割り当てると,5日のroles_able_be_filledは" do 
+    #2/5の必要ロールが00010になり割り当て不能 " do
+    log2_1_1_set
+    day ,sft_str,idx_list_of_long_patern = 2,"2",[2,0]
+    list_of_long_patern = @assign.assign_patern_if_possible(@nurce_pair,day,sft_str,idx_list_of_long_patern)
+    #          shift 0   1    2    3
+   assert_equal false, @assign.roles_able_be_filled?(5,"3")
+  end
+  must "log2_1_1にて、41,49に2,220330 を割り当てると,5日のroles_count_shortは" do 
+    #2/5の必要ロールが00010になり割り当て不能 " do
+    log2_1_1_set
+    day ,sft_str,idx_list_of_long_patern = 2,"2",[2,0]
+    list_of_long_patern = @assign.assign_patern_if_possible(@nurce_pair,day,sft_str,idx_list_of_long_patern)
+    #          shift 0   1    2    3
+   assert_equal [0, 0, 0, 1, 0], @assign.roles_count_short(5,"3")
+  end
+  must "log2_1_1にて、41,49に2,220330 を割り当てると,5日のneeds_all_daysは" do 
+    #2/5の必要ロールが00010になり割り当て不能 " do
+    log2_1_1_set
+    day ,sft_str,idx_list_of_long_patern = 2,"2",[2,0]
+    list_of_long_patern = @assign.assign_patern_if_possible(@nurce_pair,day,sft_str,idx_list_of_long_patern)
+    #          shift 0   1    2    3
+   assert_equal 2, @assign.needs_all_days[day]
+  end
  
 end
