@@ -166,7 +166,6 @@ class Hospital::Assign
 
   def initialize(arg_busho_id,arg_month)
     @Kangoshi = Hospital::Role.find_by_name("看護師").id
-    
     @koutai3 = Hospital::Define.koutai3?
     @shifts_int= @koutai3 ? Shift0123 : Shift0123[0..-2]
     @shifts = @koutai3    ? Sshift0123 : Sshift0123[0..-2]
@@ -182,7 +181,8 @@ class Hospital::Assign
       @lastday=@month.end_of_month.day
       @nurces = Hospital::Nurce.by_busho(@busho_id,:month => @month)
       @nurces.each{ |nurce| nurce.monthly @month}
-      @kangoshi = @nurces.select{|nurce| nurce.shokushu_id == @Kangoshi }
+      @kangoshis = @nurces.select{|nurce| nurce.shokushu_id == @Kangoshi }
+      @kangoshi_idx_of_need_roles = Hospital::Need.need_role_ids.index(@Kangoshi)
       @needs  = needs_all_days
       # @count_role_shift = count_role_shift     # [[[[role,shift],[role,shift],,],[day  ],[day]],[nurce],[nurce] ]
       # @nurces.each{|nurce| nurce.monthly(@month).day2shift}
@@ -215,6 +215,7 @@ class Hospital::Assign
     dbgout dump("  HP START  ")
     while candidate_combination.size > 1
       candidate_combination.shift
+      @count += 1
       restore_shift(@nurces,1,@initial_state)
       refresh
 
@@ -310,7 +311,7 @@ class Hospital::Assign
   end
 
   def log_newday_entrant(day)
-    dbgout("HP ASSIGN #{day}日entry")
+    dbgout("HP ASSIGN #{day}日entry-#{@count}")
     dbgout("assign_by_re_entrant")
     dbgout dump("  HP ASSIGN ")
   end
