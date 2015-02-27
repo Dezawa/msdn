@@ -21,6 +21,7 @@ class Sola::Dayly < ActiveRecord::Base
       #errors.add(:base_name,"dezawaのsolaの電力データではない" )
       return
     end
+    logger.info("ONDOTORI:: slope #{ondotori.channels["power01-電圧"].slope} + graft #{ondotori.channels["power01-電圧"].graft}")
     times_values = times_values_group_by_day(ondotori.channels["power01-電圧"])
     times_values.each{ |day,time_values|
       find_or_create_and_save(day,time_values)
@@ -40,9 +41,10 @@ class Sola::Dayly < ActiveRecord::Base
   end
 
   def self.times_values_group_by_day(channel)
-    channel.times.zip(channel.values).
+    channel.times.zip(channel.values.map{ |v| scale(v)}).
       group_by{ |time,value| time.to_date }
   end
+  def self.scale(v) ; Sola::Scale[0] * v + Sola::Scale[1] ;end
 
   def self.ondotori_load(trz_file)#Ondotori::Recode.new(trz_file)#
     file_or_xmlstring = case trz_file.class
