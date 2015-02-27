@@ -7,7 +7,7 @@ module Hospital::ReEntrant
     return true if day > lastday
     raise TimeToLongError,"timed out"  if @limit_time < Time.now
     #refresh
-      dbgout("### Hospital ASSIGN #{day}日 entry ###")
+      dbgout("### Hospital ASSIGN #{day}日 entry-#{@count} ###")
       dbgout dump("  HP ASSIGN ")
     save_log
 
@@ -320,7 +320,9 @@ module Hospital::ReEntrant
   # ということはないか
   # とりあえず、不足人数分の看護師が居るかどうかだけみる。shift2,3での潰し合いは見ない
   def roles_able_be_filled?(day,sft_str)
-    roles_count_short(day,sft_str).max <= needs_all_days[day][[@Kangoshi,sft_str]][1]
+    return true if sft_str == "0"
+    roles_count = roles_count_short(day,sft_str)
+    roles_count.max <= roles_count[@kangoshi_idx_of_need_roles]
   end
 
   def too_many_assigned?(day,sft_str)
