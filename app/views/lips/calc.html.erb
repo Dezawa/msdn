@@ -1,6 +1,7 @@
 <% @promax=@lips.promax.to_i; @opemax=@lips.opemax.to_i %>
 <font size=5 ><b>LiPS(<%=I18n.t "lips"%>版)</b></font>
-<div align=right>  <a href="/lips/example.html">例題</a>　　UserName:<%= @login %></font></div>
+<div align=right>
+<a href='/lips/example.html'>例</a>　UserName:<%= @login %></font></div>
 <%= t(:message).html_safe %>
 <font size=2>
   <%= @lips.errors.full_messages.join(' ') -%>
