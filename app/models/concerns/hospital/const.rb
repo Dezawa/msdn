@@ -36,7 +36,7 @@ module Const
 
   LimitOfNurceCandidateList = 10
   Size_of_NurceCombinationList = 3
-  Factor_of_safety_NurceCandidateList = 1.5
+  Factor_of_safety_NurceCandidateList = 1.3
 
   Timeout     = 30 #.minute
   TimeoutMult = 3.minute
