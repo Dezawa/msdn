@@ -284,6 +284,7 @@ module Hospital::ReEntrant
     @shifts.each{|sft_str|  
       daily_checks[sft_str.to_i].each{|d|
         next if day+d > @lastday
+        return false unless roles_able_be_filled?(day+d)
         return false unless too_many_assigned?(day+d,sft_str)
       }
     }
@@ -310,6 +311,15 @@ module Hospital::ReEntrant
     }
     dbgout("      長割後日チェック(#{__LINE__}) #{theday}日への割付で日勤要員不足発生せず")
     true
+  end
+
+  # その日はロールが満たされたか、もしくは
+  # 将来満たすことが可能か
+  # すなわち
+  #   残り看護師数 < 足りないロール数
+  # ということはないか
+  def roles_able_be_filled?(day)
+    candidate_combination_for_shift23_selected_by_cost(day)
   end
 
   def too_many_assigned?(day,sft_str)
