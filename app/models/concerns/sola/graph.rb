@@ -54,7 +54,7 @@ module Sola::Graph
       opt = std_opt_with_peak(:minthly,graph_file,graph_file_dir).
         merge({ 
                 :set  => [ "lmargin 0", "rmargin 0","size 0.8,1.1", "origin 0.09 ,-0.07",
-                           "xdata time", "timefmt '%Y-%m-%d'"      , "format x '%Y-%m-%d'"
+                           "xdata time", "timefmt '%Y-%m-%d'"      , "format x '%Y-%m'"
                          ],
                 :xy => [[[1,2],[1,3]]],        :point_type => [7,6],
                 :range => { :y => "[300:780]",:y2 => "[0:5]",

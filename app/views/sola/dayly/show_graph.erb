@@ -1,4 +1,4 @@
-<h3><%= @TYTLE %> <%= @TYTLE_post %></h3></h3>
+<h3><%= @TYTLE %> <%= @TYTLE_post %></h3>
 <%- opt = {action: :show_img,
    graph_format: (@graph_format||"jpeg").html_safe ,
    graph_file_dir: (@graph_file_dir ||  (Rails.root + "tmp" + "img").to_s).html_safe
@@ -7,3 +7,4 @@
 <%= @postTitleMsg.html_safe if @postTitleMsg %>
 <img src='<%= url_for( opt.merge(graph_file: @graph_file_monthly)) %>' ><br>
 <img src='<%= url_for( opt.merge(graph_file: @graph_file_dayly)) %>' >
+<%= @AfterIndexHtml.html_safe if @AfterIndexHtml %>
