@@ -125,7 +125,7 @@ module ApplicationHelper
                              { :controller => menu.model, :action => menu.action}.
                              merge( menu.option || {} ),menu.html_option
                              )
-    }.join(tdtd).html_safe
+    }.compact.join(tdtd).html_safe
     safe_join [TR , td ,table_body,TDend , TRend ] 
   end
 
