@@ -1,0 +1,14 @@
+<h3><%= @TYTLE %> <%= @TYTLE_post %></h3></h3>
+<%= @model.date %>　 ピーク <%= @model.volt_peak ? "%4.2f"%@model.volt_peak : "" %>V
+<%= form_for(@model) do |f| %>
+<table border=1>
+<tr><td rowspan=2>分</td><td colspan=24 align=center >電圧</td></tr>
+<tr><% (0..23).each{|hr| %><td><%= hr %></td><% } %></tr>
+<%- (0..59).each{|min| %>
+<tr><td><%= min %></td><%- (0..23).each{|hr| h=hr*60 -%>
+<td><%= (@model.volts && volt=@model.volts[h+min]) ? "%4.2f"%volt : "    " %></td><% } %></tr>
+<% } %>
+</table>
+
+
+<%- end %>

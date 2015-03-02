@@ -12,6 +12,13 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
                     :link => {  :url => "/sola/dayly/minute_graph",:key => :id, :key_val => :id})
      }
     ]
+  LabelsVolt =
+    [[ HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:ro => true )] ,
+     (1..31).map{ |day| 
+       HtmlLink.new(:volt_peak,day.to_s,:tform => "%6.4f",
+                    :link => {  :url => "/sola/dayly/show_volt",:key => :id, :key_val => :id})
+     }
+    ]
 
   LabelsPowers =
     [[ HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:ro => true )] ,
@@ -95,6 +102,18 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     render  :action => :index
   end
 
+  def index_volt
+    index_sub
+    logger.debug("#### @models_group_by #{@models_group_by[@models_group_by.keys.last].map{ |m| m.date}.join(',')}") #.map{ |m| m.day}.join(',')}")
+    @Labels =LabelsVolt
+    @TYTLE_post = "日 おんどとり電圧"
+    @TableHeaderDouble = [1,[31,"日々のおんどとり RTR505V 電圧(50A 5V)"]]
+
+    @method = :volt_peak_day
+    @action = "show"
+    render  :action => :index
+  end
+
   def index_month
      month = params[:month]
      @page = params[:page] || 1 
@@ -163,6 +182,12 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   def show
     @model = @Model.find params[:id]
   end
+
+  def show_volt
+    @model = @Model.find params[:id]
+    
+  end
+
   def show_graph
     Sola::Dayly.monthly_graph_with_peak(@graph_file_monthly = "sola_monthly_with_peak")
     Sola::Dayly.dayly_graph_with_peak(@graph_file_dayly = "sola_dayly_with_peak")
@@ -186,6 +211,8 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     @graph_file = "sola_correlation"
     @graph_file_dir = Rails.root+"tmp" + "img"
     @Model.correlation_graph(@graph_file,@graph_file_dir)
+
+    @comment ="補正式<br>" + Sola.eqution
     render   :file => 'application/graph', :layout => "simple"
   end
 

@@ -91,7 +91,7 @@ Rails.application.routes.draw do
   ########### 太陽光発電
   set_post( "sola/dayly",@EditTable )
   set_post( "sola/dayly",%w(load) )
-  set_get("sola/dayly",%w( index_day_total index_monitor index_month load_local_file show show_img
+  set_get("sola/dayly",%w( index_day_total index_volt show_volt index_monitor index_month load_local_file show show_img
                            show_graph peak_graph minute_graph correlation))
 
     set_get("sola/dayly",@EditTable)
