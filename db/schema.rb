@@ -767,6 +767,7 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "kwh_monitor", limit: 24
+    t.text     "volts"
   end
 
   create_table "sola_monthlies", force: true do |t|

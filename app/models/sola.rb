@@ -19,4 +19,9 @@ module Sola
   def self.table_name_prefix
     'sola_'
   end
+
+  def self.eqution
+    "電力(kW) = #{Scale[0]} * 電圧 #{Scale[1]>0 ? '+' : '-'} #{'%.4f'%Scale[1].abs}"
+  end
+
 end

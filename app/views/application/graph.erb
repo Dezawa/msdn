@@ -11,4 +11,7 @@
  when Array ; action_buttoms @TableEdit 
  end %>
 <%= action_buttom_table %>
+<table><tr><td>
 <img src='<%= url_for( opt) %>' >
+</td><td><%= @comment ? @comment.html_safe : "" %></td></tr>
+</table>
