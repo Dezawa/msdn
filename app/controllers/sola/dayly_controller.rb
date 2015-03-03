@@ -201,8 +201,9 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     status =  Status::TandD.where(base_name: "dezawa",group_name: "Dhome", group_remote_name: "power01" ).
       order("group_remote_ch_unix_time desc").first
 
-    @postTitleMsg = @postTitleMsg%[:group_remote_ch_current_batt,:group_remote_rssi,:group_remote_ch_unix_time].
-      map{ |sym| status[sym]}
+    @postTitleMsg = status ? 
+    @postTitleMsg%[:group_remote_ch_current_batt,:group_remote_rssi,:group_remote_ch_unix_time
+                  ].map{ |sym| status[sym]} : ""
   end
 
   def correlation

@@ -36,12 +36,14 @@ module Sola::Graph
       #return if graph_updated?(opt)
 
       data_list = self.where("kwh_day is not null  and kwh_monitor is not null").pluck(:kwh_monitor,  :kwh_day)
-      a,resudal = multiple_regression data_list
+      if data_list.size > 2
+        a,resudal = multiple_regression data_list
 
-      opt.merge!( { :additional_lines => "#{a[0]}+#{a[1]}*x" ,
-                    :labels => ["label 1 'モニタ = %.2f + %2f * おんどとり' at 3,32"%a,
-                                "label 2 '1-R=%f データ数=%d' at 10,30"%[1.0-resudal,data_list.size]]
-                  })
+        opt.merge!( { :additional_lines => "#{a[0]}+#{a[1]}*x" ,
+                      :labels => ["label 1 'モニタ = %.2f + %2f * おんどとり' at 3,32"%a,
+                                  "label 2 '1-R=%f データ数=%d' at 10,30"%[1.0-resudal,data_list.size]]
+                    })
+      end
       file = Rails.root+"tmp"+"Sola_correlation.data"
       open(file,"w"){ |f|
         f.puts "おんどとり発電量 モニター発電量"
@@ -133,14 +135,23 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
       }
 
       data_list = Sola::Dayly.all.order("date").pluck(:date, :peak_kw, :kwh_day).delete_if{ |a,b,c| !b}
-      max_day,max_peak,_ = data_list.max_by{ |date, peak_kw, kwh_day| peak_kw}
-      opt[:labels] = ["label 1 '最高 #{ max_day} #{'%.2f'%max_peak}kW' at '2015-01-10',4.5 left" ,
-                      "arrow 1 as 1 from '2015-05-01',4.3 to '#{max_day}',#{max_peak}"
-                     ]
+  
+      opt_max_peak!(data_list,opt)
+
       file = Rails.root+"tmp"+"Sola_peak.data"
       data_file_output_with_date(file,data_list,"年月日 ピーク発電量 一日発電量")
       gnuplot_(file.to_s,opt)
     end
+
+    def opt_max_peak!(data_list,opt)
+      max_day,max_peak,_ = data_list.max_by{ |date, peak_kw, kwh_day| peak_kw}
+      return unless max_day && max_peak
+      opt[:labels] = ["label 1 '最高 #{ max_day} #{'%.2f'%max_peak}kW' at '2015-01-10',4.5 left" ,
+                      "arrow 1 as 1 from '2015-05-01',4.3 to '#{max_day}',#{max_peak}"
+                     ]
+    end
+
+
 
     # 横軸1年分。毎月1日だけ日付をいれ、その他は ""
     # 
