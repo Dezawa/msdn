@@ -19,7 +19,7 @@ module CsvIo
   #  modelsがArrayのArrayであるときは、ヘッダーも入っていると見なし、無視する
   def csvstr(models,header=nil)
     if models[0].class == Array
-      models.map{|model| CSV.generate_line( model) }.join("\n")
+      models.map{|model| CSV.generate_line( model) }.join #("\n")
     else
       colmns = labels = self.column_names
       head = if header.nil?
