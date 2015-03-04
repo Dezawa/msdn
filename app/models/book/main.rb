@@ -140,7 +140,7 @@ class Book::Main < ActiveRecord::Base
 
   def self.make_new_year(login,year)
       sisan = sihon = 0
-    kamokus = Book::Kamoku.all(:conditions => ["code < ?",4]) #資産 負債 資本
+    kamokus = Book::Kamoku.where( ["code < ?",4]) #資産 負債 資本
     table = recalc_motoirekin(sum(login,year-1.year)).
       to_a.sort.each{|bunrui,mount|
       next if bunrui > 399 || bunrui < 1 || mount == 0
