@@ -146,7 +146,7 @@ class Book::Main < ActiveRecord::Base
       next if bunrui > 399 || bunrui < 1 || mount == 0
       #pp [bunrui,mount,Book::Kamoku.find_by_bunrui(bunrui)]
       if bunrui < 199  # 資産
-        create!( :karikata => Book::Kamoku.findA_by(bunrui: bunrui).id,
+        create!( :karikata => Book::Kamoku.find_by(bunrui: bunrui).id,
                  :kasikata => Book::Kamoku.kaisizandaka,
                  :owner => login,
                  :amount   => mount,
