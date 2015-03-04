@@ -36,12 +36,6 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     assert_equal [[3, "リーダー"],[4, "看護師"], [7, "三交代"],[9, "Aチーム"]], nurce(40).roles.sort
   end
 
-  must "看護婦Id=40のneed_role_id? " do
-    [[3,true],[4,true],[5,false],[9,true],[10,false]].each{|id,rsrt|
-      assert_equal rsrt,nurce(40).need_role_id?(id), "need_role_id? #{id}"
-    }
-  end
-
   # 
   must "Userを読み込んだ後 shiftsは設定されるかafter_find" do
     assert_equal "______1_____________12____1__",nurce(40).shifts
@@ -101,28 +95,12 @@ class Hospital::NurceTest < ActiveSupport::TestCase
 
   ########################################
 
-  must "2/1時廣眞弓さん割り当てなし" do
-    assert !nurce(35).assigned?(1)
-  end 
-
-  must "2/1尾木さん割り当てあり" do
-    assert nurce(47).assigned?(1)
-  end
-
   must "加藤照子さんの先月からの勤務状況" do
     nurce = nurce(50)
     nurce.monthly(@month-1.month)
     nurce.monthly(@month)
     assert_equal "33111___3__2____2___00____0__3_1_",nurce.shift_with_last_month
   end
-
-  # 加藤照子さんの 割り当て済み勤務
-  [[1,1],[2,2],[3,2]].each{|shift,count|
-    must "shift_count" do
-      nurce50 = nurce(50)
-      assert_equal count, nurce50.shift_count(shift),"shift_count of #{shift}"
-    end
-  }
 
   # 加藤照子さんの各シフトの合計日数
   [[:shift0,3.0],[:shift1,1.0],[:shift2,2.0],[:shift3,2.0]].each{|shift,val|
