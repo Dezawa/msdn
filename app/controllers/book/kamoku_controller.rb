@@ -29,8 +29,8 @@ class Book::KamokuController  <  Book::Controller
     ]
   Model = Book::Kamoku
   Order = "bunrui,kamoku"
-  CSVatrs = Labels.map{|lbl| lbl.symbol}
-  CSVlabels= Labels.map{|lbl| lbl.label}
+  CSVatrs = Labels.map{|lbl| lbl.symbol}[0..-2]
+  CSVlabels= Labels.map{|lbl| lbl.label}[0..-2]
 
   def set_const
     @Model= Book::Kamoku
