@@ -146,7 +146,7 @@ class Hospital::Assign
 
   delegate :logger, :to=> "ActiveRecord::Base"
   #delegate :breakpoint, :to=>"ActiveRecord::Base"
-  attr_accessor :nurces,:kangoshi,:Kangoshi,:needs,:nurce_assignd,:need_patern,:error,:roles
+  attr_accessor :nurces,:kangoshi,:kangoshis,:Kangoshi,:needs,:nurce_assignd,:need_patern,:error,:roles
   attr_accessor :restore_count, :entrant_count, :loop_count, :shortcut
   attr_accessor :exit_confition,:month
   attr_accessor :night_mode, :avoid_list,:limit_time
