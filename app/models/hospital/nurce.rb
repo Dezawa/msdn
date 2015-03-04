@@ -45,7 +45,7 @@ class Hospital::Nurce < ActiveRecord::Base
   }
   CheckFail = Class.new(StandardError)
 
-  attr_accessor :month,:shift_used
+  attr_accessor :month
 
   validate :shokui_must_be_shokui,:shokushu_must_be_shokushu, :kinmukubun_must_be_kinmukubun
   def shokui_must_be_shokui
@@ -105,15 +105,6 @@ class Hospital::Nurce < ActiveRecord::Base
      by_busho(busho_id).map{ |nurce| [nurce.name,nurce.id]}
   end
 
-
-  def ddkinmukubun_id=(arg_id) 
-    if arg_id.blank? || !(role = Hospital::Role.find arg_id)
-      self.kinmukubun=[]
-    else
-      self.kinmukubun=[role]
-    end
-  end
-
   def busho_name ; busho ? busho.name : ""          ;end
   def pre_busho_name ; pre_busho ? pre_busho.name : "" ; end
   def idou_name ; (a=Idou.rassoc(idou)) ? a.first : "";end
@@ -152,15 +143,6 @@ class Hospital::Nurce < ActiveRecord::Base
 #pp "Nurce#cleat_assign nurce=#{id} shifts =#{shift} "
 
 
-  end
-
-  def assigned?(day) ;  
-    #logger.debug("FOR_DEBUG(#{__LINE__}) monthly.shift #{monthly.shift.size},day #{day},")
-    monthly.shift[day,1] != "_"
-  end
-  def days_not_assigned(month=nil)
-    #puts monthly.shift  if id == 35 || id == 36 
-    monthly.shift.gsub(/[^_]/,"").size
   end
 
   def shift_with_last_month
@@ -311,8 +293,7 @@ class Hospital::Nurce < ActiveRecord::Base
     roles[hospital_roles.find_by(name: rolename).id]
   end
 
-  def need_role_id?(role_id);need_role_ids.include?(role_id) #.to_i);
-  end
+
   def role_id?(role_id);role_ids.include?(role_id) #.to_i);
   end
 
@@ -343,15 +324,6 @@ logger.debug("=== ADD_ROLE user #{id} role #{role_id} bunrui #{Hospital::Role.fi
     when 2 ; self.shokushu = nil   if self.shokushu == role       ; save
     when 3 ; self.kinmukubun = nil if self.kinmukubun == role       ; save
     when 4 ; self.hospital_roles.delete(role)
-    end
-  end
-
-
-  def shift_count(shift)
-    case shift
-    when 1 ;shifts.gsub(/[^1478]/,"").size + shifts.gsub(/[^9ABC]/,"").size * 0.5
-    when 2 ;shifts.gsub(/[^25]/,"").size
-    when 3 ;shifts.gsub(/[^36]/,"").size
     end
   end
 

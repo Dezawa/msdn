@@ -10,8 +10,8 @@ class Hospital::DefineTest < ActiveSupport::TestCase
 
   must "Hospital::Define.define は" do
     HD=Hospital::Define.define
-    assert_equal [true,    [0,1,2,3],  ["0","1","2","3"],  ["1","2","3"], "3",     ["2","3"]],
-    [             :koutai3,:shifts_int,:shifts ,           :shifts123,   :shiftsmx, :night].
+    assert_equal [true,    [0,1,2,3],  ["0","1","2","3"],  ["1","2","3"],    ["2","3"]],
+    [             :koutai3,:shifts_int,:shifts ,           :shifts123,       :night].
       map{|sym| HD.send(sym) }
   end
 end

@@ -146,12 +146,13 @@ class Hospital::Assign
 
   delegate :logger, :to=> "ActiveRecord::Base"
   #delegate :breakpoint, :to=>"ActiveRecord::Base"
-  attr_accessor :nurces,:kangoshi,:kangoshis,:Kangoshi,:needs,:nurce_assignd,:need_patern,:error,:roles
+  attr_accessor :nurces,:kangoshi,:Kangoshi,:needs,:nurce_assignd,:need_patern,:error,:roles
   attr_accessor :restore_count, :entrant_count, :loop_count, :shortcut
   attr_accessor :exit_confition,:month
   attr_accessor :night_mode, :avoid_list,:limit_time
 
-  attr_accessor  :koutai3, :shifts_int, :shifts, :shifts123, :shiftsmx, :night, :shifts_night
+  #attr_accessor  :koutai3, :shifts_int, :shifts, :shifts123, :shiftsmx, :night, :shifts_night
+  attr_accessor  :koutai3, :shifts_int, :shifts, :shifts123, :night, :shifts_night
   attr_accessor  :busho_id, :lastday,  :needs,   :basename
   attr_accessor  :night_mode
 
@@ -170,7 +171,7 @@ class Hospital::Assign
     @shifts_int= @koutai3 ? Shift0123 : Shift0123[0..-2]
     @shifts = @koutai3    ? Sshift0123 : Sshift0123[0..-2]
     @shifts123 = @koutai3 ? Sshift123  : Sshift123[0..-2]
-    @shiftsmx = @shifts123[-1] #  Sshift2 or Sshift3
+    # @shiftsmx = @shifts123[-1] #  Sshift2 or Sshift3
     @night  = @shifts123[1..-1] # [Sshift2] or [Sshift2,Sshift3]
     @shifts_night = { true =>  @night, false => [Sshift1], nil => [Sshift1]}
     #dbgout("FOR_DEBUG(#{__LINE__}) init @night=#{@night},@koutai3:#{@koutai3} @shifts#{@shifts}")
@@ -181,7 +182,6 @@ class Hospital::Assign
       @lastday=@month.end_of_month.day
       @nurces = Hospital::Nurce.by_busho(@busho_id,:month => @month)
       @nurces.each{ |nurce| nurce.monthly @month}
-      @kangoshis = @nurces.select{|nurce| nurce.shokushu_id == @Kangoshi }
       @kangoshi_idx_of_need_roles = Hospital::Need.need_role_ids.index(@Kangoshi)
       @needs  = needs_all_days
       # @count_role_shift = count_role_shift     # [[[[role,shift],[role,shift],,],[day  ],[day]],[nurce],[nurce] ]

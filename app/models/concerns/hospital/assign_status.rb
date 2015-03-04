@@ -291,14 +291,4 @@ module Hospital::AssignStatus
       sort_by{|r_s,remain| remain }.
       map{|r_s,remain| r_s[0] }
   end
-  ###########  helper ###########
-
-  # 与えられた看護師群が持つroleのidのリスト。
-  def roles_of(nurces)
-    nurces.map{|nurce|  nurce.need_role_ids}.flatten.uniq.sort
-  end
-
-
-
-
 end
