@@ -1,6 +1,6 @@
 class CommonController < ApplicationController
- include Actions
-
+  include Actions
+  include Permittion
   
    def show_img
      graph_dir  = Rails.root+
