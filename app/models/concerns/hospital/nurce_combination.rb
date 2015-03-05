@@ -54,22 +54,7 @@ module Hospital::NurceCombination
       }[0,limit_of_nurce_candidate_night(day)]
    rescue NoCandidateError
       return nil
-   end
-  #     candidate_combinations = candidate_combination_for_shift23(day)
-  #     candidate_combinations = candidate_combination_for_shift_selected_by_cost(day,Sshift3,:null => Sshift2)
-  #     return nil unless candidate_combinations
-  #     candidate_combinations.
-  #       sort_by{ |hash_of_combination| cost_of_nurce_combination(hash_of_combination[Sshift3],Sshift3,tight_roles(Sshift3))
-  #     }[0,limit_of_nurce_candidate_night(day)]
-  #   else
-  #     candidate_combinations = candidate_combination_for_shift23(day)
-  #     return nil unless candidate_combinations
-  #     candidate_combinations.
-  #       sort_by{ |hash_of_combination| 
-  #       cost_of_nurce_combination(hash_of_combination["2"],Sshift2,tight_roles(Sshift2)) +
-  #       cost_of_nurce_combination(hash_of_combination["3"],Sshift3,tight_roles(Sshift3))
-  #     }[0,limit_of_nurce_candidate_night(day)]
-  #   end
+    end
   end
 
   def candidate_combination_for_shift_selected_by_cost(day,shift,opt={ })
@@ -160,6 +145,13 @@ module Hospital::NurceCombination
           return if count < 1
       }
   end
+
+  def first_day_candidate_combination
+    combination = candidate_combination_for_shift23_selected_by_cost(1)
+    combination.unshift(nil)
+    combination
+  end
+
   def enough?(day,sft_str,nurces)
     is_assignables?(sft_str,nurces) && 
       roles_filled?(day,sft_str,nurces).max == 0

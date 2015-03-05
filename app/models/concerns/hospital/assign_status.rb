@@ -221,48 +221,48 @@ module Hospital::AssignStatus
   #   end
   # end
 
-  def need_nurces_roles_night(day)
-    # この日のこのshiftの看護師の必要数と不足role
-    short_role(day,Sshift3,true)
-    # 看護師の必要数,不足role
-    need_nurces = need_nurces_of_night(day)  # 看護師の必要数
-    short_roles = short_roles_of_night(day)                    # 不足role
-    as_nurces_selected = nurces_selected_of_night(day,short_roles)  # アサイン可能看護師リスト
+  # def need_nurces_roles_night(day)
+  #   # この日のこのshiftの看護師の必要数と不足role
+  #   short_role(day,Sshift3,true)
+  #   # 看護師の必要数,不足role
+  #   need_nurces = need_nurces_of_night(day)  # 看護師の必要数
+  #   short_roles = short_roles_of_night(day)                    # 不足role
+  #   as_nurces_selected = nurces_selected_of_night(day,short_roles)  # アサイン可能看護師リスト
 
-    @shifts_night[@night_mode].each{|sft_str| next unless
-      entry_log(day,sft_str,__LINE__,need_nurces_shift(day,sft_str),short_roles[sft_str],as_nurces_selected[sft_str])
-    }
-    if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
-      [as_nurces_selected,need_nurces, short_roles]
-    else 
-      false
-    end
-  end
+  #   @shifts_night[@night_mode].each{|sft_str| next unless
+  #     entry_log(day,sft_str,__LINE__,need_nurces_shift(day,sft_str),short_roles[sft_str],as_nurces_selected[sft_str])
+  #   }
+  #   if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
+  #     [as_nurces_selected,need_nurces, short_roles]
+  #   else 
+  #     false
+  #   end
+  # end
 
-  def need_nurces_roles_daytime(day)
-    # この日のこのshiftの看護師の必要数と不足role
-    short_role(day,Sshift3,true)
-    # 看護師の必要数,不足role
-    short_role_shift_of_day = short_role_shift_of(day)
-    need_nurces = { }   # 看護師の必要数
-    short_roles = { }   # 不足role
-    as_nurces_selected = { }   # アサイン可能看護師リスト
-    ## tryal
-    #(@night_mode ? @shifts123 : @shifts_night[@night_mode]).each{ |sft_str|
-    need_nurces[Sshift1] = short_role_shift_of_day[[@Kangoshi,Sshift1]][0]
-    short_roles[Sshift1] = short_role(day,Sshift1)
+  # def need_nurces_roles_daytime(day)
+  #   # この日のこのshiftの看護師の必要数と不足role
+  #   short_role(day,Sshift3,true)
+  #   # 看護師の必要数,不足role
+  #   short_role_shift_of_day = short_role_shift_of(day)
+  #   need_nurces = { }   # 看護師の必要数
+  #   short_roles = { }   # 不足role
+  #   as_nurces_selected = { }   # アサイン可能看護師リスト
+  #   ## tryal
+  #   #(@night_mode ? @shifts123 : @shifts_night[@night_mode]).each{ |sft_str|
+  #   need_nurces[Sshift1] = short_role_shift_of_day[[@Kangoshi,Sshift1]][0]
+  #   short_roles[Sshift1] = short_role(day,Sshift1)
     
-    as_nurces_selected[Sshift1] = 
-      (need_nurces[Sshift1]==0) ? [] :
-      assinable_nurces_by_cost_size_limited(Sshift1, day, short_roles[Sshift1])
+  #   as_nurces_selected[Sshift1] = 
+  #     (need_nurces[Sshift1]==0) ? [] :
+  #     assinable_nurces_by_cost_size_limited(Sshift1, day, short_roles[Sshift1])
 
-      entry_log(day,Sshift1,__LINE__,need_nurces_shift(day,Sshift1),short_roles[Sshift1],as_nurces_selected[Sshift1])
-    if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
-      [as_nurces_selected,need_nurces, short_roles]
-    else 
-      false
-    end
-  end
+  #     entry_log(day,Sshift1,__LINE__,need_nurces_shift(day,Sshift1),short_roles[Sshift1],as_nurces_selected[Sshift1])
+  #   if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
+  #     [as_nurces_selected,need_nurces, short_roles]
+  #   else 
+  #     false
+  #   end
+  # end
   
 
   def roles_count_short(day,sft_str)

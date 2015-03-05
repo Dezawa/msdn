@@ -4,18 +4,9 @@ module Hospital::ReEntrant
   include Hospital::Const
 
   def assign_night(day,opt = { })
-    return true if day > lastday
-    raise TimeToLongError,"timed out"  if @limit_time < Time.now
+    return true if lastday_or_reentrant_limit(day,opt)
     #refresh
-      dbgout("### Hospital ASSIGN #{day}日 entry-#{@count} ###")
-      dbgout dump("  HP ASSIGN ")
-    save_log
-
-    if opt[:dipth] 
-#pp ["opt[:dipth]",opt[:dipth]]
-      return true  if opt[:dipth] ==0
-       opt[:dipth] -= 1
-    end
+    log_newday_entrant(day)
 
     logger.debug("  HOSPITAL ASIGN:(#{__LINE__})必要ロール数："+
                  night.map{ |sft| sft+":["+roles_count_short(day,sft).join(",")}.join("] ")+
@@ -63,6 +54,16 @@ module Hospital::ReEntrant
     return false
   end
 
+  def lastday_or_reentrant_limit(day,opt={ })
+    raise TimeToLongError,"timed out"  if @limit_time < Time.now
+
+    return true if day > lastday
+    if opt[:dipth]
+      return true  if opt[:dipth] ==0
+      opt[:dipth] -= 1
+    end
+    false
+  end
 
   def assign_shift1(day,opt={ })
     @night_mode = false
@@ -114,22 +115,22 @@ module Hospital::ReEntrant
   end
 
 
-  def assign_single_day(day,sft_str)
-    dbgout("HP ASSIGN #{day}日entry-0")
-    dbgout("assign_single_day")
-    dbgout dump("  HP ASSIGN ")
-    combinations,need_nurces,short_roles = ready_for_day_reentrant(day)
-    return false unless combinations
-    ncm = nCm(combinations[sft_str].size,need_nurces_shift(day,sft_str).size)
-    try = 0 
-    nurce_combination_shift1(combinations,need_nurces,short_roles,day){|nurce_combinations|
-      dbgout("HP AASIGN #{day}:#{sft_str} Try #{try += 1} of #{ncm}")
-      ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,true)
-      dbgout("HP AASIGN MOST TIGHT_DAY #{day}日 結果#{ ret}")
-      return true if ret
-    }
-    false
-  end
+  # def assign_single_day(day,sft_str)
+  #   dbgout("HP ASSIGN #{day}日entry-0")
+  #   dbgout("assign_single_day")
+  #   dbgout dump("  HP ASSIGN ")
+  #   combinations,need_nurces,short_roles = ready_for_day_reentrant(day)
+  #   return false unless combinations
+  #   ncm = nCm(combinations[sft_str].size,need_nurces_shift(day,sft_str).size)
+  #   try = 0 
+  #   nurce_combination_shift1(combinations,need_nurces,short_roles,day){|nurce_combinations|
+  #     dbgout("HP AASIGN #{day}:#{sft_str} Try #{try += 1} of #{ncm}")
+  #     ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,true)
+  #     dbgout("HP AASIGN MOST TIGHT_DAY #{day}日 結果#{ ret}")
+  #     return true if ret
+  #   }
+  #   false
+  # end
 
   def assign_shift1_by_re_entrant(day,opt = { })
     return true if day > lastday

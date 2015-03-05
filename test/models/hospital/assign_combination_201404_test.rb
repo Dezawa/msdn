@@ -20,18 +20,8 @@ class Hospital::AssignCombination201404Test < ActiveSupport::TestCase
   end
 
   day = 1
-  must "4/1の need_nurces_of_night" do
-    assert_equal( {"2"=>2, "3"=>2}, @assign.need_nurces_of_night(day) )
-  end
-
    must "4/1の short_roles_of_night" do
      assert_equal( {"2"=>[3,4,9,10], "3"=>[3,4,9,10]}, @assign.short_roles_of_night(day) )
-   end
-
-   must "4/1の nurces_selected_of_night" do
-       short_roles = @assign.short_roles_of_night(day)
-     assert_equal( [[34, 46, 47, 52, 37, 42, 38, 36, 48, 35], [34, 46, 47, 52, 37, 42, 38, 36, 48, 35]],
-                   @assign.nurces_selected_of_night(day,short_roles).map{ |sft,nurces| nurces.map(&:id)} )
    end
 
    must "4/1のassinable_nurces(day)" do
