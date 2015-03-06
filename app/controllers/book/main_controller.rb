@@ -98,7 +98,7 @@ class Book::MainController < Book::Controller
     #@SortBy   = :bunrui
     @CSVatrs = CSVatrs; @CSVlabels = CSVlabels
     @CSVfile = @owner.owner+"_#{@Domain}.csv"
-    @PageSession="BKMain_per_page"
+    @PageSession="Book::MainController_per_page"
     @Pagenation = session[@PageSession] || (session[@PageSession] = 10)
     #@page = params[:page] || :lastpage
     @PagenatTbl = true
