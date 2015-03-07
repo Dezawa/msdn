@@ -8,6 +8,7 @@
 </head>
 <% if /msdn.+/ =~ File.basename(Rails.root) %><BODY bgcolor="#Ffd0d0">
 <% else; %> <BODY> <% end %>
+<div id="headerArea">
 <%   names_free     =
      [["MSDN Top","/"],["線形計画法","/lips/calc"],["複式簿記","/book/keeping"],
       ["太陽光発電","/sola/dayly/show_graph"]
@@ -38,7 +39,7 @@ urls  = %w(/lips/free /lips/calc /login /logout /change_password)
 <% else %>
 </table></td></tr></table>
 <% end %>
-
+</div>
 <%= yield %>
 
 </body>

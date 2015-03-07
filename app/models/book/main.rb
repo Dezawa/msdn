@@ -140,13 +140,13 @@ class Book::Main < ActiveRecord::Base
 
   def self.make_new_year(login,year)
       sisan = sihon = 0
-    kamokus = Book::Kamoku.all(:conditions => ["code < ?",4]) #資産 負債 資本
+    kamokus = Book::Kamoku.where( ["code < ?",4]) #資産 負債 資本
     table = recalc_motoirekin(sum(login,year-1.year)).
       to_a.sort.each{|bunrui,mount|
       next if bunrui > 399 || bunrui < 1 || mount == 0
       #pp [bunrui,mount,Book::Kamoku.find_by_bunrui(bunrui)]
       if bunrui < 199  # 資産
-        create!( :karikata => Book::Kamoku.findA_by(bunrui: bunrui).id,
+        create!( :karikata => Book::Kamoku.find_by(bunrui: bunrui).id,
                  :kasikata => Book::Kamoku.kaisizandaka,
                  :owner => login,
                  :amount   => mount,
@@ -218,12 +218,23 @@ class Book::Main < ActiveRecord::Base
     }
     @@sum
   end
+  def self.sum_by_kamoku_id(login,year,condition="")
+    period ||= [year.beginning_of_year,year.end_of_year]
+    @@sum = Hash.new{|h,k| h[k]=0}
+    books = Book::Main.where( ["owner = ? and date >= ? and date <= ? "+condition,
+                                          login,period[0],period[1] ])
+    books.each{|book|
+      @@sum[book.karikata] += book.amount* book.kariKata.taishaku
+      @@sum[book.kasikata] -= book.amount* book.kasiKata.taishaku
+    }
+    @@sum
+  end
 
   # 貸借対照表のデータをArrayのArrayで作る
   # このデータで印刷用CSV出力、Viewの出力に用いる
   def self.taishaku(login,year)
-    taishaku_end = self.sum(login,year)
-    taishaku_begin = self.sum(login,year,
+    taishaku_end = self.sum_by_kamoku_id(login,year)
+    taishaku_begin = self.sum_by_kamoku_id(login,year,
                               "and (karikata = #{Book::Kamoku.kaisizandaka} or kasikata = #{Book::Kamoku.kaisizandaka})")
     # Hashから貸借対照表的な配列を作る。
     # 科目を 貸借と損益、借方貸方に分ける
@@ -237,14 +248,9 @@ class Book::Main < ActiveRecord::Base
     size = kamoku.map{|klist| 
       klist[0].size > klist[1].size ? klist[0].size : klist[1].size
     }
-    # 結果配列
-    table = []
-    # ヘッダー部
-    table << [nil,nil,"貸借対照表"]
-    table << [nil]*4 +[year.year,"年度"]
-    table << ["資産の部",nil,nil,"負債・資本の部"]
-    table << ["科目",year.beginning_of_year.strftime("%m月%d日"),
-              year.end_of_year.strftime("%m月%d日")]*2
+    # 結果配列     # ヘッダー部
+    table = taishaku_header(year)
+ 
     # 利益の計算の箱
     profit = [0,0]  
     # ,合計計算の箱   貸方 借方 の 期首期末
@@ -255,10 +261,10 @@ class Book::Main < ActiveRecord::Base
       (0..size[i]-1).each{|j|  # 科目を順に
         table << (0..1).map{|l|  m = (l==0 ? 1 : -1)*(i==0 ? 1 : -1)      # 貸方 借方
           if (k = kamoku[i][l][j])
-            profit[i] += taishaku_end[k.bunrui] * m
-            total[l][0] += taishaku_begin[k.bunrui] 
-            total[l][1] += taishaku_end[k.bunrui] 
-            [k.kamoku,taishaku_begin[k.bunrui],taishaku_end[k.bunrui]]
+            profit[i] += taishaku_end[k.id] * m
+            total[l][0] += taishaku_begin[k.id] 
+            total[l][1] += taishaku_end[k.id] 
+            [k.kamoku,taishaku_begin[k.id],taishaku_end[k.id]]
           else
             [nil,nil,nil]
           end
@@ -273,6 +279,17 @@ class Book::Main < ActiveRecord::Base
     #[taishaku_begin,taishaku_end,keys,table]
     table
   end
+
+  def self.taishaku_header(year)
+    tbl = []
+    tbl << [nil,nil,"貸借対照表"]
+    tbl <<  [nil]*4 +[year.year,"年度"]
+    tbl <<  ["資産の部",nil,nil,"負債・資本の部"]
+    tbl <<  ["科目",year.beginning_of_year.strftime("%m月%d日"),
+              year.end_of_year.strftime("%m月%d日")]*2
+    tbl
+  end
+
 
   # 対照年度を西暦で持つ。
   # 設定時に期首、期末の日付も設定する。

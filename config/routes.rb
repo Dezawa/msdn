@@ -129,6 +129,7 @@ Rails.application.routes.draw do
 
   ################ 複式簿記
   set_get("book/main",%w( book_make  make_new_year csv_out_print sort_by_tytle sort))
+  set_post("book/main",%w(  make_new_year change_per_page))
   book = %w(main kamoku permission)
   book.each{ |model|
     set_post("book/#{model}",@EditTable)

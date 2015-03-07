@@ -213,7 +213,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
     @graph_file_dir = Rails.root+"tmp" + "img"
     @Model.correlation_graph(@graph_file,@graph_file_dir)
 
-    @comment ="補正式<br>" + Sola.eqution
+    @comment ="換算式<br>" + Sola.eqution
     render   :file => 'application/graph', :layout => "simple"
   end
 

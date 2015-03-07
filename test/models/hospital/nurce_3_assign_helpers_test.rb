@@ -63,9 +63,6 @@ class Hospital::NurceTest < ActiveSupport::TestCase
     #assert_equal [msg,2,"2"],[msg, shift.kinmucode_id,kinmu.shift]
     msg="2月1日に勤務2をsetしたときのrole_shift"
     assert_equal [msg,[[4, "2"], [9, "2"]]],[msg, nurce.role_shift(@month,true)[1].sort]
-    msg="2/1はassignされた"
-    #puts nurce.monthly.shift[1,1]
-    assert_equal [msg,true],[msg,nurce.assigned?(1)]
   end
 
   must "save_shift" do

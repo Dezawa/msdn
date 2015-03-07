@@ -22,13 +22,14 @@ class Holyday < ActiveRecord::Base
       [Time.local(@arg_year,5,4),"みどりの日"],
       [Time.local(@arg_year,5,5),"こどもの日"],
       [Time.local(@arg_year,6,30).next_week(:monday).next_week(:monday).next_week(:monday),"海の日"],
+      @arg_year > 2015 ? [Time.local(@arg_year,8,11),"山の日"] : nil,
       [Time.local(@arg_year,8,31).next_week(:monday).next_week(:monday).next_week(:monday),"敬老の日"],
       [Time.local(@arg_year,9,23),"＊＊日付確認：秋分の日"],
       [Time.local(@arg_year,9,30).next_week(:monday).next_week(:monday),"体育の日"],
       [Time.local(@arg_year,11,3),"文化の日"],
       [Time.local(@arg_year,11,23),"勤労感謝の日"],
       [Time.local(@arg_year,12,23),"天皇誕生日"]
-    ].map{|d,n| Holyday.create(:year =>@arg_year,:day => d,:name => n)}
+    ].compact.map{|d,n| Holyday.create(:year =>@arg_year,:day => d,:name => n)}
   end
 
   def self.year_of(y);

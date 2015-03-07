@@ -6,7 +6,8 @@ class Hospital::Define < ActiveRecord::Base
   class Define
     include Hospital::Const
     attr_reader *Hospital::Define.all.map{ |define| define.attri.to_sym}
-    attr_reader :koutai3,:shifts_int,:shifts ,:shifts123,:shiftsmx , :night , :shifts_night 
+    #attr_reader :koutai3,:shifts_int,:shifts ,:shifts123,:shiftsmx , :night , :shifts_night 
+    attr_reader :koutai3,:shifts_int,:shifts ,:shifts123 , :night , :shifts_night 
     attr_accessor :kangoshi,:leader
 
     def initialize
@@ -23,7 +24,7 @@ class Hospital::Define < ActiveRecord::Base
       @shifts_int= @koutai3 ? Shift0123 : Shift0123[0..-2]
       @shifts = @koutai3    ? Sshift0123 : Sshift0123[0..-2]
       @shifts123 = @koutai3 ? Sshift123  : Sshift123[0..-2]
-      @shiftsmx = @shifts123[-1] #  Sshift2 or Sshift3
+      # @shiftsmx = @shifts123[-1] #  Sshift2 or Sshift3
       @night  = @shifts123[1..-1] # [Sshift2] or [Sshift2,Sshift3]
       @shifts_night = { true =>  @night, false => [Sshift1], nil => [Sshift1]}
     end
@@ -31,7 +32,8 @@ class Hospital::Define < ActiveRecord::Base
 
 
   attr_reader *Hospital::Define.all.map{ |define| define.attri.to_sym}
-  attr_reader :koutai3,:shifts_int,:shifts ,:shifts123,:shiftsmx , :night , :shifts_night 
+  #attr_reader :koutai3,:shifts_int,:shifts ,:shifts123,:shiftsmx , :night , :shifts_night 
+  attr_reader :koutai3,:shifts_int,:shifts ,:shifts123 , :night , :shifts_night 
   attr_accessor :kangoshi,:leader
 
   @@define = nil
@@ -69,7 +71,7 @@ class Hospital::Define < ActiveRecord::Base
     @shifts_int= @koutai3 ? Shift0123 : Shift0123[0..-2]
     @shifts = @koutai3    ? Sshift0123 : Sshift0123[0..-2]
     @shifts123 = @koutai3 ? Sshift123  : Sshift123[0..-2]
-    @shiftsmx = @shifts123[-1] #  Sshift2 or Sshift3
+    # @shiftsmx = @shifts123[-1] #  Sshift2 or Sshift3
     @night  = @shifts123[1..-1] # [Sshift2] or [Sshift2,Sshift3]
     @shifts_night = { true =>  @night, false => [Sshift1], nil => [Sshift1]}
     

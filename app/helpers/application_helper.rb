@@ -8,7 +8,6 @@ require 'menu'
 # ======メニュー用
 # menue_table             :: メニューの表を出力する
 # ======一覧表用
-# add_edit_buttoms        :: 追加、編集ボタンの表示
 # label_line              :: 一覧表のタイトル行を書き出す
 # add_links_update_delete :: 一覧表のインスタンス毎に、編集、削除のボタンを表示する
 # disp_field              :: 一覧表のインスタンスの各cellの値をobjectの型に従って表示する。
@@ -24,11 +23,12 @@ require 'menu'
 #
 # ======その他
 # links                    :: 関連するページへのlink行を返す
+
 # disp_errors              :: 
 # error_messages           :: 
 # t                        :: I18n 変換
 module ApplicationHelper
-
+  include IndexTableHelper
   # Ubeboard や BookKeeping のメイン画面にあるような
   # メニュー一覧表を書き出す
   # 
@@ -129,109 +129,6 @@ module ApplicationHelper
     safe_join [TR , td ,table_body,TDend , TRend ] 
   end
 
-  def action_buttom_table(actionbuttoms=nil)
-    return "" unless action_buttoms = actionbuttoms ||  @action_buttoms
-    case action_buttoms.first
-    when Integer ; action_buttom_table_sub(action_buttoms)
-    when Array   ; action_buttoms.map{ |ab| action_buttom_table_sub(ab) }.join
-    else         ; ""
-    end.html_safe
-  end
-  def action_buttom_table_sub(action_buttoms=nil)
-    return "" unless action_buttoms && action_buttoms.size > 0 
-    clms_num =  action_buttoms.first
-    action_buttoms = action_buttoms.last.dup
-    th = "<table>\n" #<tr>"+"<td></td>"* clms +"</tr>\n"
-    tb = "<tr>" +
-      (0..action_buttoms.size-1).step(clms_num).
-      map{ |c| 
-      (1..clms_num).map{ |d|  
-        buttom = action_buttoms.shift 
-        "<td>"+action_buttom(buttom) + "</td>" if buttom}.compact.join
-    }.join("</tr><tr>\n")
-    th + tb + "</tr></table>"
-end
- def action_buttom_table_test
-    return "" unless @action_buttoms
-    clms,action_buttoms =  @action_buttoms
-   html = 
-      (0..action_buttoms.size-1).step(clms).
-      map{ |c| 
-      (1..clms).map{ |d|  
-        buttom = action_buttoms.shift 
-        action_buttom(buttom)  if buttom}.compact.join
-    }.join
-end
-  def table_edit
-    case @TableEdit
-    when TrueClass ; add_edit_buttoms(@Domain) 
-    when String; @TableEdit 
-    when Array ; action_buttoms @TableEdit 
-    end
-  end
-  # 追加、編集ボタンの表示
-  def add_edit_buttoms(dom,arg={ })
-    buttoms =  edit_buttoms(dom,arg)
-    ("<table><tr><td>"+ buttoms + "</td></tr></table>").html_safe
-  end
-
-
-  def edit_buttoms(dom,arg={ })
-    add_buttom(dom,arg)+edit_bottom(arg)
-  end
-  def add_buttom(dom,arg={ })
-    option = { :action => (arg.delete(:add_action) || :add_on_table)}.merge(arg)
-    (form_tag(option) + #:action => :add_on_table) + 
-      "<input type='hidden' name='page' value='#{@page}'>".html_safe+
-      submit_tag("追加")+
-      text_field( dom, :add_no,:size=>2, :value => 1 ) +  "</form></td><td>".html_safe
-     )
-  end
-
-  def csv_up_buttom
-    url = "/#{@Domain}/csv_upload"
-    form_tag(url,:multipart => true,:method => :post)+
-      submit_tag("CSVで登録")+file_field(@Domain, :csvfile)+"</form>".html_safe
-  end
-
-  def csv_out_buttom
-    button_to( 'CSVダウンロード', { :action => :csv_out })
-  end
-
-  def upload_buttom(action,label)
-    url = "/#{@Domain}/#{action}"
-    form_tag(url,:multipart => true,:method => :post)+
-      submit_tag(label)+file_field(@Domain, :uploadfile)+"</form>".html_safe
-  end
-
-  def edit_bottom(arg={ })
-    action  =  (arg.delete(:edit_action) || :edit_on_table)
-    button_to( '編集', { :action => action,:page => @page}.merge(arg) )
-  end
-
-  #action_buttomの列を作る
-  #- ［［function,action,label],,,,]
-  def action_buttom(buttom)
-    function,action,label,opt,htmlopt = buttom
-    case function
-    when :form ;form_buttom(action,label,opt,htmlopt)
-    when :popup ;popupform_buttom(action,label,opt,htmlopt)
-    when :add_edit_buttoms ;edit_buttoms(@Domain) 
-    when :add_buttom       ;add_buttom(@Domain)
-    when :edit_bottom       ;edit_bottom(opt||{ })
-    when :upload_buttom     ;upload_buttom(action,label)
-    when :csv_up_buttom     ;csv_up_buttom
-    when :csv_out           ;csv_out_buttom
-    when :input_and_action  ;
-      input_and_action(action,label,opt)
-    when :select_and_action  ;
-      select_and_action(action,label,opt)
-    when nil; ""
-    else function.to_s
-    end.html_safe
-  end
-
-#  <input name="commit" type="submit"  value="%s" style="margin-top: -12px; left;"
   PopupHead =  %Q!<form action="/%s/%s">
   <input name="authenticity_token" type="hidden" value="%s" />
   <input name="commit" type="submit"  value="%s" style='margin-top: -12px; left;' 
@@ -241,155 +138,6 @@ end
   PopupWithModel = %Q!  onclick="window.open('/%s/%s?id=%d', '%s', 'width=500,height=400 %s'); target='%s'">
   <input id="%s_id" name="%s[id]" type="hidden" value="%d" />
 !
-
-  def popupform_buttom(action,label,opt ={ },htmlopt={ })
-    win_name = opt.delete(:win_name) || ""
-    scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
-    html = PopupHead%[@Domain,action,form_authenticity_token,label]
-    if @model
-      html += PopupWithModel%[@Domain,action,@model.id,win_name,scroll,win_name,@Domain,@Domain,@model.id] 
-    else
-      html += PopupWithOUTModel%[@Domain,action,win_name,scroll,win_name]
-    end
-    opt.each{ |k,v|  html += hidden_field(@Domain,k,:value => v) +"\n"  }
-    (html + "\n</form>").html_safe
-  end
-
-  def popupform_buttom(action,label,opt ={ },htmlopt={ })
-    win_name = opt.delete(:win_name) || "new_win"
-    scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
-    html = PopupHead%[@Domain,action,form_authenticity_token,label]
-    if @model
-      html += PopupWithModel%[@Domain,action,@model.id,win_name,scroll,win_name,@Domain,@Domain,@model.id] 
-    else
-      html += PopupWithOUTModel%[@Domain,action,win_name,scroll,win_name]
-    end
-    opt.each{ |k,v|  html += hidden_field(@Domain,k,:value => v) +"\n"  }
-    html + "\n</form>"
-  end
-
-  def form_buttom(action,label,opt ={ },htmlopt={ })
-    opt ||={ }
-    opt,additional =
-      case opt
-      when Hash    ; [opt,nil]
-      when Symbol  ; [{ },opt]
-    end
-
-    hidden = opt.delete(:hidden) if opt.class==Hash
-    hidden_value = opt.delete(:hidden_value) if opt.class==Hash
-
-    form_notclose = opt.delete(:form_notclose) if opt.class==Hash
-    from_notclose = form_notclose ? "" : "</form>".html_safe
-    case action
-    when Symbol  ; form_tag({ :action => action} ,opt)
-    when String  ; form_tag(action ,opt)
-    end + 
-      (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
-       else;"";end
-       )+
-      "<input type='hidden' name='page' value='#{@page}'>".html_safe+
-      (additional ?  send(additional) : "") +
-
-      (submit_tag(label)+from_notclose).html_safe
-  end
-
-  def and_action(input,action,label,opt={ })
-    scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
-
-    hidden = opt.delete(:hidden)
-    hidden_value = opt.delete(:hidden_value)
-    opt[:hidden] = (hidden ? hidden_field(@Domain,hidden,:value => hidden_value) : "").html_safe
-
-    if win_name = opt[:popup]
-      if @model ;and_input_with_model(input,action,label,opt)
-      else  ; and_input_without_model(input,action,label,opt)
-
-      end
-    else
-      and_input_no_popup(input,action,label,opt)
-    end
-  end
-
-  def and_input_no_popup(input,action,label,opt)
-      "<div>".html_safe+form_tag(:action => action) + 
-        "<input type='hidden' name='page' value='#{@page}'>".html_safe+
-        opt[:hidden] +
-        submit_tag(label)+
-        input +  "</form></div>".html_safe
-  end
-
-  def and_input_without_model(input,action,label,opt)
-       fmt =
- "<div><form action='/%s/%s'>
-  <input name='authenticity_token' type='hidden' value='%s' />
-  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400%s'); target='%s'\">
-" + input +  "</form></div>"
-      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,scroll,win_name]
-  end
-
-  def and_input_with_model(input,action,label,opt)
-      fmt =
- "<div><form action='/%s/%s'>
-  <input name='authenticity_token' type='hidden' value='%s' />
-  <input id='%s_id' name='%s[id]' type='hidden' value='%d' />
-  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' 'width=500,height=400%s'); target='%s'\">
-" + input +  "</form></div>"
-      fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,win_name,scroll,win_name]
-  end
-
-  def input_and_action(action,label,opt={ })
-    opt ||= { }
-    input =  text_field( @Domain,action,opt )
-    and_action(input,action,label,opt)
-  end
-
-  def select_and_action(action,label,opt={ })
-    opt ||= { }
-    correction = opt.delete(:correction)
-    input =   select(@Domain,action, correction, opt)
-    #input =   select(action, correction, opt)
-    and_action(input,action,label,opt)
-  end
-
-  def input_and_action_old(action,label,opt={ })
-    scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
-    hidden = opt.delete(:hidden)
-    hidden_value = opt.delete(:hidden_value)
-    if win_name = opt[:popup]
-      if @model
-      fmt =
- "<div><form action='/%s/%s'>
-  <input name='authenticity_token' type='hidden' value='%s' />
-  <input id='%s_id' name='%s[id]' type='hidden' value='%d' />
-  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' 'width=500,height=400%s'); target='%s'\">
-" + text_field( @Domain,action,opt ) +  "</form></div>"
-      fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,win_name,scroll,win_name]
-      else
-      fmt =
- "<div><form action='/%s/%s'>
-  <input name='authenticity_token' type='hidden' value='%s' />
-  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400%s'); target='%s'\">
-" + text_field( @Domain,action,opt ) +  "</form></div>"
-      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,scroll,win_name]
-      end
-    else
-      "<div>"+form_tag(:action => action) + 
-        "<input type='hidden' name='page' value='#{@page}'>"+
-        (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
-         else;"";end
-         )+
-        submit_tag(label)+
-        text_field( @Domain,action,opt) +  "</form></div>"
-    end
-  end
-
-  def action_buttoms(buttoms)
-    ("<table><tr>"+
-      buttoms.map{|buttom|
-      "<td>"+action_buttom(buttom) + "</td>"
-    }.join("\n") + "</tr></table>").html_safe
-  end
 
   def select_box
     form_tag({ :action => :index},method: :get) +
@@ -402,123 +150,6 @@ end
       send(tag,domain,action,opt)
     })
   end
-  # ラベル定義のArryを元に、一覧表の表題行を出す
-  # * (普通は) index.erb から呼ばれる。
-  #   
-  def label_line_no_tr
-    label_line_comcom(0,nil)
-  end
-  def label_line_comm(size,labels)
-    TR+label_line_comcom(size,labels)
-  end
-  def label_line_comcom(size,labels)
-    labels ||= @labels
-    labels.map{|label| 
-      unless label.class == HtmlHidden || label.class == HtmlPasswd || label.field_disable(controller)
-        if label.link
-          "<td><nobr><a href='#{label.link}'>#{label.label}</a></nobr>" 
-        else
-          "<td><nobr>#{label.label}</nobr>" 
-        end +  help(label.help) + "</td>"
-      end
-    }.compact.join.html_safe
-  end
-
-  def label_multi_lines(ary_of_list)
-    row = "" #<tr>"
-    lbl_idx=0
-    firstline = true
-    #row += #"</tr>\n"
-    ary_of_list.each{ |list| 
-      row += "<tr>"
-      list.each_with_index{|style,idx|
-        case style
-        when Integer   
-          next unless firstline
-          (1..style).each{
-            row += "<td rowspan=#{ary_of_list.size+1}>#{@labels[lbl_idx].label}</td>"
-            lbl_idx += 1
-          }
-        when  Array; 
-          row += "<td colspan=#{style[0]}>#{style[1]}</td>"
-          lbl_idx += style[0]
-        end
-      }
-      firstline = false
-      row += "</tr>"
-    }#.join("</tr><tr>\n")
-
-    row += "<tr>\n"
-    lbl_idx=0
-    ary_of_list[0].each_with_index{|style,idx|
-      case style
-      when Integer   ;        lbl_idx += style
-      when Array; 
-        (1..style[0]).each{
-          row += "<td>#{@labels[lbl_idx].label}</td>" if @labels[lbl_idx]
-          lbl_idx += 1
-        }
-      end
-    }
-    return row.html_safe
-  end
-
-  def delete_if_accepted(obj)
-    if deletable
-      "<td>" + link_to('<nobr>削除</nobr>'.html_safe,obj , "data-confirm" => 'Are you sure?', :method => :delete) + "</td>"
-    else
-      ""
-    end.html_safe
-  end
-
-  def delete_connection_if_accepted(obj)
-    if connection_deletable
-      url = "/#{@Domain}/delete_bind?id=#{@model.id}&bind_id=#{obj.id}"
-        "<td>" + link_to('取外し',url,
-                         :confirm => '関係付けだけ削除します',
-                         :method => :delete) + "</td>"
-    else
-      ""
-    end
-  end
-
-  def label_line_option(size=2,labels=nil)
-    return label_multi_lines([@TableHeaderDouble]).html_safe if @TableHeaderDouble
-    return label_multi_lines(@TableHeaderMulti).html_safe if @TableHeaderMulti
-    html = label_line_comm(size,labels)+
-      case [ @Show,@Edit,deletable].compact.size
-      when 3; "<td>　</td><td>　</td><td>　</td></tr>" 
-      when 2; "<td>　</td><td>　</td></tr>"
-      when 1; "<td>　</td></tr>"
-      else  ; "</tr>"
-      end.html_safe
-  end
-
-  def label_line(size=2,labels=nil)
-    label_line_comm(size,labels) + TRend
-  end
-
-  def deletable
-    (case @Delete
-    when Symbol  ; controller.send(@Delete)
-    else         ; @Delete
-    end
-     ) ? true : nil
-  end
-
-  def connection_deletable
-    (case @AssosiationDelete
-    when Symbol  ; controller.send(@AssosiationDelete)
-    else         ; @AssosiationDelete
-    end
-     ) ? true : nil
-  end
-
-  def add_links_update_delete(obj,maxid)
-    delete = (obj.id and obj.id < maxid) ? 
-    link_to( '<nobr>削除</nobr>',obj , :confirm => 'Are you sure?', :method => :delete) : ""
-    "<td>#{delete}<td>"
-  end
 
   def popup(url,opt = { })
     opt.merge!({ :target => 'pop',:scroll => true, :width => 300,:height => 300})
@@ -529,16 +160,21 @@ end
     unless @Pagenation
       ""
     else
-      will_page = will_paginate(models, :previous_label=>'前へ', :next_label=>'次へ').to_s
-      if controller.session[controller.class.name+"_per_page"]
-        will_page =
-          form_tag(:action => :change_per_page) +
-          will_page+"　　<input type='hidden' name='page' value='#{@page}'>"+
-          "<input id='line_per_page' name='line_per_page' size='1' type='text' value='#{@Pagenation}'>"+
-          "件/ページ"+help("Common#perpage")+"</form>"
-        will_page.gsub!(/<\/?div.*?>/,"")
+      will_page_options = {  :previous_label=>'前へ', :next_label=>'次へ',:page_gap => "..."}
+      unless controller.session[controller.class.name+"_per_page"]
+        will_paginate(models,will_page_options  )
+      else
+        safe_join([form_tag(:action => :change_per_page),
+                   will_paginate(models,will_page_options.merge(:container => false)  ),
+                   "　",
+                       hidden_field_tag('page',@page),
+                       text_field_tag('line_per_page',@Pagenation,:size => 1),
+                       "件/ページ".html_safe,
+                       help("Common#perpage"),
+                       "</form>".html_safe
+                      ]
+                  )
       end
-      will_page
     end
   end
 

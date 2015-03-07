@@ -21,3 +21,6 @@
 
 en:
   hello: "Hello world"
+
+  will_paginate:
+    page_gap: ‘…’

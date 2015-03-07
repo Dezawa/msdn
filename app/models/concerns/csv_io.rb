@@ -19,7 +19,7 @@ module CsvIo
   #  modelsがArrayのArrayであるときは、ヘッダーも入っていると見なし、無視する
   def csvstr(models,header=nil)
     if models[0].class == Array
-      models.map{|model| CSV.generate_line( model) }.join("\n")
+      models.map{|model| CSV.generate_line( model) }.join #("\n")
     else
       colmns = labels = self.column_names
       head = if header.nil?
@@ -65,14 +65,14 @@ module CsvIo
     error = [nil,"ファイルが指定されて居ないか、空か、フォーマットが違います"]
 pp ["####################",csvfile,labels,columns]
     labels = columns = self.column_names unless labels && columns
-    #begin
+    begin
       csvrows = CSV.parse(NKF.nkf("-w",csvfile.read))
       lbl2idx,indexes = serchLabelLine(csvrows,labels)
 pp [lbl2idx,indexes,csvrows]
       return error unless lbl2idx
-    #rescue
+    rescue
       return error
-    #end
+    end
 
     self.delete_all
     errors = [true,""]
@@ -148,8 +148,9 @@ pp [lbl2idx,indexes,csvrows]
   # label  ヘッダーとして必要な項目名の配列
   def label2idx(csvrow,label)
     #arryのデータから、前後の空白を削除する
+logger.debug("##label2idx csvrow=#{csvrow},label=#{label}")
     csv0 = csvrow.map{|c| c.strip if c }
-    labels = label.map{|l| lbl = l.strip }
+    labels = label.map{|l| lbl = l.strip if l}
     # csvの何列目にあるかを知る
     lbl_idxes = labels.map{|lbl| 
       [lbl,csv0.index(lbl)] if csv0.index(lbl)

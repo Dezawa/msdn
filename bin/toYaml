@@ -13,7 +13,7 @@ def toYaml(object,path)
      objects.each_with_index{|obj,idx|
        yml=YAML.dump(obj).sub(/\A.*attributes:\n/m,"").
                 gsub(/^.*:\s*('')?s*$\n/,"")
-       fp.puts "obj#{idx+1}"
+       fp.puts "obj#{idx+1}:"
        fp.print yml
      }
   }
