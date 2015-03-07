@@ -22,6 +22,7 @@ require 'menu'
 # t                        :: I18n 変換
 module ApplicationHelper
   include IndexTableHelper
+  include HtmlSafeTableItems
   # Ubeboard や BookKeeping のメイン画面にあるような
   # メニュー一覧表を書き出す
   # 
@@ -51,13 +52,6 @@ module ApplicationHelper
   #          [Array] => [Symbol,permission] permission による。OKなら　Symbolがアクション。
   # [csv_down url]  csvダウンロードのURL
   #
-  TABLE =  "<table>".html_safe
-  TR = "<tr>".html_safe
-  TD = "<td>".html_safe
-  TDTD="</td><td>".html_safe
-  TABLEend =  "</table>".html_safe
-  TRend    = "</tr>".html_safe
-  TDend    = "</td>".html_safe
   
   def raw(str);str;end
 

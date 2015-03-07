@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
 module HospitalHelper
-  TABLE =  "<table>".html_safe
-  TR = "<tr>".html_safe
-  TD = "<td>".html_safe
-  TDTD="</td><td>".html_safe
-  TABLEend =  "</table>".html_safe
-  TRend    = "</tr>".html_safe
-  TDend    = "</td>".html_safe
-   def input_busho_month
+  include HtmlSafeTableItems
+
+  def input_busho_month
     text_field(:busho_getudo,:yyyymm,size: 5)+
       select(:busho_getudo,:busho_id,Hospital::Busho.names)
   end

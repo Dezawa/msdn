@@ -2,14 +2,7 @@
 require 'html_cell'
 
 module IndexTableHelper
-
-  TABLE =  "<table>".html_safe
-  TR = "<tr>".html_safe
-  TD = "<td>".html_safe
-  TDTD="</td><td>".html_safe
-  TABLEend =  "</table>".html_safe
-  TRend    = "</tr>".html_safe
-  TDend    = "</td>".html_safe
+  include HtmlSafeTableItems
   
   # ラベル定義のArryを元に、一覧表の表題行を出す
   # * (普通は) index.erb から呼ばれる。
