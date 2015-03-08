@@ -59,7 +59,7 @@ module Sola::Graph
                            "xdata time", "timefmt '%Y-%m-%d'"      , "format x '%Y-%m'"
                          ],
                 :xy => [[[1,2],[1,3]]],        :point_type => [7,6],
-                :range => { :y => "[300:780]",:y2 => "[0:5]",
+                :range => { :y => "[300:780]",:y2 => "[0:6]",
                   :x => "['2011-5-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
                 :axis_labels   => { :ylabel => "月間発電量/kW時", :y2label => "月間ピーク/kW分"},
               })
@@ -83,7 +83,7 @@ module Sola::Graph
         merge({ 
                 :axis_labels   => { :xlabel => "年月日",:ylabel => "日発電量/kW時", :y2label => "ピーク/kW分"},
                 :xy => [[[1,2],[1,3]]],
-                :range => { :y => "[0:39]", :y2 => "[0:5]",
+                :range => { :y => "[0:39]", :y2 => "[0:6]",
                   :x => "['2011-5-1-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
 
                 :tics =>  { :xtics => "'2011-5-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
@@ -124,7 +124,7 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
         :axis_labels   => { :xlabel => "日",:ylabel => "ピーク発電量/kW",:y2label => "一日発電量/kWh"},
         :title => "日間発電量推移" ,
         :set  => [ "xdata time", "timefmt '%Y-%m-%d'"      , "format x '%Y-%m-%d'"  ],
-        :range => { :y => "[0:5]",:y2 => "[0:35]",
+        :range => { :y => "[0:6]",:y2 => "[0:35]",
                   :x => "['2015-1-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
         :tics =>  { :xtics => "'2015-1-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
           :ytics => "0,1 nomirror",:y2tics => "0,10"},
@@ -146,8 +146,8 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
     def opt_max_peak!(data_list,opt)
       max_day,max_peak,_ = data_list.max_by{ |date, peak_kw, kwh_day| peak_kw}
       return unless max_day && max_peak
-      opt[:labels] = ["label 1 '最高 #{ max_day} #{'%.2f'%max_peak}kW' at '2015-01-10',4.5 left" ,
-                      "arrow 1 as 1 from '2015-05-01',4.3 to '#{max_day}',#{max_peak}"
+      opt[:labels] = ["label 1 '最高 #{ max_day} #{'%.2f'%max_peak}kW' at '2015-01-10',5.5 left" ,
+                      "arrow 1 as 1 from '2015-05-01',5.3 to '#{max_day}',#{max_peak}"
                      ]
     end
 
@@ -217,7 +217,7 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
       :column_labels => %w(分 ピーク発電量), :column_format => %w(%s %.1f),
       :axis_labels   => { :xlabel => "分",:ylabel => "発電量/kW",:y2label => "一日発電量"},
       :title => "日間発電量推移" , 
-      :tics =>  { :xtics => "rotate by -90"}, :range =>{ :y => "[0:5]"},
+      :tics =>  { :xtics => "rotate by -90"}, :range =>{ :y => "[0:6]"},
       :point_type => [7],:point_size => 0.2,:with => ["with line"],
       :set_key => "unset key",
         :type => "scatter",
