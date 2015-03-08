@@ -14,13 +14,6 @@ require 'menu'
 # edit_field              :: インスタンスの各cellの値をobjectの型に従って編集モードで表示する。
 #                         :: １画面１インスタンス向き
 #
-# ======desp_field,edit_fieldの下請け
-# select_with_id          :: 一覧表のセレクト用下請け。複数インスタンス一覧用
-# radioBottom             :: ラジオボタンの表示
-# my_select               :: セレクトの表示。belongs_to などのとき使われる。
-#                            複数インスタンス一覧用
-# my_check_box            :: id付きのcheck_box。複数インスタンス一覧用
-#
 # ======その他
 # links                    :: 関連するページへのlink行を返す
 
@@ -223,30 +216,6 @@ module ApplicationHelper
   #:belongs_to   :: 関連から選択 || obj.表示用symbol を表示する || select
   #:proname      :: 製品名専用   || obj.表示用symbol を表示する || select
   #
-  def edit_md_date(domain,sym,obj,opt={},htmlopt="")
-      str = obj.send(sym) ; str = str ? str.strftime("%m/%d"):""
-      htmlopt + text_field(domain,sym,opt.merge(:value=>str))
-  end
-
-  def select_with_id(domain,method,obj,id,choices,opt={})
-    val = obj.send(method)
-    cc = (choices[0].class == Array) ? choices : choices.map{|c| [c]}
-    #logger.debug("select_with_id: #{choices[0].class} choices=[#{choices[0][0]},#{choices[0][-1]}]")
-    "<select id='#{domain}_#{id}_#{method}' name='#{domain}[#{id}][#{method}]'>" +
-      "<option value=''  #{val.blank? ? 'selected':''}> </option>"+
-      cc.map{|ch| 
-      "<option value='#{ch[0]}'  #{ch[0]==val ? 'selected':''}>#{ch[-1]} </option>"
-    }.join
-  end
-
-  #LiPSでのみ使用。使うの禁止
-  def radioBottom(domain,method,values,value=nil,option=nil)
-    dom = domain.to_s ; meth = method.to_s
-    values.map{|val|  checked = val[0] == value ? "checked" : ""
-      "<input type=\"radio\" id=\"#{dom}_#{meth}\" name=\"#{dom}[#{meth}]\" value=\"#{val[0]}\" #{checked} />#{val[1]}"
-    }.join("\n")
-  end
-  
 
   def name(*arg)
     arg[0]+arg[1..-1].map{|a| "[#{a}]"}.join
@@ -287,87 +256,9 @@ module ApplicationHelper
    javascript_tag(code)
   end
 
-  OnCellEdit = "
-<script language=\"javascript\">
-  myTR2 = document.getElementById('%s');
-function getCELL2() {
-  for (var i=0; i<myTR2.rows.length; i++) {
-    for (var j=0; j<myTR2.rows[i].cells.length; j++) { 
-     var Cell2=myTR2.rows[i].cells[j];
-     　Cell2.onclick =function(){Mclk2(this);}
-    }
-  }
-}
-
-
-function Mclk2(Cell2){
-   org = Cell2.textContent;
-   if(org.match(/Edit|削除|表示/) != null || Cell2.parentNode.rowIndex == 0) return ;
-   if([%s][Cell2.cellIndex] == null) return ;
-     str = prompt(\"\",org);
-   //if(str == null) return ;
-     id = Cell2.parentNode.id
-     cellINX = Cell2.cellIndex;
-     rowINX = '行位置：'+Cell2.parentNode.rowIndex +': id=' + id;
-     cellVal = 'セルの内容：'+Cell2.innerHTML;
-     res2=rowINX + '<br/> '+  cellINX + '<br/>' + cellVal;
-     //if (org != str && str != null) { //Cell2.innerHTML =  str ; 
-       tokun = jQuery('token').attr('name')
-       jQuery.ajax({ 'url' : '/%s/cell_edit','type' : 'PUT','dataType' : 'json',
-                     'data' : { 'authenticity_token' : tokun, 'id' : id ,
-                                'row' : Cell2.parentNode.rowIndex,
-                                'column' : Cell2.cellIndex },
-                      'success' : disp
-            });
-    //  Cell2.innerHTML = item ;
-   // } else {
- 
-    //   Cell2.innerHTML = org + 'O' ;
-   //}
-}
-function disp(data,dataType){ rowIdx= this.row; clmIdx = this.column;
-                              Cell2=myTR2.rows[2].cells[0];
-                              Cell2.innerHTML = 'data';
-}
-try{
-	window.addEventListener(\"load\",getCELL2,false);
-}catch(e){
-	window.attachEvent(\"onload\",getCELL2);
-}
--->
-</script>
-"
-
   def on_cell_edit(option={ })
-    code = "cell_editor = new EditCell(\"/hospital/role/on_cell_edit\",\"IndexTable\",[1],
-                 function(){ },                 function(){ }
-                 ); "
-   javascript_tag(code)
-  end
-  def on_cell_edit3(option={ })
-    script = File
   end
 
-  def on_cell_edit2(option={ })
-    table_id = option.delete(:table_id) || "IndexTable"
-    labels   = option.delete(:labels)   || @labels
-    rows     = labels.map{ |label|
-      case [label.class,!label.ro]
-      when [HtmlText,true] ; '"text"'
-      when [HtmlSelect,true];'"select"'
-      else                 ; "null"
-      end
-    }.join(",")
-    items = labels.map{ |label| '"'+label.symbol.to_s+'"' }
-    OnCellEdit%[table_id,rows,@Domain,@Domain]
-  end
-
-  # Login 前  Lips(デモ) Login
-  # Login　後 Lips(デモ) LiPS(会員版) ユーザ固有  パスワード変更　Logout
-  Login = [[["LiPS(無償版)","/lips/free"],["ログイン","/login"]],
-           [["LiPS(無償版)","/lips/free"],["LiPS(会員版)","/lips/calc"]],
-           [["パスワード変更","/login"],["ログアウト","/logout"]]
-          ]
   def error_messages_for a_r
     return "" unless a_r.errors.any? 
     ( "<ul>"+
