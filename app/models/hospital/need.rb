@@ -52,7 +52,8 @@ logger.debug("*****Hospital::Need:need_list_each_role_daytype_of  #{ret.keys.sor
   end
 
   def self.of_datetype_for_busho(what_day,busho_id)
-    self.where( ["minimun>0 and busho_id = ? and daytype in (1,?)",busho_id,what_day])
+    self.where( ["minimun>0 and busho_id = ? and daytype in (1,?) and role_id in (?)",
+                 busho_id,what_day,need_role_ids])
   end
 
   def self.what_day(day)
