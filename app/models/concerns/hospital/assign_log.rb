@@ -27,6 +27,18 @@ module Hospital::AssignLog
     dbgout dump("  HP ASSIGN ")
   end
 
+  def log_need_roles_of(day,shifts,line)
+    logger.debug("  HOSPITAL ASIGN:(#{line})必要ロール数："+
+                 shifts.map{ |sft| sft+":["+roles_count_short(day,sft).join(",")}.join("] ")+
+                 "]"
+                 )
+  end
+  def logout_nurce_combinations(nurce_combinations,line)
+      logger.debug("  HOSPITAL ASIGN:#{line})看護師組み合わせ"+
+                   nurce_combinations.map{ |nurce_combination|
+                     night.map{ |sft| sft+":["+nurce_combination[sft].map(&:id).join(",")
+                     }.join("] ")+ "]"    }.join("///")      )
+  end
   def assign_log(day,shift,nurces,line,patern=nil,msg="",sw=(LogPuts|LogInfo))
     dbgout("HP ASSIGN LOG (#{line}) #{day}:#{shift}" + (patern ? "(%4s)"%patern.to_s : "    ") +
            ' '*day + nurce_list(nurces) + " "*(34-day)+msg ,

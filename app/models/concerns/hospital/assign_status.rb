@@ -199,11 +199,6 @@ module Hospital::AssignStatus
     ret
   end
 
-  def needs_all_kinms(reculc=false)
-    return @needs_all_kinms if @needs_all_kinms && !reculc
-    needs_all_days
-  end
-
   # unsed only by nurce_paterning_test
   def need(day,role_id,kinmucode_id)
     @needs[day][[role_id,kinmucode_id]] || [0,0]

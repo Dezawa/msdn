@@ -195,4 +195,24 @@ module Hospital::NurceCombination
     @nurces.select{|nurce| nurce.monthly.shift[day,1] == "_" }
   end
 
+
+  # 看護師群のcostの総計
+  def cost_of_nurce_combination(nurces,sft_str,tight = nil)
+    tight ||= tight_roles(sft_str)
+    nurces.inject(2.0){|cost,nurce| cost + nurce.cost(@night_mode ? :night_total : Sshift1,tight) }*
+      AvoidWeight[[nurces_have_avoid_combination?(nurces),AvoidWeight.size-1].min]
+  end
+
+  def cost_of_nurce_combination_with_avoid(nurces,sft_str,tight)
+    cost_of_nurce_combination(nurces,sft_str,tight)*
+      AvoidWeight[[nurces_have_avoid_combination?(nurces),AvoidWeight.size-1].min]
+  end
+
+  def cost_of_nurce_combination_of_combination(comb2,comb3)
+    if comb3.nil?
+      comb2,comb3 = comb2
+    end 
+    cost_of_nurce_combination(comb2,Sshift2,tight_roles(Sshift2)) +
+      (comb3 ? cost_of_nurce_combination(comb3,Sshift3,tight_roles(Sshift3)) : 0) 
+  end
 end

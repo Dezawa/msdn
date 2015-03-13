@@ -183,7 +183,8 @@ class Hospital::Assign
   attr_accessor  :busho_id, :lastday,  :needs,   :basename
   attr_accessor  :night_mode
 
-  # Ctlr から呼ばれる。成否に関わらず Hospital::Monthly に書き出して帰る
+  # CTLR から呼ばれる。
+  # assign_month を実行し、成否に関わらず Hospital::Monthly に書き出して帰る
   def self.create_assign(busho_id,month,all=nil)
     assign = self.new(busho_id,month)
     assign.assign_month#_mult(all)
@@ -212,8 +213,12 @@ class Hospital::Assign
   end
 
   # 一月の割付を行う
-  # OPT  :nurce_combinations => #candidate_combination_for_shift23_selected_by_cost(day)
-  def assign_month(day=1,opt={ })
+  # 成否に関わらず Hospital::Monthly に書き出して帰る
+  #
+  # 一日目の夜勤の候補を複数組用意し、それを順次試す。
+  # Timeout 秒の間に結果がでなければ諦めて次の候補を試す
+  # すべての候補で失敗した場合は、最も深くまで割り付けられた結果を書き出す。
+  def assign_month(day=1)
     statistics_log_title
     log_start_title
     
@@ -243,6 +248,8 @@ class Hospital::Assign
     #raise StandardError
   end
 
+  # 夜勤について割付を行う。Timeoutしたらそこで打ちきる
+  # 実際の割付は #assign_night で再帰で行う
   def assign_night_untile_success_or_timeout(candidate_combination,opt ={ })
     @night_mode = true
     @start      = Time.now 
@@ -260,6 +267,8 @@ class Hospital::Assign
     end
   end
 
+  # 日勤について割付を行う。Timeoutしたらそこで打ちきる
+  # 実際の割付は #assign_shift1 で再帰で行う
   def assign_daytime_untile_success_or_timeout(opt ={ })
     @night_mode = false
     @start      = Time.now 
@@ -277,6 +286,7 @@ class Hospital::Assign
       return false
     end
   end
+
   # 複数解を求めるルーチ*ン
   # 3つのケースがある
   #  1 解を一つだけ求める                                          
@@ -341,9 +351,9 @@ class Hospital::Assign
   # end
 
   #割り当て可能なnurseをcostの低いほうから何人か選ぶ。
-  #何人選ぶか
-  # shift2,3の場合はshift2+3の5割り増し、shift1の場合はshift1の5割り増し
-  #ただし必要ロールがそろう様にするために持っているロールで分ける。
+  #何人選ぶかは #limit_of_nurce_candidate にて決める
+  #ただしcostだけで選ぶと必要ロールがそろわない恐れがあるので、
+  # 持っているロールのパターンで分け、それぞれの中でコストの低い方から必要人数選ぶ。
   # これが必要なのは割りあて可能な人数が「何人か」より多い場合
   def assinable_nurces_by_cost_size_limited(sft_str,day,short_roles_this_shift )
     @assignable_nurce ||= { }
@@ -360,6 +370,7 @@ class Hospital::Assign
     end
   end
 
+  # 持ってるroleで層別し、各々の層をcostで並べる。
   def gather_by_each_group_of_role(as_nurce,sft_str,short_role_of_this_shift)
     nurces_group_by = as_nurce.group_by{ |nurce| (nurce.need_role_ids & short_role_of_this_shift).sort}
     logger.debug("    GATHER_BY_EACH_GROUP_OF_ROLE shift=#{sft_str}:as_nurce = #{as_nurce.map(&:id).join(',')}")
@@ -373,6 +384,9 @@ class Hospital::Assign
     nurces
   end # of case
 
+  # 候補の数(上限)を決める。
+  # 多すぎると時間が掛かる。
+  # 少なすぎると割付に失敗する。
   def limit_of_nurce_candidate(sft_str,day)
     case sft_str
     when Sshift2,Sshift3 ; limit_of_nurce_candidate_night(day)
@@ -389,12 +403,14 @@ class Hospital::Assign
     [ (need_nurces_shift(day,Sshift1) * 1.2).ceil ,need_nurces_shift(day,Sshift1)+1].max
   end
 
-  def array_merge(aryary)
-    return [] if aryary==[]
-    return aryary[0] if aryary.size==1
-    maxsize = aryary.map{|ary| ary.size}.max
-    merged = aryary[0]+[nil]*(maxsize-aryary[0].size)
-    aryary[1..-1].inject(merged){|merg,ary| merg.zip(ary)}.flatten.compact
+  # 持つロールパターン毎に層別されたデータ(nurces_classified_by_role)から
+  # 順次抜き出して一次元のデータにする
+  def array_merge(nurces_classified_by_role)
+    return [] if nurces_classified_by_role==[]
+    return nurces_classified_by_role[0] if nurces_classified_by_role.size==1
+    maxsize = nurces_classified_by_role.map{|ary| ary.size}.max
+    merged = nurces_classified_by_role[0]+[nil]*(maxsize-nurces_classified_by_role[0].size)
+    nurces_classified_by_role[1..-1].inject(merged){|merg,ary| merg.zip(ary)}.flatten.compact
   end
 
 
@@ -453,39 +469,6 @@ class Hospital::Assign
   def nurce_ids_of_the_day_shift(nurces,day,sft_str)
     nurces.map{ |nurce| nurce.id if nurce.shifts[day,1] == sft_str}.compact
   end
-
-  # long_patenの配列から2日目以降のチェック指示部分を抜きだし、
-  # 同じ内容のものは一つにまとめる。チェックの重複防止
-  # [list_of_long_patern_and_dayly_check] 看護師各々に割り当てた long_patenの配列
-  #                  [ [LongPatern,daily_checks],[LongPatern,daily_checks],[] ]
-  def merged_patern(list_of_long_patern)
-    @shifts_int.map{|shift| 
-      list_of_long_patern.inject([]){|ary,long_patern|  
-        ary + long_patern.target_days[shift]
-      }.uniq 
-    }
-  end
-
-  # 看護師群のcostの総計
-  def cost_of_nurce_combination(nurces,sft_str,tight = nil)
-    tight ||= tight_roles(sft_str)
-    nurces.inject(2.0){|cost,nurce| cost + nurce.cost(@night_mode ? :night_total : Sshift1,tight) }*
-      AvoidWeight[[nurces_have_avoid_combination?(nurces),AvoidWeight.size-1].min]
-  end
-
-  def cost_of_nurce_combination_with_avoid(nurces,sft_str,tight)
-    cost_of_nurce_combination(nurces,sft_str,tight)*
-      AvoidWeight[[nurces_have_avoid_combination?(nurces),AvoidWeight.size-1].min]
-  end
-
-  def cost_of_nurce_combination_of_combination(comb2,comb3)
-    if comb3.nil?
-      comb2,comb3 = comb2
-    end 
-    cost_of_nurce_combination(comb2,Sshift2,tight_roles(Sshift2)) +
-      (comb3 ? cost_of_nurce_combination(comb3,Sshift3,tight_roles(Sshift3)) : 0) 
-  end
-
   def nurces_have_avoid_combination?(nurces)
     nurce_ids = nurces.map(&:id)
     @avoid_list.inject(0){ |cst,comb_weight| 
@@ -504,33 +487,6 @@ class Hospital::Assign
     work = (0..number_of_plan-1).to_a
     @long_plan_combination[[number_of_nurce,number_of_plan]] = 
       work.product( *[work]*(number_of_nurce-1))
-  end
-
-
-  # 指定された看護師の指定された日以降にpaternな勤務を割り当てる
-  # paternは0123からなる文字列。
-  # このパターンを割り当てても制約を満たすことを事前に確認されていること
-  def nurce_set_patern(nurce,day,patern)
-    logger.info("    HOSPITAL::ASSIGN(#{__LINE__})#長い割付仮設定=#{day}日,patern #{patern} :Nurce #{nurce.id} roles#{nurce.roles.map{|id,nm| id}}")
-    (0..patern.size-1).each{|d| 
-      nurce_set_shift(nurce,day+d,patern[d,1])
-    }
-    patern
-  end
-
-  # 指定された看護師の指定された日に勤務 sft を割り当てる。
-  # sft は 0123 な文字かInteger。
-  # 割り当てたあと、 割付methodが値の更新の責任を取るべき method,インスタンス変数の更新を行う
-  # 
-  def nurce_set_shift(nurce,day,shift_str)
-    nurce.set_shift(day,shift_str)
-    count_role_shift[day] = count_role_shift_of(day)
-    short_role_shift[day] = short_role_shift_of(day)
-    nurce.need_role_ids.each{|role_id,name| 
-      role_remain[[role_id,shift_str]] -= 1
-      #      margin_of_role[[role_id,shift_str.to_i]] -= 1
-    }
-    shift_str
   end
 
 
@@ -748,10 +704,6 @@ class Hospital::Assign
     open( File.join( Rails.root,"tmp","hospital","log","stat"),"a"){ |fp|
       fp.puts msg
     }
-  end
-
-  def save_log()
-    #logger.debug( [0,2,5].map{ |id| @initial_state[0][id][0] })
   end
 
   def save_shift_log(save_shift = nil)

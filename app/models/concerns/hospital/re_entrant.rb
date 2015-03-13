@@ -3,36 +3,49 @@
 module Hospital::ReEntrant
   include Hospital::Const
 
+  # 夜勤の割付を再帰で行う
+  # opt
+  #  :dipth 再帰の回数。 0 になったら終わり。debug、test用
+  #  :nurce_combinations  看護師の組み合わせの候補。
+  #     本来は再帰の中で再帰毎(割り当てshift毎)に作る。
+  #     初日だけは親から与えられる。これは次の二つの理由から
+  #      (1)timeoutしたとき次の初日候補を与えるのは、例外を補足するmethod
+  #      (2)複数の解を作るバージョンでは、初日候補を順に与える必要がある
   def assign_night(day,opt = { })
-    return true if lastday_or_reentrant_limit(day,opt)
+    return true if lastday_or_reentrant_limit_or_timeout(day,opt)
     #refresh
     log_newday_entrant(day)
+    log_need_roles_of(day,night,__LINE__)
 
-    logger.debug("  HOSPITAL ASIGN:(#{__LINE__})必要ロール数："+
-                 night.map{ |sft| sft+":["+roles_count_short(day,sft).join(",")}.join("] ")+
-                 "]"
-                 )
     nurce_combinations_for_shift23 = opt.delete(:nurce_combinations) ||
       candidate_combination_for_shift23_selected_by_cost(day)
-    unless nurce_combinations_for_shift23
+
+    case nurce_combinations_for_shift23
+    when nil   
       logger.debug("  HOSPITAL ASIGN:(#{__LINE__}) #{day}日.看護師の組み合わせができない")
       return false 
-    end
-
-    if nurce_combinations_for_shift23 != :fill 
-    
-      logger.debug("  HOSPITAL ASIGN:(#{__FILE__}:#{__LINE__})看護師組み合わせ"+
-                   nurce_combinations_for_shift23.map{ |nurce_combinations|
-                     night.map{ |sft| sft+":["+nurce_combinations[sft].map(&:id).join(",")
-                     }.join("] ")+ "]"    }.join("///")      )
+    when :fill
+      logger.debug("    HOSPITAL ASIGN:(#{__LINE__}) #{day}日は既にOK")
+      return true if assign_night(day+1,opt)
+    else
+      logout_nurce_combinations(nurce_combinations_for_shift23,__LINE__)
+      ######
       nurce_combinations_for_shift23.each{ |nurce_combinations|
-        nurces = nurce_combinations.values.flatten.uniq
-        # 現状保存
         shifts_short_role = save_shift(nurces,day)
-        
+        return true if try_assign_by_this(nurce_combinations,day,opt)
+        restore_shift(nurces,day,shifts_short_role)
+      }
+      #####
+    end
+    logger.debug("    ＃HOSPITAL::ASSIGN(#{__LINE__})#{day}日 割付候補終了。#{day-1}日に戻る ")    
+    return false
+  end
+
+  def try_assign_by_this(nurce_combinations,day,opt)
+        nurces = nurce_combinations.values.flatten.uniq
         logger.debug("  HOSPITAL::ASSIGN(#{__LINE__})#{day}日割付試行 "+
                      "#{night.map{ |sft| sft+':'+ nurce_list(nurce_combinations[sft])}.join('/')} ")
-        next unless night.all?{ |sft_str| assign_night_shift(day,sft_str,nurce_combinations[sft_str]) }
+        return false unless night.all?{ |sft_str| assign_night_shift(day,sft_str,nurce_combinations[sft_str]) }
 
         logger.debug("    HOSPITAL ASIGN:(#{__LINE__})#{day}日 看護師組み合わせ ["+
                      nurce_combinations.values.map{ |comb| comb.map(&:id).join(",")}.join("][") +
@@ -43,18 +56,13 @@ module Hospital::ReEntrant
         logger.debug("    HOSPITAL ASIGN:(#{__LINE__})#{day}日 看護師組み合わせ ["+
                      nurce_combinations.values.map{ |comb| comb.map(&:id).join(",")}.join("][") +
                      "] は成功したが、後ろの日ができないのでやり直し")
-        
-        restore_shift(nurces,day,shifts_short_role)
-      }
-    else 
-      logger.debug("    HOSPITAL ASIGN:(#{__LINE__}) #{day}日は既にOK")
-      return true if assign_night(day+1,opt)
-    end
-    logger.debug("    ＃HOSPITAL::ASSIGN(#{__LINE__})#{day}日 割付候補終了。#{day-1}日に戻る ")    
-    return false
+    false
   end
-
-  def lastday_or_reentrant_limit(day,opt={ })
+  # 再帰の終了判定を行う。
+  # 月の最終日を過ぎたら終了。
+  # もしくは再帰に入るときにしていした再帰回数 opt[:dipth]に達したら終了。
+  # もしくはtimeoutなら 例外発生
+  def lastday_or_reentrant_limit_or_timeout(day,opt={ })
     raise TimeToLongError,"timed out"  if @limit_time < Time.now
 
     return true if day > lastday
@@ -65,6 +73,9 @@ module Hospital::ReEntrant
     false
   end
 
+  # 日勤の割付を再帰で行う
+  # 余裕の少ない日をまず割付け #assign_tight_daies_first
+  # 残りの日を再帰で行う
   def assign_shift1(day,opt={ })
     @night_mode = false
     tight = assign_tight_daies_first
@@ -74,7 +85,8 @@ module Hospital::ReEntrant
 
   def assign_tight_daies_first #Hospital::Assign.create_assign(1,Date.new(2013,2,1))
     dbgout("HP AASIGN TIGHT_DAY FIRST")
-    while (tight_daies = shift_tight_days) && tight_daies.first && tight_daies.first.first < 4
+    # while (tight_daies = shift_tight_days) && tight_daies.first && tight_daies.first.first < 4
+    while tight_daies = remain_tight_days(4)
       most_tight_daies = tight_daies.map{ |c,day| "#{day}:#{c} " if c<4 }.compact.join(',')
       dbgout("HP ASSIGN MOST TIGHT_DAYs are #{most_tight_daies}")
       if tight_daies[0].first < 0
@@ -96,6 +108,12 @@ module Hospital::ReEntrant
     true
   end
 
+  def remain_tight_days(yoyuu_suu)
+    tight_daies = shift_tight_days
+    return nil unless tight_daies.first && tight_daies.first.first < yoyuu_suu
+    tight_daies
+  end
+
   def shift_tight_days(sft_str = Sshift1)
     (1..@lastday).
       map{|day|
@@ -115,75 +133,56 @@ module Hospital::ReEntrant
   end
 
 
-  # def assign_single_day(day,sft_str)
-  #   dbgout("HP ASSIGN #{day}日entry-0")
-  #   dbgout("assign_single_day")
-  #   dbgout dump("  HP ASSIGN ")
-  #   combinations,need_nurces,short_roles = ready_for_day_reentrant(day)
-  #   return false unless combinations
-  #   ncm = nCm(combinations[sft_str].size,need_nurces_shift(day,sft_str).size)
-  #   try = 0 
-  #   nurce_combination_shift1(combinations,need_nurces,short_roles,day){|nurce_combinations|
-  #     dbgout("HP AASIGN #{day}:#{sft_str} Try #{try += 1} of #{ncm}")
-  #     ret = assign_shift_by_reentrant(nurce_combinations,need_nurces,day,sft_str,true)
-  #     dbgout("HP AASIGN MOST TIGHT_DAY #{day}日 結果#{ ret}")
-  #     return true if ret
-  #   }
-  #   false
-  # end
-
   def assign_shift1_by_re_entrant(day,opt = { })
-    return true if day > lastday
-    raise TimeToLongError  if @limit_time < Time.now
-
-      dbgout("HP ASSIGN #{day}日entry-1")
-      dbgout dump("  HP ASSIGN ")
-    save_log
-
-    if opt[:dipth] 
-#pp ["opt[:dipth]",opt[:dipth]]
-      return true  if opt[:dipth] ==0
-       opt[:dipth] -= 1
-    end
+    return true if lastday_or_reentrant_limit_or_timeout(day,opt)
+    log_newday_entrant(day)
 
     nurce_combinations_for_shift = opt[:nurce_combinations] ||
       candidate_combination_for_shift_selected_by_cost(day,"1")
 
-    return false unless nurce_combinations_for_shift
-
-    if nurce_combinations_for_shift != :fill 
+    case nurce_combinations_for_shift
+    when nil
+      logger.debug("  HOSPITAL ASIGN:(#{__LINE__}) #{day}日.看護師の組み合わせができない")
+      return false 
+    when :fill
+      logger.debug("    HOSPITAL ASIGN:(#{__LINE__}) #{day}日は既にOK")
+      return true if  assign_shift1_by_re_entrant(day+1,opt)
+    else
       nurce_combinations_for_shift.each{ |nurce_combination|
-        nurces = nurce_combination["1"]
         # 現状保存
         shifts_short_role = save_shift(nurces,day)
 
+        nurces = nurce_combination["1"]
         next unless assign_shift_daytime(day,nurces)
         save_longhest(day,:daytime) unless opt[:dipth]
         return true if assign_shift1_by_re_entrant(day+1,opt)
+
         restore_shift(nurces,day,shifts_short_role)
       }
-    else ;return true if assign_shift1_by_re_entrant(day+1,opt)
     end
-    
     return false
   end
 
-  # 与えられた combination にしたがって、day の shiftを割り付ける
-  # long_patern も試みる
+  # 与えられた combination にしたがって、day日 の日勤を割り付ける
   def assign_shift_daytime(day,nurce_combination)
     nurce_combination.each{ |nurce| nurce_set_shift(nurce,day,"1")}
   end
 
+  # 与えられた combination にしたがって、day日 の夜勤を割り付ける
+  # long_patern 長い割付が可能なら割り付ける
+  #  可能とは
+  #    既に希望などで割り付けられた本人の勤務と衝突しない
+  #    連続勤務、夜勤上限などに抵触しない
+  #    明日以降で、他の人の勤務を合わせても割り当て上限を越えることがない
+  # 以下の事はここでは見ていないので、このmethodのあとで呼び元が調べ直す
+  #    今日と昨日に日勤を割り付ける余裕がない
+  #    明日以降の夜勤で、割り付けが偏ってroleが足りなくなる日がでる
   def assign_night_shift(day,sft_str,nurce_combination)
-#pp [day,sft_str,nurce_combination.map(&:id)]
-    # 長い割付が可能なら割り付ける
     return true if (need_nurces = need_nurces_shift(day,sft_str)) == 0
     long_plan_combination(need_nurces,Hospital::Nurce::LongPatern[@koutai3][sft_str].size).
       each{|idx_list_of_long_patern|  # [0,2]
 
-
       shifts_short_role = save_shift(nurce_combination,day)
-
       list_of_long_patern = assign_patern(nurce_combination,day,sft_str,idx_list_of_long_patern)
       #pp ret
       case list_of_long_patern
@@ -243,6 +242,44 @@ module Hospital::ReEntrant
     list_of_long_patern
   end
 
+
+  # 指定された看護師の指定された日以降にpaternな勤務を割り当てる
+  # paternは0123からなる文字列。
+  # このパターンを割り当てても制約を満たすことを事前に確認されていること
+  def nurce_set_patern(nurce,day,patern)
+    logger.info("    HOSPITAL::ASSIGN(#{__LINE__})#長い割付仮設定=#{day}日,patern #{patern} :Nurce #{nurce.id} roles#{nurce.roles.map{|id,nm| id}}")
+    (0..patern.size-1).each{|d| 
+      nurce_set_shift(nurce,day+d,patern[d,1])
+    }
+    patern
+  end
+
+  # 指定された看護師の指定された日に勤務 sft を割り当てる。
+  # sft は 0123 な文字かInteger。
+  # 割り当てたあと、 割付methodが値の更新の責任を取るべき method,インスタンス変数の更新を行う
+  # 
+  def nurce_set_shift(nurce,day,shift_str)
+    nurce.set_shift(day,shift_str)
+    count_role_shift[day] = count_role_shift_of(day)
+    short_role_shift[day] = short_role_shift_of(day)
+    nurce.need_role_ids.each{|role_id,name| 
+      role_remain[[role_id,shift_str]] -= 1
+      #      margin_of_role[[role_id,shift_str.to_i]] -= 1
+    }
+    shift_str
+  end
+
+  # long_patenの配列から2日目以降のチェック指示部分を抜きだし、
+  # 同じ内容のものは一つにまとめる。チェックの重複防止
+  # [list_of_long_patern_and_dayly_check] 看護師各々に割り当てた long_patenの配列
+  #                  [ [LongPatern,daily_checks],[LongPatern,daily_checks],[] ]
+  def merged_patern(list_of_long_patern)
+    @shifts_int.map{|shift| 
+      list_of_long_patern.inject([]){|ary,long_patern|  
+        ary + long_patern.target_days[shift]
+      }.uniq 
+    }
+  end
 
   # 評価する看護師組み合わせはその日の分は制限をみたしているが、
   # その日を起点とした長い割付を行う場合2日目以降は確認していない。
