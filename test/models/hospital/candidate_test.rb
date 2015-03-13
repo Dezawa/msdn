@@ -226,7 +226,7 @@ RoleRemain =
   # end
 
   must "夜の組み合わせ候補" do
-    combinations = (@assign.candidate_combination_for_night(day))
+    combinations = (@assign.candidate_combination_for_shifts(day,["2","3"]))
     require =    [[[35, 49], [36, 39]], [[35, 49], [36, 40]], [[35, 49], [37, 48]],
                   [[35, 49], [39, 44]], [[35, 49], [39, 45]], [[35, 49], [39, 48]], [[35, 49], [40, 44]],
                   [[35, 49], [40, 45]], [[35, 49], [40, 48]], [[35, 49], [44, 48]], [[35, 49], [45, 48]], 
@@ -303,7 +303,7 @@ RoleRemain =
   #             35, 42, 38  =>  ,49  ,49A,349
   #                 42, 38  =>  49A,  349                   38
    must " 4日 夜の組み合わせ候補" do
-     combinations = combination_combination_ids(@assign.candidate_combination_for_night(day4))
+     combinations = combination_combination_ids(@assign.candidate_combination_for_shifts(day4,["2","3"]))
    
      assert_equal [[[36, 38], []], [[51, 35], []], [[51, 42], []], [[51, 38], []], [[51, 37], []],
                    [[51, 45], []], [[35, 48], []], [[42, 38], []]

@@ -252,7 +252,7 @@ class Hospital::NurceCombinationTest < ActiveSupport::TestCase
                  #  [[46, 39], [47, 43]], [[47, 39], [38, 43]], [[47, 39], [42, 38]], [[47, 39], [46, 38]],
                  #  [[47, 43], [42, 38]], [[47, 43], [42, 39]], [[47, 43], [46, 38]], [[47, 43], [46, 39]]
                  # ].sort_by{ |a| a.flatten},
-                 combination_combination_ids(@assign.candidate_combination_for_night(20).to_a).size)
+                 combination_combination_ids(@assign.candidate_combination_for_shifts(20,["2","3"]).to_a).size)
   end
   # must "2/20の夜勤割り当て看護師組み合わせ候補最初の10個のコスト" do
   #   #             1      2    5     3      7    10      4      8   11    12    6      9

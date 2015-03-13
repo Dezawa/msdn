@@ -230,8 +230,12 @@ module Hospital::ReEntrant
     list_of_long_patern #true
   end
 
+  # indexnの組み合わせで指定された「長い割付の組み合わせ」が可能か調べる。
+  # 可能だったときはLongPatern( Hospital::Nurce::LongPatern[二直?三直?][shift][index])の
+  # 組み合わせを返す
+  # nurces :: 割付をs試す看護師のArray
+  # idx_list_of_long_patern :: LongPatern のindexの配列
   def assign_patern_if_possible(nurces,day,sft_str,idx_list_of_long_patern)
-    # この長い割付が可能か                                                # [0,2]
     list_of_long_patern = 
       assign_test_patern(nurces,day,sft_str,idx_list_of_long_patern)
 #pp ["pp list_of_long_patern",idx_list_of_long_patern,list_of_long_patern]
@@ -288,26 +292,20 @@ module Hospital::ReEntrant
   # 
   # 元々は3日以上の割付パターンについて行う予定であったが、プログラムの
   # 簡潔化のために、1日の割付もここで行うことにした。
-  # [long_patern]  『Hospital::Nurce::LongPatern[shift]』の何番目を試すのか、を
+  # idx_set_of_long_patern :: 『Hospital::Nurce::LongPatern[shift]』の何番目を試すのか、を
   #                 看護師分用意した配列。要素はInteger [0,2]
   def  assign_test_patern(nurce_list,day,sft_str,idx_set_of_long_patern)
-    #[ LongPatern,LongPatern]
     paterns = (0..nurce_list.size-1).map{|idx|
-    #pp [@koutai3,sft_str,nurce_list.map(&:id),idx_set_of_long_patern,idx]
       long_patern,errorlist =  
       nurce_list[idx].long_check(day,sft_str,
                                  Hospital::Nurce::LongPatern[@koutai3][sft_str][idx_set_of_long_patern[idx]])
       if long_patern
-        long_patern # ,daily_checks]
+        long_patern 
       else
-        # このとき、daily_checkは[item,正規表現の配列
-#pp [errorlist]
         errorlist.each{|item,reg| @count_cause[item][sft_str]+=1 }
         return false
       end
     }
-    #return paterns if avoid_check(nurce_list,sft_str,day,paterns)
-    #false
   end
   
   # 2日目以降に重大な支障が出ないか調べる。

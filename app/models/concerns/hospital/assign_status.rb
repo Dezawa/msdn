@@ -28,6 +28,39 @@ module Hospital::AssignStatus
   #    はて、、、 shift_remainに縮退できそうだが <- しにくい
   ##########################################################################
 
+  ###############################################################
+  # このセクションは、月ごとに決まるが割付の進行では変わらない
+  ###############################################################
+
+  # 割り当て可能なroleの数。(まだ割り当て前の状態)
+  # { [role_id,シフト] => 数 }。  
+  def roles_assignable
+    return @roles_assignable if @roles_assignable
+    @roles_assignable = Hash.new{|h,k| h[k]=0}
+    @nurces.each{|nurce| 
+      nurce.assinable_roles.each{ |role_sft,v| @roles_assignable[role_sft] += v  }
+    }
+    @roles_assignable    
+  end
+
+  # 今月必要とされるrole数合計    
+  # { [role_id,シフト] => 数 }。  
+  def roles_required_total
+    return @roles_required_total  if @roles_required_total 
+    @roles_required_total = Hash.new{|h,k| h[k] =0 }
+    needs_all_days[1..-1].each{|need_of_day|
+      @RoleShift.each{|key|    @roles_required_total[key] += (need_of_day[key] || [0])[0]
+      }
+    }
+    
+    @roles_required_total 
+  end
+
+  ####################################################
+
+
+  # まだ使われて居らず割り当て可能なroleの数
+  # { [role_id,シフト] => 数 }。
   def role_remain(recalc=false)
     return @role_remain if @role_remain && !recalc
     @role_remain = Hash.new{|h,k| h[k]=0}
@@ -53,15 +86,8 @@ module Hospital::AssignStatus
     @margin_of_role
   end
 
-  def roles_assignable
-    return @roles_assignable if @roles_assignable
-    @roles_assignable = Hash.new{|h,k| h[k]=0}
-    @nurces.each{|nurce| 
-      nurce.assinable_roles.each{ |role_sft,v| @roles_assignable[role_sft] += v  }
-    }
-    @roles_assignable    
-  end
-
+  # 割り当てられたrole数
+  # { [role_id,シフト] => 数 }。  
   def roles_assigned(recalc=false)
     return @roles_assigned if @roles_assigned && !recalc
     @roles_assigned = Hash.new{|h,k| h[k]=0}
@@ -73,20 +99,11 @@ module Hospital::AssignStatus
       }
     }
     @roles_assigned
-    
   end
 
-  def roles_required_total
-    return @roles_required_total  if @roles_required_total 
-    @roles_required_total = Hash.new{|h,k| h[k] =0 }
-    needs_all_days[1..-1].each{|need_of_day|
-      @RoleShift.each{|key|    @roles_required_total[key] += (need_of_day[key] || [0])[0]
-      }
-    }
-    
-    @roles_required_total 
-  end
- def roles_required(reculc=false)
+  # 現時点でまだ割り付けが終わっていない、これから必要とされる roleの数
+  # { [role_id,シフト] => 数 }
+  def roles_required(reculc=false)
     return @roles_required  if @roles_required && !reculc  
     @roles_required = Hash.new{|h,k| h[k] =0 }
     short_role_shift[1..-1].each{|short_role_of_day|
@@ -96,13 +113,6 @@ module Hospital::AssignStatus
     @roles_required
   end
 
-  def missing_roles(sft_str,m_roles)
-    m_roles.each{ |role_id|  @missing_roles[[role_id,sft_str]] += 1 }
-  end
-
-  def roles_cost(roles,tight)
-    tight.inject(0){ |cost,role| cost * 2 + (roles.include?(role) ? 1 : 0 )}
-  end
   # 各日の [role,shift] を得る
   # [ { [role,sft_srt]=>[min,max], , ,}, { day_data }, { day_data },,, ] 
   def short_role_shift(reculc=false)
@@ -112,7 +122,8 @@ module Hospital::AssignStatus
     @short_role_shift
 
   end
-  # 指定日に割り当て不足な [role,shift] の数
+
+  # 指定日の割り当て不足な [role,shift] の数
   def short_role_shift_of(day,reculc=false)
     s_r = Hash.new{|h,k| h[k]=[0,0]}
     rs=count_role_shift(reculc)
@@ -129,7 +140,7 @@ module Hospital::AssignStatus
   end
 
 
-  # ある日の、割り当てられたnurceのroleの集計
+  # 割り当てられたnurceのroleの集計
   # shift はstring
   def count_role_shift(reculc=false)
     return @count_role_shift if @count_role_shift && !reculc
@@ -139,7 +150,6 @@ module Hospital::AssignStatus
   end
 
   # ある日の、割り当てられたnurceのroleの集計
-
   # shift はstring
   def count_role_shift_of(day,reculc=false)
     r_k = Hash.new{|h,k| h[k]=0}
@@ -208,58 +218,6 @@ module Hospital::AssignStatus
     short_role_shift_of(day)[[@Kangoshi,sft_str]][0]
   end
 
-  # def need_nurces_roles(day)
-  #   if @night_mode
-  #     need_nurces_roles_night(day)
-  #   else 
-  #     need_nurces_roles_daytime(day)
-  #   end
-  # end
-
-  # def need_nurces_roles_night(day)
-  #   # この日のこのshiftの看護師の必要数と不足role
-  #   short_role(day,Sshift3,true)
-  #   # 看護師の必要数,不足role
-  #   need_nurces = need_nurces_of_night(day)  # 看護師の必要数
-  #   short_roles = short_roles_of_night(day)                    # 不足role
-  #   as_nurces_selected = nurces_selected_of_night(day,short_roles)  # アサイン可能看護師リスト
-
-  #   @shifts_night[@night_mode].each{|sft_str| next unless
-  #     entry_log(day,sft_str,__LINE__,need_nurces_shift(day,sft_str),short_roles[sft_str],as_nurces_selected[sft_str])
-  #   }
-  #   if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
-  #     [as_nurces_selected,need_nurces, short_roles]
-  #   else 
-  #     false
-  #   end
-  # end
-
-  # def need_nurces_roles_daytime(day)
-  #   # この日のこのshiftの看護師の必要数と不足role
-  #   short_role(day,Sshift3,true)
-  #   # 看護師の必要数,不足role
-  #   short_role_shift_of_day = short_role_shift_of(day)
-  #   need_nurces = { }   # 看護師の必要数
-  #   short_roles = { }   # 不足role
-  #   as_nurces_selected = { }   # アサイン可能看護師リスト
-  #   ## tryal
-  #   #(@night_mode ? @shifts123 : @shifts_night[@night_mode]).each{ |sft_str|
-  #   need_nurces[Sshift1] = short_role_shift_of_day[[@Kangoshi,Sshift1]][0]
-  #   short_roles[Sshift1] = short_role(day,Sshift1)
-    
-  #   as_nurces_selected[Sshift1] = 
-  #     (need_nurces[Sshift1]==0) ? [] :
-  #     assinable_nurces_by_cost_size_limited(Sshift1, day, short_roles[Sshift1])
-
-  #     entry_log(day,Sshift1,__LINE__,need_nurces_shift(day,Sshift1),short_roles[Sshift1],as_nurces_selected[Sshift1])
-  #   if assignable_nurces_enough_for_needs(day,need_nurces,as_nurces_selected)
-  #     [as_nurces_selected,need_nurces, short_roles]
-  #   else 
-  #     false
-  #   end
-  # end
-  
-
   def roles_count_short(day,sft_str)
     short_role = short_role_shift_of(day)
     Hospital::Need.need_role_ids.map{ |role_id| short_role[[role_id,sft_str]].first }
@@ -285,5 +243,9 @@ module Hospital::AssignStatus
     role_remain.select{|r_s,remain|  r_s[1]==sft_str }.
       sort_by{|r_s,remain| remain }.
       map{|r_s,remain| r_s[0] }
+  end
+
+  def roles_cost(roles,tight)
+    tight.inject(0){ |cost,role| cost * 2 + (roles.include?(role) ? 1 : 0 )}
   end
 end

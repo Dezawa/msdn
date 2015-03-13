@@ -228,10 +228,17 @@ class Hospital::Nurce < ActiveRecord::Base
     @assinable_roles
   end
 
+  def assignable?(day,sft_str,need_roles)
+    monthly.shift[day,1] == "_" &&
+      !check_at_assign(day,sft_str) &&
+      has_assignable_roles_atleast_one(sft_str,need_roles)
+  end
+
   # 必要roleを少なくとも一つ持って居るか？
   def has_assignable_roles_atleast_one(sft_str,need_roles)
     shift_remain[sft_str]>0 && (need_roles & need_role_ids).size > 0
   end
+
 
 ####################################################################
   def refresh
