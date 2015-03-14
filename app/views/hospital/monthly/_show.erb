@@ -9,7 +9,7 @@
 
  <tr><td><%= nurce.id %></td></td><td><nobr><%= nurce.name %></nobr></td>
    <% (1..@month.end_of_month.day).each{|day| day_column = "day%02d"%day %>
-    <td width='25' <%= monthly.days[day].color%>><nobr><%= monthly.days[day].kinmucode_code %></td><% } -%>
+    <td width='25' <%=  monthly.bg_colors(day) %>><nobr><%= monthly.days[day].kinmucode_code %></td><% } -%>
  <%= nurce_total(nurce) %>
  </tr><%}%>
  <%= day_total %>

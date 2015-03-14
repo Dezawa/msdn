@@ -16,6 +16,7 @@ class Hospital::Monthly < ActiveRecord::Base
   attr_writer :days
   attr_accessor :shift,:nurce
 
+  Days =  ("day00".."day31").to_a.map(&:to_sym)
   #def_delegators @days,:[],:each,:map
   after_find do
     store_days
@@ -31,25 +32,20 @@ class Hospital::Monthly < ActiveRecord::Base
     end
 
   def store_days
-    @days = ("day00".."day%02d"%lastday).
-      map{|day| Hospital::Kinmu.create(send day.to_sym)}
+    days
     days2shift
   end
 
+  def bg_colors(day)
+    ["","bgcolor=orange","bgcolor=red"][self[Days[day]] ? self[Days[day]]/1000 : 0 ]
+  end
 
   def days
-    @days ||= ("day00".."day%02d"%lastday).
-      map{|day| Hospital::Kinmu.create(send day.to_sym)}
+    @days ||= Days[0..lastday].map{|day| Hospital::Kinmu.create(self[day])}
   end
 
   def days2shift
     @shift ||= days.map{|knm| knm.shift ? knm.shift : "_"}.join
-  end
-  def day2shift
-    @shift ||= days.map{|id| 
-      #Hospital::Kinmucode.find(id%1000).to_0123 if id && (id%1000) > 0
-      Hospital::Kinmucode.k_code(id%1000).to_0123 if id && (id%1000) > 0
-    }
   end
 
   def restore_days_and_save
@@ -68,18 +64,13 @@ class Hospital::Monthly < ActiveRecord::Base
       #current_kinmucode = days[day].kinmucode
       next if days[day].want && days[day].want>0
       if kinmucode_id = Hospital::Kinmucode.from_0123(knm,kinmukubun_id)
-        #next if Hospital::Kinmucode.from_0123(knm,kinmukubun_id).
-        #  include?(current_kinmucode.id)
         days[day].kinmucode_id = kinmucode_id
-        #logger.debug("Shift=#{knm},kinmucode_id=#{kinmucode_id},CODE=#{days[day].kinmucode.code}")
-          #Hospital::Kinmucode.from_0123(knm,kinmukubun_id)
       else
         days[day].kinmucode_id = nil
       end
     }
-      #knm = @kinmu[3,1]
     (0..lastday).each{|day|
-      self[("day%02d"%day).to_sym] = 
+      self[Days[day]] = 
      (days[day].kinmucode_id ? days[day].kinmucode_id + days[day].want*1000 : nil)
     }
 #print  day01+" "
@@ -87,7 +78,6 @@ class Hospital::Monthly < ActiveRecord::Base
   end
 
   def set_shift(day,sft_str)
-    #self.days[day].kinmucode_id = (sft == 0 ? Hospital::Kinmucode::Koukyuu : sft )
     self.shift[day,1] = sft_str ? sft_str : "_"
   end
 
