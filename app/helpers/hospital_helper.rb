@@ -93,7 +93,7 @@ module HospitalHelper
 
   def day_bgcolor(day)
     if what_day(@month+(day-1).day) == 1
-      "bgcolor='#ff70b0'"
+      "bgcolor=#ff70b0"
 
     else
       ""
