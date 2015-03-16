@@ -6,7 +6,8 @@ require 'rubygems'
 require 'spreadsheet'
 #require '9ns100'
 
-Sheet9ns    = File.join(Rails.root,"lib","hospital","9ns100.xls")
+Sheet9ns1    = File.join(Rails.root,"lib","hospital","9ns100.xls")
+Sheet9ns   = File.join(Rails.root,"lib","hospital","9ns100-2.xls")
 Sheet9nsNew = File.join(Rails.root,"tmp","hospital","form9.xls")
 
 Spreadsheet.client_encoding = 'UTF-8'
@@ -34,7 +35,8 @@ Items =
     :weekly_hour => [39,13] ,    # ]※常勤職員の週所定労働時間
 
     :column_Shubetu => 1, :column_ward => 3, :column_nurce => 4,  #種別、病棟、名前
-    :column_Joukin  => 5, :column_part => 6, :column_Hijoukin =>7, :column_night_only => 12,
+    :column_Joukin  => 5, :column_part => 6, :column_Hijoukin =>7, :column_Kenmu => 8,
+    :column_night_only => 12,
     :column_first_weekday => 14,
     :line_weekday      => [44,261],
     :line_nurce        => [45,262] #   262 = 45+100*2+2(247)+ sum(15): 45,1272 1272 = 45+6*(202) + 15 = 45+1212+15
@@ -129,31 +131,62 @@ Items =
 
   def nurces
     @row =  Items[:line_nurce].first
-    monthlies =Hospital::Monthly.all(:conditions => ["month =?",@month]).
-      sort_by{ |monthly| monthly.nurce_id}
+    monthlies =Hospital::Monthly.where(["month =?",@month]).order(:nurce_id)
     monthlies.each{ |monthly|
-      set_nurce_shubetu(monthly,@row)
+      nurce = Hospital::Nurce.find(monthly.nurce_id)
+      set_nurce_shubetu(nurce,monthly,@row)
+      monthly_shift(nurce,monthly,@row)
       @row += 2
     }
   end
 
-  def set_nurce_shubetu(monthly,row)
-      nurce = Hospital::Nurce.find(monthly.nurce_id)
+  def set_nurce_shubetu(nurce,monthly,row)
       @sheet[ row,Items[:column_Shubetu]]  = Hospital::Role.shokushu.rassoc(nurce.shokushu_id)[0]
       @sheet[ row,Items[:column_ward]]  = Hospital::Busho.find(nurce.busho_id).name
       @sheet[ row,Items[:column_nurce]]  = nurce.name
-      sym = case nurce.kinmukubun_id
-                         when 6,7  ; :column_Joukin
-                         when 8          ; :column_part
+
+      sym = case nurce.kinmukubun.name#_id
+                         when "日勤","三交代"  ; :column_Joukin
+                         when "パート"          ; :column_part
                          when 5          ; :column_night_only
                          else            ; :column_Hijoukin
                          end
-logger.debug("SHEET sym=#{sym}, [row+1,Items[sym]] = [#{row+1},#{Items[sym]}]")
-      @sheet[ row+1,Items[sym]] = 1
-      monthly_shift(nurce,monthly,row)
-
+    logger.debug("### SHEET #{nurce.name} #{nurce.kinmukubun.name}sym=#{sym},"+
+                 "[row+1,Items[sym]] = [#{row+1},#{Items[sym]}]")
+    [ :column_Joukin , :column_part, :column_Hijoukin].each{ |sym0|
+      @sheet[ row+1,Items[sym0]] =  sym == sym0 ? 1 : 0
+    }
+    @sheet[ row+1,Items[:column_Kenmu]] = /[45678BC]/ =~ monthly.shift ? 1 : 0
   end
 
+  def monthly_daytime(nurce,monthly,row)
+    kinmus = monthly.days
+    offset = 1
+    clm = Items[:column_first_weekday]-1
+    (1..@month.end_of_month.day).each{ |day|
+      kinmucode =  kinmus[day].kinmucode
+      if kinmucode
+        daytime = (kinmucode.main_daytime||0.0) + (kinmucode.sub_daytime||0.0)
+        @sheet[ row,clm+day] = daytime if  daytime > 0.00
+      end
+    }
+    #
+  end
+  def monthly_night(nurce,monthly,row)
+    kinmus = monthly.days
+    offset = 1
+    clm = Items[:column_first_weekday]-1
+    (1..@month.end_of_month.day).each{ |day|
+      kinmucode =  kinmus[day].kinmucode
+    next_night   = 0.0
+      if kinmucode
+        night = next_night + (kinmucode.main_nignt||0.0) + (kinmucode.sub_night||0.0)
+        @sheet[ row+1,clm+day] = night.to_f if  night > 0.00
+        next_night =(kinmucode.main_next||0.0) + (kinmucode.sub_next||0.0)
+      end
+    }
+    #
+  end
   def monthly_shift(nurce,monthly,row)
       #puts row
 kinmus = monthly.days
