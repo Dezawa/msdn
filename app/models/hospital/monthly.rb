@@ -13,7 +13,7 @@ class Hospital::Monthly < ActiveRecord::Base
   extend CsvIo
   #extend Forwardable
 
-  attr_writer :days
+  attr_reader :days
   attr_accessor :shift,:nurce
 
   Days =  ("day00".."day31").to_a.map(&:to_sym)
@@ -32,7 +32,7 @@ class Hospital::Monthly < ActiveRecord::Base
     end
 
   def store_days
-    days
+    set_days
     days2shift
   end
 
@@ -40,8 +40,8 @@ class Hospital::Monthly < ActiveRecord::Base
     ["","bgcolor=orange","bgcolor=red"][self[Days[day]] ? self[Days[day]]/1000 : 0 ]
   end
 
-  def days
-    @days ||= Days[0..lastday].map{|day| Hospital::Kinmu.create(self[day])}
+  def set_days
+    @days = Days[0..lastday].map{|day| Hospital::Kinmu.create(self[day])}
   end
 
   def days2shift
