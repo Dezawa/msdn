@@ -192,6 +192,72 @@ module Hospital::NurceCombination
     @nurces.select{|nurce| nurce.assignable?(day,sft_str,short_roles.map{|r,mi_max| r }) }
   end
 
+
+  # 候補の数(上限)を決める。
+  # 多すぎると時間が掛かる。
+  # 少なすぎると割付に失敗する。
+  def limit_of_nurce_candidate(sft_str,day)
+    case sft_str
+    when Sshift2,Sshift3 ; limit_of_nurce_candidate_night(day)
+    when Sshift1         ; limit_of_nurce_candidate_day(day)
+    end # of case    
+  end
+
+  def limit_of_nurce_candidate_night(day)
+    [((need_nurces_shift(day,Sshift2)+(need_nurces_shift(day,Sshift3)||0))*Factor_of_safety_NurceCandidateList).ceil,
+     LimitOfNurceCandidateList].max
+  end
+
+  def  limit_of_nurce_candidate_day(day)
+    [ (need_nurces_shift(day,Sshift1) * 1.2).ceil ,need_nurces_shift(day,Sshift1)+1].max
+  end
+
+
+  #割り当て可能なnurseをcostの低いほうから何人か選ぶ。
+  #何人選ぶかは #limit_of_nurce_candidate にて決める
+  #ただしcostだけで選ぶと必要ロールがそろわない恐れがあるので、
+  # 持っているロールのパターンで分け、それぞれの中でコストの低い方から必要人数選ぶ。
+  # これが必要なのは割りあて可能な人数が「何人か」より多い場合
+  def assinable_nurces_by_cost_size_limited(sft_str,day,short_roles_this_shift )
+    @assignable_nurce ||= { }
+    @assignable_nurce[sft_str] = assinable_nurces(day,sft_str,short_roles_this_shift)
+    @limit = limit_of_nurce_candidate(sft_str,day)
+    logger.debug("  limit_of_nurce_candidate(sft_str,day) #{sft_str},#{day}")
+    logger.debug("    HOSPITAL ASSIGN 可能看護師 shift#{sft_str} Limit=#{@limit}=>#{@assignable_nurce[sft_str].size}人, #{@assignable_nurce[sft_str].map(&:id).join(',')}")
+    if @assignable_nurce[sft_str].size <= @limit
+      @assignable_nurce[sft_str].
+        sort_by{|nurce| nurce.cost(@night_mode ? :night_total : Sshift1,tight_roles(sft_str))} 
+    else
+      array_merge(gather_by_each_group_of_role(@assignable_nurce[sft_str],sft_str,short_roles_this_shift)
+                  )[0,@limit]
+    end
+  end
+
+  # 持ってるroleで層別し、各々の層をcostで並べる。
+  def gather_by_each_group_of_role(as_nurce,sft_str,short_role_of_this_shift)
+    nurces_group_by = as_nurce.group_by{ |nurce| (nurce.need_role_ids & short_role_of_this_shift).sort}
+    logger.debug("    GATHER_BY_EACH_GROUP_OF_ROLE shift=#{sft_str}:as_nurce = #{as_nurce.map(&:id).join(',')}")
+    nurces =  nurces_group_by.to_a.  # 持ってるroleで層別し
+      sort_by{ |roles,nurce_list|  roles_cost(roles,tight_roles(sft_str))}.
+      map{ |roles,nurce_list|                                # 各々の層をcostで並べる
+      nurce_list.sort_by{|nurce| nurce.cost(@night_mode ? :night_total : Sshift1,tight_roles(sft_str)) 
+      }
+    }
+    logger.debug("    GATHER_BY_EACH_GROUP_OF_ROLE [#{nurces.map{|ns| ns.map(&:id).join(',')}.join('],[')}]")
+    nurces
+  end # of case
+
+  # 持つロールパターン毎に層別されたデータ(nurces_classified_by_role)から
+  # 順次抜き出して一次元のデータにする
+  def array_merge(nurces_classified_by_role)
+    return [] if nurces_classified_by_role==[]
+    return nurces_classified_by_role[0] if nurces_classified_by_role.size==1
+    maxsize = nurces_classified_by_role.map{|ary| ary.size}.max
+    merged = nurces_classified_by_role[0]+[nil]*(maxsize-nurces_classified_by_role[0].size)
+    nurces_classified_by_role[1..-1].inject(merged){|merg,ary| merg.zip(ary)}.flatten.compact
+  end
+
+
   # 看護師群のcostの総計
   def cost_of_nurce_combination(nurces,sft_str,tight = nil)
     tight ||= tight_roles(sft_str)
