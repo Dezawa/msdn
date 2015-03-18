@@ -26,9 +26,6 @@ class Hospital::Nurce < ActiveRecord::Base
   include Hospital::Reguration
 
   has_and_belongs_to_many :hospital_roles,:class_name => "Hospital::Role"
-  # has_and_belongs_to_many :shokui,:class_name => "Hospital::Role",:conditions => "bunrui = 1"
-  # has_and_belongs_to_many :shokushu,:class_name => "Hospital::Role",:conditions => "bunrui = 2"
-  # has_and_belongs_to_many :kinmukubun,:class_name => "Hospital::Role",:conditions => "bunrui = 3"
   belongs_to :shokui,:class_name => "Hospital::Role"
   belongs_to :shokushu,:class_name => "Hospital::Role"
   belongs_to :kinmukubun,:class_name => "Hospital::Role"
@@ -63,34 +60,42 @@ class Hospital::Nurce < ActiveRecord::Base
 
   class AssignPatern
     attr_accessor :patern, :reg, :back,:length,:checks,:target_days
-    def initialize(*args)
-      @patern, @reg, @back,@length,@checks,@target_days = args.first
+    def initialize(args)
+      hash = { :back => 0, :reg => /^_/, :length => 1,:target_days => [[],[],[],[]] }.merge(args)
+      [ :patern, :reg, :back,:length,:checks,:target_days ].each{ |sym|
+        instance_variable_set("@#{sym}", hash.delete(sym))
+      }
     end
   end
   LongPatern = { 
     true => {
-      Sshift3 => [  # patern, reg, back,length,[調べるshift],[ [0の割り当て数見る日],[1の][2の],[3の]]
-                  AssignPatern.new(["330"    , /^[^2L3M56]_[3_][0_]/,1,4,[Sshift3],[[2],[],[],[1]] ]),
-           #AssignPatern.new(["30"     , /^_[0_]/           ,0,2,[Sshift3],[[1],[],[],[1]] ]),
-           AssignPatern.new(["3"      , /^_/               ,0,1,["3"],[[],[],[],[]]])
-           ],
-      Sshift2 => [ #  patern, reg,                back,length,[調べるshift],[ [2の割り当て数見る日],[3の]]
-            AssignPatern.new(["220330",/^[^2L3M56]_[2_][0_][3_]{2}[0_]/,1,7,[Sshift3,Sshift2],[[2,5],[],[1],[3,4]]]),
-            AssignPatern.new(["220"   , /^_[2_][0_]/          ,0,3,[Sshift2],[[2],[],[1],[]] ]),
-            #AssignPatern.new(["20"    , /^_[0_]/              ,0,2,[Sshift2],[[1],[],[1],[]] ]),
-            AssignPatern.new(["2"     , /^_/                  ,0,1,[Sshift2],[[],[],[],[]]])
-           ],
-       Sshift1 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
-             AssignPatern.new(["1"    , /^_/                 ,0,1,[Sshift1],[[],[],[],[]]])
-            ]
+      Sshift3 => 
+      [  # patern, reg, back,length,[調べるshift],[ [0の割り当て数見る日],[1の][2の],[3の]]
+       AssignPatern.new(:patern => "330",:checks => [Sshift3],:target_days =>[[2],[],[],[1]],
+                        :back => 1, :length => 4, :reg => /^[^2L3M56]_[3_][0_]/ ),
+       AssignPatern.new(:patern => "3",:checks => [Sshift3])
+      ],
+      Sshift2 => 
+      [ #  patern, reg,                back,length,[調べるshift],[ [2の割り当て数見る日],[3の]]
+       AssignPatern.new(:patern => "220330",:checks => [Sshift3,Sshift2],:target_days =>[[2,5],[],[1],[3,4]],
+                        :back => 1, :length => 7, :reg => /^[^2L3M56]_[2_][0_][3_]{2}[0_]/ ),
+       AssignPatern.new(:patern => "220",:checks => [Sshift2],:target_days =>[[2],[],[1],[]],
+                        :length => 3, :reg =>  /^_[2_][0_]/ ),
+       AssignPatern.new(:patern => "2",:checks => [Sshift2])
+      ],
+       Sshift1 => 
+      [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
+       AssignPatern.new(:patern => "1",:checks => [Sshift1])
+      ]
        },
      false => { 
        Sshift2 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]
-             AssignPatern.new(["220"  , /^[^25][0_]_[2_][0_]/,2,5,[Sshift2],[[2],[],[1],[]] ]),
-             AssignPatern.new(["2"    , /^_/                 ,0,1,[Sshift2],[[],[],[],[]]])
+             AssignPatern.new(:patern => "220",:checks => [Sshift2],:target_days => [[2],[],[1],[]] ,
+                         :back => 2, :length => 5, :reg =>  /^[^25][0_]_[2_][0_]/),
+             AssignPatern.new(:patern => "2",:checks => [Sshift2] )
             ],
         Sshift1 => [      # reg, back,length,[制約名,,],[ [2の割り当て数見る日],[3の]]  
-             AssignPatern.new(["1"    , /^_/                 ,0,1,[Sshift1],[[],[],[],[]]])
+             AssignPatern.new(:patern => "1",:checks => [Sshift1] )
              ]
       }     
 
@@ -175,17 +180,6 @@ class Hospital::Nurce < ActiveRecord::Base
     shift_remain[sft_str] -= 1 
   end
 
-# -  def save_shift; [shifts.dup ,role_used.dup ,role_remain.dup,shift_remain.dup];end
-# -  def restore_shift(saved_shift)
-# -    #dbgout( "HP  restore_shift前 #{id}:#{shifts} #{role_shift.to_a.flatten.join(' ')}")
-# -    self.shifts = saved_shift[0]
-# -    role_used   = saved_shift[1]
-# -    @role_remain = saved_shift[2]
-# -    @shift_remain= saved_shift[3]
-# -
-# -    @role_shift=(self.shifts||"").split("").map{|sft_str|   role_shift_of(sft_str) }
-# -    self
-# -  end
  def save_shift #; [shifts.dup  ,role_remain.dup,shift_remain.dup];end
   [shifts.dup  ,shift_remain.dup]
   end
