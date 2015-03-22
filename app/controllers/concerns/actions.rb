@@ -323,9 +323,7 @@ logger.debug("APPLICATION#GRAPH: params=#{params.to_a.flatten.join(',')}")
     else 
       @page = params[:page]
     end
-    #redirect_to :action => :index,:page => @page
-    find_and
-    render  :file => 'application/index',:layout => 'application'
+    redirect_to :action => :index,:page => @page
   end
 
   def csv_out(filename=nil)
