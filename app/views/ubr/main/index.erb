@@ -1,9 +1,0 @@
-<div align=center><H2>URB SCM在庫一覧更新</H2>
-<%= flash[:message] %>
-最終Uploadデータ日付 <%= @lastday %><br><br>
-SCM在庫一覧を貼り、[CSV/Excelで登録]を実行してください
-   <%=  
-      ((@labels[0].help ? help(@labels[0].help) : "") +
-       @labels[0].csv_upload_link(self)).html_safe %>
-<img src='/ubr/main/show_pdf'>
-
