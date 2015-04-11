@@ -218,19 +218,42 @@ class Hospital::Assign
   # 一日目の夜勤の候補を複数組用意し、それを順次試す。
   # Timeout 秒の間に結果がでなければ諦めて次の候補を試す
   # すべての候補で失敗した場合は、最も深くまで割り付けられた結果を書き出す。
-  def assign_month(day=1)
+  def assign_month()
+    day=1
     statistics_log_title
     log_start_title
     
     @count = 0
     @initial_state = save_shift(@nurces,1)
 
-    first_day_combination = first_day_candidate_combination
+    first_day_combination = candidate_combination_for_shift23_selected_by_cost(1) #first_day_candidate_combination
+    assign(first_day_combination,:once)
+    # dbgout dump("  HP START  ")
+    # while first_day_combination.size > 1
+    #   first_day_combination.shift
+    #   @count += 1
+    #   restore_shift(@nurces,1,@initial_state)
+    #   refresh
 
+    #   @stat = ""
+    #   next unless assign_night_untile_success_or_timeout(first_day_combination)
+    #   next unless assign_daytime_untile_success_or_timeout
+    #   @count += 1
+    #   log_stat_result
+    #   save
+    #   #next
+    #   return first_day_combination
+    # end
+    # restore_shift(@nurces,1,longest[1])
+    # save
+    # first_day_combination
+  end
+
+  def assign(first_day_combination,once_or_mult)
+    first_day_combination.unshift(nil)
     dbgout dump("  HP START  ")
     while first_day_combination.size > 1
       first_day_combination.shift
-      @count += 1
       restore_shift(@nurces,1,@initial_state)
       refresh
 
@@ -240,14 +263,12 @@ class Hospital::Assign
       @count += 1
       log_stat_result
       save
-      #next
-      return true
+      return [first_day_combination,@initial_state] if once_or_mult == :once
     end
     restore_shift(@nurces,1,longest[1])
     save
-    #raise StandardError
+    [first_day_combination,@initial_state]
   end
-
   # 夜勤について割付を行う。Timeoutしたらそこで打ちきる
   # 実際の割付は #assign_night で再帰で行う
   def assign_night_untile_success_or_timeout(candidate_combination,opt ={ })
@@ -295,8 +316,14 @@ class Hospital::Assign
   # single :: false,nil  case 2
   #        :: 2          case 3
   #        :: 1          case 1           
-  def assign_mult(single = SecondAndLater,day=1)
-    assign_mult_old(single = SecondAndLater,day)
+  def assign_mult(first_day_combination,initial_state)
+    day=1
+    statistics_log_title
+    log_start_title
+    
+    @count = 1
+    @initial_state = initial_state
+    assign(first_day_combination,:mult)
   end 
   def assign_mult_new(single = SecondAndLater,day=1)
     set_instance_valiables_for_assign_loop

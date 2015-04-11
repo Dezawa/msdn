@@ -18,6 +18,6 @@ class Hospital::AvoidCombination < ActiveRecord::Base
   end
 
   def busho_name ; busho ? busho.name : "" ; end
-  def dump ; "[#{nurce1_id},#{nurce2_id}:weight:#{weight}" ; end
+  def dump ; "[#{nurce1_id},#{nurce2_id}]:weight:#{weight}" ; end
 
 end

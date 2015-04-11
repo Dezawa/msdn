@@ -102,8 +102,8 @@ logger.debug("WAIT_ASSIGN: @first=#{@first} ******************************")
 
   def assign
       #ret=Hospital::Assign.delay(:attempts => 1).create_assign(@current_busho_id,@month,2)
-      ret=Hospital::Assign.create_assign(@current_busho_id,@month,SingleSolution)
-      
+      first_day_combination,initial_state = Hospital::Assign.create_assign(@current_busho_id,@month,SingleSolution)
+      HospitalBackendJob.new(@current_busho_id,@month,first_day_combination,initial_state)
       redirect_to :action => :show_assign,:mult => "20",:no => "0000"
   end
 
