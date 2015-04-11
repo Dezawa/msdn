@@ -11,57 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 201409131724152) do
+ActiveRecord::Schema.define(version: 20130101010101) do
 
-  create_table "book_kamokus", force: true do |t|
-    t.text    "kamoku"
-    t.integer "bunrui"
-    t.integer "code"
-  end
-
-  create_table "book_mains", force: true do |t|
-    t.integer "no"
-    t.date    "date"
-    t.integer "kasikata"
-    t.integer "karikata"
-    t.text    "tytle"
-    t.text    "memo"
-    t.integer "amount"
-    t.text    "owner"
-  end
-
-  create_table "book_permissions", force: true do |t|
-    t.string   "login"
-    t.string   "owner"
-    t.boolean  "show"
-    t.boolean  "edit"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "permission"
-    t.integer  "user_id"
-  end
-
-  create_table "bushos", force: true do |t|
-    t.string "name"
-  end
-
-  create_table "delayed_jobs", force: true do |t|
-    t.integer  "priority",   default: 0
-    t.integer  "attempts",   default: 0
-    t.text     "handler"
-    t.text     "last_error"
-    t.datetime "run_at"
-    t.datetime "locked_at"
-    t.datetime "failed_at"
-    t.string   "locked_by"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
-
-  create_table "forecasts", force: true do |t|
-    t.string   "location"
+  create_table "forecasts", force: :cascade do |t|
+    t.string   "location",     limit: 255
     t.date     "date"
     t.date     "month"
     t.date     "announce_day"
@@ -82,14 +35,14 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.float    "humi18",       limit: 24
     t.float    "humi21",       limit: 24
     t.float    "humi24",       limit: 24
-    t.string   "weather03"
-    t.string   "weather06"
-    t.string   "weather09"
-    t.string   "weather12"
-    t.string   "weather15"
-    t.string   "weather18"
-    t.string   "weather21"
-    t.string   "weather24"
+    t.string   "weather03",    limit: 255
+    t.string   "weather06",    limit: 255
+    t.string   "weather09",    limit: 255
+    t.string   "weather12",    limit: 255
+    t.string   "weather15",    limit: 255
+    t.string   "weather18",    limit: 255
+    t.string   "weather21",    limit: 255
+    t.string   "weather24",    limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "vaper03",      limit: 24
@@ -102,288 +55,15 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.float    "vaper24",      limit: 24
   end
 
-  create_table "holydays", force: true do |t|
-    t.integer "year"
+  create_table "holydays", force: :cascade do |t|
+    t.integer "year", limit: 4
     t.date    "day"
-    t.string  "name"
+    t.string  "name", limit: 255
   end
 
-  create_table "hospital_avoid_combinations", force: true do |t|
-    t.integer "busho_id"
-    t.integer "nurce1_id"
-    t.integer "nurce2_id"
-    t.integer "weight"
-  end
-
-  create_table "hospital_bushos", force: true do |t|
-    t.string "name"
-  end
-
-  create_table "hospital_defines", force: true do |t|
-    t.string "name"
-    t.string "attri"
-    t.string "value"
-    t.string "comment"
-  end
-
-  create_table "hospital_kinmucodes", force: true do |t|
-    t.string  "code"
-    t.integer "kinmukubun_id"
-    t.integer "with_mousiokuri"
-    t.float   "main_daytime",    limit: 24
-    t.float   "main_nignt",      limit: 24
-    t.float   "sub_daytime",     limit: 24
-    t.float   "sub_night",       limit: 24
-    t.string  "name"
-    t.string  "color"
-    t.string  "start"
-    t.string  "finish"
-    t.float   "main_next",       limit: 24
-    t.float   "sub_next",        limit: 24
-    t.float   "am",              limit: 24, default: 0.0
-    t.float   "night",           limit: 24, default: 0.0
-    t.float   "midnight",        limit: 24, default: 0.0
-    t.float   "am2",             limit: 24, default: 0.0
-    t.float   "night2",          limit: 24, default: 0.0
-    t.float   "midnight2",       limit: 24, default: 0.0
-    t.float   "nenkyuu",         limit: 24, default: 0.0
-    t.float   "pm",              limit: 24, default: 0.0
-    t.float   "pm2",             limit: 24, default: 0.0
-  end
-
-  create_table "hospital_limits", force: true do |t|
-    t.integer "code0"
-    t.integer "code1"
-    t.integer "code2"
-    t.integer "code3"
-    t.integer "coden"
-    t.integer "busho_id"
-    t.integer "kinmu_total"
-    t.integer "night_total"
-    t.integer "nurce_id"
-  end
-
-  create_table "hospital_meetings", force: true do |t|
-    t.integer  "busho_id"
-    t.date     "month"
-    t.integer  "number"
-    t.string   "name"
-    t.datetime "start"
-    t.float    "length",   limit: 24
-    t.boolean  "kaigi",               default: true
-  end
-
-  create_table "hospital_monthlies", force: true do |t|
-    t.date    "month"
-    t.integer "day00"
-    t.integer "day01"
-    t.integer "day02"
-    t.integer "day03"
-    t.integer "day04"
-    t.integer "day05"
-    t.integer "day06"
-    t.integer "day07"
-    t.integer "day08"
-    t.integer "day09"
-    t.integer "day10"
-    t.integer "day11"
-    t.integer "day12"
-    t.integer "day13"
-    t.integer "day14"
-    t.integer "day15"
-    t.integer "day16"
-    t.integer "day17"
-    t.integer "day18"
-    t.integer "day19"
-    t.integer "day20"
-    t.integer "day21"
-    t.integer "day22"
-    t.integer "day23"
-    t.integer "day24"
-    t.integer "day25"
-    t.integer "day26"
-    t.integer "day27"
-    t.integer "day28"
-    t.integer "day29"
-    t.integer "day30"
-    t.integer "day31"
-    t.integer "nurce_id"
-  end
-
-  create_table "hospital_needs", force: true do |t|
-    t.integer "daytype"
-    t.integer "busho_id"
-    t.integer "role_id"
-    t.integer "kinmucode_id"
-    t.integer "minimun"
-    t.integer "maximum"
-  end
-
-  create_table "hospital_nurces", force: true do |t|
-    t.string  "name"
-    t.integer "number"
-    t.integer "busho_id"
-    t.integer "shokui_id"
-    t.integer "shokushu_id"
-    t.integer "kinmukubun_id"
-    t.integer "limit_id"
-    t.integer "shikaku_id"
-  end
-
-  create_table "hospital_nurces_roles", id: false, force: true do |t|
-    t.integer "nurce_id"
-    t.integer "role_id"
-  end
-
-  create_table "hospital_roles", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "name"
-    t.string   "comment"
-    t.integer  "bunrui"
-    t.boolean  "need"
-  end
-
-  create_table "hospital_wants", force: true do |t|
-    t.integer "kinmucode_id"
-    t.integer "minimum"
-    t.integer "maximum"
-  end
-
-  create_table "labels", force: true do |t|
-    t.string "system"
-    t.string "labelid"
-    t.string "label"
-    t.text   "labeloption"
-  end
-
-  create_table "nurces", force: true do |t|
-    t.string  "name"
-    t.integer "number"
-    t.integer "busho_id"
-    t.integer "pre_busho_id"
-    t.integer "pre_shokui_id"
-    t.integer "pre_shokushu_id"
-    t.integer "pre_kinmukubun_id"
-    t.date    "assign_date"
-    t.integer "idou"
-    t.integer "limit_id"
-  end
-
-  create_table "nurces_roles", id: false, force: true do |t|
-    t.integer "nurce_id"
-    t.integer "role_id"
-  end
-
-  create_table "power_ube_hospital_months", force: true do |t|
-    t.date "month"
-  end
-
-  create_table "power_ube_hospital_powers", force: true do |t|
-    t.date    "date"
-    t.integer "month_id"
-    t.integer "weather_id"
-    t.float   "power01",    limit: 24
-    t.float   "power02",    limit: 24
-    t.float   "power03",    limit: 24
-    t.float   "power04",    limit: 24
-    t.float   "power05",    limit: 24
-    t.float   "power06",    limit: 24
-    t.float   "power07",    limit: 24
-    t.float   "power08",    limit: 24
-    t.float   "power09",    limit: 24
-    t.float   "power10",    limit: 24
-    t.float   "power11",    limit: 24
-    t.float   "power12",    limit: 24
-    t.float   "power13",    limit: 24
-    t.float   "power14",    limit: 24
-    t.float   "power15",    limit: 24
-    t.float   "power16",    limit: 24
-    t.float   "power17",    limit: 24
-    t.float   "power18",    limit: 24
-    t.float   "power19",    limit: 24
-    t.float   "power20",    limit: 24
-    t.float   "power21",    limit: 24
-    t.float   "power22",    limit: 24
-    t.float   "power23",    limit: 24
-    t.float   "power24",    limit: 24
-    t.float   "rev01",      limit: 24
-    t.float   "rev02",      limit: 24
-    t.float   "rev03",      limit: 24
-    t.float   "rev04",      limit: 24
-    t.float   "rev05",      limit: 24
-    t.float   "rev06",      limit: 24
-    t.float   "rev07",      limit: 24
-    t.float   "rev08",      limit: 24
-    t.float   "rev09",      limit: 24
-    t.float   "rev10",      limit: 24
-    t.float   "rev11",      limit: 24
-    t.float   "rev12",      limit: 24
-    t.float   "rev13",      limit: 24
-    t.float   "rev14",      limit: 24
-    t.float   "rev15",      limit: 24
-    t.float   "rev16",      limit: 24
-    t.float   "rev17",      limit: 24
-    t.float   "rev18",      limit: 24
-    t.float   "rev19",      limit: 24
-    t.float   "rev20",      limit: 24
-    t.float   "rev21",      limit: 24
-    t.float   "rev22",      limit: 24
-    t.float   "rev23",      limit: 24
-    t.float   "rev24",      limit: 24
-    t.float   "ave01",      limit: 24
-    t.float   "ave02",      limit: 24
-    t.float   "ave03",      limit: 24
-    t.float   "ave04",      limit: 24
-    t.float   "ave05",      limit: 24
-    t.float   "ave06",      limit: 24
-    t.float   "ave07",      limit: 24
-    t.float   "ave08",      limit: 24
-    t.float   "ave09",      limit: 24
-    t.float   "ave10",      limit: 24
-    t.float   "ave11",      limit: 24
-    t.float   "ave12",      limit: 24
-    t.float   "ave13",      limit: 24
-    t.float   "ave14",      limit: 24
-    t.float   "ave15",      limit: 24
-    t.float   "ave16",      limit: 24
-    t.float   "ave17",      limit: 24
-    t.float   "ave18",      limit: 24
-    t.float   "ave19",      limit: 24
-    t.float   "ave20",      limit: 24
-    t.float   "ave21",      limit: 24
-    t.float   "ave22",      limit: 24
-    t.float   "ave23",      limit: 24
-    t.float   "ave24",      limit: 24
-    t.float   "by_vaper01", limit: 24
-    t.float   "by_vaper02", limit: 24
-    t.float   "by_vaper03", limit: 24
-    t.float   "by_vaper04", limit: 24
-    t.float   "by_vaper05", limit: 24
-    t.float   "by_vaper06", limit: 24
-    t.float   "by_vaper07", limit: 24
-    t.float   "by_vaper08", limit: 24
-    t.float   "by_vaper09", limit: 24
-    t.float   "by_vaper10", limit: 24
-    t.float   "by_vaper11", limit: 24
-    t.float   "by_vaper12", limit: 24
-    t.float   "by_vaper13", limit: 24
-    t.float   "by_vaper14", limit: 24
-    t.float   "by_vaper15", limit: 24
-    t.float   "by_vaper16", limit: 24
-    t.float   "by_vaper17", limit: 24
-    t.float   "by_vaper18", limit: 24
-    t.float   "by_vaper19", limit: 24
-    t.float   "by_vaper20", limit: 24
-    t.float   "by_vaper21", limit: 24
-    t.float   "by_vaper22", limit: 24
-    t.float   "by_vaper23", limit: 24
-    t.float   "by_vaper24", limit: 24
-  end
-
-  create_table "sessions", force: true do |t|
-    t.string   "session_id", null: false
-    t.text     "data"
+  create_table "sessions", force: :cascade do |t|
+    t.string   "session_id", limit: 255,   null: false
+    t.text     "data",       limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -391,11 +71,11 @@ ActiveRecord::Schema.define(version: 201409131724152) do
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true, using: :btree
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
-  create_table "shimada_factories", force: true do |t|
-    t.string  "name"
-    t.string  "weather_location"
-    t.string  "forecast_location"
-    t.integer "power_model_id",                    default: 0
+  create_table "shimada_factories", force: :cascade do |t|
+    t.string  "name",                   limit: 255
+    t.string  "weather_location",       limit: 255
+    t.string  "forecast_location",      limit: 255
+    t.integer "power_model_id",         limit: 4,     default: 0
     t.float   "revise_threshold",       limit: 24
     t.float   "revise_slope_lower",     limit: 24
     t.float   "revise_slope_higher",    limit: 24
@@ -406,19 +86,19 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.float   "raw_vaper_slope_higher", limit: 24
     t.float   "raw_vaper_y0",           limit: 24
     t.float   "raw_vaper_power_0line",  limit: 24
-    t.text    "prefix"
+    t.text    "prefix",                 limit: 65535
   end
 
-  create_table "shimada_months", force: true do |t|
+  create_table "shimada_months", force: :cascade do |t|
     t.date    "month"
-    t.integer "shimada_factory_id"
+    t.integer "shimada_factory_id", limit: 4
   end
 
-  create_table "shimada_power_by_30mins", force: true do |t|
-    t.integer  "shimada_factory_id"
+  create_table "shimada_power_by_30mins", force: :cascade do |t|
+    t.integer  "shimada_factory_id", limit: 4
     t.date     "date"
-    t.integer  "month_id"
-    t.integer  "weather_id"
+    t.integer  "month_id",           limit: 4
+    t.integer  "weather_id",         limit: 4
     t.float    "hour005",            limit: 24
     t.float    "hour01",             limit: 24
     t.float    "hour015",            limit: 24
@@ -615,9 +295,9 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.datetime "updated_at"
   end
 
-  create_table "shimada_powers", force: true do |t|
+  create_table "shimada_powers", force: :cascade do |t|
     t.date    "date"
-    t.integer "month_id"
+    t.integer "month_id",           limit: 4
     t.float   "hour01",             limit: 24
     t.float   "hour02",             limit: 24
     t.float   "hour03",             limit: 24
@@ -642,7 +322,7 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.float   "hour22",             limit: 24
     t.float   "hour23",             limit: 24
     t.float   "hour24",             limit: 24
-    t.integer "weather_id"
+    t.integer "weather_id",         limit: 4
     t.float   "rev01",              limit: 24
     t.float   "rev02",              limit: 24
     t.float   "rev03",              limit: 24
@@ -691,7 +371,7 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.float   "ave22",              limit: 24
     t.float   "ave23",              limit: 24
     t.float   "ave24",              limit: 24
-    t.string  "shape"
+    t.string  "shape",              limit: 255
     t.float   "difference00",       limit: 24
     t.float   "difference01",       limit: 24
     t.float   "difference02",       limit: 24
@@ -726,8 +406,8 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.float   "f3_x3",              limit: 24
     t.float   "f2_x1",              limit: 24
     t.float   "f2_x2",              limit: 24
-    t.integer "line"
-    t.string  "deform"
+    t.integer "line",               limit: 4
+    t.string  "deform",             limit: 255
     t.float   "hukurosu",           limit: 24
     t.float   "by_vaper01",         limit: 24
     t.float   "by_vaper02",         limit: 24
@@ -753,27 +433,27 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.float   "by_vaper22",         limit: 24
     t.float   "by_vaper23",         limit: 24
     t.float   "by_vaper24",         limit: 24
-    t.integer "shimada_factory_id"
+    t.integer "shimada_factory_id", limit: 4
   end
 
-  create_table "sola_daylies", force: true do |t|
+  create_table "sola_daylies", force: :cascade do |t|
     t.date     "month"
     t.date     "date"
-    t.string   "base_name"
-    t.string   "ch_name"
-    t.text     "kws"
+    t.string   "base_name",   limit: 255
+    t.string   "ch_name",     limit: 255
+    t.text     "kws",         limit: 65535
     t.float    "peak_kw",     limit: 24
     t.float    "kwh_day",     limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "kwh_monitor", limit: 24
-    t.text     "volts"
+    t.text     "volts",       limit: 65535
   end
 
-  create_table "sola_monthlies", force: true do |t|
+  create_table "sola_monthlies", force: :cascade do |t|
     t.date     "month"
-    t.string   "base_name"
-    t.string   "ch_name"
+    t.string   "base_name",  limit: 255
+    t.string   "ch_name",    limit: 255
     t.float    "kwh01",      limit: 24
     t.float    "kwh02",      limit: 24
     t.float    "kwh03",      limit: 24
@@ -810,312 +490,52 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.float    "sum_kwh",    limit: 24
   end
 
-  create_table "status_tand_ds", force: true do |t|
-    t.string   "base_name"
-    t.string   "group_name"
-    t.string   "group_remote_name"
-    t.string   "group_remote_ch_name"
-    t.integer  "group_remote_rssi"
-    t.integer  "group_remote_ch_current_batt"
-    t.integer  "group_remote_ch_record_type"
+  create_table "status_tand_ds", force: :cascade do |t|
+    t.string   "base_name",                    limit: 255
+    t.string   "group_name",                   limit: 255
+    t.string   "group_remote_name",            limit: 255
+    t.string   "group_remote_ch_name",         limit: 255
+    t.integer  "group_remote_rssi",            limit: 4
+    t.integer  "group_remote_ch_current_batt", limit: 4
+    t.integer  "group_remote_ch_record_type",  limit: 4
     t.datetime "group_remote_ch_unix_time"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "todos", force: true do |t|
-    t.string   "status"
-    t.string   "task"
-    t.string   "title"
-    t.string   "branch"
-    t.string   "tag"
-    t.text     "note"
-    t.text     "measures"
+  create_table "todos", force: :cascade do |t|
+    t.string   "status",     limit: 255
+    t.string   "task",       limit: 255
+    t.string   "title",      limit: 255
+    t.string   "branch",     limit: 255
+    t.string   "tag",        limit: 255
+    t.text     "note",       limit: 65535
+    t.text     "measures",   limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "top_pages", force: true do |t|
+  create_table "user_option_users", id: false, force: :cascade do |t|
+    t.integer "user_id",        limit: 4
+    t.integer "user_option_id", limit: 4
+  end
+
+  create_table "user_options", force: :cascade do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "label",      limit: 65535
+    t.text     "url",        limit: 65535
+    t.integer  "order",      limit: 4
+    t.text     "comment",    limit: 65535
+    t.text     "authorized", limit: 65535
   end
 
-  create_table "ube_change_times", force: true do |t|
-    t.text    "ope_name"
-    t.text    "ope_type"
-    t.integer "change_time"
-    t.text    "ope_from"
-    t.text    "ope_to"
+  create_table "user_options_users", id: false, force: :cascade do |t|
+    t.integer "user_id",        limit: 4
+    t.integer "user_option_id", limit: 4
   end
 
-  create_table "ube_constants", force: true do |t|
-    t.text    "name"
-    t.integer "value"
-    t.text    "comment"
-    t.boolean "admin"
-    t.text    "keyword"
-  end
-
-  create_table "ube_holydays", force: true do |t|
-    t.text "month"
-    t.text "shozow"
-    t.text "shozoe"
-    t.text "dryo"
-    t.text "dryn"
-    t.text "kakou"
-  end
-
-  create_table "ube_maintains", force: true do |t|
-    t.string   "ope_name"
-    t.datetime "plan_time_start"
-    t.datetime "plan_time_end"
-    t.string   "memo"
-    t.text     "maintain_no"
-    t.text     "maintain"
-  end
-
-  create_table "ube_meigara_shortnames", force: true do |t|
-    t.text    "name"
-    t.text    "short_name"
-    t.integer "ube_meigara_id"
-  end
-
-  create_table "ube_meigaras", force: true do |t|
-    t.text "meigara"
-    t.text "proname"
-  end
-
-  create_table "ube_named_changes", force: true do |t|
-    t.integer "jun"
-    t.integer "pre_condition_id"
-    t.integer "post_condition_id"
-    t.text    "ope_name"
-    t.text    "display"
-  end
-
-  create_table "ube_operations", force: true do |t|
-    t.text  "ope_name"
-    t.float "west",     limit: 24
-    t.float "east",     limit: 24
-    t.float "old",      limit: 24
-    t.float "new",      limit: 24
-    t.float "kakou",    limit: 24
-  end
-
-  create_table "ube_plans", force: true do |t|
-    t.integer  "jun"
-    t.string   "lot_no"
-    t.integer  "mass"
-    t.integer  "ube_product_id"
-    t.text     "meigara"
-    t.integer  "yojoko"
-    t.datetime "plan_shozo_from"
-    t.datetime "plan_shozo_to"
-    t.datetime "plan_yojo_from"
-    t.datetime "plan_yojo_to"
-    t.datetime "plan_dry_from"
-    t.datetime "plan_dry_to"
-    t.datetime "plan_kakou_from"
-    t.datetime "plan_kakou_to"
-    t.datetime "result_shozo_from"
-    t.datetime "result_shozo_to"
-    t.datetime "result_yojo_from"
-    t.datetime "result_yojo_to"
-    t.datetime "result_dry_from"
-    t.datetime "result_dry_to"
-    t.datetime "result_kakou_from"
-    t.datetime "result_kakou_to"
-    t.datetime "plan_dry_out"
-    t.datetime "plan_dry_end"
-  end
-
-  create_table "ube_plans_skds", id: false, force: true do |t|
-    t.integer "plan_id"
-    t.integer "skd_id"
-  end
-
-  create_table "ube_products", force: true do |t|
-    t.string  "proname"
-    t.string  "shozo"
-    t.string  "dryer"
-    t.integer "lot_size"
-    t.float   "defect_rate",   limit: 24
-    t.text    "ope_condition"
-    t.text    "color"
-    t.boolean "hozen"
-    t.integer "roundsize"
-  end
-
-  create_table "ube_skds", force: true do |t|
-    t.text     "title"
-    t.datetime "skd_from"
-    t.datetime "skd_to"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "runtime_shozo_w"
-    t.integer  "runtime_shozo_e"
-    t.integer  "runtime_dry_o"
-    t.integer  "runtime_dry_n"
-    t.integer  "runtime_kakou"
-    t.integer  "donetime_shozo_w"
-    t.integer  "donetime_shozo_e"
-    t.integer  "donetime_dry_o"
-    t.integer  "donetime_dry_n"
-    t.integer  "donetime_kakou"
-    t.integer  "plantime_shozo_w"
-    t.integer  "plantime_shozo_e"
-    t.integer  "plantime_dry_o"
-    t.integer  "plantime_dry_n"
-    t.integer  "plantime_kakou"
-    t.integer  "month"
-    t.integer  "freetime_shozo_w"
-    t.integer  "freetime_shozo_e"
-    t.integer  "freetime_dry_o"
-    t.integer  "freetime_dry_n"
-    t.integer  "freetime_kakou"
-    t.integer  "mainttime_shozo_w"
-    t.integer  "changetime_shozo_w"
-    t.integer  "mainttime_shozo_e"
-    t.integer  "changetime_shozo_e"
-    t.integer  "mainttime_dry_o"
-    t.integer  "changetime_dry_o"
-    t.integer  "mainttime_dry_n"
-    t.integer  "changetime_dry_n"
-    t.integer  "mainttime_kakou"
-    t.integer  "changetime_kakou"
-    t.integer  "running_wf_shozow"
-    t.integer  "running_wf_shozoe"
-    t.integer  "running_pf_shozow"
-    t.integer  "running_pf_shozoe"
-    t.integer  "running_dryo"
-    t.integer  "running_dryn"
-    t.integer  "runned_wf_shozow"
-    t.integer  "runned_wf_shozoe"
-    t.integer  "runned_pf_shozow"
-    t.integer  "runned_pf_shozoe"
-    t.integer  "runned_dryo"
-    t.integer  "runned_dryn"
-    t.text     "message"
-    t.text     "free_list"
-    t.integer  "limit_wf_shozow"
-    t.integer  "limit_wf_shozoe"
-    t.integer  "limit_pf_shozow"
-    t.integer  "limit_pf_shozoe"
-    t.integer  "limit_dryero"
-    t.integer  "limit_dryern"
-    t.boolean  "jun_only"
-    t.datetime "replan_from"
-    t.date     "plan_from"
-  end
-
-  create_table "ubr_pillars", force: true do |t|
-    t.string  "name"
-    t.integer "souko_floor_id"
-    t.integer "kazu_x"
-    t.integer "kazu_y"
-    t.float   "start_x",        limit: 24
-    t.float   "start_y",        limit: 24
-    t.float   "kankaku_x",      limit: 24
-    t.float   "kankaku_y",      limit: 24
-    t.float   "size_x",         limit: 24
-    t.float   "size_y",         limit: 24
-  end
-
-  create_table "ubr_souko_floor_souko_plans", force: true do |t|
-    t.integer "souko_floor_id"
-    t.integer "souko_plan_id"
-    t.float   "floor_offset_x", limit: 24
-    t.float   "floor_offset_y", limit: 24
-  end
-
-  create_table "ubr_souko_floor_waku_blocks", id: false, force: true do |t|
-    t.integer "souko_floor_id"
-    t.integer "waku_block_id"
-  end
-
-  create_table "ubr_souko_floors", force: true do |t|
-    t.text  "name"
-    t.float "outline_x0", limit: 24
-    t.float "outline_y0", limit: 24
-    t.float "outline_x1", limit: 24
-    t.float "outline_y1", limit: 24
-  end
-
-  create_table "ubr_souko_plans", force: true do |t|
-    t.text    "name"
-    t.text    "stat_name_list"
-    t.text    "stat_reg_list"
-    t.float   "offset_x",       limit: 24
-    t.float   "offset_y",       limit: 24
-    t.float   "stat_offset_x",  limit: 24
-    t.float   "stat_offset_y",  limit: 24
-    t.float   "stat_font",      limit: 24
-    t.float   "stat_point",     limit: 24
-    t.boolean "landscape"
-  end
-
-  create_table "ubr_waku_blocks", force: true do |t|
-    t.integer "souko_floor_id"
-    t.text    "souko"
-    t.text    "content"
-    t.text    "sufix"
-    t.text    "max"
-    t.float   "label_pos_x",    limit: 24
-    t.float   "label_pos_y",    limit: 24
-    t.float   "base_point_x",   limit: 24
-    t.float   "base_point_y",   limit: 24
-  end
-
-  create_table "ubr_wakus", force: true do |t|
-    t.text    "name"
-    t.text    "areaknb"
-    t.text    "direct_to"
-    t.text    "palette"
-    t.integer "volum"
-    t.integer "dan3"
-    t.integer "dan2"
-    t.integer "dan1"
-    t.integer "retusu"
-    t.float   "pos_x",     limit: 24
-    t.float   "pos_y",     limit: 24
-  end
-
-  create_table "ubr_walls", force: true do |t|
-    t.integer "souko_floor_id"
-    t.float   "name",           limit: 24
-    t.float   "x0",             limit: 24
-    t.float   "y0",             limit: 24
-    t.float   "dx1",            limit: 24
-    t.float   "dy1",            limit: 24
-    t.float   "dx2",            limit: 24
-    t.float   "dy2",            limit: 24
-    t.float   "dx3",            limit: 24
-    t.float   "dy3",            limit: 24
-    t.float   "dx4",            limit: 24
-    t.float   "dy4",            limit: 24
-  end
-
-  create_table "user_option_users", id: false, force: true do |t|
-    t.integer "user_id"
-    t.integer "user_option_id"
-  end
-
-  create_table "user_options", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "label"
-    t.text     "url"
-    t.integer  "order"
-    t.text     "comment"
-    t.text     "authorized"
-  end
-
-  create_table "user_options_users", id: false, force: true do |t|
-    t.integer "user_id"
-    t.integer "user_option_id"
-  end
-
-  create_table "users", force: true do |t|
+  create_table "users", force: :cascade do |t|
     t.string   "username",                  limit: 40
     t.string   "name",                      limit: 100, default: ""
     t.string   "email",                     limit: 100
@@ -1125,192 +545,40 @@ ActiveRecord::Schema.define(version: 201409131724152) do
     t.datetime "updated_at"
     t.string   "remember_token",            limit: 40
     t.datetime "remember_token_expires_at"
-    t.boolean  "lipscsvio",                             default: false
-    t.boolean  "lipssizeoption",                        default: false
-    t.integer  "lipssizepro",                           default: 10
-    t.integer  "lipssizeope",                           default: 10
-    t.string   "lipslabelcode",                         default: "default"
-    t.string   "lipsoptlink"
-    t.string   "state",                                 default: "passive"
+    t.boolean  "lipscsvio",                 limit: 1,   default: false
+    t.boolean  "lipssizeoption",            limit: 1,   default: false
+    t.integer  "lipssizepro",               limit: 4,   default: 10
+    t.integer  "lipssizeope",               limit: 4,   default: 10
+    t.string   "lipslabelcode",             limit: 255, default: "default"
+    t.string   "lipsoptlink",               limit: 255
+    t.string   "state",                     limit: 255, default: "passive"
     t.datetime "deleted_at"
-    t.string   "subdomain"
+    t.string   "subdomain",                 limit: 255
     t.datetime "confirmed_at"
-    t.string   "reset_password_token"
+    t.string   "reset_password_token",      limit: 255
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                         default: 0,         null: false
+    t.integer  "sign_in_count",             limit: 4,   default: 0,         null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip"
-    t.string   "last_sign_in_ip"
+    t.string   "current_sign_in_ip",        limit: 255
+    t.string   "last_sign_in_ip",           limit: 255
   end
 
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
 
-  create_table "weather_by_30mins", force: true do |t|
-    t.string   "location"
-    t.date     "month"
-    t.date     "date"
-    t.float    "hourhour005",    limit: 24
-    t.float    "hourhour010",    limit: 24
-    t.float    "hourhour015",    limit: 24
-    t.float    "hourhour020",    limit: 24
-    t.float    "hourhour025",    limit: 24
-    t.float    "hourhour030",    limit: 24
-    t.float    "hourhour035",    limit: 24
-    t.float    "hourhour040",    limit: 24
-    t.float    "hourhour045",    limit: 24
-    t.float    "hourhour050",    limit: 24
-    t.float    "hourhour055",    limit: 24
-    t.float    "hourhour060",    limit: 24
-    t.float    "hourhour065",    limit: 24
-    t.float    "hourhour070",    limit: 24
-    t.float    "hourhour075",    limit: 24
-    t.float    "hourhour080",    limit: 24
-    t.float    "hourhour085",    limit: 24
-    t.float    "hourhour090",    limit: 24
-    t.float    "hourhour095",    limit: 24
-    t.float    "hourhour100",    limit: 24
-    t.float    "hourhour105",    limit: 24
-    t.float    "hourhour110",    limit: 24
-    t.float    "hourhour115",    limit: 24
-    t.float    "hourhour120",    limit: 24
-    t.float    "hourhour125",    limit: 24
-    t.float    "hourhour130",    limit: 24
-    t.float    "hourhour135",    limit: 24
-    t.float    "hourhour140",    limit: 24
-    t.float    "hourhour145",    limit: 24
-    t.float    "hourhour150",    limit: 24
-    t.float    "hourhour155",    limit: 24
-    t.float    "hourhour160",    limit: 24
-    t.float    "hourhour165",    limit: 24
-    t.float    "hourhour170",    limit: 24
-    t.float    "hourhour175",    limit: 24
-    t.float    "hourhour180",    limit: 24
-    t.float    "hourhour185",    limit: 24
-    t.float    "hourhour190",    limit: 24
-    t.float    "hourhour195",    limit: 24
-    t.float    "hourhour200",    limit: 24
-    t.float    "hourhour205",    limit: 24
-    t.float    "hourhour210",    limit: 24
-    t.float    "hourhour215",    limit: 24
-    t.float    "hourhour220",    limit: 24
-    t.float    "hourhour225",    limit: 24
-    t.float    "hourhour230",    limit: 24
-    t.float    "hourhour235",    limit: 24
-    t.float    "hourhour240",    limit: 24
-    t.float    "vaperhour005",   limit: 24
-    t.float    "vaperhour010",   limit: 24
-    t.float    "vaperhour015",   limit: 24
-    t.float    "vaperhour020",   limit: 24
-    t.float    "vaperhour025",   limit: 24
-    t.float    "vaperhour030",   limit: 24
-    t.float    "vaperhour035",   limit: 24
-    t.float    "vaperhour040",   limit: 24
-    t.float    "vaperhour045",   limit: 24
-    t.float    "vaperhour050",   limit: 24
-    t.float    "vaperhour055",   limit: 24
-    t.float    "vaperhour060",   limit: 24
-    t.float    "vaperhour065",   limit: 24
-    t.float    "vaperhour070",   limit: 24
-    t.float    "vaperhour075",   limit: 24
-    t.float    "vaperhour080",   limit: 24
-    t.float    "vaperhour085",   limit: 24
-    t.float    "vaperhour090",   limit: 24
-    t.float    "vaperhour095",   limit: 24
-    t.float    "vaperhour100",   limit: 24
-    t.float    "vaperhour105",   limit: 24
-    t.float    "vaperhour110",   limit: 24
-    t.float    "vaperhour115",   limit: 24
-    t.float    "vaperhour120",   limit: 24
-    t.float    "vaperhour125",   limit: 24
-    t.float    "vaperhour130",   limit: 24
-    t.float    "vaperhour135",   limit: 24
-    t.float    "vaperhour140",   limit: 24
-    t.float    "vaperhour145",   limit: 24
-    t.float    "vaperhour150",   limit: 24
-    t.float    "vaperhour155",   limit: 24
-    t.float    "vaperhour160",   limit: 24
-    t.float    "vaperhour165",   limit: 24
-    t.float    "vaperhour170",   limit: 24
-    t.float    "vaperhour175",   limit: 24
-    t.float    "vaperhour180",   limit: 24
-    t.float    "vaperhour185",   limit: 24
-    t.float    "vaperhour190",   limit: 24
-    t.float    "vaperhour195",   limit: 24
-    t.float    "vaperhour200",   limit: 24
-    t.float    "vaperhour205",   limit: 24
-    t.float    "vaperhour210",   limit: 24
-    t.float    "vaperhour215",   limit: 24
-    t.float    "vaperhour220",   limit: 24
-    t.float    "vaperhour225",   limit: 24
-    t.float    "vaperhour230",   limit: 24
-    t.float    "vaperhour235",   limit: 24
-    t.float    "vaperhour240",   limit: 24
-    t.float    "humidithour005", limit: 24
-    t.float    "humidithour010", limit: 24
-    t.float    "humidithour015", limit: 24
-    t.float    "humidithour020", limit: 24
-    t.float    "humidithour025", limit: 24
-    t.float    "humidithour030", limit: 24
-    t.float    "humidithour035", limit: 24
-    t.float    "humidithour040", limit: 24
-    t.float    "humidithour045", limit: 24
-    t.float    "humidithour050", limit: 24
-    t.float    "humidithour055", limit: 24
-    t.float    "humidithour060", limit: 24
-    t.float    "humidithour065", limit: 24
-    t.float    "humidithour070", limit: 24
-    t.float    "humidithour075", limit: 24
-    t.float    "humidithour080", limit: 24
-    t.float    "humidithour085", limit: 24
-    t.float    "humidithour090", limit: 24
-    t.float    "humidithour095", limit: 24
-    t.float    "humidithour100", limit: 24
-    t.float    "humidithour105", limit: 24
-    t.float    "humidithour110", limit: 24
-    t.float    "humidithour115", limit: 24
-    t.float    "humidithour120", limit: 24
-    t.float    "humidithour125", limit: 24
-    t.float    "humidithour130", limit: 24
-    t.float    "humidithour135", limit: 24
-    t.float    "humidithour140", limit: 24
-    t.float    "humidithour145", limit: 24
-    t.float    "humidithour150", limit: 24
-    t.float    "humidithour155", limit: 24
-    t.float    "humidithour160", limit: 24
-    t.float    "humidithour165", limit: 24
-    t.float    "humidithour170", limit: 24
-    t.float    "humidithour175", limit: 24
-    t.float    "humidithour180", limit: 24
-    t.float    "humidithour185", limit: 24
-    t.float    "humidithour190", limit: 24
-    t.float    "humidithour195", limit: 24
-    t.float    "humidithour200", limit: 24
-    t.float    "humidithour205", limit: 24
-    t.float    "humidithour210", limit: 24
-    t.float    "humidithour215", limit: 24
-    t.float    "humidithour220", limit: 24
-    t.float    "humidithour225", limit: 24
-    t.float    "humidithour230", limit: 24
-    t.float    "humidithour235", limit: 24
-    t.float    "humidithour240", limit: 24
-    t.datetime "created_at"
-    t.datetime "updated_at"
+  create_table "weather_locations", force: :cascade do |t|
+    t.string  "name",          limit: 255
+    t.string  "location",      limit: 255
+    t.string  "weather_block", limit: 255
+    t.string  "forecast_code", limit: 255
+    t.string  "excite_zip",    limit: 255
+    t.integer "weather_prec",  limit: 4
   end
 
-  create_table "weather_locations", force: true do |t|
-    t.string  "name"
-    t.string  "location"
-    t.string  "weather_block"
-    t.string  "forecast_code"
-    t.string  "excite_zip"
-    t.integer "weather_prec"
-  end
-
-  create_table "weathers", force: true do |t|
-    t.string "location"
+  create_table "weathers", force: :cascade do |t|
+    t.string "location",   limit: 255
     t.date   "date"
     t.float  "hour01",     limit: 24
     t.float  "hour02",     limit: 24
