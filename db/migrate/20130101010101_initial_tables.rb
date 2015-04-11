@@ -1,5 +1,6 @@
 # encoding: UTF-8
 class InitialTables < ActiveRecord::Migration
+
   def change
     create_table "forecasts", force: true do |t|
       t.string   "location"
