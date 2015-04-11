@@ -1,55 +1,9 @@
-a1:
-  user_id: 1
-  user_option_id:  1
-a2:
-  user_id:  1
-  user_option_id:  2
 a3:
   user_id:  1
   user_option_id:  3
 a4:
   user_id:  1
   user_option_id:  4
-a5:
-  user_id:  1
-  user_option_id:  5
-a6:
-  user_id:  1
-  user_option_id:  6
-a7:
-  user_id:  1
-  user_option_id:  7
-a9:
-  user_id:  1
-  user_option_id:  9
-a10:
-  user_id:  1
-  user_option_id:  10
-a11:
-  user_id:  1
-  user_option_id:  11
-a12:
-  user_id:  1
-  user_option_id:  12
-aa:
-  user_id:  3
-  user_option_id:  8
-a57:
-  user_id:  5
-  user_option_id:  7
-
-ab:
-  user_id:  6
-  user_option_id:  1
 ac:
   user_id:  6
   user_option_id:  3
-a69:
-  user_id:  6
-  user_option_id:  9
-a68:
-  user_id:  6
-  user_option_id:  8
-a77:
-  user_id:  7
-  user_option_id:  7
