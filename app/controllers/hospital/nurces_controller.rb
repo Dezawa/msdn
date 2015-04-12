@@ -61,7 +61,7 @@ class Hospital::NurcesController <  Hospital::Controller
   end
 
   def update_on_table
-    @permit = Labels.select{ |lbl| !lbl.ro}.map{ |lbl| lbl.symbol }
+    @permit_attr = attr_list #Labels.select{ |lbl| !lbl.ro}.map{ |lbl| lbl.symbol }
     @page = params[:page] || 1
     @models = []
     @models= @PagenatTbl ? find_and : find # @Model.all(@conditions)#@PagenatTbl
