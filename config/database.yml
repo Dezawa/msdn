@@ -9,24 +9,45 @@
 # And be sure to use new-style password hashing:
 #   http://dev.mysql.com/doc/refman/5.0/en/old-client.html
 #
+# DBの切り分け
+#          production              deveropment         test  hostname root    branch   
+# msdn     msdn_product            msdn_develop              www      msdn\b
+# msdntest msdn_production_test    msdn_develop_test         www      *test*
+# Simada   msdn_product_shimada    msdn_develop_shimada                       Shimada
+<%
+socket = ["/tmp/mysqld.sock",
+          "/tmp/mysql.sock",
+          "/var/run/mysqld/mysqld.sock",
+          "/var/lib/mysql/mysql.sock"].detect{|socket| File.exist?(socket)}
+          
+test_db , development_db ,production_db =
+       case $BRANCH
+       when nil,"MASTER"
+            case Rails.root.to_s
+            when /test/ ; %w(msdn_test_test    msdn_develop_test     msdn_product_test)
+            else        ; %w(msdn_test         msdn_develop         msdn_product)
+            end
+       when "Shimada"   ; %w(msdn_test_shimada msdn_develop_shimada msdn_product_shimada)
+       end
+%>
 default: &default
   adapter: mysql2
   encoding: utf8
   pool: 5
   username: msdn
   password: msdnpass
-  socket: /var/lib/mysql/mysql.sock
+  socket: <%= socket %>
 
 development:
   <<: *default
-  database: msdn_develop_test
+  database: <%= development_db %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: msdn_test
+  database: <%= test_db %>
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -49,6 +70,6 @@ test:
 #
 production:
   <<: *default
-  database: msdn_product
+  database: <%= production_db %>
   username: msdn
   password: msdnpass
