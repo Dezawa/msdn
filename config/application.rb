@@ -22,6 +22,8 @@ module Msdn
 
     config.time_zone = 'Tokyo'
     config.active_record.default_timezone = :local
+
+    $BRANCH = "Shimada"
   end
 end
 

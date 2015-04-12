@@ -210,7 +210,7 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
       logger.debug("Update_on_table:#{i} id=#{id} maxid=#{@maxid} #{model}")
       case model
       when ActionController::Parameters
-        model = model.permit(*@permit)
+        model = model.permit( attr_list )
       when ActiveSupport::HashWithIndifferentAccess,Hash
       end
 
@@ -226,7 +226,7 @@ logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{param
       else
         #  unless UbeModel.new(model) == models[id]
         @mdl = @Model.find(id)
-        @result &=  @mdl.update_attributes(model)
+        @result &=  @mdl.update_attributes(model) # @model.update_attributes(permit_attr)
         @errors << @mdl.errors if @mdl.errors.size>0
         @models << @mdl
       end
@@ -365,7 +365,7 @@ logger.debug("APPLICATION#GRAPH: params=#{params.to_a.flatten.join(',')}")
   end
   def attr_list(labels = nil)
     labels ||= @labels
-    labels.map{|html_cell| html_cell.symbol}
+    labels.select{ |lbl| !lbl.ro}.map{|html_cell| html_cell.symbol}
   end
 
   def permit_attr
