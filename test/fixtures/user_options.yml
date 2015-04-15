@@ -13,3 +13,10 @@ No4:
   order: '85'
   authorized: オプションメンテ
   comment: !!null 
+No13:
+  id: '13'
+  label: シマダヤ
+  url: /shimada/factory
+  order: '100'
+  authorized: シマダヤ
+  comment: 
