@@ -9,6 +9,8 @@ require "csv"
 class Sola::Dayly < ActiveRecord::Base
   include Sola::Graph
   extend Statistics
+  include Tand
+  extend Tand::ClassMethod
 #include Statistics
   serialize :kws
   serialize :volts
@@ -16,7 +18,7 @@ class Sola::Dayly < ActiveRecord::Base
 #select max(peak_kw) sola_daylies,month from sola_daylies group by month;
 #select max(peak_kw) max_peak,month from sola_daylies group by month;
 
-  def self.load_trz(trz_file)
+  def self.oldload_trz(trz_file)
     ondotori = Ondotori::Recode.new(trz_file) # ondotori_load(trz_file)
     load_ondotori(ondotori)
   end
