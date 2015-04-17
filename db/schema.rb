@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130101010101) do
+ActiveRecord::Schema.define(version: 20150416025100) do
 
   create_table "forecasts", force: :cascade do |t|
     t.string   "location",     limit: 255
@@ -71,6 +71,19 @@ ActiveRecord::Schema.define(version: 20130101010101) do
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true, using: :btree
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
+  create_table "shimada_daylies", force: :cascade do |t|
+    t.date     "month"
+    t.date     "date"
+    t.string   "base_name",              limit: 255
+    t.string   "ch_name",                limit: 255
+    t.string   "measurement_type",       limit: 255
+    t.text     "measurement_value",      limit: 65535
+    t.text     "converted_value",        limit: 65535
+    t.integer  "shimada_instruments_id", limit: 4
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+  end
+
   create_table "shimada_factories", force: :cascade do |t|
     t.string  "name",                   limit: 255
     t.string  "weather_location",       limit: 255
@@ -87,6 +100,20 @@ ActiveRecord::Schema.define(version: 20130101010101) do
     t.float   "raw_vaper_y0",           limit: 24
     t.float   "raw_vaper_power_0line",  limit: 24
     t.text    "prefix",                 limit: 65535
+  end
+
+  create_table "shimada_instruments", force: :cascade do |t|
+    t.string   "serial",           limit: 255
+    t.string   "base_name",        limit: 255
+    t.string   "ch_name",          limit: 255
+    t.string   "measurement_type", limit: 255
+    t.string   "unit",             limit: 255
+    t.string   "comment",          limit: 255
+    t.integer  "converter",        limit: 4,   default: 0
+    t.float    "slope",            limit: 24,  default: 1.0
+    t.float    "graft",            limit: 24,  default: 0.0
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
   end
 
   create_table "shimada_months", force: :cascade do |t|

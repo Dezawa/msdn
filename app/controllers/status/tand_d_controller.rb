@@ -16,6 +16,12 @@ class Status::TandDController < CommonController#ApplicationController
   def set_instanse_variable
     super
     @Model= Status::TandD
+    @Links = Shimada::Controller::Links
+    [
+     Menu.new(   "工場一覧"  ,"shimada/factory"    , :action => :index ) ,
+     Menu.new(   "測定器一覧","shimada/instrument" , :action => :index) ,
+     Menu.new("電池残量" ,"status/tand_d" ,
+              { :action => :list,:controller => "status/tand_d"})] 
     @Domain= @Model.name.underscore
     @TYTLE = "おんどとり Currentデータ"
     @Delete=true

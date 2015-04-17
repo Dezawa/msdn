@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 Rails.application.routes.draw do
+
 # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -178,6 +179,12 @@ Rails.application.routes.draw do
   controller="shimada/factory"
   set_post(controller,@EditTable)
   set_get(controller,%w(today update_today clear_today update_tomorrow))
+
+ edit_table("shimada/instrument")
+  namespace :shimada do
+    resources :daylies,:instrument
+  end
+
   ######### 熱管理
   %w(monthly_graph monthly_scatter ).
     each{ |act|
@@ -196,7 +203,7 @@ Rails.application.routes.draw do
 
   set_get("hospital/meetings",@EditTable)
   set_post("hospital/meetings",@EditTable)
-  namespace :hospital do
+  namespace :shospital do
     set_get(:roles,[:show_assign,:set_busho])
     set_get(:meetings, %w( show_assign set_busho_month))
     set_post(:meetings, %w(set_busho_month assign update_assign))

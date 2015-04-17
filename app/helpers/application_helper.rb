@@ -105,8 +105,8 @@ module ApplicationHelper
   def links_table(menus)
     td="<td width=\"90\" align=\"center\" bgcolor=\"#c0f0f0\">".html_safe
     tdtd = safe_join([TDend,TD])
-    table_body = menus.map{|menu| 
-      next if menu.disable && !controller.send(menu.disable)
+    table_body = menus.map{|menu|
+      next if !menu || menu.disable && !controller.send(menu.disable)
       "<font size=1>" +
       link_to_unless_current(menu.label,
                              { :controller => menu.model, :action => menu.action}.
