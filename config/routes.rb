@@ -68,6 +68,12 @@ Rails.application.routes.draw do
     controller: "#{module_name}/#{model}"
   end
 
+  def edit_table(*args)
+    args.each{|model|
+      set_get(model,%w(add_on_table edit_on_table csv_out csv_download))
+      set_post(model,%w( update_on_table  csv_upload))
+    }
+  end
   @EditTable = %w(add_on_table edit_on_table update_on_table csv_out csv_upload csv_download)
  
   root :to => "top#msdn"

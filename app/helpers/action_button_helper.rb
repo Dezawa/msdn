@@ -60,11 +60,16 @@ module ActionButtonHelper
   end
   def add_buttom(dom,arg={ })
     option = { :action => (arg.delete(:add_action) || :add_on_table)}.merge(arg)
-    (form_tag(option) + #:action => :add_on_table) + 
+    (form_tag(option, :method => :get) + #:action => :add_on_table) + 
       "<input type='hidden' name='page' value='#{@page}'>".html_safe+
       submit_tag("追加")+
       text_field( dom, :add_no,:size=>2, :value => 1 ) +  "</form></td><td>".html_safe
      )
+  end
+
+  def edit_bottom(arg={ })
+    action  =  (arg.delete(:edit_action) || :edit_on_table)
+    button_to( '編集', { :action => action,:page => @page}.merge(arg),:method => :get )
   end
 
   def csv_up_buttom
@@ -81,11 +86,6 @@ module ActionButtonHelper
     url = "/#{@Domain}/#{action}"
     form_tag(url,:multipart => true,:method => :post)+
       submit_tag(label)+file_field(@Domain, :uploadfile)+"</form>".html_safe
-  end
-
-  def edit_bottom(arg={ })
-    action  =  (arg.delete(:edit_action) || :edit_on_table)
-    button_to( '編集', { :action => action,:page => @page}.merge(arg) )
   end
 
   #action_buttomの列を作る
