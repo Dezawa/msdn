@@ -33,21 +33,37 @@ module Tand
       }
     end
     def load_trz(trz_file)
-      ondotori = Ondotori::Recode.new(trz_file) # ondotori_load(trz_file)
+      ondotori = Ondotori::Recode.new(trz_file) 
       load_ondotori(ondotori)
     end
 
     def load_ondotori(ondotori)
-      unless ondotori.base_name == "dezawa" && ondotori.channels["power01-電圧"] 
-        #errors.add(:base_name,"dezawaのsolaの電力データではない" )
-        return
-      end
-      logger.info("ONDOTORI:: slope #{ondotori.channels["power01-電圧"].slope} + graft #{ondotori.channels["power01-電圧"].graft}")
-      times_values = times_values_group_by_day(ondotori.channels["power01-電圧"])
-      times_values.each{ |day,time_values|
-        find_or_create_and_save(day,time_values)
+      return  unless valid_trz(ondotori)
+      channel_and_attr.each{|channel_name,attr|
+        channel = ondotori.channels[channel_name]
+        times_values = times_values_group_by_day(channel)
+        times_values.each{ |day,time_values|
+          find_or_create_and_save(day,attr,channel.interval.to_f,time_values)
+      }
       }
     end
+
+    def times_values_group_by_day(channel)
+      channel.times.zip(channel.values). #.map{ |v| scale(v)}).
+      group_by{ |time,value| time.to_date }
+    end
+
+    def find_or_create_and_save(day,attr,interval,time_values)
+      dayly = self.find_by(:date => day) || self.new(:date => day)
+      dayly[attr] ||= []
+      time_values.each{ |time,value| 
+        min = (time.seconds_since_midnight/interval).to_i
+        dayly[attr][min] = value 
+      }
+      dayly.save
+      dayly
+    end
+
   end
   
   def self.included(base)
