@@ -13,7 +13,7 @@ Rails.application.configure do
   config.eager_load = false
 
   # Configure static asset server for tests with Cache-Control for performance.
-  config.serve_static_assets  = true
+  config.serve_static_files  = true
   config.static_cache_control = 'public, max-age=3600'
 
   # Show full error reports and disable caching.
@@ -36,4 +36,11 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+  
+  # DEPRECATION WARNING: You did not specify a value for the configuration
+  #  option `active_support.test_order`. In Rails 5, the default value of
+  #  this option will change from `:sorted` to `:random`.
+  #  To disable this warning and keep the current behavior,
+  #  you can add the following line to your `config/environments/test.rb`:
+    config.active_support.test_order = :sorted
 end
