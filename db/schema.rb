@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150416025100) do
+ActiveRecord::Schema.define(version: 20150420023600) do
 
   create_table "forecasts", force: :cascade do |t|
     t.string   "location",     limit: 255
@@ -74,14 +74,14 @@ ActiveRecord::Schema.define(version: 20150416025100) do
   create_table "shimada_daylies", force: :cascade do |t|
     t.date     "month"
     t.date     "date"
-    t.string   "base_name",              limit: 255
-    t.string   "ch_name",                limit: 255
-    t.string   "measurement_type",       limit: 255
-    t.text     "measurement_value",      limit: 65535
-    t.text     "converted_value",        limit: 65535
-    t.integer  "shimada_instruments_id", limit: 4
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
+    t.string   "serial",            limit: 255
+    t.string   "ch_name_type",      limit: 255
+    t.string   "measurement_type",  limit: 255
+    t.text     "measurement_value", limit: 65535
+    t.text     "converted_value",   limit: 65535
+    t.integer  "instrument_id",     limit: 4
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
   end
 
   create_table "shimada_factories", force: :cascade do |t|
@@ -106,6 +106,7 @@ ActiveRecord::Schema.define(version: 20150416025100) do
     t.string   "serial",           limit: 255
     t.string   "base_name",        limit: 255
     t.string   "ch_name",          limit: 255
+    t.string   "measurement",      limit: 255
     t.string   "measurement_type", limit: 255
     t.string   "unit",             limit: 255
     t.string   "comment",          limit: 255
@@ -466,15 +467,33 @@ ActiveRecord::Schema.define(version: 20150416025100) do
   create_table "sola_daylies", force: :cascade do |t|
     t.date     "month"
     t.date     "date"
-    t.string   "base_name",   limit: 255
-    t.string   "ch_name",     limit: 255
-    t.text     "kws",         limit: 65535
-    t.float    "peak_kw",     limit: 24
-    t.float    "kwh_day",     limit: 24
+    t.string   "base_name",        limit: 255
+    t.string   "ch_name_type",     limit: 255
+    t.text     "kws",              limit: 65535
+    t.float    "peak_kw",          limit: 24
+    t.float    "kwh_day",          limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.float    "kwh_monitor", limit: 24
-    t.text     "volts",       limit: 65535
+    t.float    "kwh_monitor",      limit: 24
+    t.text     "volts",            limit: 65535
+    t.string   "serial",           limit: 255
+    t.integer  "instrument_id",    limit: 4
+    t.string   "measurement_type", limit: 255
+  end
+
+  create_table "sola_instruments", force: :cascade do |t|
+    t.string   "serial",           limit: 255
+    t.string   "base_name",        limit: 255
+    t.string   "ch_name",          limit: 255
+    t.string   "measurement_type", limit: 255
+    t.string   "measurement",      limit: 255
+    t.string   "unit",             limit: 255
+    t.string   "comment",          limit: 255
+    t.integer  "converter",        limit: 4,   default: 0
+    t.float    "slope",            limit: 24,  default: 1.0
+    t.float    "graft",            limit: 24,  default: 0.0
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
   end
 
   create_table "sola_monthlies", force: :cascade do |t|

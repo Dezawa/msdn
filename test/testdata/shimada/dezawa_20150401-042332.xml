@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<file format="current_readings" version="1.22" name="dezawa_20150401-042332.xml">
+<base>
+<serial>529C0541</serial>
+<model>RTR-500NW</model>
+<name>dezawa</name>
+<time_diff>540</time_diff>
+<std_bias>0</std_bias>
+<dst_bias>0</dst_bias>
+<time_zone>(UTC+09:00) 大阪、札幌、東京</time_zone>
+<lan>
+<input>0</input>
+<output>0</output>
+</lan>
+</base>
+<group>
+<num>0</num>
+<name>Dhome</name>
+<remote>
+<serial>52C215FA</serial>
+<model>RTR-505-V</model>
+<num>1</num>
+<name>power01</name>
+<rssi>5</rssi>
+<ch>
+<num>1</num>
+<scale_expr></scale_expr>
+<name></name>
+<current>
+<unix_time>1427829779</unix_time>
+<time_str>2015-04-01 04:22:59</time_str>
+<value valid="true">0.0019</value>
+<unit>V</unit>
+<batt>5</batt>
+</current>
+<record>
+<type>146</type>
+<unix_time>1427829239</unix_time>
+<data_id>6920</data_id>
+<interval>60</interval>
+<count>10</count>
+<data>
+EwATABMAEwATABMAEwATABMAEwA=
+</data>
+</record>
+</ch>
+</remote>
+</group>
+</file>

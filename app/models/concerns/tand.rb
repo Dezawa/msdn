@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-module Tand 
+module Tand
   module ClassMethod
     def load_xml(xml_file)
       ondotori = Ondotori::Current.new(xml_file)#ondotori_status_load(xml_file)
@@ -33,18 +33,19 @@ module Tand
       }
     end
     def load_trz(trz_file)
-      ondotori = Ondotori::Recode.new(trz_file) 
+      ondotori = Ondotori::Recode.new(trz_file)
+      @base_name = ondotori.base_name
       load_ondotori(ondotori)
     end
 
     def load_ondotori(ondotori)
       return  unless valid_trz(ondotori)
       channel_and_attr.each{|channel_name,attr|
-        channel = ondotori.channels[channel_name]
+        next unless channel = ondotori.channels[channel_name]
         times_values = times_values_group_by_day(channel)
         times_values.each{ |day,time_values|
-          find_or_create_and_save(day,attr,channel.interval.to_f,time_values)
-      }
+          find_or_create_and_save(day,attr,channel,time_values)
+        }
       }
     end
 
@@ -53,13 +54,21 @@ module Tand
       group_by{ |time,value| time.to_date }
     end
 
-    def find_or_create_and_save(day,attr,interval,time_values)
-      dayly = self.find_by(:date => day) || self.new(:date => day)
+    def find_or_create_and_save(day,attr,channel,time_values )
+      conditions = {date: day, serial:  channel.serial, measurement_type: channel.type  }
+      dayly = self.find_by(conditions ) || self.new(conditions )
+      
       dayly[attr] ||= []
       time_values.each{ |time,value| 
-        min = (time.seconds_since_midnight/interval).to_i
+        min = (time.seconds_since_midnight/channel.interval).to_i
         dayly[attr][min] = value 
       }
+      dayly.month = day.to_time.beginning_of_month.to_date
+      dayly.ch_name_type = channel.name_type
+      dayly.instrument =
+        dayly.class.instrument.find_by(serial: channel.serial,
+                                    measurement_type: channel.type
+                                    )
       dayly.save
       dayly
     end

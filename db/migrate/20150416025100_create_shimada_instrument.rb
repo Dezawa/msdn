@@ -1,9 +1,10 @@
-class CreateShimadaInstruments < ActiveRecord::Migration
+class CreateShimadaInstrument < ActiveRecord::Migration
   def change
     create_table :shimada_instruments do |t|
       t.string   :serial
       t.string   "base_name"
       t.string   "ch_name"
+      t.string   "measurement",      limit: 255
       t.string   "measurement_type"
       t.string   :unit
       t.string   :comment

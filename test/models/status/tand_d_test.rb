@@ -24,7 +24,8 @@ class Status::TadnDTest < ActiveSupport::TestCase
   end
   must "groupから最新" do
     [XML,XML2,XML3].each{ |xml|Status::TandD.load_xml(xml)}
-    assert_equal [],
+    assert_equal [[Time.local(2015,1,4,3,52,13), "dumy", 4],
+                  [Time.local(2015,1,4,3,48,13), "dezawa", 4]],
    Status::TandD.select_each_one_from_every_group_by([:base_name, :group_name, :group_remote_name],
                                                          "group_remote_ch_unix_time DESC").
       map{ |st| [st.group_remote_ch_unix_time,st.base_name,st.group_remote_ch_current_batt]}
