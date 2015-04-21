@@ -48,6 +48,37 @@ module ActionButtonHelper
     end
   end
 
+  
+  def action_buttoms(buttoms)
+    ("<table><tr>"+
+      buttoms.map{|buttom|
+      "<td>"+action_buttom(buttom) + "</td>"
+    }.join("\n") + "</tr></table>").html_safe
+  end
+
+  
+  #action_buttomの列を作る
+  #- ［［function,action,label],,,,]
+  def action_buttom(buttom)
+    function,action,label,opt,htmlopt = buttom
+    case function
+    when :form ;form_buttom(action,label,opt,htmlopt)
+    when :popup ;popupform_buttom(action,label,opt,htmlopt)
+    when :add_edit_buttoms ;edit_buttoms(@Domain) 
+    when :add_buttom       ;add_buttom(@Domain)
+    when :edit_bottom       ;edit_bottom(opt||{ })
+    when :upload_buttom     ;upload_buttom(action,label)
+    when :csv_up_buttom     ;csv_up_buttom
+    when :csv_out           ;csv_out_buttom
+    when :input_and_action  ;
+      input_and_action(action,label,opt)
+    when :select_and_action  ;
+      select_and_action(action,label,opt)
+    when nil; ""
+    else function.to_s
+    end.html_safe
+  end
+
   # 追加、編集ボタンの表示
   def add_edit_buttoms(dom,arg={ })
     buttoms =  edit_buttoms(dom,arg)
@@ -79,35 +110,13 @@ module ActionButtonHelper
   end
 
   def csv_out_buttom
-    button_to( 'CSVダウンロード', { :action => :csv_out })
+    button_to( 'CSVダウンロード', { :action => :csv_out },:method => :get)
   end
 
   def upload_buttom(action,label)
     url = "/#{@Domain}/#{action}"
     form_tag(url,:multipart => true,:method => :post)+
       submit_tag(label)+file_field(@Domain, :uploadfile)+"</form>".html_safe
-  end
-
-  #action_buttomの列を作る
-  #- ［［function,action,label],,,,]
-  def action_buttom(buttom)
-    function,action,label,opt,htmlopt = buttom
-    case function
-    when :form ;form_buttom(action,label,opt,htmlopt)
-    when :popup ;popupform_buttom(action,label,opt,htmlopt)
-    when :add_edit_buttoms ;edit_buttoms(@Domain) 
-    when :add_buttom       ;add_buttom(@Domain)
-    when :edit_bottom       ;edit_bottom(opt||{ })
-    when :upload_buttom     ;upload_buttom(action,label)
-    when :csv_up_buttom     ;csv_up_buttom
-    when :csv_out           ;csv_out_buttom
-    when :input_and_action  ;
-      input_and_action(action,label,opt)
-    when :select_and_action  ;
-      select_and_action(action,label,opt)
-    when nil; ""
-    else function.to_s
-    end.html_safe
   end
 
 #  <input name="commit" type="submit"  value="%s" style="margin-top: -12px; left;"
@@ -249,13 +258,6 @@ module ActionButtonHelper
         submit_tag(label)+
         text_field( @Domain,action,opt) +  "</form></div>"
     end
-  end
-
-  def action_buttoms(buttoms)
-    ("<table><tr>"+
-      buttoms.map{|buttom|
-      "<td>"+action_buttom(buttom) + "</td>"
-    }.join("\n") + "</tr></table>").html_safe
   end
 
 end
