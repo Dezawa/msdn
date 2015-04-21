@@ -11,11 +11,13 @@ class Sola::Dayly < ActiveRecord::Base
   extend Statistics
   include Tand
   extend Tand::ClassMethod
+  belongs_to :instrument , :class_name => "Sola::Instrument"
 #include Statistics
   serialize :kws
   serialize :volts
   before_save :set_culc
 
+  def self.instrument ;  Sola::Instrument ;end
   def self.valid_trz(ondotori)
     ondotori.base_name == "dezawa" && ondotori.channels["power01-電圧"]
   end
