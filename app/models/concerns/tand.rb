@@ -12,21 +12,25 @@ module Tand
         group.remotes.each{ |name,remote|
           group_remote_name = remote.name
           group_remote_rssi = remote.rssi
+          group_remote_serial  = remote.serial
 
-          remote.channels.each{ |name,ch|
+            remote.channels.each{ |name,ch|
+            next if ch.record.type == ""
+            group_remote_ch_record_type  = ch.record.type
             group_remote_ch_name = ch.name
             group_remote_ch_unix_time = ch.current.unix_time
             group_remote_ch_current_batt = ch.current.batt
-            group_remote_ch_record_type  = ch.record.type
-            status = self.find_or_create_by(:base_name  => base_name  ,
-                                            :group_name => group_name ,
-                                            :group_remote_name => group_remote_name,
-                                            :group_remote_ch_name => group_remote_ch_name,
-                                            :group_remote_ch_unix_time =>group_remote_ch_unix_time
-                                           )
+            status = self.
+              find_or_create_by(:base_name  => base_name  ,
+                                :group_name => group_name ,
+                                :group_remote_name => group_remote_name,
+                                :group_remote_ch_name => group_remote_ch_name,
+                                :group_remote_ch_unix_time =>group_remote_ch_unix_time
+                               )
             status.group_remote_rssi = group_remote_rssi
             status.group_remote_ch_current_batt = group_remote_ch_current_batt
             status.group_remote_ch_record_type  = group_remote_ch_record_type
+            status.serial  = group_remote_serial
             status.save
           }
         }
