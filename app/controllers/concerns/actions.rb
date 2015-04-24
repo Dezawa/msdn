@@ -52,6 +52,11 @@ module Actions
   # from your application log (in this case, all fields with names like "password"). 
   # filter_parameter_logging :password
 
+  def model(the_model)
+    @Model = the_model
+    @Domain= @Model.name.underscore
+  end
+  
   def set_instanse_variable
     @weather_location = session[:weather_location] || "maebashi"
   end
