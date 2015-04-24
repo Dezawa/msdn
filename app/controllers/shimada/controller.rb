@@ -17,11 +17,16 @@ class Shimada::Controller <  CommonController #ApplicationController
   def set_instanse_variable
     super
     @Links = Links
-    if @factory_id = session[:shimada_factory] 
+    if params[:factory_id]
+      @factory_id = session[:shimada_factory] =  params[:factory_id].to_i
       @factory    = Shimada::Factory.find @factory_id
     else
-      @factory = Shimada::Factory.find_by(name: "GMC")
-      @factory_id = @factory.id
+     if (@factory_id = session[:shimada_factory]) &&  
+       (@factory    = Shimada::Factory.find_by id: @factory_id)
+     else
+       @factory = Shimada::Factory.find_by(name: "GMC")
+       @factory_id = @factory.id
+     end
     end
   end
 
