@@ -148,10 +148,13 @@ end
 
 class HtmlLink   < HtmlCell
   def initialize(sym,lbl=nil,args={})
-    @ro = true
     super
+    @ro = true if @ro || link[:link_label].class == String
   end
-  def edit_text(domain,object,htmlopt="")
+  def edit(domain,object,controller,opt) 
+    text_field(domain,symbol,opt)
+  end
+  def ddedit_text(domain,object,htmlopt="")
     disp(object,htmlopt="")
   end
   def disp(object,htmlopt="")
