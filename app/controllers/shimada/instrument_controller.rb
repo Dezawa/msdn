@@ -3,7 +3,8 @@ require 'ondotori'
 require "ondotori/converter"
 class Shimada::InstrumentController < Shimada::Controller
   Labels =
-  [
+    [
+     HtmlSelect.new(:factory_id,"工場",:correction => Shimada::Factory.all.pluck(:name,:id)),
    HtmlText.new(:serial,"機器連番",size: 6),
    HtmlText.new(:base_name       ,"おんどとりbase",size: 6),
    HtmlText.new(:ch_name           ,"おんどとりchannel",size: 20, ),
@@ -13,7 +14,10 @@ class Shimada::InstrumentController < Shimada::Controller
    HtmlText.new(:comment         ,"説明"    ,size: 20),
    HtmlSelect.new(:converter     ,"変換"     ,:correction => Shimada.converter ,size: 4),
    HtmlNum.new( :slope           ,"傾き"    ,size: 3), 
-   HtmlNum.new( :graft           ,"切片"    ,size: 3)
+   HtmlNum.new( :graft           ,"切片"    ,size: 3),
+   HtmlNum.new( :buttely         ,"電池"    ,ro: true),
+   HtmlNum.new( :denpa           ,"電波"    ,ro: true),
+   HtmlDate.new( :status_date     ,"状況月日",ro: true,:tform =>"%y/%m/%d"),
   ]
 
   CSVatrs = Labels.map{|lbl| lbl.symbol}
