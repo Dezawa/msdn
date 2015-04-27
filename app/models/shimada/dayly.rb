@@ -3,6 +3,7 @@ require 'ondotori'
 require 'ondotori/converter'
 require 'ondotori/recode'
 require "vaper"
+require "statistics"
 require "pp"
 class Shimada::Dayly < ActiveRecord::Base
   include Tand
@@ -16,18 +17,37 @@ class Shimada::Dayly < ActiveRecord::Base
   before_save  :set_attrs, :convert
 
   def self.instrument ; Shimada::Instrument ;end
+  def self.instruments ; @instruments ||= Shimada::Instrument.all.order(:id) ;end
+  def self.serials     ; @serials ||=  instruments.map(&:serial)                 ;end
+  
   def self.valid_trz(ondotori)
-    ondotori.base_name == "dezawa" && ondotori.channels["power01-電圧"] ||
-      ondotori.base_name == "中部" &&
-      ( ["フリーザーA-温度","フリーザーA-湿度"] &  ondotori.channels.keys).size > 0
+    (serials & ondotori.channels.values.map(&:serial)).size>0
   end
   
   def self.channel_and_attr
     [["フリーザーA-温度",:measurement_value],["フリーザーA-湿度",:measurement_value],
+     ["1F休憩所-温度",:measurement_value],["1F休憩所-湿度",:measurement_value],
      ["power01-電圧",:measurement_value]
     ]
   end
 
+  scope :by_factory_name, -> factory_name {
+    joins(:instrument).merge(Shimada::Instrument.by_factory_name(factory_name)).order(:date)
+  }
+  scope :by_factory_id, -> factory_id {
+    joins(:instrument).merge(Shimada::Instrument.by_factory_id(factory_id)).order(:date)
+  }
+  
+  scope :by_factory_id_order_instrument, -> factory_id {
+    joins(:instrument).merge(Shimada::Instrument.by_factory_id(factory_id)).
+      order(:date,"shimada_instruments.id")
+  }
+  
+  def self.by_factory(factory_name)
+    factory_id = Shimada::Factory.find_by(name: factory_name).id
+    by_factory_id(factory_id)
+  end
+  
   def convert
     self.converted_value =
     case self.instrument.converter
@@ -48,6 +68,18 @@ class Shimada::Dayly < ActiveRecord::Base
       end
     }        
   end
+
+  ### temp_humidity_vaper
+  def converted_value_hourly
+    (converted_value.each_slice(3600/interval).
+     map{|values| vals= values.compact ; vals.average.roundN(4) unless vals.empty? } +
+     [nil]*24
+    )[0,24]
+  end
+  
+  ("00".."23").each_with_index{ |h,idx|
+    define_method("hourly#{h}".to_sym){  converted_value_hourly[idx] }
+  }
   
   # base_name ch_name 
   def set_attrs

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150421060849) do
+ActiveRecord::Schema.define(version: 20150426120025) do
 
   create_table "forecasts", force: :cascade do |t|
     t.string   "location",     limit: 255
@@ -82,6 +82,7 @@ ActiveRecord::Schema.define(version: 20150421060849) do
     t.integer  "instrument_id",     limit: 4
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
+    t.integer  "interval",          limit: 4
   end
 
   create_table "shimada_factories", force: :cascade do |t|
@@ -115,6 +116,7 @@ ActiveRecord::Schema.define(version: 20150421060849) do
     t.float    "graft",            limit: 24,  default: 0.0
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false
+    t.integer  "factory_id",       limit: 4
   end
 
   create_table "shimada_months", force: :cascade do |t|
@@ -543,7 +545,7 @@ ActiveRecord::Schema.define(version: 20150421060849) do
     t.string   "group_remote_ch_name",         limit: 255
     t.integer  "group_remote_rssi",            limit: 4
     t.integer  "group_remote_ch_current_batt", limit: 4
-    t.integer  "group_remote_ch_record_type",  limit: 4
+    t.string   "group_remote_ch_record_type",  limit: 255
     t.datetime "group_remote_ch_unix_time"
     t.datetime "created_at"
     t.datetime "updated_at"

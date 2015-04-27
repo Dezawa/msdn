@@ -44,11 +44,12 @@ module Tand
 
     def load_ondotori(ondotori)
       return  unless valid_trz(ondotori)
-      channel_and_attr.each{|channel_name,attr|
-        next unless channel = ondotori.channels[channel_name]
+      #channel_and_attr.each{|channel_name,attr|
+      ondotori.channels.each{|channel_name,channel|
+        next unless instrument.all.pluck(:serial).include?(channel.serial)
         times_values = times_values_group_by_day(channel)
         times_values.each{ |day,time_values|
-          find_or_create_and_save(day,attr,channel,time_values)
+          find_or_create_and_save(day,channel,time_values)
         }
       }
     end
@@ -58,16 +59,17 @@ module Tand
       group_by{ |time,value| time.to_date }
     end
 
-    def find_or_create_and_save(day,attr,channel,time_values )
+    def find_or_create_and_save(day,channel,time_values )
       conditions = {date: day, serial:  channel.serial, measurement_type: channel.type  }
       dayly = self.find_by(conditions ) || self.new(conditions )
       
-      dayly[attr] ||= []
+      dayly[:measurement_value] ||= []
       time_values.each{ |time,value| 
         min = (time.seconds_since_midnight/channel.interval).to_i
-        dayly[attr][min] = value 
+        dayly[:measurement_value][min] = value 
       }
       dayly.month = day.to_time.beginning_of_month.to_date
+      dayly.interval = channel.interval
       dayly.ch_name_type = channel.name_type
       dayly.instrument =
         dayly.class.instrument.find_by(serial: channel.serial,

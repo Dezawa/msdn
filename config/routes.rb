@@ -155,38 +155,39 @@ Rails.application.routes.draw do
   set_get("book/kamoku",%w(edit_on_table_all_column))
 
   ############ しまだ
-  %w(shimada/month shimada/chubu/month).each{ |shimada|
-    %w( analyze power factory reset_reevice_and_ave reculc_all reculc_shapes rm_gif standerd
-     show_analyze show_gif).each{ |act|
-      get  "/#{shimada}/#{act}" =>  "#{shimada}##{act}"
-    }
-    %w(graph graph_month graph_month_temp graph_month_bugs   
-       graph_the_day graph_patarn_all_month graph_deform graph_line 
-       graph_all_month graph_all_by_month  graph_all_month_vaper graph_all_month_temp 
-       graph_all_month_bugs graph_all_month_offset graph_all_month_bugs_offset
-        graph_all_month_lines 
-       graph_simyartion graph_almighty graph_superman graph_superman2
+  # %w(shimada/month shimada/chubu/month).each{ |shimada|
+  #   %w( analyze power  reset_reevice_and_ave reculc_all reculc_shapes rm_gif standerd
+  #    show_analyze show_gif).each{ |act|
+  #     get  "/#{shimada}/#{act}" =>  "#{shimada}##{act}"
+  #   }
+  #   %w(graph graph_month graph_month_temp graph_month_bugs   
+  #      graph_the_day graph_patarn_all_month graph_deform graph_line 
+  #      graph_all_month graph_all_by_month  graph_all_month_vaper graph_all_month_temp 
+  #      graph_all_month_bugs graph_all_month_offset graph_all_month_bugs_offset
+  #       graph_all_month_lines 
+  #      graph_simyartion graph_almighty graph_superman graph_superman2
 
-       graph_all_days
-    ).each{ |act|
-      get  "/#{shimada}/#{act}" =>  "#{shimada}##{act}"
-    }
+  #      graph_all_days
+  #   ).each{ |act|
+  #     get  "/#{shimada}/#{act}" =>  "#{shimada}##{act}"
+  #   }
 
-    %w(today tomorrow).each{ |day|
-      get "/#{shimada}/#{day}" => "#{shimada}##{day}"
-    }
-    set_post(shimada,@EditTable)
-  }
-    %w(month power factory chubu/month).each{  |model|
-      set_resources("shimada",model) 
-    }
-  controller="shimada/factory"
-  set_post(controller,@EditTable)
-  set_get(controller,%w(today update_today clear_today update_tomorrow))
-
- edit_table("shimada/instrument")
+  #   %w(today tomorrow).each{ |day|
+  #     get "/#{shimada}/#{day}" => "#{shimada}##{day}"
+  #   }
+  #   set_post(shimada,@EditTable)
+  # }
+  #   %w(month power chubu/month).each{  |model|
+  #     set_resources("shimada",model) 
+  #   }
+  # controller="shimada/factory"
+  # #set_post(controller,@EditTable)
+  # set_get(controller,%w(today update_today clear_today update_tomorrow))
+  
+  set_get("shimada/daylies",%w(index_month))
+  edit_table("shimada/factory","shimada/instrument")
   namespace :shimada do
-    resources :daylies,:instrument
+    resources :daylies,:instrument,:factory
   end
 
   ######### 熱管理

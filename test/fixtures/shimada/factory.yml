@@ -1,0 +1,69 @@
+---
+one:
+  id: '1'
+  name: "中部シマダヤ"
+  weather_location: gifu
+  forecast_location: gifu
+  power_model_id: '0'
+  revise_threshold: 
+  revise_slope_lower: 
+  revise_slope_higher: 
+  revise_y0: 
+  revise_power_0line: 
+  raw_vaper_threshold: 
+  raw_vaper_slope_lower: 
+  raw_vaper_slope_higher: 
+  raw_vaper_y0: 
+  raw_vaper_power_0line: 
+  prefix: 
+two:
+  id: '5'
+  name: GMC
+  weather_location: maebashi
+  forecast_location: maebashi
+  power_model_id: '0'
+  revise_threshold: 
+  revise_slope_lower: 
+  revise_slope_higher: 
+  revise_y0: 
+  revise_power_0line: 
+  raw_vaper_threshold: 
+  raw_vaper_slope_lower: 
+  raw_vaper_slope_higher: 
+  raw_vaper_y0: 
+  raw_vaper_power_0line: 
+  prefix: 
+No3:
+  id: '7'
+  name: "埼玉シマダヤ"
+  weather_location: maebashi
+  forecast_location: maebashi
+  power_model_id: '0'
+  revise_threshold: 
+  revise_slope_lower: 
+  revise_slope_higher: 
+  revise_y0: 
+  revise_power_0line: 
+  raw_vaper_threshold: 
+  raw_vaper_slope_lower: 
+  raw_vaper_slope_higher: 
+  raw_vaper_y0: 
+  raw_vaper_power_0line: 
+  prefix: 
+No4:
+  id: '8'
+  name: "丸中製麺"
+  weather_location: oumihachiman
+  forecast_location: oumihachiman
+  power_model_id: '0'
+  revise_threshold: 
+  revise_slope_lower: 
+  revise_slope_higher: 
+  revise_y0: 
+  revise_power_0line: 
+  raw_vaper_threshold: 
+  raw_vaper_slope_lower: 
+  raw_vaper_slope_higher: 
+  raw_vaper_y0: 
+  raw_vaper_power_0line: 
+  prefix: 

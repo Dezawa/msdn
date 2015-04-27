@@ -1,0 +1,83 @@
+---
+
+no1:
+  id: '1'
+  factory_id: '1'
+  serial: 52BC036F
+  base_name: "中部"
+  ch_name: "フリーザーA"
+  measurement_type: '13'
+  measurement: "温度"
+  unit: "℃"
+  comment: "中部フリーザーA温度"
+  converter: '0'
+  slope: '1.0'
+  graft: '0.0'
+two:
+  id: '2'
+  factory_id: '1'
+  serial: 52BC036F
+  base_name: "中部"
+  ch_name: "フリーザーA"
+  measurement_type: '13'
+  measurement: "湿度"
+  unit: "%Rh"
+  comment: "中部フリーザーA湿度"
+  converter: '2'
+  slope: '1.0'
+  graft: '0.0'
+No3:
+  id: '3'
+  factory_id: '1'
+  serial: 52C204E9
+  base_name: ティアンドデイ社屋
+  ch_name: "サーバー"
+  measurement_type: '146'
+  measurement: "電力"
+  unit: "kWh"
+  comment: "ティアンドデイ社屋 サーバー電力"
+  converter: '1'
+  slope: '0.01'
+  graft: '0.0'
+
+No4:
+  id: '4'
+  factory_id: '1'
+  serial: 52BC036E
+  base_name: "ティアンドデイ社屋"
+  ch_name: 1F休憩所
+  measurement_type: '13'
+  measurement: "温度"
+  unit: "℃"
+  comment: ''
+  converter: '0'
+  slope: '1.0'
+  graft: '0.0'
+No5:
+  id: '5'
+  factory_id: '1'
+  serial: 52BC036E
+  base_name: "ティアンドデイ社屋"
+  ch_name: 1F休憩所
+  measurement_type: '208'
+  measurement: "蒸気圧"
+  unit: "hPa"
+  comment: ''
+  converter: '2'
+  slope: '1.0'
+  graft: '0.0'
+
+one:
+  id: '6'
+  factory_id: '1'
+  serial: 52C215FA
+  base_name: "dezawa"
+  ch_name: "power01"
+  measurement_type: '146'
+  measurement: "電力"
+  unit: "kWh"
+  comment: "power01-電力"
+  converter: '1'
+  slope: '2.1463'
+  graft: '-0.0439'
+  
