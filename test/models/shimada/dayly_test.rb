@@ -132,7 +132,7 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
     Shimada::Dayly.load_trz(TD0424)
     dayly23 = Shimada::Dayly.find_by(date: "2015-4-23" ,ch_name_type: "1F休憩所-温度")
     assert_equal [nil,   nil,   nil,   nil,   nil,   nil,    9.4,  10.53,
-                  11.92, 13.54, 15.53, 17.32, 19.08, 20.42, 22.06, 23.1,
+                  11.93, 13.54, 15.53, 17.33, 19.08, 20.42, 22.06, 23.1,
                   23.27, 22.15, 18.57, 16.35, 15.55, 15.16, 14.66, 14.28],
     #             [11.90, 13.9, 15.9, 17.2, 19.2
       dayly23.converted_value_hourly
@@ -215,5 +215,31 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
       daylies.map{|dayly| [dayly.date.day,dayly.ch_name_type]}
 
   end
-  
+   must "TD0424svrを取り込むとサーバー電圧は" do
+    Shimada::Dayly.load_trz(TD0424svr)
+    assert_equal [0.001675, 0.001674, 0.00170,  0.001673, 0.001667, 0.00168,
+                  0.001701, 0.001691, 0.001698, 0.001681, 0.001672, 0.001678
+                 ],
+      Shimada::Dayly.by_factory_id(1).
+      where(date: "2015-4-23",ch_name_type:"サーバー-電圧")[0].
+      measurement_value[8*12,12].map{|v| v.round(6)}
+  end
+   must "TD0424svrを取り込むとサーバー電力は" do
+    Shimada::Dayly.load_trz(TD0424svr)
+    assert_equal [1.675, 1.674, 1.7, 1.673, 1.667, 1.68,
+                  1.701, 1.691, 1.698, 1.681, 1.672, 1.678
+                 ],
+      Shimada::Dayly.by_factory_id(1).
+      where(date: "2015-4-23",ch_name_type:"サーバー-電圧")[0].
+      converted_value[8*12,12].map{|v| v.round(6)}
+  end
+
+   must "TD0424svrを取り込むと4/23 7～9時台サーバー平均電力は" do
+    Shimada::Dayly.load_trz(TD0424svr)
+    assert_equal [1.68, 1.68, 1.72],
+      Shimada::Dayly.by_factory_id(1).
+      where(date: "2015-4-23",ch_name_type:"サーバー-電圧")[0].
+      converted_value_hourly[7,3].map{|v| v.round(6)}
+  end
+
 end

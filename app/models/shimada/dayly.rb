@@ -72,7 +72,7 @@ class Shimada::Dayly < ActiveRecord::Base
   ### temp_humidity_vaper
   def converted_value_hourly
     (converted_value.each_slice(3600/interval).
-     map{|values| vals= values.compact ; vals.average.roundN(4) unless vals.empty? } +
+     map{|values| vals= values.compact ; vals.average.round(2) unless vals.empty? } +
      [nil]*24
     )[0,24]
   end

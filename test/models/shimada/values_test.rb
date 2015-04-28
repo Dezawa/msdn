@@ -33,17 +33,17 @@ TD0424svr= "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_�
       map{|dayly| dayly.ch_name_type if dayly}
   end
   must "TD0424,TD0423,TD0423svr,TD0424を読んだ時の 4/23のデータ" do
-    [TD0424,TD0423,TD0423svr,TD0424].each{|file|    Shimada::Dayly.load_trz(file)}
+    [TD0424,TD0423,TD0423svr,TD0424svr].each{|file|    Shimada::Dayly.load_trz(file)}
     values = Shimada::Values.new(1, "2015-4-23").hours
     #             フリーザ温湿度 サーバ電力 １F温湿度 太陽
-    assert_equal [[nil, nil, nil, 11.92, 8.518, nil],      [nil, nil, nil, 13.54, 9.011, nil], #8、9時
-                  [nil, nil, nil, 15.53, 8.396, nil],      [nil, nil, nil, 17.32, 6.917, nil],
-                  [nil, nil, nil, 19.08, 5.922, nil],      [nil, nil, nil, 20.42, 5.608, nil]              
-                  ],  values[8,6]
+    assert_equal [
+                  [nil, nil, 1.67, 9.35, 8.61, nil], [nil, nil, 1.68, 10.53, 8.81, nil],# 6,7
+                  [nil, nil, 1.68, 11.93, 8.52, nil], [nil, nil, 1.72, 13.54, 9.01, nil], #8,9
+                 ],  values[6,4]
   end
   must "TD0424,TD0423,TD0423svr,TD0424を読んだ時の 4/23の8時のhtmlデータ" do
     [TD0424,TD0423,TD0423svr,TD0424].each{|file|    Shimada::Dayly.load_trz(file)}
-    assert_equal "<br><br><br>11.92<br>8.52<br>",
+    assert_equal "<br><br><br>11.93<br>8.52<br>",
       Shimada::Values.new(1, "2015-4-23").hour_html08
   end
 end

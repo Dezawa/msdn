@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 class Shimada::Values
   include ActiveModel::Model
+  attr_reader :date,:factory_id,:id
   #attr_reader :channels
-  def initialize(factory_id_or_name,date)
+  def initialize(factory_id_or_name,date=Time.now)
     @factory_id =
       case factory_id_or_name
       when Integer ; factory_id_or_name
@@ -12,9 +13,18 @@ class Shimada::Values
           Shimada::Factory.find_by(name: factory_id_or_name).id
         end
       end
-    @date = date
+    @date = case date
+            when Date,Time ; date.to_date
+            when String    ; pp date;Date.parse(date)
+            else           ; Time.now
+            end
+    @id =@factory_id*100+@date.day
   end
 
+  def self.month(factory_id_or_name,month)
+    (month..month.end_of_month).map{|date| self.new(factory_id_or_name,date) }
+  end
+  
   def instruments
     @channels ||= Shimada::Instrument.where(factory_id: @factory_id).order(:id)
   end
@@ -39,12 +49,14 @@ class Shimada::Values
       daylies.map{|dayly| dayly ? dayly.converted_value_hourly : [nil]*24}.transpose
   end
 
+  def item_labels
+    instruments.map{|instrument| instrument.ch_name + "-" + instrument.measurement}.
+      join("<br>".html_safe).html_safe
+  end
+  
   ("00".."23").each{|h|
     define_method("hour_html#{h}") do 
-      hours[h.to_i].map{|v| v ? "%.2f"%v : ""}.join("<br>")
+      hours[h.to_i].map{|v| v ? "%.2f"%v : "ー　"}.join("<br>".html_safe).html_safe
     end
   }
-  def hour_html0888
-    hours[8].map{|v| v ? "%.2f"%v : ""}.join("<br>")
-  end
 end
