@@ -37,7 +37,7 @@ No3:
   unit: "kWh"
   comment: "ティアンドデイ社屋 サーバー電力"
   converter: '1'
-  slope: '0.01'
+  slope: '1000'
   graft: '0.0'
 
 No4:
