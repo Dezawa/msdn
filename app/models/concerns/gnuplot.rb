@@ -1,43 +1,65 @@
 # -*- coding: utf-8 -*-
 module Gnuplot
-  #
-  # opt  :
-  #   必須  :column_labels   例  %w(日 中央 - + 気温),          必須
-  #   必須  :column_format   例 "%s %.1f %.1f %.1f %.1f\n",
-  #         :terminal        default    "jpeg"
-  #         :xy              例 [ [[1,2],[3,4]]     ,[[5,6]]
-  #                                ↑最初のファイル   ↑二つ目のファイル  への指示
-  #         :axis_labels     例  { :xlabel => "日",:ylabel => "推定電力",:y2label => "気温"},
-  #         :title  例 => "電力推定",
-  #         :tics   例 => { :xtics => "rotate by -90",:y2tics=> "-5,5"},
-  #         :by_tics 例  => { 4 => "x1y2" },    x1y1以外の軸を使うとき
-  #         :size             default  "600,400"
-  #         :grid   例 => "ytics"                
-  #         :additional_lines  近似線などを書く式を生で記述
-  #         :type   => "scatter"  using 1:2,  無いときは using 2:xticlabel(1)
-  #         :with   => "line",
-  #         :labels ["label 1 'Width = 3' at 2,0.1 center","arrow 1 as 2 from -1.5,-0.6 to -1.5,-1"]
-  #  実装まだ
+  DefaultOption =
+    {
+     ###### 図の形状、画像フォーマット ######
+     terminal: "jpeg"    ,
+     size:      "600,400",
+     type:     "scatter", #  using 1:2,  無いときは using 2:xticlabel(1)
+
+     ########  ファイルpath関連 #######
+     base_path:        Rails.root+"tmp"+"gnuplot"+"data" ,# データ書き出しパス。
+     graph_file:       "image",
+     graph_file_dir:   Rails.root+"tmp" + "img",
+     define_file:      Rails.root+"tmp"+"gnuplot"+"graph.def",
+     
+     ###### データ関連 ######
+     #
+     # 入力データ構造
+     #  形式１ [ [value,value,value,,,], [,,,], [,,,],,,,,]
+     #  形式２ [ [objct,objct,objct,,,], [,,,], [,,,],,,,,]
+     #
+     # 中間ファイル関連
+     #   
+     # column_labels: "" ,       # gnuplotの入力データとなる中間ファイルのヘッダー文字列
+     # column_attrs:  [] ,       # 入力データ構造が形式２のとき、obje.send[sym] としてデータを得る
+     #
+     # プロットデータ関連
+     #      データファイルの何カラム目を用いるか ######
+     # column_format:    ,     xy:       [[1,2]]   ,  #  [ [[1,2],[3,4]]     ,[[5,6]]
+     #                             ↑最初のファイル   ↑二つ目のファイル  への指示
+
+     ####### title達 ######
+     #title:       , #  グラフのタイトル。図枠の上外側中央に表示される
+     #axis_labels: , #  軸   例  { :xlabel => "日",:ylabel => "推定電力",:y2label => "気温"},
+
+     ####### 軸 ######
+     #tics:        , #  軸目盛  例 { :xtics => "rotate by -90",:y2tics=> "-5,5"},
+     #by_tics:     , #  例 => { 4 => "x1y2" },    x1y1以外の軸を使うとき
+     
+     #grid:    , #   例 => "ytics"                
+     #######  ######
+
+     #######  ######
+     #######  ######
+     
+     #additional_lines: , #  近似線などを書く式を生で記述
+     #with:     "line",   #
+     #labels:  ,# ["label 1 'Width = 3' at 2,0.1 center","arrow 1 as 2 from -1.5,-0.6 to -1.5,-1"]
+     #  実装まだ
   #
   #         :group_by    data_list.group_by{ |d| d.semd(opt[:group_by])}
   #         :keys        defaultではgroup_by の分類がsortされて使われる。
   #                      違うsort順にしたいときに設定
-  #  ファイルpath関連
-  #         :base_path              データ書き出しパス。RAILS_ROOTからの相対 tmp/gnuplot/data
-  #         :graph_file                "image"
-  #         :graph_file_dir             RAILS_ROOT+"/tmp/img"
-  #         :define_file           絶対path  RAILS_ROOT+"/tmp/gnuplot/graph.def"
+    }
   # 出力される画像fileは  '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'
   # detalistの形式は以下を想定
   #   データファイルpath          String
   #   データファイルpathの配列    [ String, String ]
-  #   データ                      [ [clm0,clm1,clm,,] ,[clm1,clm2,clm3,,] ] 
+  #   データ                      [ [clm0,clm1,clm,,] ,[clm1,clm2,clm3,,] ]
+  def plot ;gnuplot_(arry_of_data_objects,option);end
   def gnuplot_(data_list,opt)
-    opt = { :terminal => "jpeg",:size => "600,400" ,
-      :graph_file => "image", :graph_file_dir => Rails.root+"tmp" + "img",
-      :define_file => Rails.root+"tmp/gnuplot/graph.def",
-      :base_path   =>  "tmp/gnuplot/data"
-    }.merge opt
+    opt = DefaultOption.merge opt
 
     datafile_pathes =  datafiles(data_list,opt)
     def_file = output_gnuplot_define(datafile_pathes,opt)
@@ -49,18 +71,36 @@ module Gnuplot
   # detalistの形式は以下を想定
   #   データファイルpath          String
   #   データファイルpathの配列    [ String, String ]
-  #   データ                      [ [clm0,clm1,clm,,] ,[clm1,clm2,clm3,,] ] 
+  #   データ                      [ [clm0,clm1,clm,,] ,[clm1,clm2,clm3,,] ]
+  # StringでもArrayでも無い場合
+  #   データObjectの配列          [ Object, Object,,, ] :: 各Objectから column_attrs のデータを使う
+ 
+
   def datafiles(data_list,opt)
     if data_list.class == String ; [ data_list] # データファイルパス
     elsif data_list.class == Array
-      if data_list.first.class == String ; data_list # Array of データファイルパス
-      elsif data_list.first.class == Array
+      case data_list.first
+      when String ; data_list # Array of データファイルパス
+      when  Array
         group_by = 
-        opt[:group_by] ? data_list.group_by{ |d| d.semd(opt[:group_by])} : [["",data_list]]
+          opt[:group_by] ? data_list.group_by{ |d| d.semd(opt[:group_by])} : [["",data_list]]
         output_datafile(group_by,opt){ |f,k,data|
-          data.each{ |datum| f.puts opt[:column_format]%datum}
+          data.each{ |datum|
+            f.puts (opt[:column_format] ?
+                    opt[:column_format]%datum : datum.join(" "))
+          }
         }
-      end
+      else
+        group_by = 
+          opt[:group_by] ? data_list.group_by{ |d| d.semd(opt[:group_by])} : [["",data_list]]
+          output_datafile(group_by,opt){ |f,k,objects|
+            objects.each{ |object|
+              datum = opt[:column_attrs].map{|sym| object.send(sym)}
+              f.puts (opt[:column_format] ?
+                    opt[:column_format]%datum : datum.join(" "))
+            }
+          }
+      end        
     end
   end
   
@@ -148,14 +188,14 @@ set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'"
   end
 
   def output_datafile(grouped_data_ary,opt,&block)
-    base_path = opt[:base_path]+"000"
+    base_path = opt[:base_path].to_s+"/data000"
     datafile_pathes = []
     keys = opt[:keys] || grouped_data_ary.map{ |ary| ary.first}.sort
-    keys.each_with_index{ |k,idx|
+    keys.each_with_index{ |key,idx|
       datafile_pathes << Rails.root+"#{base_path}.data"
       open(datafile_pathes.last,"w"){ |f|
         f.puts opt[:column_labels].join(" ") if opt[:column_labels]
-        yield f,k,grouped_data_ary[idx][1]
+        yield f,key,grouped_data_ary[idx][1]
         f.puts
       }
       base_path.succ!
