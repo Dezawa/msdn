@@ -90,14 +90,14 @@ Rails.application.routes.draw do
   post "/users/sign_up" => "users#create"
   %w(user_options users ).each{|controller| set_post(controller,@EditTable)    }
     
-  ########### LiPS
-  set_get("lips",%w( member calc csv_download))
-  set_post("lips",%w(change_form calc)+@EditTable)
-  get "/lips" => "lips#member" 
+  # ########### LiPS
+  # set_get("lips",%w( member calc csv_download))
+  # set_post("lips",%w(change_form calc)+@EditTable)
+  # get "/lips" => "lips#member" 
 
-  ########### Todo
-  set_post("todos",@EditTable)
-  resources :todos
+  # ########### Todo
+  # set_post("todos",@EditTable)
+  # resources :todos
 
   ########### 太陽光発電
   set_post( "sola/dayly",@EditTable )
@@ -126,33 +126,34 @@ Rails.application.routes.draw do
   set_post(:weather,%w(change_location get_data temp_vaper weather_location cband))
   set_post(:weather_location,%w(change_location)+@EditTable)
   
-  ########### UBR 
-  ubr = %w(main waku waku_block souko_plan souko_floor wall pillar)
-  set_get("ubr/main",%w(occupy_pdf reculc show_pdf ))
-  get "/ubr/souko_plan/show_plan/:id" => "ubr/souko_plan#show_plan"
-  get "/ubr/souko_floor/show_floor/:id" => "ubr/souko_floor#show_floor"
+  # ########### UBR 
+  # ubr = %w(main waku waku_block souko_plan souko_floor wall pillar)
+  # set_get("ubr/main",%w(occupy_pdf reculc show_pdf ))
+  # get "/ubr/souko_plan/show_plan/:id" => "ubr/souko_plan#show_plan"
+  # get "/ubr/souko_floor/show_floor/:id" => "ubr/souko_floor#show_floor"
 
-  ubr.each{ |model|
-    set_resources("ubr",model) 
-    set_post( "ubr/#{model}",@EditTable )
-    set_post( "ubr/#{model}",%w(add_assosiation edit_assosiation))
-  }
+  # ubr.each{ |model|
+  #   set_resources("ubr",model) 
+  #   set_post( "ubr/#{model}",@EditTable )
+  #   set_post( "ubr/#{model}",%w(add_assosiation edit_assosiation))
+  # }
 
-  ################ 複式簿記
-  set_get("book/main",%w( book_make  make_new_year csv_out_print sort_by_tytle sort))
-  set_post("book/main",%w(  make_new_year change_per_page))
-  book = %w(main kamoku permission)
-  book.each{ |model|
-    set_post("book/#{model}",@EditTable)
-    set_get("book/#{model}",@EditTable)
-    set_resources("book",model) 
-    set_post("book/#{model}",%w(add_assosiation edit_assosiation owner_change_win owner_change))
-  }
-  get "/book/keeping" => "book/keeping#index"
-  set_post("book/keeping",%w())
-  set_get("book/keeping",%w(taishaku csv_taishaku motocho book_make help csv_motocho owner_change owner_change_win year_change))
-  set_post("book/main",%w(renumber))
-  set_get("book/kamoku",%w(edit_on_table_all_column))
+  # ######
+  # ########## 複式簿記
+  # set_get("book/main",%w( book_make  make_new_year csv_out_print sort_by_tytle sort))
+  # set_post("book/main",%w(  make_new_year change_per_page))
+  # book = %w(main kamoku permission)
+  # book.each{ |model|
+  #   set_post("book/#{model}",@EditTable)
+  #   set_get("book/#{model}",@EditTable)
+  #   set_resources("book",model) 
+  #   set_post("book/#{model}",%w(add_assosiation edit_assosiation owner_change_win owner_change))
+  # }
+  # get "/book/keeping" => "book/keeping#index"
+  # set_post("book/keeping",%w())
+  # set_get("book/keeping",%w(taishaku csv_taishaku motocho book_make help csv_motocho owner_change owner_change_win year_change))
+  # set_post("book/main",%w(renumber))
+  # set_get("book/kamoku",%w(edit_on_table_all_column))
 
   ############ しまだ
   # %w(shimada/month shimada/chubu/month).each{ |shimada|
@@ -184,7 +185,7 @@ Rails.application.routes.draw do
   # #set_post(controller,@EditTable)
   # set_get(controller,%w(today update_today clear_today update_tomorrow))
   
-  set_get("shimada/daylies",%w(index_month))
+  set_get("shimada/daylies",%w(index_month graph))
   edit_table("shimada/factory","shimada/instrument")
   namespace :shimada do
     resources :daylies,:instrument,:factory
