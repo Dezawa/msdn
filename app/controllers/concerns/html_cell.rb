@@ -167,16 +167,17 @@ class HtmlLink   < HtmlCell
     key_val = links.delete(:key_val)
     htmloption = links.delete(:htmloption)
     params = links.size == 0 ? "" : links.map{ |k,v| "#{k}=#{v}"}.join("&")
+    lbl = linklabel(object,links)
     #logger.debug("HtmlLink: #{object.send(symbol)},#{url},#{key}, #{key_val}")
     if key
       "<a href='#{url}?#{key}=#{object.send(key_val)}&#{params}' #{htmloption}>#{lbl}</a>".html_safe
     else
-      "<a href='#{url}/#{object.id}?#{params}' #{htmloption}>#{linklabel}</a>".html_safe
+      "<a href='#{url}/#{object.id}?#{params}' #{htmloption}>#{lbl}</a>".html_safe
     end
 #>>>>>>> HospitalPower:lib/html_cell.rb
   end
 
-  def linklabel
+  def linklabel(object,links)
     links.delete(:link_label) || 
       if val = object.send(symbol) 
         if tform
