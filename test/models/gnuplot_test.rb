@@ -22,12 +22,12 @@ class GnuplotTest < ActiveSupport::TestCase
 
   must "CaseString" do
      gp = Graph::Base.new(CaseString)
-     assert_equal [Power01], gp.datafiles(gp.arry_of_data_objects,{})
+     assert_equal [Power01], gp.datafiles#(gp.arry_of_data_objects,{})
    end
   
    must "CaseArryString" do
      gp = Graph::Base.new(CaseArryString)
-     assert_equal [Power01,Hyum], gp.datafiles(gp.arry_of_data_objects,{})
+     assert_equal [Power01,Hyum], gp.datafiles#(gp.arry_of_data_objects,{})
      end
    must "CaseArryArry" do
    gp = Graph::Base.new(CaseArryArry)

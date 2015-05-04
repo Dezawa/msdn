@@ -18,30 +18,45 @@ module Gnuplot
      # 入力データ構造
      #  形式１ [ [value,value,value,,,], [,,,], [,,,],,,,,]
      #  形式２ [ [objct,objct,objct,,,], [,,,], [,,,],,,,,]
+     #  形式３ objct
      #
      # 中間ファイル関連
-     #   
      # column_labels: "" ,       # gnuplotの入力データとなる中間ファイルのヘッダー文字列
      # column_attrs:  [] ,       # 入力データ構造が形式２のとき、obje.send[sym] としてデータを得る
+     #                           # 形式３のとき objctのserializeされている attrを指定し、そのデータを用いる
+     # column_format:    ,       # 中間ファイルへの出力format
      #
-     # プロットデータ関連
-     #      データファイルの何カラム目を用いるか ######
-     # column_format:    ,     xy:       [[1,2]]   ,  #  [ [[1,2],[3,4]]     ,[[5,6]]
-     #                             ↑最初のファイル   ↑二つ目のファイル  への指示
-
+     ###################################
+     ######## プロットデータ関連 #######
+     ###################################
+     #
      ####### title達 ######
-     #title:       , #  グラフのタイトル。図枠の上外側中央に表示される
-     #axis_labels: , #  軸   例  { :xlabel => "日",:ylabel => "推定電力",:y2label => "気温"},
-
+     # title:       , #  グラフのタイトル。図枠の上外側中央に表示される
+     # axis_labels: , #  軸   例  { :xlabel => "日",:ylabel => "推定電力",:y2label => "気温"},
+     #
+     #
+     ### データファイルの何カラム目を用いるか ######
+     # xy:       [[1,2]]   ,  #  [ [[1,2],[3,4]]     ,[[5,6]]
+     #                             ↑最初のファイル   ↑二つ目のファイル  への指示
      ####### 軸 ######
-     #tics:        , #  軸目盛  例 { :xtics => "rotate by -90",:y2tics=> "-5,5"},
-     #by_tics:     , #  例 => { 4 => "x1y2" },    x1y1以外の軸を使うとき
-     
-     #grid:    , #   例 => "ytics"                
-     #######  ######
-
-     #######  ######
-     #######  ######
+     # tics:        , #  軸目盛  例 { :xtics => "rotate by -90",:y2tics=> "-5,5"},
+     # by_tics:     , #  例 => { 4 => "x1y2" },    x1y1以外の軸を使うとき
+     #     
+     # grid:        , #   例 => "ytics"
+     # set_key:     , # 描画された曲線の説明や表題を表示
+     #                # default "set key outside autotitle columnheader"
+     # axis_labels: , # {x: "X軸",y2: "Y2軸"}
+     # range:       , # {x: "[0:100]",y2: "[11:59]"}
+     #
+     ##### 点、線 ######
+     # point_type: [1,2,6]  idx番目のtypeが point_type[idx]
+     # point_size: [1,2,6] 
+     # line_type:
+     #
+     ####### set ######
+     #
+     # set:   , #色々な set  ["...","....", ,,,]
+     #####  ######
      
      #additional_lines: , #  近似線などを書く式を生で記述
      #with:     "line",   #
@@ -76,7 +91,9 @@ module Gnuplot
   #   データObjectの配列          [ Object, Object,,, ] :: 各Objectから column_attrs のデータを使う
  
 
-  def datafiles(data_list,opt)
+  def datafiles(data_list=nil,opt=nil)
+    opt ||= @option || DefaultOption
+    data_list ||= @arry_of_data_objects
     if data_list.class == String ; [ data_list] # データファイルパス
     elsif data_list.class == Array
       case data_list.first
@@ -85,10 +102,7 @@ module Gnuplot
         group_by = 
           opt[:group_by] ? data_list.group_by{ |d| d.semd(opt[:group_by])} : [["",data_list]]
         output_datafile(group_by,opt){ |f,k,data|
-          data.each{ |datum|
-            f.puts (opt[:column_format] ?
-                    opt[:column_format]%datum : datum.join(" "))
-          }
+          data.each{ |datum|  output_line(f,datum,opt)  }
         }
       else
         group_by = 
@@ -172,7 +186,14 @@ set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'"
 
   def labels(arg_labels)   ; arg_labels ? arg_labels.map{ |l| "set #{l}"}.join("\n") : ""   ;  end
   def index_of_label(label); labels.index(label)                                       ;  end
-  def axis_labels(opt)     ; opt[:axis_labels].map{ |k,v| "set #{k} '#{v}'"}.join("\n");  end
+  def axis_labels(opt)
+    opt[:axis_labels].map{ |k,v|
+      case v
+      when String ; "set #{k} '#{v}'"
+      when Array ; "set #{k} '#{v.first}' #{v[1]}"
+      end
+      }.join("\n")
+  end
 
   def range_str(opt)
     return "" unless opt[:range]
@@ -187,6 +208,19 @@ set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'"
     opt[:grid].map{ |grid| "set grid #{grid}"}.join("\n")
   end
 
+  def output_line(f,datum,opt)
+    if opt[:column_attrs]
+      datum.each_with_index{|data,idx|
+        data ? f.printf(opt[:column_attrs][idx],data) : " - "
+      }
+    else
+      datum.each{|data|
+        f.printf( data ? "#{data} " : " - " )
+      }
+    end
+    f.puts
+  end
+  
   def output_datafile(grouped_data_ary,opt,&block)
     base_path = opt[:base_path].to_s+"/data000"
     datafile_pathes = []
