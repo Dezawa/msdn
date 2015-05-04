@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-module Graph
+module Graph::Ondotori
   class TempHumidity < Base
     TempHumidityDef =
       {size: "900,400",
