@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
 Hyum    = "test/testdata/shimada/temp-hyumidity-20141223-060422.trz"
-
+Hyums   = Dir.glob("/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_2015040*trz")
 class GraphOndotoriTempHumidityTest < ActiveSupport::TestCase
   fixtures "shimada/instrument", "shimada/factory"
   def setup
+    Shimada::Dayly.delete_all
     Shimada::Dayly.load_trz(Hyum)
     @dayly = Shimada::Dayly.find_by(date: "2014-12-22",
                                     ch_name_type: "フリーザーA-温度")
@@ -54,5 +55,20 @@ class GraphOndotoriTempHumidityTest < ActiveSupport::TestCase
     gt.plot
   end
 
+  must "複数の日選択" do
+    Hyums.each{|hyum| Shimada::Dayly.load_trz(hyum)}
+    daylies = Shimada::Dayly.where(month: "2015-4-1",
+                                 ch_name_type: "1F休憩所-温度")
+    gt = Graph::Ondotori::TempHumidity.
+      new(daylies ,
+          title_post: "ー 2015-4月",
+          graph_file: "monthly",
+          define_file:      Rails.root+"tmp"+"gnuplot"+"monthly.def",
+       xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m/%d'" ],
+         )
+    assert_equal 9*24*12, gt.objects.size
+    gt.plot
+    
+  end
     
 end
