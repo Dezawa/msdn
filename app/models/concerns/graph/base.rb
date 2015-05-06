@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 module Graph
   class Base
+    include ActiveModel::Model
     include Gnuplot
+  delegate :logger, :to=>"ActiveRecord::Base"
     attr_reader :arry_of_data_objects,:option
     def initialize(arry_of_data_objects,opt={})
       @arry_of_data_objects = arry_of_data_objects

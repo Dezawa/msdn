@@ -6,6 +6,7 @@ require "vaper"
 require "statistics"
 require "pp"
 class Shimada::Dayly < ActiveRecord::Base
+  delegate :logger, :to=>"ActiveRecord::Base"
   include Tand
   extend Tand::ClassMethod
   
@@ -47,6 +48,12 @@ class Shimada::Dayly < ActiveRecord::Base
     factory_id = Shimada::Factory.find_by(name: factory_name).id
     by_factory_id(factory_id)
   end
+  def time_values(fmt=nil)
+    date0 = date.to_time
+    unless fmt ;(0..3600*24-1).step(interval).map{|t| date0+t}
+    else       ;(0..3600*24-1).step(interval).map{|t| (date0+t).strftime(fmt)}
+    end
+  end
   
   def convert
     self.converted_value =
@@ -60,7 +67,7 @@ class Shimada::Dayly < ActiveRecord::Base
 
   def vaper_pressure
     temperature = Shimada::Dayly.
-      find_by(date: date,serial: serial,measurement_type: 13)
+      find_by(date: date,serial: serial,measurement_type: Ondotori::TypeNameHash["温度"])
     return unless temperature
     temperature.measurement_value.map.with_index{|temp,idx|
       if temp && measurement_value[idx]

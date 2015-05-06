@@ -3,22 +3,24 @@ class Shimada::FactoryController <  Shimada::Controller
 
   PopupToday = %Q!onClick="window.open('/shimada/factory/today','today','width=800,height=500,scrollbars=yes');" target="today"! 
   Labels = 
-    [
-     HtmlText.new(:name,"工場名",:size => 8 ),
-     HtmlSelect.new(:weather_location,"過去データ",:correction => WeatherLocation.name_location_past),
+    [ HtmlLink.new(:name,"工場名",:size => 8 ,
+                   :link => { :url => "/shimada/dayly/",:key => :id, :key_val => :id}),
+     HtmlSelect.new(:weather_location,"過去",:correction => WeatherLocation.name_location_past),
      #all.map{|wl| [wl.name,wl.location]}),
      HtmlSelect.new(:forecast_location,"予報",:correction => WeatherLocation.name_location),
+     HtmlLink.new(:id,"",:link => { :url => "/shimada/daylies/",:key => :factory_id, :key_val => :id,
+                    :link_label => "実績"}),
      #all.map{|wl| [wl.name,wl.location]}),
-     HtmlNum.new(:power_model_id,"パワーモデル",size: 2),
-     HtmlText.new(:prefix,"subモデル",:size=>4),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/today",:key => :id, :key_val => :id,
-                    :link_label => "本日実績", :htmloption =>PopupToday}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/tomorrow",:key => :id, :key_val => :id,
-                    :link_label => "明日予報"}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/month/power",:key => :id, :key_val => :id,
-                    :link_label => "過去実績"}),
-     HtmlLink.new(:id,"",:link => { :url => "/shimada/%s/month/analyze",:key => :id, :key_val => :id,
-                    :link_label => "分析"})
+     # HtmlNum.new(:power_model_id,"パワーモデル",size: 2),
+     # HtmlText.new(:prefix,"subモデル",:size=>4),
+     # HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/today",:key => :id, :key_val => :id,
+     #                :link_label => "本日実績", :htmloption =>PopupToday}),
+     # HtmlLink.new(:id,"",:link => { :url => "/shimada/factory/tomorrow",:key => :id, :key_val => :id,
+     #                :link_label => "明日予報"}),
+     # HtmlLink.new(:id,"",:link => { :url => "/shimada/month/power",:key => :id, :key_val => :id,
+     #                :link_label => "過去実績"}),
+     # HtmlLink.new(:id,"",:link => { :url => "/shimada/%s/month/analyze",:key => :id, :key_val => :id,
+     #                :link_label => "分析"})
      #HtmlLink.new(:id,"",:link => { :url => shimada_month_analyze_index_path,:link_label => "分析"})
     ]
   LabelParams=
@@ -31,15 +33,17 @@ class Shimada::FactoryController <  Shimada::Controller
   def set_instanse_variable
     super
     @factory_id = params[:factory_id] if  params[:factory_id]
-    @Model= Shimada::Factory
-
+    #@Model= Shimada::Factory
+    model  Shimada::Factory
     @MonthModel = Shimada::MonthModels[@factory.power_model_id]
     @PowerModel = Shimada::PowerModels[@factory.power_model_id]
-    @Domain= @Model.name.underscore
+    #@Domain= @Model.name.underscore
     @TYTLE = "シマダヤ工場電力管理"
     @labels=Labels
-    @TableEdit  = true
-    @TableHeaderDouble = [1,[2,"気象データ"],1,[5,"温度補正パラメータ"],[5,"蒸気圧補正パラメータ"]]
+    @TableEdit  = 
+    @TableEdit  = [:add_edit_buttoms,:csv_out, :csv_up_buttom]
+    #@TableHeaderDouble = [1,[2,"気象データ"],1,[5,"温度補正パラメータ"],[5,"蒸気圧補正パラメータ"]]
+    @TableHeaderDouble = [1,[2,"気象データ地域"]]
     @Show = @Delete = @Edir = true
   end
 

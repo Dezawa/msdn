@@ -35,7 +35,7 @@ class GnuplotTest < ActiveSupport::TestCase
      assert_equal [path],
        gp.datafiles(gp.arry_of_data_objects,
                     gp.option.merge(column_format: "%s %d %d"))
-     assert_equal "abc 10 20\ndef 11 21\n\n", path.read
+     assert_equal "abc 10 20 \ndef 11 21 \n\n", path.read
    end
    
    must "CaseArryObject " do

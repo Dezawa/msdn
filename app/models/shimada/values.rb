@@ -1,6 +1,17 @@
 # -*- coding: utf-8 -*-
+
+# Shimada::Daylyから 一つの工場の全測定値を測定日毎に一まとめにし
+# Arrayにして返す。Array内の順は、Shimada::Instrumentの順
+#
+# 使い方
+#  simada_values =  Shimada::Values.new(工場IDor工場名,日付)
+#  daylies = simada_values.daylies
+#
+#  一月分simada_values =  Shimada::Values.month(factory_id_or_name,month)
+#     
 class Shimada::Values
   include ActiveModel::Model
+  include ActionView::Helpers::UrlHelper
   attr_reader :date,:factory_id,:id
   #attr_reader :channels
   def initialize(factory_id_or_name,date=Time.now)
@@ -15,7 +26,7 @@ class Shimada::Values
       end
     @date = case date
             when Date,Time ; date.to_date
-            when String    ; pp date;Date.parse(date)
+            when String    ; Date.parse(date)
             else           ; Time.now
             end
     @id =@factory_id*100+@date.day
@@ -50,8 +61,17 @@ class Shimada::Values
   end
 
   def item_labels
-    instruments.map{|instrument| instrument.ch_name + "-" + instrument.measurement}.
-      join("<br>".html_safe).html_safe
+    instruments.map.with_index{|instrument,idx|
+      lbl = instrument.ch_name + "-" + instrument.measurement
+      daylies[idx] ? link_to(lbl, 
+                             "/shimada/daylies/graph_dayly/?id=#{daylies[idx].id}" +
+                               "&type=#{graph_type(instrument.measurement)}"
+                            ) : lbl
+    }.join("<br>".html_safe).html_safe
+  end
+
+  def graph_type(measurement)
+    {"温度" => :temp, "電力" => :power, "蒸気圧" => :hyum}[measurement]
   end
   
   ("00".."23").each{|h|

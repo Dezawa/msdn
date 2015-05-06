@@ -185,7 +185,7 @@ Rails.application.routes.draw do
   # #set_post(controller,@EditTable)
   # set_get(controller,%w(today update_today clear_today update_tomorrow))
   
-  set_get("shimada/daylies",%w(index_month graph))
+  set_get("shimada/daylies",%w(index_month show_img graph graph_dayly graph_month graph_temp_hyum_vaper))
   edit_table("shimada/factory","shimada/instrument")
   namespace :shimada do
     resources :daylies,:instrument,:factory

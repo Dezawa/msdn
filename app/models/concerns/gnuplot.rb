@@ -132,7 +132,7 @@ set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'"
     plot  = plot_list(datafile_pathes,opt)
     def_file = opt[:define_file]
 
-    [ head,title,key ,set ,labels( opt[:labels]) ,
+    [ head,title,key ,data_time(opt),set ,labels( opt[:labels]) ,
       range_str(opt),tics,grid,axis_labels,
       plot
     ].flatten.compact.join("\n") +
@@ -195,6 +195,13 @@ set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'"
       }.join("\n")
   end
 
+  def data_time(opt)
+    [:xdata_time,:ydata_time,:x2data_time,:y2data_time].
+      map{|data_time| 
+      "set #{data_time.to_s.sub(/_/,' ')}\nset "+opt[data_time].join("\nset ") if opt[data_time]
+    }.compact
+  end
+  
   def range_str(opt)
     return "" unless opt[:range]
     opt[:range].map{ |axis,str| "set #{axis}range #{str}"}.join("\n")
