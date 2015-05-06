@@ -34,3 +34,16 @@ class Array
   def times(other) ;  self.map{ |a| a*other } ;end
 end
 
+class Numeric
+  def str(format) ; format%self ; end
+end
+class String
+  def str(format) ; format%self ; end
+end
+
+class Time
+  alias  :str :strftime
+end
+class Date
+  alias :str :strftime
+end
