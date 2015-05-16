@@ -17,9 +17,9 @@ Graph > Graph::Base > Graph::Ondotori::Base >
 1-1、1-3の場合はゴチャゴチャになるので、温度、水蒸気圧の二つにする
 
 Graph.newに与えるデータは次のケースがある
-A Dayly ::
-B [Dayly,Dayly,,,,] :: 一つの測定器のある期間分の Dayly
-C [Dayly,Dayly,,,,] :: Arryはグルーピングされた測定器の Dayly
+A Dayly,[Dayly]     :: Dayly または要素が一つのDaylyのRelation
+B [Dayly,Dayly,,,,] :: 一つの測定器のある期間分の DaylyのArrayまたはRelation
+C [[Dayly,Dayly,,,,]] :: 内側のArryはグルーピングされた測定器の Dayly、またはRelation
 D [[Dayly,Dayly,,,,],[Dayly,Dayly,,,,],,,,] :: C の期間分のArray
 
 これらは、次の様に使われる
@@ -49,35 +49,48 @@ module Graph::Ondotori
         ( @option[:title_post] || "" )
       
       @arry_of_data_objects =
-        if dayly.kind_of?(ActiveRecord::Relation) ||dayly.class == Array
-          multi_days(dayly)
-        else        ; one_day(dayly)
+        if dayly.kind_of?(ActiveRecord::Relation) ; multi_days(dayly)
+        elsif dayly.class == Array
+          if dayly.first.kind_of?(ActiveRecord::Relation) || dayly.first.class == Array
+                      combination(dayly)       #case C
+          else      ; multi_days(dayly)        #case B
+          end
+        else        ; one_day(dayly)           #case A
         end
     end
-    
-    def multi_days(daylies)
-      dayly_class = daylies.first.class
-      @objects =
-        daylies.map{|dayly|
-        logger.debug("##### serial:#{ dayly.serial}, date: #{  dayly.date}")
-        objects =dayly_class.where( serial: dayly.serial, date:   dayly.date).
-          order(:ch_name_type) # ****-温度、****-湿度
-        logger.debug("##### #{objects.map{|o| o.id}}")
-        objects[0].time_values("%Y-%m-%d %H:%M").
-          zip(objects[0].converted_value,
-              objects[1].measurement_value,
-              objects[1].converted_value)
-      }.flatten(1).sort_by{|arry| arry.first }
+
+    # case C :: 複数の測定器のデータのセット
+    #        :: interbal が異なるかもしれないので、測定器毎に出力ファイルを分ける
+    #        :: { 装置 => [[item1,item2,item3,,],[item1,item2,item3,,],,,] }
+    def combination(arry_of_daylies)
+      #                    day1             day2                day3
+      # arry_of_daylies =>
+      #   [ [装置11,装置21,装置31],[装置12,装置22,装置32],[装置13,装置23,装置33],,]
+      arry_of_daylies.flatten.
+        # {serial => [装置11,装置21,装置12,装置22,装置13,装置23],
+        #  serial => [装置31,装置32,装置33] }
+        group_by{|dayly| dayly.instrument.serial}. 
+        map{|serial,daylies|          # {serial => [装置11,装置21,装置12,装置22,装置13,装置23],
+        values = daylies.group_by{|dayly| dayly.date}. #{1day => [装置11,装置21]}
+          values.map{|dayly|
+          dayly[0].time_values("%Y-%m-%d %H:%M").
+            zip( *dayly.map(&:converted_value))
+        }.flatten(1)
+        [serial,values]
+      }.to_h
     end
     
+    # case B :: 一つの測定器の Daylyの配列 ｜ DaylyのRelation
+    #        :: 要素数が１の時は case A
+    def multi_days(daylies)
+      dayly_class = daylies.first.class
+      daylies.map{|dayly| dayly.time_and_converted_value
+      }.flatten(1).sort_by{|arry| arry.first }
+    end
+
+    # case A :: Dayly
     def one_day(dayly)
-      @objects = 
-        dayly.class.where(serial: dayly.serial, date:   dayly.date).
-        order(:ch_name_type) # ****-温度、****-湿度
-        @objects[0].time_values("%Y-%m-%d %H:%M").
-        zip(objects[0].converted_value,
-            objects[1].measurement_value,
-            objects[1].converted_value)
+        dayly.time_and_converted_value 
     end
   end
 end

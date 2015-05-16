@@ -5,7 +5,18 @@ require 'ondotori/recode'
 require "vaper"
 require "statistics"
 require "pp"
+
 class Shimada::Dayly < ActiveRecord::Base
+  module Temp
+    def time_and_converted_value
+      objects = self.class.where( serial: serial, date: date).order(:ch_name_type)
+      objects[0].time_values("%Y-%m-%d %H:%M").
+        zip(objects[0].converted_value,
+            objects[1].measurement_value,
+            objects[1].converted_value)
+    end 
+  end
+  
   delegate :logger, :to=>"ActiveRecord::Base"
   include Tand
   extend Tand::ClassMethod
@@ -48,6 +59,8 @@ class Shimada::Dayly < ActiveRecord::Base
     factory_id = Shimada::Factory.find_by(name: factory_name).id
     by_factory_id(factory_id)
   end
+
+
   def time_values(fmt=nil)
     date0 = date.to_time
     unless fmt ;(0..3600*24-1).step(interval).map{|t| date0+t}
@@ -76,6 +89,22 @@ class Shimada::Dayly < ActiveRecord::Base
     }        
   end
 
+  def time_and_converted_value_with_vaper
+    if temperature?
+      objects = self.class.where( serial: serial, date: date).order(:ch_name_type)
+      objects[0].time_values("%Y-%m-%d %H:%M").
+        zip(objects[0].converted_value,
+            objects[1].measurement_value,
+            objects[1].converted_value)
+    else
+      nil
+    end
+  end
+  
+  def time_and_converted_value
+    time_values("%Y-%m-%d %H:%M").zip(converted_value)
+  end
+  
   ### temp_humidity_vaper
   def converted_value_hourly
     (converted_value.each_slice(3600/interval).
@@ -93,4 +122,9 @@ class Shimada::Dayly < ActiveRecord::Base
    # month = date.to_time.beginning_of_month.to_date
    # base
   end
+
+  def temperature?
+    self[:measurement_type] == Ondotori::TypeNameHash["温度"]
+  end
+    # pp "Shimada::Dayly initialize #{measurement_type}"
 end

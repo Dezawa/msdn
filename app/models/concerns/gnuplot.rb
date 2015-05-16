@@ -12,7 +12,7 @@ module Gnuplot
      graph_file:       "image",
      graph_file_dir:   Rails.root+"tmp" + "img",
      define_file:      Rails.root+"tmp"+"gnuplot"+"graph.def",
-     
+     data_file:     "data000" ,
      ###### データ関連 ######
      #
      # 入力データ構造
@@ -36,7 +36,7 @@ module Gnuplot
      #
      #
      ### データファイルの何カラム目を用いるか ######
-     # xy:       [[1,2]]   ,  #  [ [[1,2],[3,4]]     ,[[5,6]]
+     # xy:       [[[1,2]]]   ,  #  [ [[1,2],[3,4]]     ,[[5,6]]
      #                             ↑最初のファイル   ↑二つ目のファイル  への指示
      ####### 軸 ######
      # tics:        , #  軸目盛  例 { :xtics => "rotate by -90",:y2tics=> "-5,5"},
@@ -53,9 +53,10 @@ module Gnuplot
      # point_size: [1,2,6] 
      # line_type:
      #
-     ####### set ######
+     ####### set,unset ######
      #
      # set:   , #色々な set  ["...","....", ,,,]
+     # unset: , #色々な unset  ["...","....", ,,,]
      #####  ######
      
      #additional_lines: , #  近似線などを書く式を生で記述
@@ -67,12 +68,11 @@ module Gnuplot
   #         :keys        defaultではgroup_by の分類がsortされて使われる。
   #                      違うsort順にしたいときに設定
     }
+  
   # 出力される画像fileは  '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'
-  # detalistの形式は以下を想定
-  #   データファイルpath          String
-  #   データファイルpathの配列    [ String, String ]
-  #   データ                      [ [clm0,clm1,clm,,] ,[clm1,clm2,clm3,,] ]
+  # detalistの形式は #datafiles の説明参照
   def plot ;gnuplot_(arry_of_data_objects,option);end
+  
   def gnuplot_(data_list,opt)
     opt = DefaultOption.merge opt
 
@@ -81,64 +81,173 @@ module Gnuplot
     `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`
   end
 
-  # data_listの形式にしたがって、output_gnuplot_define の入力形式(データファイルのpathのArray)に
-  # 変換する
+  
+  # data_list のデータを gnuplotの入力形式のfileを出力し、そのpathの配列を返す。
   # detalistの形式は以下を想定
-  #   データファイルpath          String
-  #   データファイルpathの配列    [ String, String ]
-  #   データ                      [ [clm0,clm1,clm,,] ,[clm1,clm2,clm3,,] ]
-  # StringでもArrayでも無い場合
-  #   データObjectの配列          [ Object, Object,,, ] :: 各Objectから column_attrs のデータを使う
- 
-
+  #  (1)既にgnuplotの入力形式のfileができていて、そのpathが渡される
+  #  (1.1) データファイルpath :: String, or Pathname ::
+  #                       :: Sola::Dayly.monthly_graph_with_peak, minute_graph
+  #                                                       dayly_graph_with_peak,peak_graph
+  #                                                       correlation_graph
+  #  (1.2) データファイルpathの配列 ::   [ String, String ] or [Pathname,Pathname]
+  #
+  #  (2) データ配列 の配列 ::  内側の配列は１サンプルの全項目。外側の配列がサンプル
+  #                        ::  [ [clm0,clm1,clm,,] ,[clm1,clm2,clm3,,] ]
+  #                        ::  これらは opt[:group_by] でグループ別に分けられ、
+  #                        ::  { key1 => [[clm0,clm1,clm,,] ,[clm1,clm2,clm3,,] ]
+  #                        ::    key2 => [[clm0,clm1,clm,,] ,[clm1,clm2,clm3,,] ]
+  #                        ::  }
+  #                        ::  という形になってからファイル出力される。
+  #                        ::  1グループ毎に1ファイル。
+  #                     温湿度グラフ Graph::Ondotori::Base#one_day,multi_days
+  # (3) グループ化された配列 :: (2)のグループ化がされたあとのデータ
+  #                          :: { key1 => Array_of_Array } でもよいし、to_aされた形
+  #                          :: [ [key1, Array_of_Array] ,[key2, Array_of_Array] ] でもよい
+  #                          :: [ [key1,Array_of_Object] ,,, でもよい
+  # (4) Objectの配列       :: データ配列 ではなく、Objectが渡される。
+  #                        :: Objectのどのattrを使うかは opt[:column_attrs] で知る。
+  #
+  #  (1.1) String,Pathname
+  #  (1.2) Array              String,Pathname
+  #  (2)                      Array                     data,data
+  #  (3)                      Array                     key,Array
+  #  (4)                      Object,opt[:column_attrs]
+  #  (3)   Hash               Array                     Array
+  #
+  # multiplot の場合は opt[:multiplot] にその形状が渡される(例 layout 2,1の場合 [2,1]
+  # このとき、 opt、data_list ともに 上記の構造が layout 分の要素のHashとして渡される）
+  #  opt = { :multiplot => [2,1],
+  #          :multi_order => ["power","temp_hyum"],
+  #          "power"     => {},
+  #          "temp_hyum" => {},
+  #        }
+  # data_list ={
+  #             "power"     => data_list_of_power,
+  #             "temp_hyum" => data_list_of_temp_hyum,
+  #            } 
+  #      また、opt[idx][:data_file] が定義されている必要がある。ないとみな data000になり、
+  #      上書きされてしまう。
   def datafiles(data_list=nil,opt=nil)
     opt ||= @option || DefaultOption
     data_list ||= @arry_of_data_objects
-    if data_list.class == String ; [ data_list] # データファイルパス
-    elsif data_list.class == Array
-      case data_list.first
-      when String ; data_list # Array of データファイルパス
-      when  Array
-        group_by = 
-          opt[:group_by] ? data_list.group_by{ |d| d.semd(opt[:group_by])} : [["",data_list]]
-        output_datafile(group_by,opt){ |f,k,data|
-          data.each{ |datum|  output_line(f,datum,opt)  }
-        }
-      else
-        group_by = 
-          opt[:group_by] ? data_list.group_by{ |d| d.semd(opt[:group_by])} : [["",data_list]]
-          output_datafile(group_by,opt){ |f,k,objects|
-            objects.each{ |object|
-              datum = opt[:column_attrs].map{|sym| object.send(sym)}
-              f.puts (opt[:column_format] ?
-                    opt[:column_format]%datum : datum.join(" "))
-            }
-          }
-      end        
+    if opt[:multiplot]
+      opt[:multi_order].map{|key| [key,datafiles_case_data_list(data_list[key],opt[key])] }.to_h
+    else ; datafiles_case_data_list(data_list,opt)
     end
   end
   
-  def gnuplot_define(datafile_pathes,opt)
-    head = "set terminal #{opt[:terminal]} enhanced size #{opt[:size]} enhanced font '/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10'
-set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'"
-    title = opt[:title] ? "set title '#{opt[:title]}'" : nil
-    key = opt[:set_key] || "set key outside autotitle columnheader" #: "unset key"
-    
-    tics  = opt[:tics] ? tics_str(opt) : nil
-    grid  = opt[:grid] ? grid_str(opt) : nil
-    set   = opt[:set]  ? opt[:set].map{ |str| "set #{str}"}.join("\n")  : ""
-    axis_labels = opt[:axis_labels] ? axis_labels(opt) : nil
-
-    plot  = plot_list(datafile_pathes,opt)
-    def_file = opt[:define_file]
-
-    [ head,title,key ,data_time(opt),set ,labels( opt[:labels]) ,
-      range_str(opt),tics,grid,axis_labels,
-      plot
-    ].flatten.compact.join("\n") +
-     ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")
+  def datafiles_case_data_list(data_list,opt)
+    case data_list
+    when String,Pathname ; [ data_list] # データファイルパス
+    when Array  ; datafiles_case_array(data_list,opt)
+    when Hash   ; datafiles_case_hash(data_list,opt)
+    end
   end
 
+  def datafiles_case_hash( group_by,opt)
+    case  group_by.values.first
+    when Array
+      output_datafile(group_by,opt){ |f,k,data|
+        data.each{ |datum|  output_line(f,datum,opt)  }
+      }
+    else
+      output_datafile(group_by,opt){ |f,k,objects|
+        objects.each{ |object|
+          datum = opt[:column_attrs].map{|sym| object.send(sym)}
+          f.puts (opt[:column_format] ?
+                  opt[:column_format]%datum : datum.join(" "))
+        }
+      }
+    end
+  end
+    
+  def datafiles_case_array(data_list,opt)
+    case data_list.first
+    when String,Pathname ; data_list # Array of データファイルパス
+    when  Array
+      group_by =
+        if data_list.first[1].class != Array
+          opt[:group_by] ? data_list.group_by{ |d| d.send(opt[:group_by])} : [["",data_list]]
+        else
+          data_list
+        end
+      output_datafile(group_by,opt){ |f,k,data|
+        data.each{ |datum|  output_line(f,datum,opt)  }
+      }
+    else
+      group_by = 
+        opt[:group_by] ? data_list.group_by{ |d| d.send(opt[:group_by])} : [["",data_list]]
+      output_datafile(group_by,opt){ |f,k,objects|
+        objects.each{ |object|
+          datum = opt[:column_attrs].map{|sym| object.send(sym)}
+          f.puts (opt[:column_format] ?
+                  opt[:column_format]%datum : datum.join(" "))
+        }
+      }
+    end
+  end
+  
+  # 通常は
+  # datafile_pathes :: データファイルのパスの配列
+  # arg_option      :: プロット条件のHash
+  #
+  # multiplotの場合は
+  # datafile_pathes :: データファイルのパスの配列の配列
+  # arg_option      :: プロット条件のHashの配列
+  # 
+  # 配列の要素数は multiplot の plotの数
+  def gnuplot_define(datafile_pathes,arg_option)
+    if arg_option[:multiplot]
+      head = header(arg_option[:header]) +
+        "\nset multiplot layout #{arg_option[:multiplot]}\n" +
+        "set lmargin #{arg_option[:multi_margin][0]}\n"  +
+        "set rmargin #{arg_option[:multi_margin][1]}\n" +
+        "unset xlabel\nunset xtics\n"
+      reset_xtics = "set xlabel\nset tics"
+      head +
+        arg_option[:multi_order].reverse.map{|key|
+        xtics = reset_xtics
+        reset_xtics = nil
+        opt = arg_option[key]
+        plot_def = plot_define(opt)
+        plot  = plot_list(datafile_pathes[key],opt)
+        def_file = arg_option[key][:define_file]
+        [ xtics,plot_def, plot   ].flatten.compact.join("\n") +
+          ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")
+      }.reverse.join("\n")
+    else
+      opt = arg_option
+      head = header(opt)
+      plot_def = plot_define(opt)
+      plot  = plot_list(datafile_pathes,opt)
+      
+      def_file = opt[:define_file]
+
+      [ head,plot_def, plot   ].flatten.compact.join("\n") +
+        ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")
+    end
+  end
+
+  def header(opt)
+    "set terminal #{opt[:terminal]} enhanced size #{opt[:size]} "+
+      "enhanced font '/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10'\n"+
+      "set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'"
+  end
+
+  def plot_define(opt)
+      title = opt[:title] ? "set title '#{opt[:title]}'" : nil
+      key = opt[:set_key] || "set key outside autotitle columnheader" #: "unset key"
+      
+      tics  = opt[:tics] ? tics_str(opt) : nil
+      grid  = opt[:grid] ? grid_str(opt) : nil
+      set   = opt[:set]  ? opt[:set].map{ |str| "set #{str}"}.join("\n")  : ""
+      unset   = opt[:unset]  ? opt[:unset].map{ |str| "unset #{str}"}.join("\n")  : ""
+      axis_labels = opt[:axis_labels] ? axis_labels(opt) : nil
+      [title,key ,data_time(opt),unset,set ,labels( opt[:labels]) ,
+       range_str(opt),tics,grid,axis_labels
+      ].flatten.compact.join("\n")
+  end
+  
   def output_gnuplot_define(datafile_pathes,opt)
     def_file = opt[:define_file]
     open(def_file,"w"){ |f|   f.puts gnuplot_define(datafile_pathes,opt) }
@@ -217,23 +326,30 @@ set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'"
 
   def output_line(f,datum,opt)
     if opt[:column_attrs]
-      datum.each_with_index{|data,idx|
-        data ? f.printf(opt[:column_attrs][idx],data) : " - "
+      datum.each{|data|
+        if data
+          data_array = opt[:column_attrs].
+            each{|sym| value = data.send sym
+            f.printf opt[:column_format] ? opt[:column_format]%value : value.to_s
+          }
+        else ;  f.printf " - "
+        end
       }
     else
-      datum.each{|data|
-        f.printf( data ? "#{data} " : " - " )
+      datum.each_with_index{|data,idx|
+        f.printf( data ? (opt[:column_format] && opt[:column_format][idx] ? opt[:column_format][idx]%data : "#{data} ") : " - " )
+        #f.printf( data ?  "#{data} " : " - " )
       }
     end
     f.puts
   end
   
   def output_datafile(grouped_data_ary,opt,&block)
-    base_path = opt[:base_path].to_s+"/data000"
+    base_path = opt[:base_path].to_s+"/"+ opt[:data_file]
     datafile_pathes = []
     keys = opt[:keys] || grouped_data_ary.map{ |ary| ary.first}.sort
     keys.each_with_index{ |key,idx|
-      datafile_pathes << Rails.root+"#{base_path}.data"
+      datafile_pathes << "#{base_path}.data"
       open(datafile_pathes.last,"w"){ |f|
         f.puts opt[:column_labels].join(" ") if opt[:column_labels]
         yield f,key,grouped_data_ary[idx][1]

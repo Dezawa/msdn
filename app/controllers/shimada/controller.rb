@@ -48,11 +48,13 @@ class Shimada::Controller <  CommonController #ApplicationController
         @Model.by_factory_id(@factory_id).
           where(month: month,measurement_type:  Ondotori::TypeNameHash["温度"] )
       when "temp_vaper_power"
-          Shimada::Values.month(@factory_id, month)
+        Shimada::Dayly.by_factory_id(@factory_id).
+          where(month: month)
       end
 
     Shimada::Graph.create(params[:type],@models,
-                         xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m:%d'" ])
+                          xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m/%d'" ]).
+      plot
     render   :file => 'application/graph', :layout => "simple"
   end
     

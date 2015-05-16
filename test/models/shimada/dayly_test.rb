@@ -44,8 +44,34 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
      Shimada::Dayly.serials. #instrument.all.pluck(:serial).
      include?(ondotori.channels["power01-電圧"].serial)
   end
+######### temp_or_hyum? とtime_and_converted_value
+  
+  must "Hyumを取り込むと12/22日のデータの温度の変換temp_or_hyum?は" do
+    Shimada::Dayly.load_trz(Hyum)
+    assert_equal true ,
+      Shimada::Dayly.find_by(date: "2014-12-22",ch_name_type: "フリーザーA-温度").
+      temperature?
+  end
+  must "Hyumを取り込むと12/22日のデータの温度のtime_and_converted_valueは" do
+    Shimada::Dayly.load_trz(Hyum)
+    assert_equal 4 ,
+      Shimada::Dayly.find_by(date: "2014-12-22",ch_name_type: "フリーザーA-温度").
+      time_and_converted_value[0].size
+  end
 
+  must "Power01を取り込むと4/1の電力データのtemp_or_hyum?は" do
+    Shimada::Dayly.load_trz(Power01)
+    dayly1 =  Shimada::Dayly.find_by(date: "2015-04-01" ,ch_name_type: "power01-電圧")
+    assert_equal false ,   dayly1.temperature?
+  end
+  
+  must "Power01を取り込むと4/1の電力データのtime_and_converted_valueは" do
+    Shimada::Dayly.load_trz(Power01)
+    dayly1 =  Shimada::Dayly.find_by(date: "2015-04-01" ,ch_name_type: "power01-電圧")
+    assert_equal 2 ,   dayly1.time_and_converted_value[0].size
+  end
 
+  ########### 
   must "Power01を取り込むと3/31と4/1のデータができる" do
     Shimada::Dayly.load_trz(Power01)
     assert_equal 2,Shimada::Dayly.count
@@ -57,11 +83,11 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
       dayly1.measurement_value[12*60,10]
   end
   
-  must "Power01を取り込むと4/1の電力データは" do
+  must "Power01を取り込むと4/1の電圧データは" do
     Shimada::Dayly.load_trz(Power01)
     dayly1 =  Shimada::Dayly.find_by(date: "2015-04-01" ,ch_name_type: "power01-電圧")
-    assert_equal [1.0095, 1.0056, 0.9546, 0.9915, 1.034, 1.0619, 1.0872, 1.0838, 1.0773, 1.064],
-      dayly1.converted_value[12*60,10].map{|v| v.round(4)}
+    assert_equal [0.4908, 0.489, 0.4652, 0.4824, 0.5022, 0.5152, 0.527, 0.5254, 0.5224, 0.5162],
+      dayly1.measurement_value[12*60,10]
   end
   
   must "Hyumを取り込むと" do
@@ -83,12 +109,12 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
 
   must "Hyumを取り込むと12/22日のデータの温度の変換は" do
     Shimada::Dayly.load_trz(Hyum)
-    assert_equal 0 ,
+    assert_equal 0,
       Shimada::Dayly.find_by(date: "2014-12-22",ch_name_type: "フリーザーA-温度").
       instrument.converter
   end
 
-  
+
   must "Hyumを取り込むと12/22日の温度データ" do
     Shimada::Dayly.load_trz(Hyum)
     dayly22 = Shimada::Dayly.find_by(date: "2014-12-22" ,ch_name_type: "フリーザーA-温度")
