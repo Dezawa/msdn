@@ -2,7 +2,7 @@
 class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
   attr_reader :grouped_daylies
 
-  GnuplotDef =
+  GraphTempVaperPowerDef =
     { multiplot:   "2,1",
      multi_margin: [10,15], 
      multi_order: ["power","temp_hyum"],
@@ -10,7 +10,7 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
      
      "power" => { set: ["bmargin 0"
                        ],
-                 #unset: ["xlabel", "xtics"],
+                 title: "",
                  data_file: "power000",
                  column_labels: %w(月日 時刻 電力),
                  #column_attrs:  [:time_and_converted_value],
@@ -22,7 +22,7 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
                 },
       "temp_hyum" => { set: ["tmargin 0", "bmargin 3"],
                  axis_labels: {xlabel: "月日"},
-                 #set: ["xlabel"],
+                 title: "",
                  data_file: "temp_hyum00",
                  column_labels: %w(月日 時刻 気温 水蒸気圧),
                  xy: [[[1,3],[1,4]]],
@@ -38,12 +38,11 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
   #               :: で得たrelation
   def initialize(daylies,opt={})
     option  = DefaultOption.merge(opt)
-    option[:title]=  (option[:title] ? option[:title] : "" ) +
-      ( option[:title_post] || "" )
+    title = (option.delete(:title) || "") + ( option.delete(:title_post) || "" )
     
-    @option = option.merge GnuplotDef
-    GnuplotDef[:multi_order].each{|key| @option[key] = option.merge(@option[key]) }
-    
+    @option = option.merge GraphTempVaperPowerDef
+    GraphTempVaperPowerDef[:multi_order].each{|key| @option[key] = option.merge(@option[key]) }
+    @option[@option[:multi_order].first][:title]=  title 
     @arry_of_data_objects = 
       combination(daylies).
       map{|serial,dayly_s|

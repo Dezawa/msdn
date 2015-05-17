@@ -49,8 +49,9 @@ class Shimada::DayliesController <  Shimada::Controller
     date = params[:date]
     dailies = @Model.by_factory_id_order_instrument(@factory_id).
       where(date: date,measurement_type: Ondotori::TypeNameHash["温度"])
-
-    Shimada::GraphTempHyumVaper.new(dailies) #@factory_id,date,@Model)
+    option = { title:  "気温・湿度・蒸気圧  #{@factory.name} (#{date})"
+             }
+    Shimada::GraphTempHyumVaper.new(dailies,option).plot #@factory_id,date,@Model)
     render   :file => 'application/graph', :layout => "simple"
   end
   def show_img

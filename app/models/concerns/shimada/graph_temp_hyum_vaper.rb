@@ -11,8 +11,9 @@ class Shimada::GraphTempHyumVaper    < Graph::Ondotori::TempHumidity
     super(daylies,
           {title_post: "ー#{dayly.instrument.base_name} " +
             dayly.instrument.ch_name +
-            dayly.date.strftime(" %m月%d日")}.merge(opt)
-          )
+            dayly.date.strftime(" %m月%d日")}
+         )
+    @option.merge! opt
   end
   
   def multi_days(daylies)

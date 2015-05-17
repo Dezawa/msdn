@@ -51,10 +51,10 @@ class Shimada::Controller <  CommonController #ApplicationController
         Shimada::Dayly.by_factory_id(@factory_id).
           where(month: month)
       end
-
-    Shimada::Graph.create(params[:type],@models,
-                          xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m/%d'" ]).
-      plot
+    option = {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m/%d'" ],
+              title: @factory.name + month.strftime(" (%Y年%m月度)")
+             }
+    Shimada::Graph.create(params[:type],@models,option).plot
     render   :file => 'application/graph', :layout => "simple"
   end
     
