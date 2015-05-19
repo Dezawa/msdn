@@ -3,6 +3,7 @@
 
 class Shimada::Controller <  CommonController #ApplicationController
   include Actions
+  include GraphController
   delegate :logger, :to=>"ActiveRecord::Base"
   #before_filter {|ctrl| ctrl.set_permit %w(複式簿記試用 複式簿記利用 複式簿記メンテ)}
   before_filter :set_instanse_variable
@@ -37,7 +38,10 @@ class Shimada::Controller <  CommonController #ApplicationController
   end
   def graph_dayly
     @model = @Model.find params[:id]
-    Shimada::Graph.create(params[:type],@model)
+    option = {time_range:  :dayly,
+              title: @factory.name + @model.date.strftime(" (%m月%d日)")
+             }
+    Shimada::Graph.create(params[:type],@model,option)
     render   :file => 'application/graph', :layout => "simple"
   end
   def graph_month
@@ -51,7 +55,7 @@ class Shimada::Controller <  CommonController #ApplicationController
         Shimada::Dayly.by_factory_id(@factory_id).
           where(month: month)
       end
-    option = {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m/%d'" ],
+    option = {time_range:  :monthly,
               title: @factory.name + month.strftime(" (%Y年%m月度)")
              }
     Shimada::Graph.create(params[:type],@models,option).plot

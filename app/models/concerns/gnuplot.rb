@@ -63,22 +63,23 @@ module Gnuplot
      #with:     "line",   #
      #labels:  ,# ["label 1 'Width = 3' at 2,0.1 center","arrow 1 as 2 from -1.5,-0.6 to -1.5,-1"]
      #  実装まだ
-  #
-  #         :group_by    data_list.group_by{ |d| d.semd(opt[:group_by])}
-  #         :keys        defaultではgroup_by の分類がsortされて使われる。
-  #                      違うsort順にしたいときに設定
+     #
+     #         :group_by    data_list.group_by{ |d| d.semd(opt[:group_by])}
+     #         :keys        defaultではgroup_by の分類がsortされて使われる。
+     #                      違うsort順にしたいときに設定
     }
   
   # 出力される画像fileは  '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'
   # detalistの形式は #datafiles の説明参照
-  def plot ;gnuplot_(arry_of_data_objects,option);end
+  def plot ;gnuplot_(arry_of_data_objects,@option);end
   
   def gnuplot_(data_list,opt)
-    opt = DefaultOption.merge opt
+    #opt = DefaultOption.merge opt
 
     datafile_pathes =  datafiles(data_list,opt)
     def_file = output_gnuplot_define(datafile_pathes,opt)
     `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`
+    "#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}"
   end
 
   
@@ -229,6 +230,7 @@ module Gnuplot
   end
 
   def header(opt)
+    pp opt
     "set terminal #{opt[:terminal]} enhanced size #{opt[:size]} "+
       "enhanced font '/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10'\n"+
       "set out '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'"
@@ -250,6 +252,7 @@ module Gnuplot
   
   def output_gnuplot_define(datafile_pathes,opt)
     def_file = opt[:define_file]
+    #pp def_file
     open(def_file,"w"){ |f|   f.puts gnuplot_define(datafile_pathes,opt) }
 
     def_file 

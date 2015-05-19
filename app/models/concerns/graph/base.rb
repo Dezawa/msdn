@@ -16,10 +16,11 @@ module Graph
 
     def plot(opt={})
       opt = @option.merge opt
-
-    datafile_pathes =  datafiles(@arry_of_data_objects ,opt)
-    def_file = output_gnuplot_define(datafile_pathes,opt)
-    `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`
-  end
+      #pp @option
+      datafile_pathes =  datafiles(@arry_of_data_objects ,opt)
+      def_file = output_gnuplot_define(datafile_pathes,opt)
+      `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`
+      "#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}"
+    end
   end
 end

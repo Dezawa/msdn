@@ -85,6 +85,7 @@ Rails.application.routes.draw do
   devise_for :users
 
   ################## -ユーザ管理
+   edit_table :user_options,:users
   resources :user_options,:users
   get "/users/sign_in" => "devise/sessions#new"
   post "/users/sign_up" => "users#create"
@@ -184,8 +185,10 @@ Rails.application.routes.draw do
   # controller="shimada/factory"
   # #set_post(controller,@EditTable)
   # set_get(controller,%w(today update_today clear_today update_tomorrow))
-  
+  set_get("show_graph",["show_img"])
   set_get("shimada/daylies",%w(index_month show_img graph graph_dayly graph_month graph_temp_hyum_vaper))
+  set_get("shimada/factory",%w(img_table))
+  
   edit_table("shimada/factory","shimada/instrument")
   namespace :shimada do
     resources :daylies,:instrument,:factory

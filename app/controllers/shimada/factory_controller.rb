@@ -47,6 +47,14 @@ class Shimada::FactoryController <  Shimada::Controller
     @Show = @Delete = @Edir = true
   end
 
+  def img_table
+    find_and
+    @slice=2
+    @width=900/2
+    @height=400/2
+    @images = @models.zip(@models.map{|model| model.today_graph(:temp_vaper_power) })
+  end
+  
   def index
     find_and
     render :layout => 'application'
@@ -57,12 +65,10 @@ class Shimada::FactoryController <  Shimada::Controller
     super
   end
 
-
   def edit_on_table
     @labels =  Labels[0,5]+LabelParams
     super
   end
-
 
   def today
     path = Rails.root+"app/models/shimada/update_mysql.rb"

@@ -43,7 +43,7 @@ TD0424svr= "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_�
   end
   must "TD0424,TD0423,TD0423svr,TD0424を読んだ時の 4/23の8時のhtmlデータ" do
     [TD0424,TD0423,TD0423svr,TD0424].each{|file|    Shimada::Dayly.load_trz(file)}
-    assert_equal "<br><br><br>11.93<br>8.52<br>",
+    assert_equal "ー　<br>ー　<br>ー　<br>11.93<br>8.52<br>ー　",
       Shimada::Values.new(1, "2015-4-23").hour_html08
   end
 end

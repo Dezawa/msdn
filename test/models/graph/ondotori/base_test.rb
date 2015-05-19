@@ -15,8 +15,8 @@ class Graph::Ondotori::BaseTest < ActiveSupport::TestCase
     puts __LINE__
     Shimada::Dayly.load_trz(Hyum0405)
     dayly = Shimada::Dayly.first
-    assert_equal [["2015-04-04 12:00", 14.9, 65.0, 11.02],
-                  ["2015-04-04 12:05", 15.2, 65.0, 11.24]],
+    assert_equal [["2015-04-04 12:00", 14.9],# 65.0, 11.02],
+                  ["2015-04-04 12:05", 15.2]],# 65.0, 11.24]],
       Graph::Ondotori::Base.new(dayly).arry_of_data_objects[12*12,2]#one_day(dayly)[12*12,2]
   end
   must "電力データをone_dayに与えると" do
@@ -30,8 +30,8 @@ class Graph::Ondotori::BaseTest < ActiveSupport::TestCase
     puts __LINE__
     Hyums[0,5].each{|hyum| Shimada::Dayly.load_trz(hyum)}
     dayly = Shimada::Dayly.where(date: "2015-4-4", ch_name_type: "1F休憩所-温度")
-    assert_equal [["2015-04-04 12:00", 14.9, 65.0, 11.02],
-                  ["2015-04-04 12:05", 15.2, 65.0, 11.24]],
+    assert_equal [["2015-04-04 12:00", 14.9],# 65.0, 11.02],
+                  ["2015-04-04 12:05", 15.2]],# 65.0, 11.24]],
       Graph::Ondotori::Base.new(dayly).arry_of_data_objects[12*12,2]#multi_days(dayly)[12*12,2]
   end
   must "電力データのReationをmulti_daysに与えると" do

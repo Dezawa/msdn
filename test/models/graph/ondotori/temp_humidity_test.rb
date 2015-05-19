@@ -15,10 +15,10 @@ class GraphOndotoriTempHumidityTest < ActiveSupport::TestCase
     assert_equal [0,5,10,15,20,25], @dayly.time_values[0,6].map(&:min)
   end
 
-  must "dayly数は二つ" do
-    gt = Graph::Ondotori::TempHumidity.new(@dayly)
-    assert_equal 2, gt.objects.size
-  end
+  # must "dayly数は二つ" do
+  #   gt = Graph::Ondotori::TempHumidity.new(@dayly)
+  #   assert_equal 2, gt.objects.size
+  # end
   must "12時の温湿度など" do
     gt = Graph::Ondotori::TempHumidity.new(@dayly)
     assert_equal [["2014-12-22 12:00", 3.9, 41.0, 3.31],
@@ -34,7 +34,7 @@ class GraphOndotoriTempHumidityTest < ActiveSupport::TestCase
     assert_equal ["2014-12-22 12:00 3.9 41.0 3.31 ",
                   "2014-12-22 12:05 3.9 40.0 3.23 ",
                   "2014-12-22 12:10 4.3 39.0 3.24 "],
-      paths.first.read.split("\n")[12*12+1,3] # ＋１ は、ヘッダー行
+      File.read(paths.first).split("\n")[12*12+1,3] # ＋１ は、ヘッダー行
   end
 
   must "def file" do
@@ -66,7 +66,7 @@ class GraphOndotoriTempHumidityTest < ActiveSupport::TestCase
           define_file:      Rails.root+"tmp"+"gnuplot"+"monthly.def",
        xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m/%d'" ],
          )
-    assert_equal 9*24*12, gt.objects.size
+    assert_equal 9*24*12, gt.arry_of_data_objects.size
     gt.plot
     
   end

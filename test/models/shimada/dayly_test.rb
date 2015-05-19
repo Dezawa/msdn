@@ -52,11 +52,11 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
       Shimada::Dayly.find_by(date: "2014-12-22",ch_name_type: "フリーザーA-温度").
       temperature?
   end
-  must "Hyumを取り込むと12/22日のデータの温度のtime_and_converted_valueは" do
+  must "Hyumを取り込むと12/22日のデータの温度のtime_and_converted_value_with_vaperは" do
     Shimada::Dayly.load_trz(Hyum)
     assert_equal 4 ,
       Shimada::Dayly.find_by(date: "2014-12-22",ch_name_type: "フリーザーA-温度").
-      time_and_converted_value[0].size
+      time_and_converted_value_with_vaper[0].size
   end
 
   must "Power01を取り込むと4/1の電力データのtemp_or_hyum?は" do

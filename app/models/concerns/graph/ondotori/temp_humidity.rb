@@ -21,6 +21,18 @@ module Graph::Ondotori
       @option.merge!(TempHumidityDef)
     end
     
+    # case B :: 一つの測定器の Daylyの配列 ｜ DaylyのRelation
+    #        :: 要素数が１の時は case A
+    def multi_days(daylies)
+      dayly_class = daylies.first.class
+      daylies.map{|dayly| dayly.time_and_converted_value_with_vaper
+      }.flatten(1).sort_by{|arry| arry.first }
+    end
+
+    # case A :: Dayly
+    def one_day(dayly)
+        dayly.time_and_converted_value_with_vaper
+    end
     def gnuplot_option 
       super.merge( {} )
     end

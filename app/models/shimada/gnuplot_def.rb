@@ -153,6 +153,7 @@ module Shimada::GnuplotDef
       group_by = ( @opt.keys & [:by_,:by_date] ).size>0 ? "set key outside autotitle columnheader" : "unset key"
       output_def_file(path, group_by,opt_path)
       `(cd #{Rails.root};/usr/local/bin/gnuplot #{@def_file})`
+      "#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}"
     end
         
     def ytics_for_with_option

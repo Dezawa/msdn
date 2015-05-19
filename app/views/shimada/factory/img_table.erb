@@ -1,0 +1,7 @@
+<table border=1>
+<% @images.each_slice( @slice){|images| %>
+<tr><% images.each{|model,image| -%>
+<td><% if model ; %><%= model.name -%>
+<br><a href=""><img src='/show_graph/show_img?graph_path=<%= image %>' width="<%= @width%>" height="<%= @height%>"></a>
+<% end%></td><% } %></tr><% } %>
+</table>

@@ -17,8 +17,8 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
                  column_format: ["%s " ,"%.3f "],
                  xy:            [[[1,3]]] ,
                  axis_labels:   {ylabel: "電力"},
-                 point_type: 6,
-                 point_size: 0.4
+                 point_type: [6],
+                 point_size: 0.8
                 },
       "temp_hyum" => { set: ["tmargin 0", "bmargin 3"],
                  axis_labels: {xlabel: "月日"},
@@ -37,12 +37,16 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
   # daylies :: Shimada::Dayly.by_factory_id(@factory_id).where(month: month)
   #               :: で得たrelation
   def initialize(daylies,opt={})
-    option  = DefaultOption.merge(opt)
-    title = (option.delete(:title) || "") + ( option.delete(:title_post) || "" )
-    
-    @option = option.merge GraphTempVaperPowerDef
-    GraphTempVaperPowerDef[:multi_order].each{|key| @option[key] = option.merge(@option[key]) }
-    @option[@option[:multi_order].first][:title]=  title 
+    #opt  = DefaultOption.merge(opt)
+
+    title = (opt.delete(:title) || "") + ( opt.delete(:title_post) || "" )
+
+    @option =  DefaultOption.merge(GraphTempVaperPowerDef).merge(opt)
+    GraphTempVaperPowerDef[:multi_order].
+      each{|key| @option[key] = DefaultOption.merge(@option[key]).merge(opt) }
+    @option[:header] = DefaultOption.merge(@option[:header]).merge(opt)
+   # pp  @option[:header] 
+    @option[@option[:multi_order].first][:title]=  title
     @arry_of_data_objects = 
       combination(daylies).
       map{|serial,dayly_s|

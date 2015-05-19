@@ -22,7 +22,7 @@ class Shimada::GraphTempVaperPowerTest < ActiveSupport::TestCase
   must "grouping_daylies_by_graph_type " do
     load_trz(TD0424,    TD0423  ,  TD0423svr, TD0424svr)
     sgtvp = Shimada::GraphTempVaperPower.new(daylies)
-    assert_equal %w(power temp_hyum), sgtvp.grouped_daylies.keys,
+    assert_equal %w(power temp_hyum), sgtvp.arry_of_data_objects.keys,
       "grouping_daylies_by_graph_typeのkey"
 
   end
