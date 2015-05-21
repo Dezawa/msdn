@@ -44,10 +44,19 @@ module Graph::Ondotori
   class Base < Graph::Base
     
     def initialize(dayly,opt={})
-      @option  = DefaultOption.merge(opt)
-      @option[:title]=  (@option[:title] ? @option[:title] : "" ) +
-        ( @option[:title_post] || "" )
-      
+      @option  =
+        case opt
+        when Hash
+          option  = DefaultOption.merge(opt)
+          option[:title]=
+           (option[:title] ? option[:title] : "" ) + ( option[:title_post] || "" )
+         option
+        when Gnuplot::OptionST
+          option  = Gnuplot::DefaultOptionST.merge(opt)
+          st = option[:body][:common]
+          st[:title] = (st[:title] ? st[:title] : "") + (st[:title_post] || "" )
+          option
+        end
       @arry_of_data_objects =
         if dayly.kind_of?(ActiveRecord::Relation) ; multi_days(dayly)
         elsif dayly.class == Array

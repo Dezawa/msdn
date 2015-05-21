@@ -38,10 +38,15 @@ class Shimada::Controller <  CommonController #ApplicationController
   end
   def graph_dayly
     @model = @Model.find params[:id]
+    optionST = Gnuplot::OptionST.
+      new({time_range:  :dayly},
+          {common: {title: @factory.name + @model.date.strftime(" (%Y年%m月度)")}
+          }
+         )
     option = {time_range:  :dayly,
               title: @factory.name + @model.date.strftime(" (%m月%d日)")
              }
-    Shimada::Graph.create(params[:type],@model,option)
+    Shimada::Graph.create(params[:type],@model,optionST)
     render   :file => 'application/graph', :layout => "simple"
   end
   def graph_month
@@ -55,10 +60,15 @@ class Shimada::Controller <  CommonController #ApplicationController
         Shimada::Dayly.by_factory_id(@factory_id).
           where(month: month)
       end
+    optionST = Gnuplot::OptionST.
+      new({time_range:  :monthly},
+          {common: {title: @factory.name + month.strftime(" (%Y年%m月度)")}
+          }
+         )
     option = {time_range:  :monthly,
               title: @factory.name + month.strftime(" (%Y年%m月度)")
              }
-    Shimada::Graph.create(params[:type],@models,option).plot
+    Shimada::Graph.create(params[:type],@models,optionST).plot
     render   :file => 'application/graph', :layout => "simple"
   end
     

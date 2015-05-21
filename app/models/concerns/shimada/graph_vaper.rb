@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 class Shimada::GraphVaper    < Graph::Ondotori::ConvertedValue
 
-  def initialize(daylies,opt={})
+  def initialize(daylies,opt=Gnuplot::OptionST.new)
     dayly=
         if daylies.kind_of?(ActiveRecord::Relation) ||dayly.class == Array
           daylies.first
         else        ; daylies
         end
-    super(daylies,
-          title_post: "ー#{dayly.instrument.base_name} " +
+    super(daylies,opt)
+      option =
+        { title_post: "ー#{dayly.instrument.base_name} " +
             dayly.instrument.ch_name +
             dayly.date.strftime(" %m月%d日"),
           title:  "湿度・水蒸気圧",
@@ -17,7 +18,14 @@ class Shimada::GraphVaper    < Graph::Ondotori::ConvertedValue
           xy: [[[1,3],[1,4]]],by_tics: {1 => "x1y2"},
           tics: {xtics: "rotate by -90",y2tics: "20,10"},
           range: {y: "[0:40]",y2: "[20:100]"}
-          )
+        }
+      
+    case opt
+    when Hash ;
+      @option.merge!(option).merge!(opt)
+    when Gnuplot::OptionST
+      @option.merge(option,[:body,:common]).merge(opt)
+    end
     plot
   end
   

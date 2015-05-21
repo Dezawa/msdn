@@ -1,20 +1,30 @@
 # -*- coding: utf-8 -*-
 module Graph::Ondotori
   class ConvertedValue < Graph::Base
-    TempDef =
+    tempdef =
       {
-       size: "900,400",
        xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%H:%M'" ],
        tics: {xtics: "rotate by -90"},
        xy: [[[1,3]]],point_type: [7,7],point_size: 0.5,
        set_key: "set key outside autotitle columnheader width -9  samplen 1 "
       }
 
+    TempDef = { size: "900,400" }.merge tempdef
+    TempDefST = OptionST.new({ size: "900,400" }, {common: tempdef})
+
     attr_reader :objects
     
     def initialize(dayly,opt={})
-      @option  = DefaultOption.merge(TempDef).merge(opt)
-      @option[:title] += @option[:title_post] || ""
+      case opt
+      when Hash
+        @option  = DefaultOption.merge(TempDef).merge(opt)
+        @option[:title] += @option[:title_post] || ""
+      when OptionST
+        @option  = DefaultOptionST.
+          merge(TempDefST).
+          merge(opt)
+        @option[:body][:common][:title] += @option[:body][:common][:title_post] || ""
+      end
       
       @arry_of_data_objects =
         if dayly.kind_of?(ActiveRecord::Relation) ||dayly.class == Array
@@ -42,9 +52,8 @@ module Graph::Ondotori
   end
        
   class TempHumidityADay < Graph::Base #.transposeBaseBase
-    TempHumidityDef =
-      {size: "900,400",
-       title:  "気温・湿度・蒸気圧",
+    temphumiditydef = 
+      {title:  "気温・湿度・蒸気圧",
        column_labels: %w(年月日 時刻 気温 湿度 水蒸気圧),
        set: [ "xdata time",'timefmt "%Y-%m-%d %H:%M"',"format x '%H:%M'"
             ],
@@ -56,6 +65,8 @@ module Graph::Ondotori
        range: {y: "[0:40]", y2: "[20:100]"},
        set_key: "set key outside autotitle columnheader width -9  samplen 1 "
       }
+    TempHumidityDef = {size: "900,400"}.merge(temphumiditydef)
+    TempHumidityDefST = Gnuplot::OptionST.new({size: "900,400"},temphumiditydef)
 
      attr_reader :objects 
     def initialize(dayly,opt={})
@@ -63,8 +74,14 @@ module Graph::Ondotori
       @objects =
         dayly_class.where(serial: dayly.serial, date:   dayly.date).
         order(:ch_name_type) # ****-温度、****-湿度
-      @option  = DefaultOption.merge(TempHumidityDef).merge(opt)
-      @option[:title] += @option[:title_post] || ""
+      case opt
+      when Hash ;
+        @option  = DefaultOption.merge(TempHumidityDef).merge(opt)
+        @option[:title] += @option[:title_post] || ""
+      when Gnuplot::OptionST ;
+        @option  = DefaultOptionST.merge(TempHumidityDefST).merge(opt)
+        @option[:body][:common][:title] += @option[:body][:common][:title_post] || ""
+      end
       @arry_of_data_objects =
         objects[0].time_values("%Y-%m-%d %H:%M").
         zip(objects[0].converted_value,

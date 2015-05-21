@@ -22,8 +22,13 @@ class Shimada::Graph
                dayly:   {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%H:%M'" ]}
               }
   attr_reader :graph_item, :dayly
-  def self.create(graph_type,dayly,opt={})
-    opt.merge!(TimeRange[opt[:time_range]])
+  def self.create(graph_type,dayly,opt=Gnuplot::OptionST.new)
+    opt =
+      case opt
+      when Hash ;    opt.merge(TimeRange[opt[:time_range]])
+      when Gnuplot::OptionST ;
+        opt.merge(TimeRange[opt[:header].delete(:time_range)],[:body,:common])
+      end
     Classes[graph_type.to_s].new(dayly,opt)
   end
   

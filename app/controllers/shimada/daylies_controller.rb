@@ -21,7 +21,7 @@ class Shimada::DayliesController <  Shimada::Controller
   def set_instanse_variable
     super
     model Shimada::Dayly
-    @TYTLE = "シマダヤ:月度データ"
+    @TYTLE = "シマダヤ"
     @TYTLE_post = "(#{@factory.name}工場)"
     @SortBy    = :month
   end
@@ -51,7 +51,10 @@ class Shimada::DayliesController <  Shimada::Controller
       where(date: date,measurement_type: Ondotori::TypeNameHash["温度"])
     option = { title:  "気温・湿度・蒸気圧  #{@factory.name} (#{date})"
              }
-    Shimada::GraphTempHyumVaper.new(dailies,option).plot #@factory_id,date,@Model)
+    optionST = Gnuplot::OptionST.
+      new({},
+          {common: {title:  "気温・湿度・蒸気圧  #{@factory.name} (#{date})"}  })
+    Shimada::GraphTempHyumVaper.new(dailies,optionST).plot #@factory_id,date,@Model)
     render   :file => 'application/graph', :layout => "simple"
   end
   def show_img
