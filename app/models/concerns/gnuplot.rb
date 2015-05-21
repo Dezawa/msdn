@@ -7,8 +7,17 @@ module Gnuplot
   # 出力される画像fileは  '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'
   #     このpathは opt[:graph_file_path] に代入される。
   # detalistの形式は #datafiles の説明参照
-  def plot ;logger.debug("##########  @option=#{@option}")
-    gnuplot_(arry_of_data_objects,@option);end
+  #def plot ;  gnuplot_(arry_of_data_objects,@option);end
+  def plot(opt=nil)
+    @option = opt ? @option.merge( opt) : @option
+    #option =  @option.is_a?(Gnuplot::OptionST) ? @option[:header] :  @option
+    
+    datafile_pathes =  datafiles(@arry_of_data_objects ,@option)
+    def_file = output_gnuplot_define(datafile_pathes,@option)
+    `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`
+    
+    @option.is_a?(OptionST) ? @option[:header][:graph_file_path] : @option[:graph_file_path]
+  end
   
   def gnuplot_(data_list,opt)
     #opt = DefaultOption.merge opt
