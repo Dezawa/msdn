@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module Gnuplot
-  include Gnuplot::Defines
+  include Gnuplot::Options
   
   # 出力される画像fileは  '#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}'
   #     このpathは opt[:graph_file_path] に代入される。

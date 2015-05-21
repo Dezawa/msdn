@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-module Gnuplot::Defines
+module Gnuplot::Options
   # :header、:body共に中身はHash
   # :header は図の形状、画像フォーマットファイルpath関連を指定する。
   # :body   はグラフのパラメータとデータファイルのbasenameを指定する。
