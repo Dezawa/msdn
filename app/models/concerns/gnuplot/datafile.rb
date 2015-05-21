@@ -46,7 +46,22 @@ module Gnuplot::Datafile
   #            } 
   #      また、opt[idx][:data_file] が定義されている必要がある。ないとみな data000になり、
   #      上書きされてしまう。
-  
+  def output_datafile(grouped_data_ary,opt,&block)
+   # pp opt
+    base_path = opt[:base_path].to_s+"/"+ opt[:data_file]
+    datafile_pathes = []
+    keys = opt[:keys] || grouped_data_ary.map{ |ary| ary.first}.sort
+    keys.each_with_index{ |key,idx|
+      datafile_pathes << "#{base_path}.data"
+      open(datafile_pathes.last,"w"){ |f|
+        f.puts opt[:column_labels].join(" ") if opt[:column_labels]
+        yield f,key,grouped_data_ary[idx][1]
+        f.puts
+      }
+      base_path.succ!
+    }
+    datafile_pathes 
+  end
   def datafiles(data_list=nil,opt=nil)
     opt ||= @option || DefaultOptionST
     data_list ||= @arry_of_data_objects
