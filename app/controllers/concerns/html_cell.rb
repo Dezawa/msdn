@@ -180,13 +180,14 @@ class HtmlLink   < HtmlCell
   def linklabel(object,links)
     links.delete(:link_label) || 
       if val = object.send(symbol) 
-        if tform
-          case val
-          when Time,Date,DateTime ; val.strftime(tform)
-          else ;         tform%val
-          end
-        else  val
-        end
+        # if tform
+        #   case val
+        #   when Time,Date,DateTime ; val.strftime(tform)
+        #   else ;         tform%val
+        #   end
+        # else  val
+        # end
+        tform ? val.str(tform) : val
       else
         ""
       end
