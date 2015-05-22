@@ -1,0 +1,32 @@
+<h3><%= @TYTLE  %> 一覧 <%= @TYTLE_post %></h3>
+<%= flash[:message] %>
+<%= disp_errors(@errors) if @errors -%>
+<%= case @TableEdit
+ when TrueClass ; add_edit_buttoms(@Domain) 
+ when String; @TableEdit 
+ when Array ; action_buttoms @TableEdit 
+ end %>
+<%= action_buttom_table %>
+<%=  will_paginate @dayly %>
+<%= select_box if @Select%>
+  <table border=1 id="IndexTable"><%= @TableHeader ? send(@TableHeader) : label_line_option %>
+<% @models.each do |obj|  -%>
+  <tr id='<%= obj.id %>'><% @labels.each{|html_cell| 
+        next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) -%>
+  <%= html_cell.td %><%= html_cell.disp_field obj %></td><% } %>
+  <% if @Show %>
+    <td><%= link_to '<nobr>表示</nobr>'.html_safe, obj %></td>
+  <% end %>
+  <% if @Edit %>
+    <td><%= link_to 'Edit', :action => :edit ,:page => @page,:id => obj.id %>
+    </td>
+  <% end %>
+  <%= delete_if_accepted obj %>
+  </tr>
+<% end -%>
+</table>
+<br />
+<%= send(@AfterIndex,:show) if @AfterIndex %>
+<%= @AfterIndexHtml %>
+<%= on_cell_edit() if @on_cell_edit%>
+<token name ='<%= form_authenticity_token %>'></token>
