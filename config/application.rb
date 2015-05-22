@@ -47,3 +47,6 @@ end
 class Date
   alias :str :strftime
 end
+class DateTime
+  alias :str :strftime
+end
