@@ -14,7 +14,7 @@ class WeatherController < CommonController #ApplicationController
   Temperature = [HtmlText.new("気温","")] + 
     ("01".."24").map{ |h| HtmlText.new("hour#{h}".to_sym, h,:ro => true,:size => 2 ) }
   Vaper = Weather::Vaper.map{ |h| HtmlNum.new(h, h.sub(/vaper/,""),:ro => true,:size => 2 ) }
-  Humidity = Weather::Humidity.map{ |h| HtmlNum.new(h, h.sub(/humidity/,""),:ro => true,:size => 2 ) }
+  Humidity = Weather::Humidity.map{ |h| HtmlNum.new(h.to_sym, h.sub(/humidity/,""),:ro => true,:size => 2 ) }
 
   def set_instanse_variable
     super
