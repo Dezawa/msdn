@@ -22,9 +22,12 @@ module Gnuplot::Makedefine
 
     plot_def =
       if arg_option[:body].keys.size == 1
-         plot_def = plot_define(arg_option[:body][:common])
-        plot  = plot_list(datafile_pathes,arg_option[:body][:common])
-        [ plot_def,  plot ].flatten.compact.join("\n")+"\n#########\n"
+        opt = arg_option[:body][:common]
+         plot_def = plot_define(opt)
+        plot  = plot_list(datafile_pathes,opt)
+        [ plot_def,  plot ].flatten.compact.join("\n")+
+          ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")+
+          "\n#########\n"
       else
         reset_xtics = "set xlabel\nset tics"
         arg_option[:header][:multi_order].reverse.map{|key|

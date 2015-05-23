@@ -47,7 +47,6 @@ module Gnuplot::Datafile
   #      また、opt[idx][:data_file] が定義されている必要がある。ないとみな data000になり、
   #      上書きされてしまう。
   def output_datafile(grouped_data_ary,opt,&block)
-   # pp opt
     base_path = opt[:base_path].to_s+"/"+ opt[:data_file]
     datafile_pathes = []
     keys = opt[:keys] || grouped_data_ary.map{ |ary| ary.first}.sort
@@ -65,14 +64,14 @@ module Gnuplot::Datafile
   def datafiles(data_list=nil,opt=nil)
     opt ||= @option || DefaultOptionST
     data_list ||= @arry_of_data_objects
-    case @option
+    case opt
     when Hash
       if opt[:multiplot]
         opt[:multi_order].
           map{|key| [key,datafiles_case_data_list(data_list[key],opt[key])] }.to_h
       else ; datafiles_case_data_list(data_list,opt)
       end
-    when Gnuplot::OptionST
+    when Gnuplot::OptionST,Gnuplot::Options::OptionST
       if opt[:header][:multiplot]
         opt[:header][:multi_order].
           map{|key| [key,datafiles_case_data_list(data_list[key],opt[:body][key])] }.to_h
