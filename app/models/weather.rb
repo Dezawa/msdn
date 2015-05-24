@@ -4,6 +4,11 @@ require 'pp'
 class Weather < ActiveRecord::Base
   include PowerGraph
   extend PowerGraphGraph
+
+  serialize :temp
+  serialize  :vaper
+  serialize :humi
+  
   Temperature = ("hour01".."hour24").to_a
   Vaper       = ("vaper01".."vaper24").to_a
   Humidity    = ("humidity01".."humidity24").to_a
@@ -119,11 +124,14 @@ set xlabel "気温/℃"
       temp,vaper,humidity = hours_data_of(location,y,m,d) #mp_vaper_humidity.split(/[\n\r]+/)
       logger.info("WEATHER:: #{temp.class}")
       return unless temp
-      weather = self.create( { :location => location.to_s,:date => day,
-                               :month => day.beginning_of_month}.
-                             merge(Hash[*Temperature.zip(temp).flatten]).
-                             merge(Hash[*Vaper.zip(vaper).flatten]).
-                             merge(Hash[*Humidity.zip(humidity).flatten])
+      weather = self.create({ :location => location.to_s,
+                             :date => day,
+                             :month => day.beginning_of_month ,# }.
+                             :temp => temp, :vaper => vaper, :humi => humidity
+                             }
+                             # merge(Hash[*Temperature.zip(temp).flatten]).
+                             # merge(Hash[*Vaper.zip(vaper).flatten]).
+                             # merge(Hash[*Humidity.zip(humidity).flatten])
 
                              )
     end
@@ -133,6 +141,7 @@ set xlabel "気温/℃"
       return weather if weather
       fetch(location,day)
     end
+    
     Hour,Atmospher,Atmospher_sea,Rain,Temperature0,Dew,Vaper0,Humidity0,Wind_blow,Wind_speed,Daytime,Daylight,Snow,Snow_stack,Weather,Cloud,View = (0..16).to_a
 
     PhantomJS = "/usr/local/bin/phantomjs"
@@ -166,8 +175,15 @@ logger.debug("HOURS_DATA_OF: url =#{url}")
       content = `#{PhantomJS} #{jspath}`     
     end
 
-    def hours_data_of(block,y,m,d)
+    def hours_data_of(*block_y_m_d)
+      logger.debug("###### hours_data_of block_y_m_d=#{block_y_m_d}")
+      block = block_y_m_d.shift
+      y,m,d = case block_y_m_d.first
+              when Integer,Float   ;  block_y_m_d
+              when Date,Time; [ block_y_m_d.year, block_y_m_d.month, block_y_m_d.day]
+              end
       location = WeatherLocation.find_by(location: block)
+      
       content =  get_data(location,y,m,d)
       lines = content.split(/[\n\r]+/)  
       while ( line = lines.shift) && /tablefix[12]/ !~ line ;end
@@ -195,13 +211,31 @@ logger.debug("HOURS_DATA_OF: url =#{url}")
     end
 
   end
-
-  def temperatures ;   Temperature.map{ |t| self[t]} ; end
-  def vapers      ;   Vaper.map{ |t| self[t]} ; end
+  
+  def temperatures ;  temp ; end # Temperature.map{ |t| self[t]} ; end
+  def vapers      ;   vaper ; end #Vaper.map{ |t| self[t]} ; end
   def max_temp ; temperatures.max ; end
-  ("01".."24").each_with_index{ |h,idx| define_method("tempvaper#{h}".to_sym){
-      ("%2.1f<br>%2.1f"%[Temperature[idx],Vaper[idx]].map{ |t| self[t]}).html_safe
-    }}
+
+  ("01".."24").each_with_index{ |h,idx| 
+    define_method("tempvaper#{h}".to_sym){
+      ("%2.1f<br>%2.1f"%[temp[idx],
+                         vaper[idx]
+                        ]).html_safe #.map{ |t| self[t]}).html_safe
+    }
+    define_method("temp_#{h}".to_sym){ temp[idx] }
+    define_method("hour#{h}".to_sym){ temp[idx] }
+  }
+  def clm2serial
+    self.temp  = Temperature.map{|tmp| self[tmp] }
+    self.vaper = Vaper.map{|tmp| self[tmp] }
+    self.humi  =  Humidity.map{|tmp| self[tmp] }
+    self
+  end
+
+  def self.clm2serial_all
+    self.all.each{|w| w.clm2serial.save }
+  end
+    
 end
 __END__
 s = Time.local(2013,2,1).beginning_of_day

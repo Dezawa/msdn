@@ -12,7 +12,7 @@ class WeatherController < CommonController #ApplicationController
   TempVaper = [HtmlText.new("気温<br>蒸気圧".html_safe,"")] + 
     ("01".."24").map{ |h| HtmlText.new("tempvaper#{h}".to_sym, h,:ro => true,:size => 2 ) }
   Temperature = [HtmlText.new("気温","")] + 
-    ("01".."24").map{ |h| HtmlText.new("hour#{h}".to_sym, h,:ro => true,:size => 2 ) }
+    ("01".."24").map{ |h| HtmlText.new("temp_#{h}".to_sym, h,:ro => true,:size => 2 ) }
   Vaper = Weather::Vaper.map{ |h| HtmlNum.new(h, h.sub(/vaper/,""),:ro => true,:size => 2 ) }
   Humidity = Weather::Humidity.map{ |h| HtmlNum.new(h.to_sym, h.sub(/humidity/,""),:ro => true,:size => 2 ) }
 
