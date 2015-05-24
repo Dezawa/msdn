@@ -43,9 +43,6 @@ class Shimada::Controller <  CommonController #ApplicationController
           {common: {title: @factory.name + @model.date.strftime(" (%Y年%m月度)")}
           }
          )
-    # option = {time_range:  :dayly,
-    #           title: @factory.name + @model.date.strftime(" (%m月%d日)")
-    #          }
     Shimada::Graph.create(params[:type],@model,optionST)
     render   :file => 'application/graph', :layout => "simple"
   end
