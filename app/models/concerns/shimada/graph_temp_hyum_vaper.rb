@@ -17,9 +17,8 @@ class Shimada::GraphTempHyumVaper    < Graph::Ondotori::TempHumidity
     when Hash ;
       @option.merge!(title_post).merge!(opt)
     when Gnuplot::OptionST
-      @option.merge(title_post,[:body,:common]).merge(opt)
+      @option.merge(title_post,[:body,:common]).merge!(opt)
     end
-    
   end
   
   def multi_days(daylies)
