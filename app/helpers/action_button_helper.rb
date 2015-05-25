@@ -71,7 +71,8 @@ module ActionButtonHelper
     when :csv_up_buttom     ;csv_up_buttom
     when :csv_out           ;csv_out_buttom
     when :input_and_action  ;
-      input_and_action(action,label,opt)
+      logger.debug("##### input_and_action #{[action,label,opt,htmlopt]}")
+      input_and_action(action,label,opt,htmlopt||{})
     when :select_and_action  ;
       select_and_action(action,label,opt)
     when nil; ""
@@ -170,25 +171,25 @@ module ActionButtonHelper
       (submit_tag(label)+from_notclose).html_safe
   end
 
-  def and_action(input,action,label,opt={ })
+  def and_action(input,action,label,opt={ },htmlopt={ })
     scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
 
     hidden = opt.delete(:hidden)
     hidden_value = opt.delete(:hidden_value)
     opt[:hidden] = (hidden ? hidden_field(@Domain,hidden,:value => hidden_value) : "").html_safe
 
-    if win_name = opt[:popup]
+    if win_name = opt.delete(:popup)
       if @model ;and_input_with_model(input,action,label,opt)
       else  ; and_input_without_model(input,action,label,opt)
 
       end
     else
-      and_input_no_popup(input,action,label,opt)
+      and_input_no_popup(input,action,label,opt,htmlopt)
     end
   end
 
-  def and_input_no_popup(input,action,label,opt)
-      "<div>".html_safe+form_tag(:action => action) + 
+  def and_input_no_popup(input,action,label,opt,htmlopt={})
+    "<div>".html_safe+form_tag({:action => action},(htmlopt||{})) + 
         "<input type='hidden' name='page' value='#{@page}'>".html_safe+
         opt[:hidden] +
         submit_tag(label)+
@@ -214,10 +215,10 @@ module ActionButtonHelper
       fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,win_name,scroll,win_name]
   end
 
-  def input_and_action(action,label,opt={ })
+  def input_and_action(action,label,opt={},htmlopt={})
     opt ||= { }
     input =  text_field( @Domain,action,opt )
-    and_action(input,action,label,opt)
+    and_action(input,action,label,opt,htmlopt)
   end
 
   def select_and_action(action,label,opt={ })
