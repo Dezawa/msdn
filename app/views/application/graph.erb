@@ -1,9 +1,12 @@
 <h3><%= @TYTLE %>　<%= @TYTLEpost %></h3>
-<%- opt = {action: :show_img,
-   graph_format: @graph_format||"jpeg" ,
-   graph_file: @graph_file ||  "image",
-   graph_file_dir: @graph_file_dir ||  (Rails.root + "tmp" + "img").to_s
-   }
+<%- opt = {action: :show_img, graph_format: @graph_format||"jpeg" }.
+      merge(
+        @graph_path ? { graph_path: @graph_path } :
+        {
+          graph_file: @graph_file ||  "image",
+          graph_file_dir: @graph_file_dir ||  (Rails.root + "tmp" + "img").to_s
+         }
+        )
 %>
 <%= case @TableEdit
  when TrueClass ; add_edit_buttoms(@Domain) 
