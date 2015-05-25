@@ -19,24 +19,46 @@ class Weather < ActiveRecord::Base
   }
 
 
-  class << self
-    def plot_year(weather_location,day_from,day_to,hour_from,hour_to)
-      day_from  = Time.parse(day_from || "2013-1-1") 
-      day_to    = Time.parse(day_to   || "2020-12-31")
-      hour_from = (hour_from||9).to_i - 1
-      hour_to   = (hour_to ||15).to_i - 1
-      weathers  = self.where(["location =? and date >= ?  and date <= ?",
-                             weather_location,day_from,day_to])
-      graph_by_days_hour weathers
-      #output_plot_year_data(weathers,hour_from,hour_to)
-      #opt = {:def_file => Rails.root+"tmp/weather_temp_vaper.def",
-      #  :location => WeatherLocation.find_by(location: weather_location) 
-      #}.merge(opt)
-      #graph_file = output_plot_year_def_file(path,opt)
-      #`(cd #{Rails.root};/usr/local/bin/gnuplot #{opt[:def_file]})`
-      graph_file
+    class << self
+      def plot_year(weather_location,day_from,day_to,hour_from,hour_to)
+        day_from  = Time.parse(day_from || "2013-1-1") 
+        day_to    = Time.parse(day_to   || "2020-12-31")
+        hour_from = (hour_from||9).to_i - 1
+        hour_to   = (hour_to ||15).to_i - 1
+        weathers  = self.where(["location =? and date >= ?  and date <= ?",
+                                weather_location,day_from,day_to])
+        plot_year_option =
+          Gnuplot::OptionST.new({graph_file: "weather_#{weather_location}"},
+                                common: { point_type: [6,6,6],point_size: [0.5,0.3,0.5]}
+                                )
+        data_list =
+          weathers.map{|weather|
+          #pp [:temp,:vaper,:humi].map{|sym| weather[sym]}
+          weather.times.map{|t| t.str("%Y-%m-%d %H:%M")}.
+              zip( *[:temp,:humi,:vaper].map{|sym| weather[sym]}  )
+        }.flatten(1)
+        Graph::TempHumidity.new( data_list,plot_year_option ).plot
       
-    end
+      end
+      
+    # def plot_yearold(weather_location,day_from,day_to,hour_from,hour_to)
+    #   day_from  = Time.parse(day_from || "2013-1-1") 
+    #   day_to    = Time.parse(day_to   || "2020-12-31")
+    #   hour_from = (hour_from||9).to_i - 1
+    #   hour_to   = (hour_to ||15).to_i - 1
+    #   weathers  = self.where(["location =? and date >= ?  and date <= ?",
+    #                           weather_location,day_from,day_to])
+      
+    #   deffile = graph_by_days_hour weathers,min: day_from.to_date,max: day_to.to_date
+    #   output_plot_year_data(weathers,hour_from,hour_to)
+    #   opt = {:def_file => Rails.root+"tmp/weather_temp_vaper.def",
+    #   #  :location => WeatherLocation.find_by(location: weather_location) 
+    #   #}.merge(opt)
+    #   graph_file = output_plot_year_def_file(path,opt)
+    #   #`(cd #{Rails.root};/usr/local/bin/gnuplot #{opt[:def_file]})`
+    #   graph_file
+      
+    # end
 
     def temp_vaper_graph(weather_location,opt={ })
       path = output_plot_data(weather_location,opt)
@@ -178,9 +200,9 @@ logger.debug("HOURS_DATA_OF: url =#{url}")
     def hours_data_of(*block_y_m_d)
       logger.debug("###### hours_data_of block_y_m_d=#{block_y_m_d}")
       block = block_y_m_d.shift
-      y,m,d = case block_y_m_d.first
+      y,m,d = case y_m_d = block_y_m_d.first
               when Integer,Float   ;  block_y_m_d
-              when Date,Time; [ block_y_m_d.year, block_y_m_d.month, block_y_m_d.day]
+              when Date,Time; [ y_m_d.year, y_m_d.month, y_m_d.day]
               end
       location = WeatherLocation.find_by(location: block)
       
@@ -225,6 +247,7 @@ logger.debug("HOURS_DATA_OF: url =#{url}")
     define_method("temp_#{h}".to_sym){ temp[idx] }
     define_method("hour#{h}".to_sym){ temp[idx] }
   }
+  def times ; (1..24).map{|hour| date.to_time+hour.hour};end
   def clm2serial
     self.temp  = Temperature.map{|tmp| self[tmp] }
     self.vaper = Vaper.map{|tmp| self[tmp] }
