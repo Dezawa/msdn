@@ -2,7 +2,7 @@
 
 
 
-class Shimada::Graph
+class Shimada::Graph < Graph::Base
   Type = {
            "温度"    => "temp_hyum" ,
            "蒸気圧"  => "temp_hyum" ,
@@ -17,10 +17,6 @@ class Shimada::Graph
      "temp_vaper_power" => Shimada::GraphTempVaperPower 
     }
 
-  TimeRange = { nil =>  {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"']},
-               monthly: {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m/%d'" ]},
-               dayly:   {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%H:%M'" ]}
-              }
   attr_reader :graph_item, :dayly
   def self.create(graph_type,dayly,opt=Gnuplot::OptionST.new)
     opt =
