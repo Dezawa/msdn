@@ -135,7 +135,7 @@ module Gnuplot::Makedefine
         st = block_given? ? yield(plot_fmt(opt),p,idx_x,idx_y) : sprintf(plot_fmt(opt),p,idx_x,idx_y)
         st += 
         ( opt[:by_tics] && opt[:by_tics][idx] ? " axes #{opt[:by_tics][idx]}" : "") +
-        point_type( opt[:point_type],idx) +
+        point_type( opt[:point_type],idx) + color(opt[:color],idx) + 
         point_size( opt[:point_size],idx ) +# ?   " ps #{opt[:point_size]}" : "")+
         #( opt[:with] ? " with #{opt[:with]}" : "")
         case opt[:with]
@@ -192,7 +192,11 @@ module Gnuplot::Makedefine
       when Array ;      (opt_point_size[idx] || opt_point_size[-1]).to_s
       end
   end
-
+  def color(opt_color,idx)
+    return "" unless opt_color
+    " lc rgb '#{opt_color[idx > opt_color.size ? -1 : idx]}'"
+  end
+  
   def point_type( opt_point_type,idx)
     return "" unless opt_point_type
     " pt " +
