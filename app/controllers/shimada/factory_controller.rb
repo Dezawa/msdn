@@ -45,6 +45,7 @@ class Shimada::FactoryController <  Shimada::Controller
     #@TableHeaderDouble = [1,[2,"気象データ"],1,[5,"温度補正パラメータ"],[5,"蒸気圧補正パラメータ"]]
     @TableHeaderDouble = [1,[2,"気象データ地域"]]
     @Show = @Delete = @Edir = true
+    logger.debug("### @Links = #{@Links}")
   end
 
   def img_table

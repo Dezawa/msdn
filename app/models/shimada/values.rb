@@ -21,9 +21,12 @@ class Shimada::Values
       when String ;
         if /^\d/  ; factory_id_or_name.to_i
         else
-          Shimada::Factory.find_by(name: factory_id_or_name).id
+          @factory = Shimada::Factory.find_by(name: factory_id_or_name)
+          @factory.id
         end
       end
+    @factory ||= Shimada::Factory.find(@factory_id)
+    
     @date = case date
             when Date,Time ; date.to_date
             when String    ; Date.parse(date)
@@ -38,6 +41,16 @@ class Shimada::Values
   
   def instruments
     @channels ||= Shimada::Instrument.where(factory_id: @factory_id).order(:id)
+  end
+
+  # 気象庁
+  def weather_location
+    @weather_location ||= WeatherLocation.find_by(location: @factory.weather_location)
+  end
+
+  # [temp_list,vaper_list,humi_list ]
+  def  weather
+    @weather ||= Weather.find_or_feach(@factory.weather_location,@date)
   end
 
   def daylies
@@ -57,17 +70,28 @@ class Shimada::Values
   end
   
   def hours
-      daylies.map{|dayly| dayly ? dayly.converted_value_hourly : [nil]*24}.transpose
+    #daylies.map{|dayly| dayly ? dayly.converted_value_hourly : [nil]*24}.transpose.
+    #  zip(weather)
+    (daylies.map{|dayly| dayly ? dayly.converted_value_hourly : [nil]*24}+
+     [:temp,:humi,:vaper].map{|sym| weather[sym]}).transpose
   end
 
   def item_labels
-    instruments.map.with_index{|instrument,idx|
+    (instruments.map.with_index{|instrument,idx|
       lbl = instrument.ch_name + "-" + instrument.measurement
       daylies[idx] ? link_to(lbl, 
                              "/shimada/daylies/graph_dayly/?id=#{daylies[idx].id}" +
                                "&type=#{graph_type(instrument.measurement)}"
                             ) : lbl
-    }.join("<br>".html_safe).html_safe
+    }.join("<br>".html_safe) +"<br>".html_safe+
+      link_to(weather_location.name+"-気温",
+              "/shimada/daylies/graph_weather/?type=weather&id=#{weather.id}&time_range=dayly"
+             )+"<br>　　　湿度<br>　　　蒸気圧".html_safe +
+      
+      link_to("予報"+weather_location.name+"-気温",
+              "/shimada/daylies/graph_weather/?type=forecast&id=#{forecast.id}&time_range=dayly"
+             )+"<br>　　　湿度<br>　　　蒸気圧".html_safe
+    ).html_safe
   end
 
   def graph_type(measurement)

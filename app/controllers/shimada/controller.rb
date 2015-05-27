@@ -36,6 +36,16 @@ class Shimada::Controller <  CommonController #ApplicationController
     @model = @Model.find params[:id]
     Shimada::Graph.create(params[:type],@model)
   end
+  def graph_weather
+    weather = Weather.find(params[:id])
+    @graph_path =
+      Weather.plot([weather],
+                   Gnuplot::OptionST.new({},
+                                         {common: {time_range: params[:time_range]}}
+                                        )
+                  )
+    render   :file => 'application/graph', :layout => "simple"
+  end
   def graph_dayly
     @model = @Model.find params[:id]
     optionST = Gnuplot::OptionST.
