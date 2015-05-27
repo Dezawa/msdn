@@ -27,18 +27,38 @@ class Weather < ActiveRecord::Base
         hour_to   = (hour_to ||15).to_i - 1
         weathers  = self.where(["location =? and date >= ?  and date <= ?",
                                 weather_location,day_from,day_to])
+        plot(weathers)
+      end
+      def plot(weathers,option=Gnuplot::OptionST.new)
+        title ,time_range=
+          case weathers.size
+          when 1 ;
+            ["(#{weathers.first.date.str('%Y-%m-%d)')})",
+             Graph::Base::TimeRange[:dayly]
+            ]
+          else   ;
+            ["(#{weathers.first.date.str('%Y-%m-%d')} - #{weathers.last.date.str('%Y-%m-%d)')})",
+             Graph::Base::TimeRange[ if weathers.first.date.year < weathers.last.date.year ; :years
+                        else :monthly
+                        end
+                      ]
+             ]
+          end                                     
         plot_year_option =
-          Gnuplot::OptionST.new({graph_file: "weather_#{weather_location}"},
-                                common: { point_type: [6,6,6],point_size: [0.5,0.3,0.5]}
-                                )
+          Gnuplot::OptionST.
+          new({graph_file: "weather_#{weathers.first.location}"},
+              common: { point_type: [6,6,6],point_size: [0.5,0.3,0.5],
+                       title_post: title,
+                       time_range: time_range
+                      }
+             ).merge!(option)
         data_list =
           weathers.map{|weather|
           #pp [:temp,:vaper,:humi].map{|sym| weather[sym]}
           weather.times.map{|t| t.str("%Y-%m-%d %H:%M")}.
               zip( *[:temp,:humi,:vaper].map{|sym| weather[sym]}  )
         }.flatten(1)
-        Graph::TempHumidity.new( data_list,plot_year_option ).plot
-      
+        Graph::TempHumidity.new( data_list,plot_year_option ).plot     
       end
       
     # def plot_yearold(weather_location,day_from,day_to,hour_from,hour_to)
