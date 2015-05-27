@@ -76,7 +76,8 @@ class Shimada::Values
     #daylies.map{|dayly| dayly ? dayly.converted_value_hourly : [nil]*24}.transpose.
     #  zip(weather)
     (daylies.map{|dayly| dayly ? dayly.converted_value_hourly : [nil]*24}+
-     [:temp,:humi,:vaper].map{|sym| weather[sym]}).transpose
+     [:temp,:humi,:vaper].map{|sym| weather[sym]}+
+     [:temp24,:humi24,:vape24].map{|sym| forecast.send(sym)}).transpose
   end
 
   def item_labels
@@ -88,12 +89,10 @@ class Shimada::Values
                             ) : lbl
     }.join("<br>".html_safe) +"<br>".html_safe+
       link_to(weather_location.name+"-気温",
-              "/shimada/daylies/graph_weather/?type=weather&id=#{weather.id}&time_range=dayly"
+              "/shimada/daylies/graph_weather/?date=#{date}&location=#{weather_location.location}&time_range=dayly"
              )+"<br>　　　湿度<br>　　　蒸気圧".html_safe  + "<br>".html_safe +
       
-      link_to("予報"+weather_location.name+"-気温",
-              "/shimada/daylies/graph_weather/?type=forecast&id=#{forecast.id}&time_range=dayly"
-             )+"<br>　　　湿度<br>　　　蒸気圧".html_safe
+      "予報"+weather_location.name+"-気温<br>　　　湿度<br>　　　蒸気圧".html_safe
     ).html_safe
   end
 

@@ -9,10 +9,18 @@ class Forecast < ActiveRecord::Base
   Vaper    = %w(vaper03 vaper06 vaper09 vaper12 vaper15 vaper18 vaper21 vaper24)
  #extend Shimada::ForecastReal
   class << self
-    def daylies_of_month(weather_location,month)
-      where(:month  => month,:location =>  weather_location).order("date").
+    def daylies_period(location,period)
+      where(  ["location = ? and date >= ? and date <= ?",
+               location,period.first,period.last]).order("date").
       group_by{ |d| d.date }.
       map{|date,daylies| daylies.sort_by{|d| d.announce}.last}
+    end
+    
+    def daylies_of_month(weather_location,month)
+      where(:month  => month,:location =>  weather_location).
+      group_by{ |d| d.date }.
+      map{|date,daylies| daylies.sort_by{|d| d.announce}.last}.
+      sort_by{|d| d.date}
     end
     def dayly_of_a_day(weather_location,date)
       daylies_of_a_day(weather_location,date)[-1,1]
@@ -55,74 +63,37 @@ class Forecast < ActiveRecord::Base
       ret
     end
 
-    def differrence_via_real(location = "maebashi" )
-      weather_location = WeatherLocation.find_by(location: location)
-      dates = Forecast.where(  ["location = ?",location]).
-        pluck(:date).uniq
-      weathers = dates.map{ |date|
-        today    = Forecast.find_by(date: date ,announce_day: date)
-        tomorrow = Forecast.find_by(date: date ,announce_day: date-1)
-        real     = Weather.find_or_feach(location,date)
-        [today,tomorrow,real]
-      }
-
-      differ = []
-      weathers.map{ |k,a,r|
-        next unless r
-        [3,6,9,12,15,18,21,24].each_with_index{ |h,idx|
-          diff = []
-          diff << ( r.date.to_time + h.hour)
-          diff << (r ? r.temperatures[h-1] : nil )
-          diff << (k ? (k.temperature[idx]-r.temperatures[h-1])  : nil)
-          diff << (a ? (a.temperature[idx]-r.temperatures[h-1])  : nil)
-          if /^47/ =~ weather_location.weather_block
-            diff << (r ? r.vapers[h-1] :  nil)
-            diff << (k  ? (k.vaper[idx]-r.vapers[h-1])  : nil )
-            diff << (a  ? (a.vaper[idx]-r.vapers[h-1])  : nil)
-          end
-          differ << diff
-        }
-      }
-      differ
+    def differrence_via_real(location  , period )
+      forecasts = daylies_period(location,period)
+      weathers =
+        Weather.where(  ["location = ? and date >= ? and date <= ?",
+                         location,period.first,period.last])
+      
     end
 
-    def differrence_via_real_graph(location = :maebashi,graph_file = "graph")
-      weather_location = WeatherLocation.find_by(location: location)
-      differ = differrence_via_real(location)
-      deffile = Rails.root+"tmp/shimada/forecast-real.def"
-      open(Rails.root+"tmp/shimada/forecast-real","w"){ |f|
-        f.puts "No 日時 気温 当日予報誤差 前日予報誤差 蒸気圧 当日予報誤差 前日予報誤差" 
-        i=0.0
-        differ.each{ |h,t,dt0,dt1,v,dv0,dv1|
-          f.print  i 
-          i += 1/8.0
-
-          f.print h.hour == 3 ?  h.strftime(" \"%Y-%m-%d %H:00\"") : " \"\""
-          f.print t   ? " %.1f "%t    : " -- "
-          f.print dt0 ? " %.1f "%dt0  : " -- "
-          f.print dt1 ? " %.1f "%dt1  : " -- "
-          f.print v   ? " %.1f "%v    : " -- "
-          f.print dv0 ? " %.1f "%dv0  : " -- "
-          f.print dv1 ? " %.1f "%dv1  : " -- "
-          f.puts
-        }
-      }
-      logger.debug("DIFFERRENCE_VIA_REAL_GRAPH: location=#{location} zp =#{WeatherLocation.find_by(location: location).forecast_code}")
-      open(deffile,"w"){ |f|
-        f.puts Def%[Rails.root+"tmp/img",graph_file,
-                    WeatherLocation.find_by(location: location).name,
-                    differ.first.first.strftime("%Y/%m/%d"),
-                    differ.last.first.strftime("%Y/%m/%d"),differ.size/8-0.125,
-                    Rails.root,Rails.root,Rails.root
-                   ]
-      }
-      `(cd #{Rails.root};/usr/local/bin/gnuplot #{deffile})`
-      [graph_file,"jpeg"]
+    def differrence_via_real_graph(location = :maebashi, period = nil, graph_file = "graph")
+      unless period
+        today = Time.now.to_date
+        (today .. today)
+      end
+      forecasts = daylies_period(location,period)
+      weathers = Weather.where(  ["location = ? and date >= ? and date <= ?",
+                                  location,period.first,period.last])
+      option = Gnuplot::OptionST.
+        new({time_range: :dayly},
+            {common: {column_labels: [%w(年月日 時刻 予報気温 予報湿度 水蒸気圧),
+                                      %w(年月日 時刻 気温 湿度 水蒸気圧)],
+                      with: ["lines","lines","lines",nil,nil,nil],
+                      by_tics: {1 => "x1y2",4 => "x1y2"}   ,
+                    color: ["red","green","blue","red","green","blue"],
+                     }})
+      Graph::TempHumidity.create_by_multi_models([forecasts,weathers],option).plot
+      
     end
 
 
     def plot(forecasts,option=Gnuplot::OptionST.new)
-      Graph::TempHumidity.create(forecasts,option).plot     
+      Graph::TempHumidity.create_by_models(forecasts,option).plot     
     end
   end # of class method
 
@@ -136,7 +107,10 @@ class Forecast < ActiveRecord::Base
     end
     Vaper.map{ |sym| self[sym]}  
   end
-
+  def time24 ; d=self.date.to_time;(1..24).map{|h| d+h.hour} ; end
+  def temp24 ; ([[nil,nil]]*8).zip(temperature).flatten ;end
+  def humi24 ; ([[nil,nil]]*8).zip(humidity).flatten ;end
+  def vape24 ; ([[nil,nil]]*8).zip(vaper).flatten ;end
   def to_s
     "#{date} #{announce}: temp:#{temperature.join(',')}  Humi:#{humidity.join(',')}  Vaper:#{ vaper.join(',')}"
   end
