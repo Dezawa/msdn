@@ -92,7 +92,7 @@ module Gnuplot::Makedefine
   end
 
   def plot_define(opt)
-      title = opt[:title] ? "set title '#{opt[:title]}'" : nil
+    title = opt[:title] ? "set title '#{opt[:title]}#{opt[:title_post]}'" : nil
       key = opt[:set_key] || "set key outside autotitle columnheader" #: "unset key"
       
       tics  = opt[:tics] ? tics_str(opt) : nil
@@ -140,9 +140,9 @@ module Gnuplot::Makedefine
         #( opt[:with] ? " with #{opt[:with]}" : "")
         case opt[:with]
         when nil ; ""
-        when String ;  opt[:with]
+        when String ;  " with #{opt[:with]}"
         when Array
-          opt[:with][idx] ? opt[:with][idx] : ""
+          opt[:with][idx] ? " with #{opt[:with][idx]}" : ""
         else ; ""
         end
 
