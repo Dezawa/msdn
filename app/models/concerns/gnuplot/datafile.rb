@@ -53,7 +53,7 @@ module Gnuplot::Datafile
     keys.each_with_index{ |key,idx|
       datafile_pathes << "#{base_path}.data"
       open(datafile_pathes.last,"w"){ |f|
-        f.puts opt[:column_labels].join(" ") if opt[:column_labels]
+        f.puts column_labels(opt[:column_labels],idx) if opt[:column_labels]
         yield f,key,grouped_data_ary[idx][1]
         f.puts
       }
@@ -104,7 +104,14 @@ module Gnuplot::Datafile
       }
     end
   end
-    
+
+  def column_labels(labels,idx)
+    case labels.first
+    when Array ; labels[idx]
+    else labels
+    end.join(" ")
+  end
+  
   def datafiles_case_array(data_list,opt)
     case data_list.first
     when String,Pathname ; data_list # Array of データファイルパス
