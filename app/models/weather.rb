@@ -30,7 +30,7 @@ class Weather < ActiveRecord::Base
         plot(weathers)
       end
       def plot(weathers,option=Gnuplot::OptionST.new)
-        Graph::TempHumidity.create(weathers,option).plot 
+        Graph::TempHumidity.create_by_models(weathers,option).plot 
       end
       
     # def plot_yearold(weather_location,day_from,day_to,hour_from,hour_to)
