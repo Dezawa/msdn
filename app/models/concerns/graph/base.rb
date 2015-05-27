@@ -4,9 +4,10 @@ module Graph
     include ActiveModel::Model
     include Gnuplot
 
-    TimeRange = { nil =>  {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"']},
-                 monthly: {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m/%d'" ]},
-                 dayly:   {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%H:%M'" ]}
+    TimeRange = { nil =>  {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%Y/%m/%d'"]},
+                 years:   {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%Y/%m/%d'"]},
+                 monthly: {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m/%d'"   ]},
+                 dayly:   {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%H:%M'"   ]}
                 }
   
     TempHumidityDefST = Gnuplot::OptionST.
