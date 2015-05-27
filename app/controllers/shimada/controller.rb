@@ -37,9 +37,13 @@ class Shimada::Controller <  CommonController #ApplicationController
     Shimada::Graph.create(params[:type],@model)
   end
   def graph_weather
-    weather = Weather.find(params[:id])
+    @model  = case params[:type]
+              when "weather" ;Weather
+              when "forecast" ; Forecast
+             end
+    model = @model.find(params[:id])
     @graph_path =
-      Weather.plot([weather],
+      @model.plot([model],
                    Gnuplot::OptionST.new({},
                                          {common: {time_range: params[:time_range]}}
                                         )

@@ -52,6 +52,9 @@ class Shimada::Values
   def  weather
     @weather ||= Weather.find_or_feach(@factory.weather_location,@date)
   end
+  def  forecast
+    @forecast ||= Forecast.dayly_of_a_day(@factory.weather_location,@date).first
+  end
 
   def daylies
     return @daylies if @daylies
@@ -86,7 +89,7 @@ class Shimada::Values
     }.join("<br>".html_safe) +"<br>".html_safe+
       link_to(weather_location.name+"-気温",
               "/shimada/daylies/graph_weather/?type=weather&id=#{weather.id}&time_range=dayly"
-             )+"<br>　　　湿度<br>　　　蒸気圧".html_safe +
+             )+"<br>　　　湿度<br>　　　蒸気圧".html_safe  + "<br>".html_safe +
       
       link_to("予報"+weather_location.name+"-気温",
               "/shimada/daylies/graph_weather/?type=forecast&id=#{forecast.id}&time_range=dayly"
