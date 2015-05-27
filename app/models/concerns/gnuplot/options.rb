@@ -21,7 +21,20 @@ module Gnuplot::Options
       self[:body]   = args[1] || {}
       self[:body][:common] = {} unless self[:body][:common]
     end
-    
+
+    def dup
+      ret = OptionST.new(self[:header].dup,self[:body].dup)
+      self[:body].keys.each{|key| ret[:body][key] = self[:body][key].dup }
+      ret
+    end
+
+    def delete(*key_for_merge)
+      return nil unless key_for_merge
+      vv=key_for_merge.flatten[0..-2].inject(self){|v,k| v[k]}
+      return nil unless vv
+      return vv.delete(key_for_merge.flatten.last)
+    end
+      
     def merge(other,key_for_merge=nil)
       unless key_for_merge
         ret = OptionST.new(self[0].dup,self[1].dup)
@@ -40,7 +53,7 @@ module Gnuplot::Options
         }
         ret
       else
-        key_for_merge.inject(self){|v,k| v[k]}.merge!(other)
+        key_for_merge.flatten.inject(self){|v,k| v[k]}.merge!(other)
         self
       end
     end
@@ -117,7 +130,7 @@ module Gnuplot::Options
           #####  ######
           
           #additional_lines: , #  近似線などを書く式を生で記述
-          #with:     "line",   #
+          #with:    [lines boxes,,,],   #
           #labels:  ,# ["label 1 'Width = 3' at 2,0.1 center","arrow 1 as 2 from -1.5,-0.6 to -1.5,-1"]
           #  実装まだ
           #
