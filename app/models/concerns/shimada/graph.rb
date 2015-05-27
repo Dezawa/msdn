@@ -23,7 +23,7 @@ class Shimada::Graph < Graph::Base
       case opt
       when Hash ;    opt.merge(TimeRange[opt[:time_range]])
       when Gnuplot::OptionST ;
-        opt.merge(TimeRange[opt[:header].delete(:time_range)],[:body,:common])
+        opt.merge(TimeRange[opt[:header].delete(:time_range)],[:body,:common]) if opt[:header][:time_range]
       end
     Classes[graph_type.to_s].new(dayly,opt)
   end

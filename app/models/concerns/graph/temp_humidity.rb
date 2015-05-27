@@ -5,8 +5,7 @@ module Graph
     
     def initialize(data_list,opt=Gnuplot::OptionST.new)
       super
-      @option =@option.merge(TempHumidityDefST).merge(opt)
-      pp @option
+      @option = Gnuplot::DefaultOptionST.merge(TempHumidityDefST).merge(opt) 
     end
   end
 end
