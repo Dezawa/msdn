@@ -9,6 +9,19 @@ class Forecast < ActiveRecord::Base
   Vaper    = %w(vaper03 vaper06 vaper09 vaper12 vaper15 vaper18 vaper21 vaper24)
  #extend Shimada::ForecastReal
   class << self
+    def daylies_of_month(weather_location,month)
+      where(:month  => month,:location =>  weather_location).order("date").
+      group_by{ |d| d.date }.
+      map{|date,daylies| daylies.sort_by{|d| d.announce}.last}
+    end
+    def dayly_of_a_day(weather_location,date)
+      daylies_of_a_day(weather_location,date)[-1,1]
+    end
+    
+    def daylies_of_a_day(weather_location,date)
+      where(:date  =>date,:location =>  weather_location).order("announce")
+    end
+
     def to_hash(weathers)
       weather,temperature,humidity = weathers
       w = Hash[*Weathers.zip(weather).flatten]

@@ -135,19 +135,13 @@ class ForecastController < CommonController # ApplicationController
   end
 
   def daylies_of_month
-    @models = @Model.where(:month  => params[:month],:location =>  @weather_location).
-      order("date").
-      group_by{ |d| d.date }.
-      map{|date,daylies| daylies.sort_by{|d| d.announce}.last}
-    
+    @models = @Model.daylies_of_month(@weather_location, params[:month])    
   end
   def daylies_of_a_day
-    @models = @Model.where(:date  => params[:date],:location =>  @weather_location).
-      order("announce")
+    @models = @Model.daylies_of_a_day(@weather_location, params[:date])
   end
   def dayly_of_a_day
-    @models = @Model.where(:date  => params[:date],:location =>  @weather_location).
-      order("announce")[-1,1]
+    @models = @Model.dayly_of_a_day(@weather_location, params[:date])
   end
   def index_sub
     @Pagenation = 3
