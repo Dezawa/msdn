@@ -122,39 +122,8 @@ class Forecast < ActiveRecord::Base
 
 
     def plot(forecasts,option=Gnuplot::OptionST.new)
-      location=forecasts.first.location
-        title ,time_range=
-          case forecasts.size
-          when 1 ;
-            ["(#{forecasts.first.date.str('%Y-%m-%d)')})",
-             Graph::Base::TimeRange[:dayly]
-            ]
-          else   ;
-            ["(#{forecasts.first.date.str('%Y-%m-%d')} - #{forecasts.last.date.str('%Y-%m-%d)')})",
-             Graph::Base::TimeRange[ if forecasts.first.date.year < forecasts.last.date.year ; :years
-                                     else ; :monthly
-                                     end
-                                   ]
-            ]
-          end          
-        option = 
-          Gnuplot::OptionST.
-          new({graph_file: "forecast_#{location}"},
-              common: { point_type: [6,6,6],point_size: [0.5,0.3,0.5],
-                       title_post: title,
-                      with: ["lines","lines","lines",nil],
-                      }.merge(time_range)
-             )#.merge!(option)
-        #pp option
-        data_list =
-          forecasts.map{|forecast|
-          #pp [:temp,:vaper,:humi].map{|sym| weather[sym]}
-          forecast.times.map{|t| t.str("%Y-%m-%d %H:%M")}.
-              zip( *[:temperature,:humidity,:vaper].map{|sym| forecast.send sym }  )
-        }.flatten(1)
-        Graph::TempHumidity.new( data_list,option ).plot     
-        
-  end
+      Graph::TempHumidity.create(forecasts,option).plot     
+    end
   end # of class method
 
   def times       ; d=self.date.to_time;[3,6,9,12,15,18,21,24].map{|h| d+h.hour} ; end
