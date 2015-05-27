@@ -19,7 +19,9 @@ module Graph
                     axis_labels: {:ylabel =>"気温(℃),水蒸気圧(hPa)",
                                   :y2label => ["湿度(%RH)","offset -2,0"]},
                     tics: {xtics: "rotate by -90",y2tics: "20,10"},
-                    xy: [[[1,3],[1,4],[1,5]]],point_type: [6],point_size: 0.3,
+                    xy: [[[1,3],[1,4],[1,5]]],
+                    point_type: [6],point_size: 0.3,
+                    color: ["red","green","blue"],
                     by_tics: {1 => "x1y2"},
                     range: {y: "[0:40]", y2: "[20:100]"},
                     set_key: "set key outside autotitle columnheader width -9  samplen 1 "
