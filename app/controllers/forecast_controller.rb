@@ -72,11 +72,11 @@ class ForecastController < CommonController # ApplicationController
     @graph_format = :jpeg
     if params[:month]
       daylies_of_month
-      @graph_path = @Model.graph(@models, @weather_location)
+      @graph_path = @Model.plot(@models)
       render  :file => 'application/graph',:layout => 'application'
     elsif params[:date]
       dayly_of_a_day
-      @graph_path = @Model.graph(@models, @weather_location)
+      @graph_path = @Model.plot(@models)
       render  :file => 'application/graph',:layout => 'application'
     else
       @TableHeaderDouble = nil

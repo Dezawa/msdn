@@ -121,7 +121,8 @@ class Forecast < ActiveRecord::Base
     end
 
 
-    def graph(forecasts,location)
+    def plot(forecasts,option=Gnuplot::OptionST.new)
+      location=forecasts.first.location
         title ,time_range=
           case forecasts.size
           when 1 ;
@@ -138,7 +139,7 @@ class Forecast < ActiveRecord::Base
           end          
         option = 
           Gnuplot::OptionST.
-          new({graph_file: "weather_#{location}"},
+          new({graph_file: "forecast_#{location}"},
               common: { point_type: [6,6,6],point_size: [0.5,0.3,0.5],
                        title_post: title,
                       with: ["lines","lines","lines",nil],
