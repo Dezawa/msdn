@@ -16,6 +16,9 @@ class Shimada::Factory < ActiveRecord::Base
     case graph_type.to_s
     when "temp_vaper_power"
       Shimada::Dayly.by_factory_id(id).where(date: today)
+    when "temp_hyum"
+      Shimada::Dayly.by_factory_id_order_instrument(id).
+      where(date: today,measurement_type: Ondotori::TypeNameHash["温度"])
     end
     if daylies && daylies.size>0
       Shimada::Graph.create( graph_type.to_s,daylies,opt).plot

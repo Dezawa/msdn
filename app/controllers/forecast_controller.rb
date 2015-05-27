@@ -9,22 +9,28 @@ class ForecastController < CommonController # ApplicationController
     [ HtmlText.new(:location  ,"場所",    :ro => true , :size => 7),
      HtmlLink.new(:month     ,"年月",  :tform => "%Y/%m", :ro => true, :size => 7 ,
                   :link => {  :url => "/forecast",
-                            :key => :month, :key_val => :month})
+                            :key => :month, :key_val => :month}),
+      HtmlLink.new(:month     ,"グラフ", :ro => true, :size => 7 ,
+                  :link => {  :url => "/forecast/graph",:link_label => "グラフ",
+                            :key => :month, :key_val => :month}),
     ]
   LabelsDaylies = [
             HtmlText.new(:location ,"場所",    :ro => true , :size => 7),
-            HtmlLink.new(:date     ,"年月日",  :tform => "%Y/%m/%d", :ro => true, :size => 7,
+            HtmlLink.new(:date     ,"月日",  :tform => "%m/%d", :ro => true, :size => 7,
                  :link => {  :url => "/forecast",:key => :date, :key_val => :date}
                         ),
-            HtmlDate.new(:announce ,"発表日時",  :tform => "%m/%d %H", :ro => true, :size => 7 )
+            HtmlLink.new(:date     ,"グラフ", :ro => true, :size => 7 ,
+                  :link => {  :url => "/forecast/graph",:link_label => "グラフ",
+                            :key => :date, :key_val => :date}),
+            HtmlDate.new(:announce ,"最終発表日時",  :tform => "%m/%d %H", :ro => true, :size => 7 ),
             ] +
     Temp.map{  |clm|   HtmlNum.new(clm.to_sym,clm.sub(/temp/,""),:tform => "%.1f") } +
     Vaper.map{ |clm|   HtmlNum.new(clm.to_sym,clm.sub(/vaper/,""),:tform => "%.1f") } +
     Humi.map{  |clm|   HtmlNum.new(clm.to_sym,clm.sub(/humi/,""),:tform => "%.1f") } +
     Weather.map{ |clm| HtmlText.new(clm.to_sym,clm.sub(/weather/,"")) } 
   LabelsDayAll = LabelsDaylies.dup
-  LabelsDayAll[1,1] = HtmlDate.new(:date ,"年月日",:tform => "%Y/%m/%d",:ro => true,:size => 7)
-    
+  LabelsDayAll[1,1] = HtmlDate.new(:date ,"月日",:tform => "%m/%d",:ro => true,:size => 7)
+  LabelsDayAll.delete_at(2)  
   def set_instanse_variable
     super
     @Model= Forecast
@@ -34,7 +40,7 @@ class ForecastController < CommonController # ApplicationController
     @TableEdit = #[[:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}]]
     [ [:select_and_action,:change_location,"地域変更",
        {:correction => correction ,:selected => @weather_location }],
-      [:form,:fetch,"取り込み",method: :get] ,[:form,:error_graph,"予報誤差",method: :get]
+      [:form,:fetch,"取り込み",method: :get] #,[:form,:error_graph,"予報誤差",method: :get]
     ]
     @Domain= @Model.name.underscore
     @TableHeaderDouble = [3,[8,"気温"],[8,"蒸気圧"],[8,"湿度"],[8,"天気"]]
@@ -48,6 +54,7 @@ class ForecastController < CommonController # ApplicationController
   def index
     if params[:month]
       @labels = LabelsDaylies
+      @TableHeaderDouble = [4,[8,"気温"],[8,"蒸気圧"],[8,"湿度"],[8,"天気"]]
       daylies_of_month
       render  :file => 'application/index',:layout => 'application'
     elsif params[:date]
@@ -61,7 +68,24 @@ class ForecastController < CommonController # ApplicationController
     end
   end
   
-  def show
+  def graph
+    @graph_format = :jpeg
+    if params[:month]
+      daylies_of_month
+      @graph_path = @Model.graph(@models, @weather_location)
+      render  :file => 'application/graph',:layout => 'application'
+    elsif params[:date]
+      dayly_of_a_day
+      @graph_path = @Model.graph(@models, @weather_location)
+      render  :file => 'application/graph',:layout => 'application'
+    else
+      @TableHeaderDouble = nil
+      @labels = LabelsMonthList
+      month_list 
+    end
+  end
+
+    def show
     if /[^\d]/ =~ params[:id]
       send(params[:id])
     else
@@ -120,6 +144,10 @@ class ForecastController < CommonController # ApplicationController
   def daylies_of_a_day
     @models = @Model.where(:date  => params[:date],:location =>  @weather_location).
       order("announce")
+  end
+  def dayly_of_a_day
+    @models = @Model.where(:date  => params[:date],:location =>  @weather_location).
+      order("announce")[-1,1]
   end
   def index_sub
     @Pagenation = 3
