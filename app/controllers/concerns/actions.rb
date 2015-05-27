@@ -56,10 +56,7 @@ module Actions
     @Model = the_model
     @Domain= @Model.name.underscore
   end
-  
-  def set_instanse_variable
-    @weather_location = session[:weather_location] || "maebashi"
-  end
+
   ##########################
   def new
     @model = @Model.new(@New)

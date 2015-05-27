@@ -2,6 +2,10 @@ class CommonController < ApplicationController
   include Actions
   include Permittion
   
+  def set_instanse_variable
+    @weather_location = session[:weather_location] || "maebashi"
+  end
+  
   def show_img
     graph_format = params[:graph_format].blank? ? :gif : params[:graph_format]
     graph_path =
