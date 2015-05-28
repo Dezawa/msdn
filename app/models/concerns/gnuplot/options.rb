@@ -120,7 +120,11 @@ module Gnuplot::Options
           #
           ##### 点、線 ######
           # point_type: [1,2,6]  idx番目のtypeが point_type[idx]
-          # point_size: [1,2,6] 
+          # point_size: [1,2,6]
+          # color:      ["red","blue"] http://d.hatena.ne.jp/yrgnah_yats/20090802/1249188972
+          #             white , black ,grey ,red ,yellow ,green ,light-green
+          #             dark-green ,blue ,cyan ,magenta ,turquoise ,pink ,salmon
+          #            ,khaki ,orange,purple
           # line_type:
           #
           ####### set,unset ######
