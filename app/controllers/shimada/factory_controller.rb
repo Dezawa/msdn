@@ -49,12 +49,7 @@ class Shimada::FactoryController <  Shimada::Controller
   end
 
   def img_table
-    find_and
-    @slice=2
-    @width=900/2
-    @height=400/2
-    #@images = @models.zip(@models.map{|model| model.today_graph(:temp_vaper_power) })
-    @images = @models.zip(@models.map{|model| model.today_graph(:temp_hyum) })
+    super(:temp_hyum)
   end
   
   def index
