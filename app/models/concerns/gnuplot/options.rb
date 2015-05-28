@@ -89,11 +89,15 @@ module Gnuplot::Options
           #  形式１ [ [value,value,value,,,], [,,,], [,,,],,,,,]
           #  形式２ [ [objct,objct,objct,,,], [,,,], [,,,],,,,,]
           #  形式３ objct
-          #
+          #  形式４ [ [key,Array],[key,[Array]], {key=>Array,key=>Array}
+          #  
           # 中間ファイル関連
-          # column_labels: "" ,       # gnuplotの入力データとなる中間ファイルのヘッダー文字列
-          # column_attrs:  [] ,       # 入力データ構造が形式２のとき、obje.send[sym] としてデータを得る
-          #                           # 形式３のとき objctのserializeされている attrを指定し、そのデータを用いる
+          # column_labels: "" , # gnuplotの入力データとなる中間ファイルのヘッダー文字列
+          # column_attrs:  [] , # 入力データ構造が形式２のとき、obje.send[sym] としてデータを得る
+          #                     # 出力ファイルが複数になり(group_byにて)、かつそれ毎にカラムラベルを
+          #                     # 変更したい場合は Array of Array にする。
+          #                     #  例  [%w(年月日 時刻 予報気温), %w(年月日 時刻 気温)],
+          #              # 形式３のとき objctのserializeされている attrを指定し、そのデータを用いる
           # column_format:    ,       # 中間ファイルへの出力format
           #
           ###################################
