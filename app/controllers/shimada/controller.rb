@@ -96,8 +96,6 @@ class Shimada::Controller <  CommonController #ApplicationController
     @slice=2
     @width=900/2
     @height=400/2
-    #@images = @models.zip(@models.map{|model| model.today_graph(:temp_vaper_power) })
-    @images = @models.zip(@models.map{|model| model.today_graph(attr) })
   end
 
 end

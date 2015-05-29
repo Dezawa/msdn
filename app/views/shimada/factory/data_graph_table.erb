@@ -1,0 +1,13 @@
+<h3><%= @TYTLE  %> <%= @TYTLE_post %></h3>
+<table border=1>
+<% @images.each_slice( @slice){|images| %>
+  <tr><% images.each{|graph_type,image| -%>
+      <td><%= Shimada::GraphType[graph_type] -%> <br>
+          <%= link_to(action: :data_graph_table,id: @model.id) do
+                    image_tag( (image.blank? ? nil : "/show_graph/show_img?graph_path=#{image}"),
+                    width: @width, height:  @height)  
+                    end
+          %>
+      </td>    <% } %>
+</tr><% } %>
+</table>

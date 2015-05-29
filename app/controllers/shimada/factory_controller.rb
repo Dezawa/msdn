@@ -45,11 +45,22 @@ class Shimada::FactoryController <  Shimada::Controller
     #@TableHeaderDouble = [1,[2,"気象データ"],1,[5,"温度補正パラメータ"],[5,"蒸気圧補正パラメータ"]]
     @TableHeaderDouble = [1,[2,"気象データ地域"]]
     @Show = @Delete = @Edir = true
-    logger.debug("### @Links = #{@Links}")
   end
 
   def img_table
-    super(:temp_hyum)
+    find_and
+    @slice,@width,@height= 2,900/2,400/2
+    @images = @models.zip(@models.map{|model| model.today_graph(:temp_hyum) })
+  end
+  
+  def data_graph_table
+    @model = @Model.find(factory_id = params[:id])
+    date = Time.now
+    date = Date.new(2015,4,23)
+    @images = @model.day_graphs(date)
+    @slice,@width,@height= 2,900/2,400/2
+    @TYTLE = @model.name
+    #render action: :img_table
   end
   
   def index

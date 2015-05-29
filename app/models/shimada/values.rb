@@ -15,11 +15,13 @@ class Shimada::Values
   attr_reader :date,:factory_id,:id
   #attr_reader :channels
   def initialize(factory_id_or_name,date=Time.now)
+    pp ["factory_id_or_name",factory_id_or_name]
     @factory_id =
       case factory_id_or_name
       when Integer ; factory_id_or_name
       when String ;
-        if /^\d/  ; factory_id_or_name.to_i
+        case factory_id_or_name
+        when /^\d/  ; factory_id_or_name.to_i
         else
           @factory = Shimada::Factory.find_by(name: factory_id_or_name)
           @factory.id

@@ -2,6 +2,9 @@
 <% @images.each_slice( @slice){|images| %>
 <tr><% images.each{|model,image| -%>
 <td><% if model ; %><%= model.name -%>
-<br><a href=""><img src='/show_graph/show_img?graph_path=<%= image %>' width="<%= @width%>" height="<%= @height%>"></a>
+<br><%= link_to(action: :data_graph_table,id: model.id) do
+          image_tag( (image.blank? ? nil : "/show_graph/show_img?graph_path=#{image}"),
+                    width: @width,height:  @height) 
+    end %>
 <% end%></td><% } %></tr><% } %>
 </table>
