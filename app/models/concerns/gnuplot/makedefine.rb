@@ -127,7 +127,7 @@ module Gnuplot::Makedefine
     xy_ary_ary = opt[:xy] ? opt[:xy].dup :  [[[1,2]]]
     idx = 0
     str = "plot "+
-      path.map{ |p|
+      (path||[]).map{ |p|
       xy_ary = xy_ary_ary.size > 1 ? xy_ary_ary.shift : xy_ary_ary.first.dup
       #      str += 
       s = xy_ary.map{ |idx_x,idx_y|
