@@ -4,7 +4,9 @@ class Shimada::Instrument < ActiveRecord::Base
   belongs_to :simada_factory
 
   scope :by_factory_id, -> (factory_id) { where factory_id: factory_id }
-  
+  scope :by_factory_id_and_serial, -> (factory_id,serials) {
+    where(factory_id: factory_id ,serial: serials)
+  }
   scope :by_factory_name, -> (factory_name) { by_factory_id(Shimada::Factory.where(name: factory_name))}
   
   def buttely

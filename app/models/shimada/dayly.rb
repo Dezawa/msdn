@@ -54,6 +54,9 @@ class Shimada::Dayly < ActiveRecord::Base
     joins(:instrument).merge(Shimada::Instrument.by_factory_id(factory_id)).
       order(:date,"shimada_instruments.id")
   }
+  scope :by_factory_id_and_instrument_serial, -> (factory_id,serials) {
+    joins(:instrument).merge(Shimada::Instrument.by_factory_id_and_serial(factory_id,serials))
+  }
   
   def self.by_factory(factory_name)
     factory_id = Shimada::Factory.find_by(name: factory_name).id
