@@ -14,7 +14,7 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
                 {#body
                  common: { point_type: [6,6,6],   point_size: [0.2,0.2,0.2]},
                  "power" => { set: ["bmargin 0"    ],
-                             title: "",
+                             title: "全電力と温度・蒸気圧",
                              data_file: "power000",
                              column_labels: %w(月日 時刻 電力),
                              #column_attrs:  [:time_and_converted_value],
@@ -85,7 +85,9 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
         option[option[:multi_order].first][:title]=  title
         option
       when Gnuplot::OptionST
-        DefaultOptST.merge(opt)
+        title_post = opt[:body][:common][:title_post]
+        DefaultOptST.merge(opt).merge({title_post: title},[:body,"power"])
+        #DefaultOptST.merge({title: title},[:body,"power"])
       end
     
     @arry_of_data_objects = 
