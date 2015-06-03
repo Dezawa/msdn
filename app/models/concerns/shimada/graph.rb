@@ -18,12 +18,16 @@ class Shimada::Graph < Graph::Base
     }
 
   attr_reader :graph_item, :dayly
-  def self.create(graph_type,dayly,opt=Gnuplot::OptionST.new)
+  def self.create(graph_type,dayly,opt= Gnuplot::OptionST.new)
     opt =
       case opt
       when Hash ;    opt.merge(TimeRange[opt[:time_range]])
       when Gnuplot::OptionST ;
-        opt.merge(TimeRange[opt[:header].delete(:time_range)],[:body,:common]) if opt[:header][:time_range]
+         if opt[:header][:time_range]
+           opt.merge(TimeRange[opt[:header].delete(:time_range)],[:body,:common])
+         else
+           opt
+         end
       end
     Classes[graph_type.to_s].new(dayly,opt)
   end
