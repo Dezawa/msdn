@@ -78,7 +78,7 @@ module Gnuplot::Options
          graph_file:       "image",
          graph_file_dir:   Rails.root+"tmp" + "img",
          define_file:      Rails.root+"tmp"+"gnuplot"+"graph.def",
-           }
+           }.freeze
   body = {
           base_path:        Rails.root+"tmp"+"gnuplot"+"data" ,# データ書き出しパス。
           type:     "scatter", #  using 1:2,  無いときは using 2:xticlabel(1),
@@ -146,7 +146,7 @@ module Gnuplot::Options
           #         :keys        defaultではgroup_by の分類がsortされて使われる。
           #                      違うsort順にしたいときに設定
          }
-  DefaultOptionST = OptionST.new( header  ,  {common: body  } )
+  DefaultOptionST = OptionST.new( header.freeze  ,  {common: body.freeze  }.freeze )
   DefaultOption = header.merge(body)
 
 end

@@ -10,9 +10,9 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
                 { multiplot:   "2,1",
                  multi_margin: [10,15], 
                  multi_order: ["power","temp_hyum"],
-                 size: "900,400"},
+                 size: "900,400"}.freeze,
                 {#body
-                 common: { point_type: [6,6,6],   point_size: [0.2,0.2,0.2]},
+                 common: { point_type: [6,6,6],   point_size: [0.2,0.2,0.2]}.freeze,
                  "power" => { set: ["bmargin 0"    ],
                              title: "全電力と温度・蒸気圧",
                              data_file: "power000",
@@ -21,7 +21,7 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
                              column_format: ["%s " ,"%.3f "],
                              xy:            [[[1,3]]] ,
                              axis_labels:   {ylabel: "電力"},
-                            },
+                            }.freeze,
                  "temp_hyum" => { set: ["tmargin 0", "bmargin 3"],
                                  axis_labels: {xlabel: "月日"},
                                  title: "",
@@ -30,8 +30,8 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
                                  xy: [[[1,3],[1,4]]],
                                  tics:       {xtics: "rotate by -90"},
                                  axis_labels:   {ylabel: "気温、蒸気圧"},
-                                }
-                }
+                                }.freeze
+                }.freeze
                )
          )
   
