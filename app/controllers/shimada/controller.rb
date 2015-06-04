@@ -90,12 +90,4 @@ class Shimada::Controller <  CommonController #ApplicationController
     Shimada::Graph.create(params[:type],@models,optionST).plot
     render   :file => 'application/graph', :layout => "simple"
   end
-
-  def img_table(attr)
-    find_and
-    @slice=2
-    @width=900/2
-    @height=400/2
-  end
-
 end
