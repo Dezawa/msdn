@@ -158,7 +158,7 @@ set xlabel "気温/℃"
     def get_data(location,y,m,d)
       url_past = /47\d{3}/ =~ location.weather_block ? URLPast_s : URLPast_a
       url = url_past%[location.weather_prec,location.weather_block,y,m,d]
-logger.debug("HOURS_DATA_OF: url =#{url}")
+      logger.debug("HOURS_DATA_OF: url =#{url}")
       fp = Tempfile.open("js.js")
       fp.write JS%url
       jspath = fp.path
@@ -230,7 +230,7 @@ logger.debug("HOURS_DATA_OF: url =#{url}")
   def self.clm2serial_all
     self.all.each{|w| w.clm2serial.save }
   end
-    
+
 end
 __END__
 s = Time.local(2013,2,1).beginning_of_day
