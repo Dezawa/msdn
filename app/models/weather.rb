@@ -51,8 +51,8 @@ class Weather < ActiveRecord::Base
         open( path.last,"w"){ |f|
           f.puts "温度 #{year}"
           weathers.each{ |w| 
-            w.temperatures.each_with_index{ |temp,idx| 
-              f.printf("%.1f %.1f\n",temp,w.vapers[idx])
+            w.temperatures.each_with_index{ |tmp,idx| 
+              f.printf("%.1f %.1f\n",tmp,w.vapers[idx])
             }
           }
         }
@@ -67,16 +67,16 @@ class Weather < ActiveRecord::Base
         weathers.each{ |w| 
           year_date = w.date.yday
           (hour_from..hour_to).each
-            w.temperatures.each_with_index{ |temp,idx| 
-              f.printf("%.1f %.1f\n",temp,w.vapers[idx])
-            }
+          w.temperatures.each_with_index{ |tmp,idx| 
+            f.printf("%.1f %.1f\n",tmp,w.vapers[idx])
           }
         }
+      }
 
     end
 
     Def =
-%Q!set terminal jpeg enhanced size 700,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
+      %Q!set terminal jpeg enhanced size 700,400 enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"
 set out 'tmp/img/%s.jpeg'
 set title "%s " #"温度-消費電力 " 
 set key outside  autotitle columnheader #samplen 1 width -4
@@ -181,7 +181,7 @@ logger.debug("HOURS_DATA_OF: url =#{url}")
       return nil unless line
       /(201\d年\d{1,2}月\d{1,2}日)/ =~ line
       date = $1
-      temp = []
+      tmp = []
       humi = []
       vaper= []
       (1..24).each{ |d|
