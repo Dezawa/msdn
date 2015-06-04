@@ -14,48 +14,29 @@ class Weather < ActiveRecord::Base
   Humidity    = ("humidity01".."humidity24").to_a
 
 
-    Block= { "maebashi" => [42,47624],
-             "minamiashigara" => [46,1008]
-  }
+  Block= { "maebashi" => [42,47624],
+          "minamiashigara" => [46,1008]
+         }
 
 
-    class << self
-      def plot_year(weather_location,day_from,day_to,hour_from,hour_to)
-        day_from  = Time.parse(day_from || "2013-1-1") 
-        day_to    = Time.parse(day_to   || "2020-12-31")
-        hour_from = (hour_from||9).to_i - 1
-        hour_to   = (hour_to ||15).to_i - 1
-        weathers  = self.where(["location =? and date >= ?  and date <= ?",
-                                weather_location,day_from,day_to])
-        plot(weathers)
-      end
-      def plot(weathers,option=Gnuplot::OptionST.new)
-        Graph::TempHumidity.create_by_models(weathers,option).plot 
-      end
-      
-    # def plot_yearold(weather_location,day_from,day_to,hour_from,hour_to)
-    #   day_from  = Time.parse(day_from || "2013-1-1") 
-    #   day_to    = Time.parse(day_to   || "2020-12-31")
-    #   hour_from = (hour_from||9).to_i - 1
-    #   hour_to   = (hour_to ||15).to_i - 1
-    #   weathers  = self.where(["location =? and date >= ?  and date <= ?",
-    #                           weather_location,day_from,day_to])
-      
-    #   deffile = graph_by_days_hour weathers,min: day_from.to_date,max: day_to.to_date
-    #   output_plot_year_data(weathers,hour_from,hour_to)
-    #   opt = {:def_file => Rails.root+"tmp/weather_temp_vaper.def",
-    #   #  :location => WeatherLocation.find_by(location: weather_location) 
-    #   #}.merge(opt)
-    #   graph_file = output_plot_year_def_file(path,opt)
-    #   #`(cd #{Rails.root};/usr/local/bin/gnuplot #{opt[:def_file]})`
-    #   graph_file
-      
-    # end
+  class << self
+    def plot_year(weather_location,day_from,day_to,hour_from,hour_to)
+      day_from  = Time.parse(day_from || "2013-1-1") 
+      day_to    = Time.parse(day_to   || "2020-12-31")
+      hour_from = (hour_from||9).to_i - 1
+      hour_to   = (hour_to ||15).to_i - 1
+      weathers  = self.where(["location =? and date >= ?  and date <= ?",
+                              weather_location,day_from,day_to])
+      plot(weathers)
+    end
+    def plot(weathers,option=Gnuplot::OptionST.new)
+      Graph::TempHumidity.create_by_models(weathers,option).plot 
+    end
 
     def temp_vaper_graph(weather_location,opt={ })
       path = output_plot_data(weather_location,opt)
       opt = {:def_file => Rails.root+"tmp/weather_temp_vaper.def",
-        :location => WeatherLocation.find_by(location: weather_location) }.merge(opt)
+             :location => WeatherLocation.find_by(location: weather_location) }.merge(opt)
       graph_file = output_def_file(path,opt)
       `(cd #{Rails.root};/usr/local/bin/gnuplot #{opt[:def_file]})`
       graph_file
@@ -117,15 +98,15 @@ set xlabel "気温/℃"
   d = -1.23303
   xx(x) = 1.0 - (x + 273.15) * invtc 
   p(a,b,c,d,x)=pc*exp((a*xx(x) + b*xx(x)**1.5 + c*xx(x)**3 + d*xx(x)**6) / (1.0 - xx(x)))
-!
+    !
     def output_def_file(path,opt={ })
       grapf_file = opt[:grapf_file] || "temp_vaper_#{opt[:location].location}"
       title      = opt[:title]      || "温度-水蒸気圧(#{opt[:location].name})"
       open(opt[:def_file],"w"){ |f|
         f.printf Def,grapf_file,title
         f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 "}.join(" , ") +
-        " , \\"
-       f.puts  [100,80,60,40,20].map{ |r| rr = 0.01 * r
+          " , \\"
+        f.puts  [100,80,60,40,20].map{ |r| rr = 0.01 * r
           "p(a,b,c,d,x)*#{rr} with line title '#{r}%'"
         }.join(" , ")
       }
@@ -135,19 +116,15 @@ set xlabel "気温/℃"
     def fetch(location,day)
       y,m,d = [day.year, day.month, day.day]
       #emp_vaper_humidity = `/usr/local/bin/weather_past.rb #{location} #{y} #{m} #{d}`
-      temp,vaper,humidity = hours_data_of(location,y,m,d) #mp_vaper_humidity.split(/[\n\r]+/)
-      logger.info("WEATHER:: #{temp.class}")
-      return unless temp
+      tmp,vaper,humidity = hours_data_of(location,y,m,d) #mp_vaper_humidity.split(/[\n\r]+/)
+      logger.info("WEATHER:: #{tmp.class}")
+      return unless tmp
       weather = self.create({ :location => location.to_s,
                              :date => day,
                              :month => day.beginning_of_month ,# }.
-                             :temp => temp, :vaper => vaper, :humi => humidity
-                             }
-                             # merge(Hash[*Temperature.zip(temp).flatten]).
-                             # merge(Hash[*Vaper.zip(vaper).flatten]).
-                             # merge(Hash[*Humidity.zip(humidity).flatten])
-
-                             )
+                             :temp => tmp, :vaper => vaper, :humi => humidity
+                            }
+                           )
     end
 
     def find_or_feach(location,day)
