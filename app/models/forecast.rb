@@ -111,10 +111,10 @@ class Forecast < ActiveRecord::Base
     end
     Vaper.map{ |sym| self[sym]}  
   end
-  def time24 ; d=self.date.to_time;(1..24).map{|h| d+h.hour} ; end
-  def temp24 ; ([[nil,nil]]*8).zip(temperature).flatten ;end
-  def humi24 ; ([[nil,nil]]*8).zip(humidity).flatten ;end
-  def vape24 ; ([[nil,nil]]*8).zip(vaper).flatten ;end
+  def time_24 ; d=self.date.to_time;(1..24).map{|h| d+h.hour} ; end
+  def temp_24 ; ([[nil,nil]]*8).zip(temperature).flatten ;end
+  def humi_24 ; ([[nil,nil]]*8).zip(humidity).flatten ;end
+  def vape_24 ; ([[nil,nil]]*8).zip(vaper).flatten ;end
   def to_s
     "#{date} #{announce}: temp:#{temperature.join(',')}  Humi:#{humidity.join(',')}  Vaper:#{ vaper.join(',')}"
   end

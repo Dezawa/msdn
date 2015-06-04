@@ -15,7 +15,7 @@ class Shimada::Values
   attr_reader :date,:factory_id,:id
   #attr_reader :channels
   def initialize(factory_id_or_name,date=Time.now)
-    pp ["factory_id_or_name",factory_id_or_name]
+    #pp ["factory_id_or_name",factory_id_or_name]
     @factory_id =
       case factory_id_or_name
       when Integer ; factory_id_or_name
@@ -81,7 +81,7 @@ class Shimada::Values
     #  zip(weather)
     (daylies.map{|dayly| dayly ? dayly.converted_value_hourly : [nil]*24}+
      [:temp,:humi,:vaper].map{|sym| weather[sym]}+
-     [:temp24,:humi24,:vape24].map{|sym| forecast.send(sym)}).transpose
+     [:temp_24,:humi_24,:vape_24].map{|sym| forecast.send(sym)}).transpose
   end
 
   def item_labels
