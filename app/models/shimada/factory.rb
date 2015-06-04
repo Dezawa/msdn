@@ -14,18 +14,17 @@ class Shimada::Factory < ActiveRecord::Base
   has_many :shimada_powers ,:class_name =>  "Shimada::Power"
   has_many :shimada_instruments,:class_name =>  "Shimada::Instrument"
 
-  def today_graph(graph_type)
+  def today_graph(graph_type,option = Gnuplot::OptionST.new)
     today = Time.now.to_date
     today = Date.new(2015,4,23)
-    day_graph(today,graph_type)
+    day_graph_new(today,Shimada::GraphDefines[graph_type],option)
   end
 
   def day_graph_new(day_range,graph_define,option = Gnuplot::OptionST.new)
     opt = option.dup.merge({time_range:  :dayly,
-                            graph_file: "#{graph_define.graph_type}_#{graph_define.id}",
+                            graph_file: "#{graph_define.graph_type}_#{graph_define.id}_#{id}",
                             },[:header])
-    day_range = (day_range .. day_range) unless day_range.class == Range
-
+    #day_range = (day_range .. day_range) unless day_range.class == Range
     case graph_define.graph_type.to_s
     when "weather"
       return Forecast.differrence_via_real_graph weather_location,day_range
