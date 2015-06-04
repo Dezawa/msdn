@@ -190,32 +190,34 @@ logger.debug("HOURS_DATA_OF: url =#{url}")
         # puts line
         clms = line.split(/<\/td><td.*?>/)
         if /47\d{3}/ =~ location.weather_block
-          temp << clms[Temperature0].to_f
+          tmp << clms[Temperature0].to_f
           humi << clms[Humidity0].to_f
           vaper << clms[Vaper0].to_f
         else
-          temp << clms[2].to_f
+          tmp << clms[2].to_f
           
         end
       }
-      [temp,vaper,humi]
+      [tmp,vaper,humi]
     end
 
   end
   
-  def temperatures ;  temp ; end # Temperature.map{ |t| self[t]} ; end
-  def vapers      ;   vaper ; end #Vaper.map{ |t| self[t]} ; end
-  def max_temp ; temperatures.max ; end
-  def temperature ; temp ;end
-  def humidity;humi;end
+  def temperatures ; temp ; end # Temperature.map{ |t| self[t]} ; end
+  def vapers       ; vaper ; end #Vaper.map{ |t| self[t]} ; end
+  def max_temp     ; temperatures.max ; end
+  def temperature  ; temp ;end
+  def humidity     ; humi ;end
+
   ("01".."24").each_with_index{ |h,idx| 
-    define_method("tempvaper#{h}".to_sym){
-      ("%2.1f<br>%2.1f"%[temp[idx],
-                         vaper[idx]
-                        ]).html_safe #.map{ |t| self[t]}).html_safe
-    }
     define_method("temp_#{h}".to_sym){ temp[idx] }
     define_method("hour#{h}".to_sym){ temp[idx] }
+    define_method("humidity#{h}".to_sym){self.humi||=[]; self.humi[idx] }
+    define_method("tempvaper#{h}".to_sym){
+      self.temp ||=[]; self.vaper ||= []
+      ((self.temp[idx] ? "%2.1f<br>"%self.temp[idx] : "---<br>") +
+        (self.vaper[idx] ? "%2.1f"%self.vaper[idx] : "---")).html_safe 
+    }
   }
   def times ; (1..24).map{|hour| date.to_time+hour.hour};end
   def clm2serial
