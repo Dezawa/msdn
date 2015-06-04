@@ -142,7 +142,7 @@ class HtmlNum  < HtmlText
   end
   def disp(object,htmlopt="")
     val = super
-    val.blank?  ? "　" : (tform ? tform%val : val)
+    (val == "　" || val.blank?) ? "　" : (tform ? tform%val : val)
   end
 end
 
