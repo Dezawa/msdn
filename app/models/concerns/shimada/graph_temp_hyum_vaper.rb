@@ -13,11 +13,11 @@ class Shimada::GraphTempHyumVaper    < Graph::Ondotori::TempHumidity
     title_post = {title_post: "ー#{dayly.instrument.base_name} " +
                       dayly.instrument.ch_name +
                       dayly.date.strftime(" %m月%d日")}
-    case @option
+    case @options
     when Hash ;
-      @option.merge!(title_post).merge!(opt)
+      @options.merge!(title_post).merge!(opt)
     when Gnuplot::OptionST
-      @option.merge(title_post,[:body,:common]).merge!(opt)
+      @options.merge(title_post,[:body,:common]).merge!(opt)
     end
   end
   

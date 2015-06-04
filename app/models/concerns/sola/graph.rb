@@ -44,22 +44,22 @@ module Sola::Graph
     end
 
     def correlation_graph(graph_file=nil,graph_file_dir=nil)
-      @option =  Gnuplot::DefaultOptionST.merge(OptionCorrelation  )
-      @option.merge({graph_file: graph_file},[:header])         if graph_file
-      @option.merge({graph_file_dir: graph_file_dir},[:header]) if graph_file_dir
-      #return if graph_updated?(@option[:header])
+      @options =  Gnuplot::DefaultOptionST.merge(OptionCorrelation  )
+      @options.merge({graph_file: graph_file},[:header])         if graph_file
+      @options.merge({graph_file_dir: graph_file_dir},[:header]) if graph_file_dir
+      #return if graph_updated?(@options[:header])
 
       data_list = self.where("kwh_day is not null  and kwh_monitor is not null").pluck(:kwh_monitor,  :kwh_day)
       #logger.debug("##### Sola_correlation data_list.size=#{data_list.size}")
       if data_list.size > 2
         a,resudal = multiple_regression data_list
         #logger.debug("##### Sola_correlation a,resudal = #{a},#{resudal}")
-        @option.merge( { :additional_lines => "#{a[0]}+#{a[1]}*x" ,
+        @options.merge( { :additional_lines => "#{a[0]}+#{a[1]}*x" ,
                       :labels => ["label 1 'モニタ = %.2f + %2f * おんどとり' at 3,32"%a,
                                   "label 2 '1-R=%f データ数=%d' at 10,30"%[1.0-resudal,data_list.size]]
                     },[:body,:common]
                      )
-        logger.debug("##### Sola_correlation @option[:body][:common] = #{@option[:body][:common] }")
+        logger.debug("##### Sola_correlation @options[:body][:common] = #{@options[:body][:common] }")
       end
       #logger.debug("##### Sola_correlation option[:body].keys=#{opt[:body].keys.join(' ')}")
       file = Rails.root+"tmp"+"Sola_correlation.data"
@@ -67,11 +67,11 @@ module Sola::Graph
         f.puts "おんどとり発電量 モニター発電量"
         data_list.each{ |powers| f.puts "%.1f %.1f"%powers}
       }
-      gnuplot_(file.to_s,@option)
+      gnuplot_(file.to_s,@options)
     end
 
     def monthly_graph_with_peak(graph_file=nil,graph_file_dir=nil)
-      @option = std_opt_with_peak(:minthly,graph_file,graph_file_dir).
+      @options = std_opt_with_peak(:minthly,graph_file,graph_file_dir).
         merge({ 
                 :set  => [ "lmargin 0", "rmargin 0","size 0.8,1.1", "origin 0.09 ,-0.07",
                            "xdata time", "timefmt '%Y-%m-%d'"      , "format x '%Y-%m'"
@@ -82,7 +82,7 @@ module Sola::Graph
                 :axis_labels   => { :ylabel => "月間発電量/kW時", :y2label => "月間ピーク/kW分"},
               },[:body,:common])
 
-      #return if graph_updated?(@option)
+      #return if graph_updated?(@options)
       
       peaks  = Sola::Dayly.select("max(peak_kw) peak",:month).group(:month).
         map{|m| [m.month,m.peak]}.to_h
@@ -92,7 +92,7 @@ module Sola::Graph
 
       file = Rails.root+"tmp"+"Sola_monthly.data"
       data_file_output_with_date(file,data_list,"年月 月間発電量 月間ピーク発電")
-      gnuplot_(file.to_s,@option)
+      gnuplot_(file.to_s,@options)
     end 
 
     def dayly_graph_with_peak(graph_file=nil,graph_file_dir=nil)
@@ -151,16 +151,16 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
                 :set_key => "set key left horizontal bottom box autotitle columnheader width -7 samplen 1",
                 :xy => [[[1,2],[1,3]]], :by_tics => { 1 => "x1y2" }
                }
-      @option =
+      @options =
         Gnuplot::DefaultOptionST.merge(Gnuplot::OptionST.new(header,{:common => common}))
 
       data_list = Sola::Dayly.all.order("date").pluck(:date, :peak_kw, :kwh_day).delete_if{ |a,b,c| !b}
   
-      opt_max_peak!(data_list,@option)
+      opt_max_peak!(data_list,@options)
 
       file = Rails.root+"tmp"+"Sola_peak.data"
       data_file_output_with_date(file,data_list,"年月日 ピーク発電量 一日発電量")
-      gnuplot_(file.to_s,@option)
+      gnuplot_(file.to_s,@options)
     end
 
     def opt_max_peak!(data_list,opt)

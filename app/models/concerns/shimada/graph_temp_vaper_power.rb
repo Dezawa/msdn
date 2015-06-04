@@ -70,10 +70,7 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
   # daylies :: Shimada::Dayly.by_factory_id(@factory_id).where(month: month)
   #               :: で得たrelation
   def initialize(daylies,opt= Gnuplot::OptionST.new)
-    #opt  = DefaultOption.merge(opt)
-
-
-    @option =
+    @options =
       case opt
       when Hash
         title = (opt.delete(:title) || "") + ( opt.delete(:title_post) || "" )

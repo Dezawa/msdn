@@ -17,13 +17,13 @@ module Graph::Ondotori
     def initialize(dayly,opt={})
       case opt
       when Hash
-        @option  = DefaultOption.merge(TempDef).merge(opt)
-        @option[:title] += @option[:title_post] || ""
+        @options  = DefaultOption.merge(TempDef).merge(opt)
+        @options[:title] += @options[:title_post] || ""
       when OptionST
-        @option  = DefaultOptionST.
+        @options  = DefaultOptionST.
           merge(TempDefST).
           merge(opt)
-        @option[:body][:common][:title] += @option[:body][:common][:title_post] || ""
+        @options[:body][:common][:title] += @options[:body][:common][:title_post] || ""
       end
       
       @arry_of_data_objects =
@@ -76,11 +76,11 @@ module Graph::Ondotori
         order(:ch_name_type) # ****-温度、****-湿度
       case opt
       when Hash ;
-        @option  = DefaultOption.merge(TempHumidityDef).merge(opt)
-        @option[:title] += @option[:title_post] || ""
+        @options  = DefaultOption.merge(TempHumidityDef).merge(opt)
+        @options[:title] += @options[:title_post] || ""
       when Gnuplot::OptionST ;
-        @option  = DefaultOptionST.merge(TempHumidityDefST).merge(opt)
-        @option[:body][:common][:title] += @option[:body][:common][:title_post] || ""
+        @options  = DefaultOptionST.merge(TempHumidityDefST).merge(opt)
+        @options[:body][:common][:title] += @options[:body][:common][:title_post] || ""
       end
       @arry_of_data_objects =
         objects[0].time_values("%Y-%m-%d %H:%M").

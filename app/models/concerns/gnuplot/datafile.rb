@@ -62,7 +62,7 @@ module Gnuplot::Datafile
     datafile_pathes 
   end
   def datafiles(data_list=nil,opt=nil)
-    opt ||= @option || DefaultOptionST
+    opt ||= @options || Gnuplot::DefaultOptionST
     data_list ||= @arry_of_data_objects
     case opt
     when Hash

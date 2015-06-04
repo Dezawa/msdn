@@ -22,9 +22,9 @@ class Shimada::GraphVaper    < Graph::Ondotori::ConvertedValue
       
     case opt
     when Hash ;
-      @option.merge!(option).merge!(opt)
+      @options.merge!(option).merge!(opt)
     when Gnuplot::OptionST
-      @option.merge(option,[:body,:common]).merge(opt)
+      @options.merge(option,[:body,:common]).merge(opt)
     end
     plot
   end

@@ -19,9 +19,9 @@ module Graph::Ondotori
     
     def initialize(dayly,opt={})
       super
-      @option = case @option
-                when Hash  ; @option.merge(TempHumidityDef)
-                when Gnuplot::OptionST;@option.merge(TempHumidityDefST)
+      @options = case @options
+                when Hash  ; @options.merge(TempHumidityDef)
+                when Gnuplot::OptionST;@options.merge(TempHumidityDefST)
                 end
     end
     

@@ -11,7 +11,7 @@ module Gnuplot::Makedefine
   # 
   # 配列の要素数は multiplot の plotの数
   def gnuplot_define(datafile_pathes,arg_option=nil)
-    arg_option ||= @option
+    arg_option ||= @options
     
     return gnuplot_define_struct(datafile_pathes,arg_option) if arg_option.kind_of?(Gnuplot::OptionST)
     gnuplot_define_sub(datafile_pathes,arg_option)

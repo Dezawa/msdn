@@ -44,7 +44,7 @@ module Graph::Ondotori
   class Base < Graph::Base
     
     def initialize(dayly,opt={})
-      @option  =
+      @options  =
         case opt
         when Hash
           option  = DefaultOption.merge(opt)
