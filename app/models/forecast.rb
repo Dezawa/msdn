@@ -9,6 +9,10 @@ class Forecast < ActiveRecord::Base
   Vaper    = %w(vaper03 vaper06 vaper09 vaper12 vaper15 vaper18 vaper21 vaper24)
  #extend Shimada::ForecastReal
   class << self
+    def null(location=nil,date=Time.now)
+      ForecastNull.new(location: location,date: date,month: date.beginning_of_month)
+    end
+    
     def daylies_period(location,period)
       where(  ["location = ? and date >= ? and date <= ?",
                location,period.first,period.last]).order("date").
@@ -136,6 +140,9 @@ class Forecast < ActiveRecord::Base
   end
   def xx(temp) ; 1 - (temp + 273.15) * InvTc ; end
 
+end
+class ForecastNull < Forecast
+  def vaper ; [nil]*8 ;end
 end
 
 class Time

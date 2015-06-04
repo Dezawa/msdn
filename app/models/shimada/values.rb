@@ -55,7 +55,9 @@ class Shimada::Values
     @weather ||= Weather.find_or_feach(@factory.weather_location,@date)
   end
   def  forecast
-    @forecast ||= Forecast.dayly_of_a_day(@factory.weather_location,@date).first
+    @forecast ||=
+      (forecast = Forecast.dayly_of_a_day(@factory.weather_location,@date)) ?
+      forecast.first : Forecast.null(@factory.weather_location,@date)
   end
 
   def daylies
