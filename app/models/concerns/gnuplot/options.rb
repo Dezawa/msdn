@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-module Gnuplot::Options
+module Gnuplot
   # :header、:body共に中身はHash
   # :header は図の形状、画像フォーマットファイルpath関連を指定する。
   # :body   はグラフのパラメータとデータファイルのbasenameを指定する。
@@ -15,12 +15,12 @@ module Gnuplot::Options
   # 描画用のdefineを書き出すさい、keyが指定されないか、該当するkeyがないばあい、commonが
   # つかわれる。
   
-  OptionST = Struct.new(:header,:body) do
-    def initialize(*args)
-      self[:header] = args[0] || {}
-      self[:body]   = args[1] || {}
-      self[:body][:common] = {} unless self[:body][:common]
-    end
+OptionST = Struct.new(:header,:body) do    
+  def initialize(*args) # OptionST = Struct.new(:header,:body) do
+    self[:header] = args[0] || {}
+    self[:body]   = args[1] || {}
+    self[:body][:common] = {} unless self[:body][:common]
+  end
 
     def dup
       ret = OptionST.new(self[:header].dup,self[:body].dup)
@@ -69,6 +69,7 @@ module Gnuplot::Options
     end
   end
 
+module Options
   header = {
          ###### 図の形状、画像フォーマット ######
          terminal: "jpeg"    ,
@@ -146,7 +147,7 @@ module Gnuplot::Options
           #         :keys        defaultではgroup_by の分類がsortされて使われる。
           #                      違うsort順にしたいときに設定
          }
-  DefaultOptionST = OptionST.new( header.freeze  ,  {common: body.freeze  }.freeze )
-  DefaultOption = header.merge(body)
-
+  Gnuplot::DefaultOptionST = OptionST.new( header.freeze  ,  {common: body.freeze  }.freeze )
+  Gnuplot::DefaultOption = header.merge(body)
+  end
 end

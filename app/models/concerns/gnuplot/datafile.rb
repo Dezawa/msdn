@@ -71,7 +71,7 @@ module Gnuplot::Datafile
           map{|key| [key,datafiles_case_data_list(data_list[key],opt[key])] }.to_h
       else ; datafiles_case_data_list(data_list,opt)
       end
-    when Gnuplot::OptionST,Gnuplot::Options::OptionST
+    when Gnuplot::OptionST
       if opt[:header][:multiplot]
         opt[:header][:multi_order].
           map{|key| [key,datafiles_case_data_list(data_list[key],opt[:body][key])] }.to_h
