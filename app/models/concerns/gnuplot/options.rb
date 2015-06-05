@@ -1,27 +1,32 @@
 # -*- coding: utf-8 -*-
 module Gnuplot
-  
-    TimeRange = { nil =>  {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%Y/%m/%d'"]},
-                 years:   {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%Y/%m/%d'"]},
-                 monthly: {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m/%d'"   ]},
-                 dayly:   {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%H:%M'"   ]}
-                }
-  
-  # :header、:body共に中身はHash
-  # :header は図の形状、画像フォーマットファイルpath関連を指定する。
-  # :body   はグラフのパラメータとデータファイルのbasenameを指定する。
-  # :body は multiplotをもサポートするために、さらに構造をもつ
-  #    共通・defaultのパラメータを置く :common => {} と
-  #    plot固有のパラメータを置く key => {} が 〇個以上
-  #
-  # DefaultOptionST に、グラフ種類固有の OptionST がmergeされ、さらに
-  # グラフ固有の OptionST がmergeされる。
-  #   :header のmerge は単に この順に上書きされるだけ
-  #   :body :comon、key を各々mergeしたあと、common を keyで上書きしたものを keyに入れる
-  #
-  # 描画用のdefineを書き出すさい、keyが指定されないか、該当するkeyがないばあい、commonが
-  # つかわれる。
-  
+
+  # 横軸が時間の時に横軸目盛の表示方法を指定するにあたり、その標準を定義する
+  # 年単位、月単位、一日の中、の3つを定義
+  TimeRange =
+  { nil =>  {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%Y/%m/%d'"]},
+   years:   {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%Y/%m/%d'"]},
+   monthly: {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m/%d'"   ]},
+   dayly:   {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%H:%M'"   ]}
+  }
+
+# Gnuplotに与える option のための Structure
+#   :header と :body の二つの要素があり、defaultでは :bodyには :common 要素が一つある。
+#   二つに分けてあるのは multi plot の場合を考慮したため。
+#   :header はグラフ全体のパラメータを定義する。multiplotの場合、全plotに共通な情報
+#   :body   は個々のグラフのパラメータを定義する。
+#      multiplot の場合は :body の要素として 個々のグラフ毎にパラメータを定義する。
+#      multiplot ではない場合は :body の要素 :common でパラメータを定義する。
+#
+# :header、:body 及び:body直下の要素はHash
+# :header は図の形状、画像フォーマットファイルpath関連を指定する。
+# :body   はグラフのパラメータとデータファイルのbasenameを指定する。
+#
+# DefaultOptionST に、グラフ種類固有の OptionST がmergeされ、さらに
+# グラフ固有の OptionST がmergeされる。
+#   :header のmerge は単に この順に上書きされるだけ
+#   :body :comon、key を各々mergeしたあと、common を keyで上書きしたものを keyに入れる
+#
 OptionST = Struct.new(:header,:body) do    
   def initialize(*args) # OptionST = Struct.new(:header,:body) do
     self[:header] = args[0] || {}
@@ -29,72 +34,80 @@ OptionST = Struct.new(:header,:body) do
     self[:body][:common] = {} unless self[:body][:common]
   end
 
+  # 横軸が時間の時に横軸目盛の表示方法を指定する、:xdata_time option を設定する。
+  # 暗黙のうちに呼ばれることはないので、横軸が時間の時は明示的に呼ぶこと
+  #   [:body][:common][:xdata_time] が設定されている場合はなにもしない
+  #   [:header][:time_range] が設定されている時は その値 :dayly,:monthly,:years により決める
+  #   何も指定されていない場合は、:year となる
   def set_timerange
-    if self[:header][:time_range]
-      self.merge(TimeRange[self[:header].delete(:time_range)],[:body,:common])
-    end
-    unless self[:body][:common][:xdata_time]
-      self.merge(TimeRange[:dayly],[:body,:common])
-    end
+    return if self[:body][:common][:xdata_time]
+    self.merge(TimeRange[self[:header].delete(:time_range)],[:body,:common])
   end
-  
-    def dup
-      ret = OptionST.new(self[:header].dup,self[:body].dup)
-      self[:body].keys.each{|key| ret[:body][key] = self[:body][key].dup }
-      ret
-    end
 
-    def delete(*key_for_merge)
-      return nil unless key_for_merge
-      vv=key_for_merge.flatten[0..-2].inject(self){|v,k| v[k]}
-      return nil unless vv
-      return vv.delete(key_for_merge.flatten.last)
-    end
-      
-    def merge(other,key_for_merge=nil)
-      unless key_for_merge
-        ret = OptionST.new(self[0].dup,self[1].dup)
-        #headerのマージ
-        ret[:header] = ret[:header].merge(other[:header])
-        # bodyのマージ
-        #
-        ret[:body] = ret[:body]
-        (ret[:body].keys+other[:body].keys).uniq.
-          each{|key|
-          ret[:body][key] =
-            ret[:body][key] ? ret[:body][key].merge(other[:body][key]||{}) : other[:body][key]
-        }
-        (ret[:body].keys-[:common]).each{|key|
-          ret[:body][key] = ret[:body][:common].merge( ret[:body][key] ? ret[:body][key] : {} )
-        }
-        ret
-      else
-        key_for_merge.flatten.inject(self){|v,k| v[k]}.merge!(other)
-        self
-      end
-    end
-    def merge!(other,key_for_merge=nil)
-      unless key_for_merge
-        ret = self.merge(other)
-        self[:header] = ret[:header]
-        self[:body]   = ret[:body]
-      else
-        self[key_for_merge.first].merge!(other)
-      end
+  # 深いdupである
+  def dup
+    ret = OptionST.new(self[:header].dup,self[:body].dup)
+    self[:body].keys.each{|key| ret[:body][key] = self[:body][key].dup }
+    ret
+  end
+
+  def delete(*key_for_merge)
+    return nil unless key_for_merge
+    vv=key_for_merge.flatten[0..-2].inject(self){|v,k| v[k]}
+    return nil unless vv
+    return vv.delete(key_for_merge.flatten.last)
+  end
+
+  # key_for_merge がある場合は、その keyにmerge! される。
+  #  keyの指定は [key1][key2][key3] のときに、[key1,key2,key3] の様にする
+  # 無い場合は other は OptionST である
+  # mergeしたのち、[:body][:common] に [:body][そのたのkey] をmergeしたものが
+  # [:body][そのたのkey]にしまわれる  
+  def merge(other,key_for_merge=nil)
+    unless key_for_merge
+      ret = OptionST.new(self[0].dup,self[1].dup)
+      #headerのマージ
+      ret[:header] = ret[:header].merge(other[:header])
+      # bodyのマージ
+      #
+      ret[:body] = ret[:body]
+      (ret[:body].keys+other[:body].keys).uniq.
+        each{|key|
+        ret[:body][key] =
+          ret[:body][key] ? ret[:body][key].merge(other[:body][key]||{}) : other[:body][key]
+      }
+      (ret[:body].keys-[:common]).each{|key|
+        ret[:body][key] = ret[:body][:common].merge( ret[:body][key] ? ret[:body][key] : {} )
+      }
+      ret
+    else
+      key_for_merge.flatten.inject(self){|v,k| v[k]}.merge!(other)
       self
     end
   end
+  def merge!(other,key_for_merge=nil)
+    unless key_for_merge
+      ret = self.merge(other)
+      self[:header] = ret[:header]
+      self[:body]   = ret[:body]
+    else
+      self[key_for_merge.first].merge!(other)
+    end
+    self
+  end
+end
 
+# 標準なoptionSTを定義している
 module Options
   header = {
-         ###### 図の形状、画像フォーマット ######
-         terminal: "jpeg"    ,
-         size:      "600,400",
+            ###### 図の形状、画像フォーマット ######
+            terminal: "jpeg"    ,
+            size:      "600,400",
 
-         ########  ファイルpath関連 #######
-         graph_file:       "image",
-         graph_file_dir:   Rails.root+"tmp" + "img",
-         define_file:      Rails.root+"tmp"+"gnuplot"+"graph.def",
+            ########  ファイルpath関連 #######
+            graph_file:       "image",
+            graph_file_dir:   Rails.root+"tmp" + "img",
+            define_file:      Rails.root+"tmp"+"gnuplot"+"graph.def",
            }.freeze
   body = {
           base_path:        Rails.root+"tmp"+"gnuplot"+"data" ,# データ書き出しパス。
@@ -165,5 +178,5 @@ module Options
          }
   Gnuplot::DefaultOptionST = OptionST.new( header.freeze  ,  {common: body.freeze  }.freeze )
   Gnuplot::DefaultOption = header.merge(body)
-  end
+end
 end
