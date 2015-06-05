@@ -50,7 +50,7 @@ class Shimada::FactoryController <  Shimada::Controller
   def img_table
     find_and
     @slice,@width,@height= 2,900/2,400/2
-    @images = @models.zip(@models.map{|model| model.today_graph(:temp_hyum) })
+    @images = @models.zip(@models.map{|model| model.today_graph("全電力・気温") })
   end
   
   def data_graph_table
@@ -60,7 +60,6 @@ class Shimada::FactoryController <  Shimada::Controller
     @images = @model.day_graphs(date)
     @slice,@width,@height= 2,900/2,400/2
     @TYTLE = @model.name
-    #render action: :img_table
   end
   
   def index
