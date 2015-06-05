@@ -23,7 +23,6 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
                              axis_labels:   {ylabel: "電力"},
                             }.freeze,
                  "temp_hyum" => { set: ["tmargin 0", "bmargin 3"],
-                                 axis_labels: {xlabel: "月日"},
                                  title: "",
                                  data_file: "temp_hyum00",
                                  column_labels: %w(月日 時刻 気温 水蒸気圧),
@@ -70,6 +69,7 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
   # daylies :: Shimada::Dayly.by_factory_id(@factory_id).where(month: month)
   #               :: で得たrelation
   def initialize(daylies,opt= Gnuplot::OptionST.new)
+    opt.set_timerange
     @options =
       case opt
       when Hash
@@ -78,20 +78,17 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
         GraphTempVaperPowerDef[:multi_order].
           each{|key| option[key] = DefaultOption.merge(option[key]).merge(opt) }
         option[:header] = DefaultOption.merge(option[:header]).merge(opt)
-        # pp  @option[:header] 
         option[option[:multi_order].first][:title]=  title
         option
       when Gnuplot::OptionST
-        title_post = opt[:body][:common][:title_post]
-        DefaultOptST.merge(opt).merge({title_post: title},[:body,"power"])
-        #DefaultOptST.merge({title: title},[:body,"power"])
+        title_post = opt[:body][:common][:title_post] 
+        DefaultOptST.merge(opt).merge({title_post: title_post},[:body,"power"])
       end
-    
     @arry_of_data_objects = 
       combination(daylies).
-      map{|serial,dayly_s|
+      map{|serial,values|   # values [ [date,time,temp,vaper],,,] or  [ [date,time,],,,]
       [Shimada::Graph::Type[Shimada::Instrument.find_by(serial: serial).measurement],
-                            dayly_s]}.to_h
+       values]}.to_h
   end
   
 
