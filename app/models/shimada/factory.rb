@@ -17,7 +17,7 @@ class Shimada::Factory < ActiveRecord::Base
   def today_graph(graph_type,option = Gnuplot::OptionST.new)
     today = Time.now.to_date
     today = Date.new(2015,4,23)
-    day_graph_new(today,Shimada::GraphDefines[graph_type],option)
+    day_graph_new(today,Shimada::GraphDefines[id][graph_type],option)
   end
 
   def day_graph_new(day_range,graph_define,option = Gnuplot::OptionST.new)
@@ -56,21 +56,15 @@ class Shimada::Factory < ActiveRecord::Base
     end
   end
 
-  def day_graphs(date,graph_types=nil,option = Gnuplot::OptionST.new)
-    (graph_types || ["temp_vaper_power","temp_hyum","weather"]).
-      map{|graph_type|  [graph_type,day_graph(date,graph_type,option)]
-    }
-  end
-
   def day_graphs(date,option = Gnuplot::OptionST.new)#all_graphs    }
-    Shimada::GraphDefines.keys.map{|graph_define_name|
+    Shimada::GraphDefines[id].keys.map{|graph_define_name|
       [graph_define_name,graph(graph_define_name,(date..date),option)]
     }
     
   end
 Shimada::GraphDefine
   def graph(graph_define_name,day_range,option = Gnuplot::OptionST.new)
-    graph_define = Shimada::GraphDefines[graph_define_name]
+    graph_define = Shimada::GraphDefines[id][graph_define_name]
     option = option.dup.merge( {title: graph_define.title},[:body,:common] )
     day_graph_new(day_range,graph_define,option)
   end
