@@ -19,29 +19,26 @@ module Gnuplot::Makedefine
 
   def gnuplot_define_struct(datafile_pathes,arg_option)
     head     = header(arg_option[:header])
+    plot_def = plot_define_struct(datafile_pathes,arg_option)
+    head +"\n#########\n"+  plot_def +"\n#########\n"
+  end
+  
+  def plot_define_struct(datafile_pathes,arg_option)
+    if arg_option[:body].keys.size == 1
+      plot_define_plot_list(datafile_pathes,arg_option[:body][:common])
+    else
+      arg_option[:body][arg_option[:header][:multi_order].last][:set] += ["xlabel","tics"]
+      #reset_xtics = "set xlabel\nset tics"
+      arg_option[:header][:multi_order].reverse.map{|key|
+        plot_define_plot_list(datafile_pathes[key],arg_option[:body][key])
+      }.reverse.join("\n")
+    end
+  end
 
-    plot_def =
-      if arg_option[:body].keys.size == 1
-        opt = arg_option[:body][:common]
-         plot_def = plot_define(opt)
-        plot  = plot_list(datafile_pathes,opt)
-        [ plot_def,  plot ].flatten.compact.join("\n")+
-          ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")+
-          "\n#########\n"
-      else
-        reset_xtics = "set xlabel\nset tics"
-        arg_option[:header][:multi_order].reverse.map{|key|
-          xtics = reset_xtics
-          reset_xtics = nil
-          opt = arg_option[:body][key]
-          plot_def = plot_define(opt)
-          plot  = plot_list(datafile_pathes[key],opt)
-          def_file = opt[:define_file]
-          [ xtics,plot_def, plot   ].flatten.compact.join("\n") +
-            ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")
-        }.reverse.join("\n")+"\n#########\n"
-      end
-    head +"\n"+  plot_def
+  def plot_define_plot_list(datafile_pathes,opt)
+    plot_define(opt)  +"\n"+
+      plot_list(datafile_pathes,opt) +"\n"+
+       ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")
   end
   
   def gnuplot_define_sub(datafile_pathes,arg_option)
