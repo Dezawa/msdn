@@ -33,9 +33,16 @@ class Shimada::Graph < Graph::Base
   end
   
   # type :: :single
-  def initialize(graph_item,dayly,opt={})
-    @dayly = dayly
-    @graph_item  = graph_item
+  def initialize(graph_item,dayly,opt=Gnuplot::OptionST.new)    opt =
+      case opt
+      when Hash ;    opt.merge(TimeRange[opt[:time_range]])
+      when Gnuplot::OptionST ;
+         if opt[:header][:time_range]
+           opt.dup.merge(TimeRange[opt[:header].delete(:time_range)],[:body,:common])
+         else
+           opt
+         end
+      end
   end
   
 end
