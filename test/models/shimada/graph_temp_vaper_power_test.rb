@@ -52,7 +52,7 @@ set title '全電力と温度・蒸気圧'
 set key outside autotitle columnheader
 set xdata time
 set timefmt \"%Y-%m-%d %H:%M\"
-set format x '%H:%M'
+set format x '%Y/%m/%d'
 set bmargin 0
 set ylabel '電力'
 plot '#{RailsData}/power000.data' using 1:3 pt 6 ps 0.2
@@ -61,7 +61,7 @@ set title ''
 set key outside autotitle columnheader
 set xdata time
 set timefmt \"%Y-%m-%d %H:%M\"
-set format x '%H:%M'
+set format x '%Y/%m/%d'
 set tmargin 0
 set bmargin 3
 set xlabel
@@ -102,7 +102,7 @@ plot '#{RailsData}/temp_hyum00.data' using 1:3 pt 6 ps 0.2 ,\\
        (gp.options[:header].keys + gp.options[:body][:common].keys).map(&:to_s).sort.uniq,
        "Shimada::GraphTempVaperPower の headerとcommon のoptionsのkey"
 
-     assert_equal [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%H:%M'"   ] ,
+     assert_equal [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%Y/%m/%d'"   ] ,
        gp.options[:body]["power"][:xdata_time]
 
     assert_equal ["power000","temp_hyum00"],

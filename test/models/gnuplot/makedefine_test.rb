@@ -36,13 +36,13 @@ class GnuplotMakedefileTest < ActiveSupport::TestCase
 
    PowerDef =  "set title '全電力と温度・蒸気圧'\n" +
      "set key outside autotitle columnheader\n" +
-     "set xdata time\nset timefmt \"%Y-%m-%d %H:%M\"\nset format x '%H:%M'\n"+
+     "set xdata time\nset timefmt \"%Y-%m-%d %H:%M\"\nset format x '%Y/%m/%d'\n"+
      "set bmargin 0\n"+
        "set ylabel '電力'\nplot 'datafilepoewr' using 1:3 pt 6 ps 0.2\n"
      
    TempDef =  "set title ''\n"+
      "set key outside autotitle columnheader\n" +
-     "set xdata time\nset timefmt \"%Y-%m-%d %H:%M\"\nset format x '%H:%M'\n"+
+     "set xdata time\nset timefmt \"%Y-%m-%d %H:%M\"\nset format x '%Y/%m/%d'\n"+
      "set tmargin 0\nset bmargin 3\n"+
      "set xlabel\nset tics\nset xtics rotate by -90\n" +
      "set ylabel '気温、蒸気圧'\n" +
