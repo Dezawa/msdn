@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 module Gnuplot
+  
+    TimeRange = { nil =>  {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%Y/%m/%d'"]},
+                 years:   {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%Y/%m/%d'"]},
+                 monthly: {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%m/%d'"   ]},
+                 dayly:   {xdata_time:  [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%H:%M'"   ]}
+                }
+  
   # :header、:body共に中身はHash
   # :header は図の形状、画像フォーマットファイルpath関連を指定する。
   # :body   はグラフのパラメータとデータファイルのbasenameを指定する。
@@ -22,6 +29,15 @@ OptionST = Struct.new(:header,:body) do
     self[:body][:common] = {} unless self[:body][:common]
   end
 
+  def set_timerange
+    if self[:header][:time_range]
+      self.merge(TimeRange[self[:header].delete(:time_range)],[:body,:common])
+    end
+    unless self[:body][:common][:xdata_time]
+      self.merge(TimeRange[:dayly],[:body,:common])
+    end
+  end
+  
     def dup
       ret = OptionST.new(self[:header].dup,self[:body].dup)
       self[:body].keys.each{|key| ret[:body][key] = self[:body][key].dup }
