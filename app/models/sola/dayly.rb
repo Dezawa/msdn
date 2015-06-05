@@ -13,8 +13,12 @@ class Sola::Dayly < ActiveRecord::Base
   extend Tand::ClassMethod
   belongs_to :instrument , :class_name => "Sola::Instrument"
 #include Statistics
-  serialize :kws
+  #serialize :kws
   serialize :volts
+  
+  serialize :measurement_value
+  serialize :converted_value
+  #before_save   :convert
   before_save :set_culc
 
   def self.instrument ;  Sola::Instrument ;end
@@ -74,6 +78,18 @@ class Sola::Dayly < ActiveRecord::Base
 []
   end
 
+  def convert
+    self.converted_value =
+    case self.instrument.converter
+    when 0  ; measurement_value.dup
+    when 1  ; measurement_value.map{|value| value && instrument.slope * value + instrument.graft}
+    when  2 ; vaper_pressure        
+    when 9  ;
+    end
+  end
+
+  def kws ; converted_value ;end
+  
   ("04".."20").each{ |h|  
     define_method("kwh#{h}") do
       min = h.to_i*60
@@ -115,7 +131,7 @@ class Sola::Dayly < ActiveRecord::Base
 
   def set_culc
     self.month ||= date.beginning_of_month
-    volts2kws
+    convert #volts2kws
     kws_to_peak_kw
     kws_to_kwh_day
     #update_monthly
