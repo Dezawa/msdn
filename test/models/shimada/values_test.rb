@@ -1,18 +1,9 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
+require 'ondotori/trz_files_helper'
 class Shimada::ValuesTest < ActiveSupport::TestCase
   fixtures "shimada/instrument", "shimada/factory"
 
-Testdata="./test/testdata/shimada/"
-Power01 = Testdata+"dezawa_power01_20150401-191041.trz"
-Hyum    = Testdata+"temp-hyumidity-20141223-060422.trz"
-TD24    = "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_20150424-060350.trz"
-TD01rest= "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_20150401-060343.trz"
-TD01svr = "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_サーバー_20150401-063443.trz"
-TD0424   = "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_20150424-060350.trz"
-TD0423   = "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_20150423-060418.trz"
-TD0423svr= "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_サーバー_20150423-060853.trz"
-TD0424svr= "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_サーバー_20150424-060837.trz"
   def setup
     Shimada::Dayly.delete_all
   end
@@ -37,13 +28,15 @@ TD0424svr= "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_�
     values = Shimada::Values.new(1, "2015-4-23").hours
     #             フリーザ温湿度 サーバ電力 １F温湿度 太陽
     assert_equal [
-                  [nil, nil, 1.67, 9.35, 8.61, nil], [nil, nil, 1.68, 10.53, 8.81, nil],# 6,7
-                  [nil, nil, 1.68, 11.93, 8.52, nil], [nil, nil, 1.72, 13.54, 9.01, nil], #8,9
+                  [nil, nil, 1.67, 9.35, 8.61, nil, 14.4, 79.0, 13.0, nil, nil, nil],
+                  [nil, nil, 1.68, 10.53, 8.81, nil, 16.5, 61.0, 11.5, nil, nil, nil],
+                  [nil, nil, 1.68, 11.93, 8.52, nil, 18.6, 53.0, 11.4, nil, nil, nil],
+                  [nil, nil, 1.72, 13.54, 9.01, nil, 20.1, 45.0, 10.6, nil, nil, nil]
                  ],  values[6,4]
   end
   must "TD0424,TD0423,TD0423svr,TD0424を読んだ時の 4/23の8時のhtmlデータ" do
     [TD0424,TD0423,TD0423svr,TD0424].each{|file|    Shimada::Dayly.load_trz(file)}
-    assert_equal "ー　<br>ー　<br>ー　<br>11.93<br>8.52<br>ー　",
+    assert_equal "ー　<br>ー　<br>ー　<br>11.93<br>8.52<br>ー　<br>18.60<br>53.00<br>11.40<br>ー　<br>ー　<br>ー　",
       Shimada::Values.new(1, "2015-4-23").hour_html08
   end
 end

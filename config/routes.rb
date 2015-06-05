@@ -120,12 +120,12 @@ Rails.application.routes.draw do
   end
   
   ########### 天候関連
-  resources :weather,:forecast,:weather_location
-  set_get(:forecast,%w( fetch error_graph show_img show_gif show_jpeg))
+  set_get(:forecast,%w( fetch graph error_graph show_img show_gif show_jpeg))
   set_get(:weather,%w( temperatuer humidity show_img plot_year))
   set_post(:forecast,%w(change_location))
   set_post(:weather,%w(change_location get_data temp_vaper weather_location cband))
   set_post(:weather_location,%w(change_location)+@EditTable)
+  resources :weather,:forecast,:weather_location
   
   # ########### UBR 
   # ubr = %w(main waku waku_block souko_plan souko_floor wall pillar)
@@ -186,8 +186,10 @@ Rails.application.routes.draw do
   # #set_post(controller,@EditTable)
   # set_get(controller,%w(today update_today clear_today update_tomorrow))
   set_get("show_graph",["show_img"])
-  set_get("shimada/daylies",%w(index_month show_img graph graph_dayly graph_month graph_temp_hyum_vaper))
-  set_get("shimada/factory",%w(img_table))
+  set_get("shimada/daylies",
+          %w(index_month show_img img_table
+             graph graph_weather graph_dayly graph_month graph_temp_hyum_vaper))
+  set_get("shimada/factory",%w(img_table data_graph_table))
   
   edit_table("shimada/factory","shimada/instrument")
   namespace :shimada do

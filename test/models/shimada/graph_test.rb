@@ -1,19 +1,14 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
+require 'ondotori/trz_files_helper'
+
 class Shimada::GraphTest < ActiveSupport::TestCase
   fixtures "shimada/instrument", "shimada/factory"
 
-  MSDNDIR  =  "/home/dezawa/MSDN/おんどとり/data/"
-  TD01rest = MSDNDIR + "ティアンドデイ社屋_1F休憩所_20150401-060343.trz"
-  TD01svr  = MSDNDIR + "ティアンドデイ社屋_サーバー_20150401-063443.trz"
-  TD0424   = MSDNDIR + "ティアンドデイ社屋_1F休憩所_20150424-060350.trz"
-  TD0423   = MSDNDIR + "ティアンドデイ社屋_1F休憩所_20150423-060418.trz"
-  TD0423svr= MSDNDIR + "ティアンドデイ社屋_サーバー_20150423-060853.trz"
-  TD0424svr= MSDNDIR + "ティアンドデイ社屋_サーバー_20150424-060837.trz"
 
   RailsTmp=Rails.root + "tmp"
   Img     = RailsTmp + "img"
-  Gnuplot = RailsTmp + "gnuplot"
+  Gnuplotpath = RailsTmp + "gnuplot"
   def setup
     Shimada::Dayly.delete_all
     [TD0424svr,TD0423svr,TD0424,TD0423].each{|trz|  Shimada::Dayly.load_trz(trz)}
@@ -24,13 +19,27 @@ class Shimada::GraphTest < ActiveSupport::TestCase
     gp = Shimada::Graph.create("temp_vaper_power",dayly).plot
     expect = (Img + "image.jpeg").to_s
     assert_equal "'#{expect}'",
-      `gawk   '/set out/ {print $3}' #{Gnuplot+"graph.def"}`.chomp
+      `gawk   '/set out/ {print $3}' #{Gnuplotpath+"graph.def"}`.chomp
   end
   must "graph_type temp_vaper_power で graph_file指定したときのgraph path " do
     dayly = Shimada::Dayly.all
-    gp = Shimada::Graph.create("temp_vaper_power",dayly,graph_file: "testfile").plot
+    gp = Shimada::Graph.
+      create("temp_vaper_power",dayly,
+             Gnuplot::OptionST.new(graph_file: "testfile")).plot
     expect = (Img + "testfile.jpeg").to_s
     assert_equal "'#{expect}'",
-      `gawk   '/set out/ {print $3}' #{Gnuplot+"graph.def"}`.chomp
+      `gawk   '/set out/ {print $3}' #{Gnuplotpath+"graph.def"}`.chomp
   end
+    must "Shimada::GraphTempVaperPowerのdef" do
+    Shimada::Dayly.load_trz(TD0423)
+    Shimada::Dayly.load_trz(TD0423svr)
+    gp = Shimada::GraphTempVaperPower.new(Shimada::Dayly.all)
+
+    define = gp.gnuplot_define({"power" =>["datafile_pathes"],
+                                "temp_hyum" =>["datafile_pathes2"]},gp.options)
+    assert /set multiplot layout 2,1/ =~ define,"multiplot二段宣言"
+    assert_equal 3, define.split("plot 'datafile_pathes").size,"multiplot plot コマンド2回"
+    assert_equal 2,define.split("set terminal").size,"multiplot plot terminalコマンド1回"
+  end
+
 end

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
-Testdata="./test/testdata/shimada/"
-Power01 = Testdata+"dezawa_power01_20150401-191041.trz"
+require 'ondotori/trz_files_helper'
 
 class Sola::DaylyTest < ActiveSupport::TestCase
-
+  fixtures "sola/instruments"
+  
   TRZ = "test/testdata/sola/ondotori_pw.trz"
   def setup
     Sola::Dayly.delete_all
@@ -22,18 +22,15 @@ class Sola::DaylyTest < ActiveSupport::TestCase
       map{ |d,v| [d.strftime("%Y-%m-%d"),v]}
   end
 
-  must "同じ日を二度読む" do
+  must "同じ日を二度読んでもデータ数は変わらない" do
     Sola::Dayly.load_trz "test/testdata/sola/dezawa_power01_20141227-161022.trz"
-    dayly2 = Sola::Dayly.find_by(date: "2014-12-27")
-    assert_equal 0.248*Sola::Scale[0]+Sola::Scale[1],dayly2.kws[12*60] ,"12:00" #12:00
-    
-    Sola::Dayly.load_trz "test/testdata/sola/dezawa_power01_20141227-161022.trz"
-    dayly = Sola::Dayly.find_by(date: "2014-12-27")
-    assert_equal 0.0815*Sola::Scale[0]+Sola::Scale[1],dayly.kws[16*60+10],"16:10"
+    assert_difference( 'Sola::Dayly.count',0 ){
+      Sola::Dayly.load_trz("test/testdata/sola/dezawa_power01_20141227-161022.trz")
+    }
   end
-  must "Power01を取り込むと二日分のデータができる" do
+  must "Dezawa01を取り込むと二日分のデータができる" do
     assert_difference( 'Sola::Dayly.count',2 ){
-      Sola::Dayly.load_trz(Power01)
+      Sola::Dayly.load_trz(Dezawa01)
     }
   end
 end

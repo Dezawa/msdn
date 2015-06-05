@@ -1,12 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
-Testdata="./test/testdata/shimada/"
-Power01 = Testdata+"dezawa_power01_20150401-191041.trz"
-Hyum    = Testdata+"temp-hyumidity-20141223-060422.trz"
-TD0424   = "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_20150424-060350.trz"
-TD0423   = "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_20150423-060418.trz"
-TD0423svr= "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_サーバー_20150423-060853.trz"
-TD0424svr= "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_サーバー_20150424-060837.trz"
+require 'ondotori/trz_files_helper'
 
 class Shimada::DaylyTest < ActiveSupport::TestCase
   fixtures "shimada/instrument", "shimada/factory"
@@ -20,26 +14,26 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
   end
 
   must "Power01を取り込むと:base_name,:serialは" do
-   ondotori = Ondotori::Recode.new(Power01)
+   ondotori = Ondotori::Recode.new(Dezawa01)
    assert_equal ["dezawa", "529C0541"],
    [:base_name,:serial].map{|sym| ondotori.send(sym)}
   end
   must "Power01は valid_trzか" do
-   ondotori = Ondotori::Recode.new(Power01)
+   ondotori = Ondotori::Recode.new(Dezawa01)
    assert_equal true,Shimada::Dayly.valid_trz(ondotori)
   end
   must "Power01のchannnelは" do
-   ondotori = Ondotori::Recode.new(Power01)
+   ondotori = Ondotori::Recode.new(Dezawa01)
    assert_equal ["power01-電圧"],ondotori.channels.keys
   end
   
   must "Power01のchannnel power01-電圧 のserial,measurement_typeは" do
-   ondotori = Ondotori::Recode.new(Power01)
+   ondotori = Ondotori::Recode.new(Dezawa01)
    assert_equal ["52C215FA", "146"],
      [:serial,:type].map{|sym| ondotori.channels["power01-電圧"].send(sym)}
   end
   must "Power01は Instrumentに有るか" do
-   ondotori = Ondotori::Recode.new(Power01)
+   ondotori = Ondotori::Recode.new(Dezawa01)
    assert_equal true,
      Shimada::Dayly.serials. #instrument.all.pluck(:serial).
      include?(ondotori.channels["power01-電圧"].serial)
@@ -47,68 +41,68 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
 ######### temp_or_hyum? とtime_and_converted_value
   
   must "Hyumを取り込むと12/22日のデータの温度の変換temp_or_hyum?は" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     assert_equal true ,
       Shimada::Dayly.find_by(date: "2014-12-22",ch_name_type: "フリーザーA-温度").
       temperature?
   end
   must "Hyumを取り込むと12/22日のデータの温度のtime_and_converted_value_with_vaperは" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     assert_equal 4 ,
       Shimada::Dayly.find_by(date: "2014-12-22",ch_name_type: "フリーザーA-温度").
       time_and_converted_value_with_vaper[0].size
   end
 
   must "Power01を取り込むと4/1の電力データのtemp_or_hyum?は" do
-    Shimada::Dayly.load_trz(Power01)
+    Shimada::Dayly.load_trz(Dezawa01)
     dayly1 =  Shimada::Dayly.find_by(date: "2015-04-01" ,ch_name_type: "power01-電圧")
     assert_equal false ,   dayly1.temperature?
   end
   
   must "Power01を取り込むと4/1の電力データのtime_and_converted_valueは" do
-    Shimada::Dayly.load_trz(Power01)
+    Shimada::Dayly.load_trz(Dezawa01)
     dayly1 =  Shimada::Dayly.find_by(date: "2015-04-01" ,ch_name_type: "power01-電圧")
     assert_equal 2 ,   dayly1.time_and_converted_value[0].size
   end
 
   ########### 
   must "Power01を取り込むと3/31と4/1のデータができる" do
-    Shimada::Dayly.load_trz(Power01)
+    Shimada::Dayly.load_trz(Dezawa01)
     assert_equal 2,Shimada::Dayly.count
   end
   must "Power01を取り込むと4/1の電圧データは" do
-    Shimada::Dayly.load_trz(Power01)
+    Shimada::Dayly.load_trz(Dezawa01)
     dayly1 =  Shimada::Dayly.find_by(date: "2015-04-01" ,ch_name_type: "power01-電圧")
     assert_equal [0.4908, 0.489, 0.4652, 0.4824, 0.5022, 0.5152, 0.527, 0.5254, 0.5224, 0.5162],
       dayly1.measurement_value[12*60,10]
   end
   
   must "Power01を取り込むと4/1の電圧データは" do
-    Shimada::Dayly.load_trz(Power01)
+    Shimada::Dayly.load_trz(Dezawa01)
     dayly1 =  Shimada::Dayly.find_by(date: "2015-04-01" ,ch_name_type: "power01-電圧")
     assert_equal [0.4908, 0.489, 0.4652, 0.4824, 0.5022, 0.5152, 0.527, 0.5254, 0.5224, 0.5162],
       dayly1.measurement_value[12*60,10]
   end
   
   must "Hyumを取り込むと" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     assert_equal 4,Shimada::Dayly.count
   end
   
   must "Hyumを取り込むと12/22,23日のデータが二つずつできる" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     assert_equal [[2014,12,22],[2014,12,23],[2014,12,22],[2014,12,23]].map{|date| Date.new(*date)},
       Shimada::Dayly.all.pluck(:date)
   end
 
   must "Hyumを取り込むと12/22日のデータは温度と湿度" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     assert_equal ["フリーザーA-温度","フリーザーA-湿度"],
       Shimada::Dayly.where(date: "2014-12-22").map{|d| d.ch_name_type}
   end
 
   must "Hyumを取り込むと12/22日のデータの温度の変換は" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     assert_equal 0,
       Shimada::Dayly.find_by(date: "2014-12-22",ch_name_type: "フリーザーA-温度").
       instrument.converter
@@ -116,31 +110,31 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
 
 
   must "Hyumを取り込むと12/22日の温度データ" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     dayly22 = Shimada::Dayly.find_by(date: "2014-12-22" ,ch_name_type: "フリーザーA-温度")
     assert_equal [3.9, 3.9, 4.3, 4.1, 4.2, 4.2, 4.6, 3.9, 4.0, 4.6, 4.5, 4.5  ],
       dayly22.measurement_value[12*12,12]
   end
   must "Hyumを取り込むと12/22日の温度の変換後データ" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     dayly22 = Shimada::Dayly.find_by(date: "2014-12-22" ,ch_name_type: "フリーザーA-温度")
     assert_equal [3.9, 3.9, 4.3, 4.1, 4.2, 4.2, 4.6, 3.9, 4.0, 4.6, 4.5, 4.5],
       dayly22.converted_value[12*12,12]
   end
   must "Hyumを取り込むと12/22日の湿度データ" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     dayly22 = Shimada::Dayly.find_by(date: "2014-12-22" ,ch_name_type: "フリーザーA-湿度")
     assert_equal [41.0, 40.0, 39.0, 38.0, 37.0, 36.0, 37.0, 34.0, 36.0, 38.0, 35.0, 36.0],
       dayly22.measurement_value[12*12,12]
   end
   must "Hyumを取り込むと12/22日の湿度データのパラメータは" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     dayly22 = Shimada::Dayly.find_by(date: "2014-12-22" ,ch_name_type: "フリーザーA-湿度")
     assert_equal [5,"52BC036E", "208"],
       [:instrument_id,:serial,:measurement_type].map{|sym| dayly22.send(sym)}
   end
   must "Hyumを取り込むと12/22日の湿度データの相棒温度は" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     dayly22 = Shimada::Dayly.find_by(date: "2014-12-22" ,ch_name_type: "フリーザーA-湿度")
     dayly22tmp = Shimada::Dayly.#find_by(date: "2014-12-22" ,ch_name_type: "フリーザーA-温度")
       find_by(date:"2014-12-22",serial: dayly22.serial,measurement_type: 13)
@@ -148,7 +142,7 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
       [:instrument_id,:serial,:measurement_type].map{|sym| dayly22tmp.send(sym)}
   end
   must "Hyumを取り込むと12/22日の湿度の変換後データ" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     dayly22 = Shimada::Dayly.find_by(date: "2014-12-22" ,ch_name_type: "フリーザーA-湿度")
     assert_equal [3.31, 3.23, 3.24, 3.12, 3.06, 2.97, 3.14, 2.75, 2.93, 3.23, 2.95, 3.03],
       dayly22.converted_value[12*12,12]
@@ -165,12 +159,12 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
   end
 
   must "Hyumを取り込むと中部しまだのデータ数は４" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     assert_equal 4, Shimada::Dayly.by_factory_name("中部シマダヤ").size
   end
      
   must "Hyumを取り込むfactory_id 1のデータ数は４" do
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     assert_equal 4, Shimada::Dayly.by_factory_name("中部シマダヤ").size
   end
   must "TD0424 を Ondotori::Recodeするとbasenameは" do

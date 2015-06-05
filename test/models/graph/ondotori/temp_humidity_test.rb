@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
-Hyum    = "test/testdata/shimada/temp-hyumidity-20141223-060422.trz"
-Hyums   = Dir.glob("/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_2015040*trz")
+require 'ondotori/trz_files_helper'
+
 class GraphOndotoriTempHumidityTest < ActiveSupport::TestCase
   fixtures "shimada/instrument", "shimada/factory"
   def setup
     Shimada::Dayly.delete_all
-    Shimada::Dayly.load_trz(Hyum)
+    Shimada::Dayly.load_trz(Hyum1223)
     @dayly = Shimada::Dayly.find_by(date: "2014-12-22",
                                     ch_name_type: "フリーザーA-温度")
   end
@@ -40,7 +40,7 @@ class GraphOndotoriTempHumidityTest < ActiveSupport::TestCase
   must "def file" do
     gt = Graph::Ondotori::TempHumidity.new(@dayly)
     datafile_pathes = gt.datafiles
-    def_file = gt.gnuplot_define(datafile_pathes,gt.option)
+    def_file = gt.gnuplot_define(datafile_pathes,gt.options)
     puts def_file
   end
 

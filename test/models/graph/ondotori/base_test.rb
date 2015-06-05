@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'test_helper'
-Hyums   = Dir.glob("/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_2015040*trz")
-Hyum0405 ="/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_20150405-060815.trz"
-Hyum0423 ="/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_20150423-060418.trz"
-TD0423svr= "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_サーバー_20150423-060853.trz"
+require 'ondotori/trz_files_helper'
+
 class Graph::Ondotori::BaseTest < ActiveSupport::TestCase
   
   fixtures "shimada/instrument", "shimada/factory"

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150426120025) do
+ActiveRecord::Schema.define(version: 20150601124912) do
 
   create_table "forecasts", force: :cascade do |t|
     t.string   "location",     limit: 255
@@ -469,18 +469,14 @@ ActiveRecord::Schema.define(version: 20150426120025) do
   create_table "sola_daylies", force: :cascade do |t|
     t.date     "month"
     t.date     "date"
-    t.string   "base_name",        limit: 255
-    t.string   "ch_name_type",     limit: 255
-    t.text     "kws",              limit: 65535
-    t.float    "peak_kw",          limit: 24
-    t.float    "kwh_day",          limit: 24
+    t.string   "base_name",   limit: 255
+    t.string   "ch_name",     limit: 255
+    t.text     "kws",         limit: 65535
+    t.float    "peak_kw",     limit: 24
+    t.float    "kwh_day",     limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.float    "kwh_monitor",      limit: 24
-    t.text     "volts",            limit: 65535
-    t.string   "serial",           limit: 255
-    t.integer  "instrument_id",    limit: 4
-    t.string   "measurement_type", limit: 255
+    t.float    "kwh_monitor", limit: 24
   end
 
   create_table "sola_instruments", force: :cascade do |t|
@@ -545,11 +541,10 @@ ActiveRecord::Schema.define(version: 20150426120025) do
     t.string   "group_remote_ch_name",         limit: 255
     t.integer  "group_remote_rssi",            limit: 4
     t.integer  "group_remote_ch_current_batt", limit: 4
-    t.string   "group_remote_ch_record_type",  limit: 255
+    t.integer  "group_remote_ch_record_type",  limit: 4
     t.datetime "group_remote_ch_unix_time"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "serial",                       limit: 255
   end
 
   create_table "todos", force: :cascade do |t|
@@ -616,6 +611,158 @@ ActiveRecord::Schema.define(version: 20150426120025) do
 
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
+
+  create_table "weather_by_30mins", force: :cascade do |t|
+    t.string   "location",       limit: 255
+    t.date     "month"
+    t.date     "date"
+    t.float    "hourhour005",    limit: 24
+    t.float    "hourhour010",    limit: 24
+    t.float    "hourhour015",    limit: 24
+    t.float    "hourhour020",    limit: 24
+    t.float    "hourhour025",    limit: 24
+    t.float    "hourhour030",    limit: 24
+    t.float    "hourhour035",    limit: 24
+    t.float    "hourhour040",    limit: 24
+    t.float    "hourhour045",    limit: 24
+    t.float    "hourhour050",    limit: 24
+    t.float    "hourhour055",    limit: 24
+    t.float    "hourhour060",    limit: 24
+    t.float    "hourhour065",    limit: 24
+    t.float    "hourhour070",    limit: 24
+    t.float    "hourhour075",    limit: 24
+    t.float    "hourhour080",    limit: 24
+    t.float    "hourhour085",    limit: 24
+    t.float    "hourhour090",    limit: 24
+    t.float    "hourhour095",    limit: 24
+    t.float    "hourhour100",    limit: 24
+    t.float    "hourhour105",    limit: 24
+    t.float    "hourhour110",    limit: 24
+    t.float    "hourhour115",    limit: 24
+    t.float    "hourhour120",    limit: 24
+    t.float    "hourhour125",    limit: 24
+    t.float    "hourhour130",    limit: 24
+    t.float    "hourhour135",    limit: 24
+    t.float    "hourhour140",    limit: 24
+    t.float    "hourhour145",    limit: 24
+    t.float    "hourhour150",    limit: 24
+    t.float    "hourhour155",    limit: 24
+    t.float    "hourhour160",    limit: 24
+    t.float    "hourhour165",    limit: 24
+    t.float    "hourhour170",    limit: 24
+    t.float    "hourhour175",    limit: 24
+    t.float    "hourhour180",    limit: 24
+    t.float    "hourhour185",    limit: 24
+    t.float    "hourhour190",    limit: 24
+    t.float    "hourhour195",    limit: 24
+    t.float    "hourhour200",    limit: 24
+    t.float    "hourhour205",    limit: 24
+    t.float    "hourhour210",    limit: 24
+    t.float    "hourhour215",    limit: 24
+    t.float    "hourhour220",    limit: 24
+    t.float    "hourhour225",    limit: 24
+    t.float    "hourhour230",    limit: 24
+    t.float    "hourhour235",    limit: 24
+    t.float    "hourhour240",    limit: 24
+    t.float    "vaperhour005",   limit: 24
+    t.float    "vaperhour010",   limit: 24
+    t.float    "vaperhour015",   limit: 24
+    t.float    "vaperhour020",   limit: 24
+    t.float    "vaperhour025",   limit: 24
+    t.float    "vaperhour030",   limit: 24
+    t.float    "vaperhour035",   limit: 24
+    t.float    "vaperhour040",   limit: 24
+    t.float    "vaperhour045",   limit: 24
+    t.float    "vaperhour050",   limit: 24
+    t.float    "vaperhour055",   limit: 24
+    t.float    "vaperhour060",   limit: 24
+    t.float    "vaperhour065",   limit: 24
+    t.float    "vaperhour070",   limit: 24
+    t.float    "vaperhour075",   limit: 24
+    t.float    "vaperhour080",   limit: 24
+    t.float    "vaperhour085",   limit: 24
+    t.float    "vaperhour090",   limit: 24
+    t.float    "vaperhour095",   limit: 24
+    t.float    "vaperhour100",   limit: 24
+    t.float    "vaperhour105",   limit: 24
+    t.float    "vaperhour110",   limit: 24
+    t.float    "vaperhour115",   limit: 24
+    t.float    "vaperhour120",   limit: 24
+    t.float    "vaperhour125",   limit: 24
+    t.float    "vaperhour130",   limit: 24
+    t.float    "vaperhour135",   limit: 24
+    t.float    "vaperhour140",   limit: 24
+    t.float    "vaperhour145",   limit: 24
+    t.float    "vaperhour150",   limit: 24
+    t.float    "vaperhour155",   limit: 24
+    t.float    "vaperhour160",   limit: 24
+    t.float    "vaperhour165",   limit: 24
+    t.float    "vaperhour170",   limit: 24
+    t.float    "vaperhour175",   limit: 24
+    t.float    "vaperhour180",   limit: 24
+    t.float    "vaperhour185",   limit: 24
+    t.float    "vaperhour190",   limit: 24
+    t.float    "vaperhour195",   limit: 24
+    t.float    "vaperhour200",   limit: 24
+    t.float    "vaperhour205",   limit: 24
+    t.float    "vaperhour210",   limit: 24
+    t.float    "vaperhour215",   limit: 24
+    t.float    "vaperhour220",   limit: 24
+    t.float    "vaperhour225",   limit: 24
+    t.float    "vaperhour230",   limit: 24
+    t.float    "vaperhour235",   limit: 24
+    t.float    "vaperhour240",   limit: 24
+    t.float    "humidithour005", limit: 24
+    t.float    "humidithour010", limit: 24
+    t.float    "humidithour015", limit: 24
+    t.float    "humidithour020", limit: 24
+    t.float    "humidithour025", limit: 24
+    t.float    "humidithour030", limit: 24
+    t.float    "humidithour035", limit: 24
+    t.float    "humidithour040", limit: 24
+    t.float    "humidithour045", limit: 24
+    t.float    "humidithour050", limit: 24
+    t.float    "humidithour055", limit: 24
+    t.float    "humidithour060", limit: 24
+    t.float    "humidithour065", limit: 24
+    t.float    "humidithour070", limit: 24
+    t.float    "humidithour075", limit: 24
+    t.float    "humidithour080", limit: 24
+    t.float    "humidithour085", limit: 24
+    t.float    "humidithour090", limit: 24
+    t.float    "humidithour095", limit: 24
+    t.float    "humidithour100", limit: 24
+    t.float    "humidithour105", limit: 24
+    t.float    "humidithour110", limit: 24
+    t.float    "humidithour115", limit: 24
+    t.float    "humidithour120", limit: 24
+    t.float    "humidithour125", limit: 24
+    t.float    "humidithour130", limit: 24
+    t.float    "humidithour135", limit: 24
+    t.float    "humidithour140", limit: 24
+    t.float    "humidithour145", limit: 24
+    t.float    "humidithour150", limit: 24
+    t.float    "humidithour155", limit: 24
+    t.float    "humidithour160", limit: 24
+    t.float    "humidithour165", limit: 24
+    t.float    "humidithour170", limit: 24
+    t.float    "humidithour175", limit: 24
+    t.float    "humidithour180", limit: 24
+    t.float    "humidithour185", limit: 24
+    t.float    "humidithour190", limit: 24
+    t.float    "humidithour195", limit: 24
+    t.float    "humidithour200", limit: 24
+    t.float    "humidithour205", limit: 24
+    t.float    "humidithour210", limit: 24
+    t.float    "humidithour215", limit: 24
+    t.float    "humidithour220", limit: 24
+    t.float    "humidithour225", limit: 24
+    t.float    "humidithour230", limit: 24
+    t.float    "humidithour235", limit: 24
+    t.float    "humidithour240", limit: 24
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "weather_locations", force: :cascade do |t|
     t.string  "name",          limit: 255
