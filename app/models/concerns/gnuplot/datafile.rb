@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 module Gnuplot::Datafile
   
-  # data_list のデータを gnuplotの入力形式のfileを出力し、そのpathの配列を返す。
+  # data_list のデータを gnuplotの入力形式のfileを出力し、
+  # そのpathの配列(または配列の配列)を返す。
+  #
+  #  data_listは指定された方法でgroup_byされ、そのグループ毎にファイルが書き出される。
+  #       guroup_by された data_list を渡すこともできる。
+  #       既にあるファイルを使う場合は、pathを渡す。
+  #
   # detalistの形式は以下を想定
   #  (1)既にgnuplotの入力形式のfileができていて、そのpathが渡される
   #  (1.1) データファイルpath :: String, or Pathname ::
@@ -46,7 +52,8 @@ module Gnuplot::Datafile
   #            } 
   #      また、opt[idx][:data_file] が定義されている必要がある。ないとみな data000になり、
   #      上書きされてしまう。
-  def output_datafile(grouped_data_ary,opt,&block)
+  def output_datafile(grouped_data,opt,&block)
+    grouped_data_ary = grouped_data.to_a
     base_path = opt[:base_path].to_s+"/"+ opt[:data_file]
     datafile_pathes = []
     keys = opt[:keys] || grouped_data_ary.map{ |ary| ary.first}.sort
