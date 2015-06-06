@@ -3,13 +3,15 @@
 module Gnuplot::Makedefine
   # 通常は
   # datafile_pathes :: データファイルのパスの配列
-  # arg_option      :: プロット条件のHash
-  #
+  # arg_option      :: プロット条件の Gnuplot::OptionST
+  #                    古い仕様の Hash の場合もまだ残してある
   # multiplotの場合は
   # datafile_pathes :: データファイルのパスの配列の配列
-  # arg_option      :: プロット条件のHashの配列
-  # 
-  # 配列の要素数は multiplot の plotの数
+  # arg_option      :: プロット条件の Gnuplot::OptionST
+  #                     古い仕様の Hash の場合は Hashの配列
+  #   配列の要素数は multiplot の plotの数
+  #
+  # 戻り値 ： define ファイルpath
   def gnuplot_define(datafile_pathes,arg_option=nil)
     arg_option ||= @options
     
@@ -17,6 +19,7 @@ module Gnuplot::Makedefine
     gnuplot_define_sub(datafile_pathes,arg_option)
   end
 
+  # 新しい仕様
   def gnuplot_define_struct(datafile_pathes,arg_option)
     head     = header(arg_option[:header])
     plot_def = plot_define_struct(datafile_pathes,arg_option)
@@ -40,39 +43,9 @@ module Gnuplot::Makedefine
       plot_list(datafile_pathes,opt) +"\n"+
        ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")
   end
-  
-  def gnuplot_define_sub(datafile_pathes,arg_option)
-    if arg_option[:multiplot]
-      head = header(arg_option[:header]) +
-        "\nset multiplot layout #{arg_option[:multiplot]}\n" +
-        "set lmargin #{arg_option[:multi_margin][0]}\n"  +
-        "set rmargin #{arg_option[:multi_margin][1]}\n" +
-        "unset xlabel\nunset xtics\n"
-      reset_xtics = "set xlabel\nset tics"
-      head +
-        arg_option[:multi_order].reverse.map{|key|
-        xtics = reset_xtics
-        reset_xtics = nil
-        opt = arg_option[key]
-        plot_def = plot_define(opt)
-        plot  = plot_list(datafile_pathes[key],opt)
-        def_file = arg_option[key][:define_file]
-        [ xtics,plot_def, plot   ].flatten.compact.join("\n") +
-          ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")
-      }.reverse.join("\n")+"\n#########\n"
-    else
-      opt = arg_option
-      head = header(opt)
-      plot_def = plot_define(opt)
-      plot  = plot_list(datafile_pathes,opt)
-      
-      def_file = opt[:define_file]
 
-      [ head,plot_def, plot   ].flatten.compact.join("\n") +
-        ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")+"\n#########\n"
-    end
-  end
-  
+  # terminal,size,出力ファイルを決める
+  # multiplot の場合はさらに、その設定を行う。
   def header(opt)
     #pp opt
     opt[:graph_file_path] = "#{opt[:graph_file_dir]}/#{opt[:graph_file]}.#{opt[:terminal]}"
@@ -81,9 +54,10 @@ module Gnuplot::Makedefine
       "set out '#{opt[:graph_file_path]}'" +
       if opt[:multiplot]
         "\nset multiplot layout #{opt[:multiplot]}\n" +
-        "set lmargin #{opt[:multi_margin][0]}\n"  +
-        "set rmargin #{opt[:multi_margin][1]}\n" +
-        "unset xlabel\nunset xtics\n"
+          if opt[:multi_margin]
+            "set lmargin #{opt[:multi_margin][0]}\nset rmargin #{opt[:multi_margin][1]}\n" +
+              "unset xlabel\nunset xtics\n"
+          else ; "" end
       else ; ""
       end
   end
@@ -221,6 +195,39 @@ module Gnuplot::Makedefine
       }
     end
     f.puts
+  end
+
+  
+  def gnuplot_define_sub(datafile_pathes,arg_option)
+    if arg_option[:multiplot]
+      head = header(arg_option[:header]) +
+        "\nset multiplot layout #{arg_option[:multiplot]}\n" +
+        "set lmargin #{arg_option[:multi_margin][0]}\n"  +
+        "set rmargin #{arg_option[:multi_margin][1]}\n" +
+        "unset xlabel\nunset xtics\n"
+      reset_xtics = "set xlabel\nset tics"
+      head +
+        arg_option[:multi_order].reverse.map{|key|
+        xtics = reset_xtics
+        reset_xtics = nil
+        opt = arg_option[key]
+        plot_def = plot_define(opt)
+        plot  = plot_list(datafile_pathes[key],opt)
+        def_file = arg_option[key][:define_file]
+        [ xtics,plot_def, plot   ].flatten.compact.join("\n") +
+          ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")
+      }.reverse.join("\n")+"\n#########\n"
+    else
+      opt = arg_option
+      head = header(opt)
+      plot_def = plot_define(opt)
+      plot  = plot_list(datafile_pathes,opt)
+      
+      def_file = opt[:define_file]
+
+      [ head,plot_def, plot   ].flatten.compact.join("\n") +
+        ( opt[:additional_lines] ? ",\\\n"+ opt[:additional_lines] : "")+"\n#########\n"
+    end
   end
   
 end
