@@ -75,6 +75,7 @@ class HtmlCell
 
 
   def disp(object,htmlopt="")
+    return object.send(display) if display
     #txt=object.send(symbol); txt.blank? || !txt ? "　" : object.send(symbol)
     case symbol
     when Symbol;    object.send(symbol).blank?  ? "　" : object.send(symbol)
