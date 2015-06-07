@@ -68,6 +68,26 @@ module Gnuplot::Datafile
     }
     datafile_pathes 
   end
+    def output_line(f,datum,opt)
+    if opt[:column_attrs]
+      datum.each{|data|
+        if data
+          data_array = opt[:column_attrs].
+            each{|sym| value = data.send sym
+            f.printf opt[:column_format] ? opt[:column_format]%value : value.to_s
+          }
+        else ;  f.printf " - "
+        end
+      }
+    else
+      datum.each_with_index{|data,idx|
+        f.printf( data ? (opt[:column_format] && opt[:column_format][idx] ? opt[:column_format][idx]%data : "#{data} ") : " - " )
+        #f.printf( data ?  "#{data} " : " - " )
+      }
+    end
+    f.puts
+  end
+
   def datafiles(data_list=nil,opt=nil)
     opt ||= @options || Gnuplot::DefaultOptionST
     data_list ||= @arry_of_data_objects

@@ -1,0 +1,24 @@
+one:
+  id: '6'
+  serial: 52BA0400
+  base_name: "dezawa"
+  ch_name: "power01"
+  measurement_type: '146'
+  measurement: "電力"
+  unit: "kWh"
+  comment: "power01-電力"
+  converter: '1'
+  slope: '2.1463'
+  graft: '-0.0439'
+tow:
+  id: '2'
+  serial: 52C215FA
+  base_name: "dezawa"
+  ch_name: "power01"
+  measurement_type: '146'
+  measurement: "電力"
+  unit: "kWh"
+  comment: "power01-電力"
+  converter: '1'
+  slope: '2.1463'
+  graft: '-0.0439'
