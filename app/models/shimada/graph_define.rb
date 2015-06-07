@@ -1,15 +1,28 @@
 # -*- coding: utf-8 -*-
-class Shimada::GraphDefine
-  include ActiveModel::Model
-  include ActionView::Helpers::UrlHelper
+class Shimada::GraphDefine < ActiveRecord::Base
+  belongs_to :factory,:class_name =>  "Shimada::Factory"
+  serialize  :serials
 
-  attr_accessor :id,:name,:factory_id,:title, :graph_type, :serials
+  before_save  :serialize_serials
 
-  def initialize(args)
-    [:id,:name,:factory_id,  :title, :graph_type, :serials].
-      each{|attr_name| instance_variable_set "@#{attr_name}",args.delete(attr_name)
-    }
+  attr_accessor :serials_to_s
+  
+  def serialize_serials
+    unless serials.class == Array
+      self.serials = self.serials.split(/[\s,]+/)
+    end
   end
+
+  def serials_to_s
+    self.serials.join(" ")
+  end
+
+  # attr_accessor :id,:name,:factory_id,:title, :graph_type, :serials
+  # def initialize(args)
+  #   [:id,:name,:factory_id,  :title, :graph_type, :serials].
+  #     each{|attr_name| instance_variable_set "@#{attr_name}",args.delete(attr_name)
+  #   }
+  # end
 
 end
 

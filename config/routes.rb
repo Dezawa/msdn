@@ -189,11 +189,11 @@ Rails.application.routes.draw do
   set_get("shimada/daylies",
           %w(index_month show_img img_table
              graph graph_weather graph_dayly graph_month graph_temp_hyum_vaper))
-  set_get("shimada/factory",%w(img_table data_graph_table))
+  set_get("shimada/factory",%w(img_table data_graph_table day_graph show_img))
   
-  edit_table("shimada/factory","shimada/instrument")
+  edit_table("shimada/factory","shimada/instrument","shimada/graph_define")
   namespace :shimada do
-    resources :daylies,:instrument,:factory
+    resources :daylies,:instrument,:factory,:graph_define
   end
 
   ######### 熱管理

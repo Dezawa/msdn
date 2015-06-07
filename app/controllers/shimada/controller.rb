@@ -12,6 +12,7 @@ class Shimada::Controller <  CommonController #ApplicationController
     [
      Menu.new(   "工場一覧"  ,"shimada/factory"    , :action => :index ) ,
      Menu.new(   "測定器一覧","shimada/instrument" , :action => :index) ,
+     Menu.new(   "グラフ定義","shimada/graph_define" , :action => :index) ,
      Menu.new(   "電池残量"  ,"status/tand_d" ,
               { :action => :list,:controller => "status/tand_d"}) ,
     ]

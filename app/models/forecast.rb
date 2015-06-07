@@ -14,8 +14,7 @@ class Forecast < ActiveRecord::Base
     end
     
     def daylies_period(location,period)
-      where(  ["location = ? and date >= ? and date <= ?",
-               location,period.first,period.last]).order("date").
+      where( location: location, date: period).order("date").
       group_by{ |d| d.date }.
       map{|date,daylies| daylies.sort_by{|d| d.announce}.last}
     end
@@ -76,13 +75,11 @@ class Forecast < ActiveRecord::Base
     end
 
     def differrence_via_real_graph(location = :maebashi, period = nil, graph_file = "graph")
-      unless period
-        today = Time.now.to_date
-        (today .. today)
-      end
+     unless period
+                 period = Time.now.to_date
+               end
       forecasts = daylies_period(location,period)
-      weathers = Weather.where(  ["location = ? and date >= ? and date <= ?",
-                                  location,period.first,period.last])
+      weathers = Weather.where( location: location, date: period)
       option = Gnuplot::OptionST.
         new({time_range: :dayly},
             {common: {column_labels: [%w(年月日 時刻 予報気温 予報湿度 水蒸気圧),

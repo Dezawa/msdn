@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150601124912) do
+ActiveRecord::Schema.define(version: 20150607004328) do
 
   create_table "forecasts", force: :cascade do |t|
     t.string   "location",     limit: 255
@@ -101,6 +101,14 @@ ActiveRecord::Schema.define(version: 20150601124912) do
     t.float   "raw_vaper_y0",           limit: 24
     t.float   "raw_vaper_power_0line",  limit: 24
     t.text    "prefix",                 limit: 65535
+  end
+
+  create_table "shimada_graph_defines", force: :cascade do |t|
+    t.integer "factory_id", limit: 4
+    t.string  "name",       limit: 255
+    t.string  "title",      limit: 255
+    t.string  "graph_type", limit: 255
+    t.text    "serials",    limit: 65535
   end
 
   create_table "shimada_instruments", force: :cascade do |t|
@@ -849,6 +857,9 @@ ActiveRecord::Schema.define(version: 20150601124912) do
     t.float  "humidity22", limit: 24
     t.float  "humidity23", limit: 24
     t.float  "humidity24", limit: 24
+    t.text   "temp",       limit: 65535
+    t.text   "vaper",      limit: 65535
+    t.text   "humi",       limit: 65535
   end
 
 end
