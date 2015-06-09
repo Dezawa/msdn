@@ -68,7 +68,8 @@ module Gnuplot::Datafile
     }
     datafile_pathes 
   end
-    def output_line(f,datum,opt)
+  
+  def output_line(f,datum,opt)
     if opt[:column_attrs]
       datum.each{|data|
         if data
@@ -110,16 +111,25 @@ module Gnuplot::Datafile
   def datafiles_case_data_list(data_list,opt)
     case data_list
     when String,Pathname ; [ data_list] # データファイルパス
-    when Array  ; datafiles_case_array(data_list,opt)
-    when Hash   ; datafiles_case_hash(data_list,opt)
+    when Array  ;   datafiles_case_array(data_list,opt)
+    when Hash   ;   datafiles_case_hash(data_list,opt)
+    when NilClass ; datafiles_case_array([[nil,null_datalist(opt)]],opt)
     end
   end
 
+  def null_datalist(opt)
+    opt[:column_labels] ? [opt[:column_labels].map{|c| nil }] : []
+  end
+  
   def datafiles_case_hash( group_by,opt)
     case  group_by.values.first
     when Array
       output_datafile(group_by,opt){ |f,k,data|
-        data.each{ |datum|  output_line(f,datum,opt)  }
+        if data.size > 0
+          data.each{ |datum|  output_line(f,datum,opt)  }
+        else
+          output_null_line(f,nil,opt)
+        end
       }
     else
       output_datafile(group_by,opt){ |f,k,objects|
