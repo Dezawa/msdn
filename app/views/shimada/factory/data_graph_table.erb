@@ -1,9 +1,10 @@
 <h3><%= @TYTLE  %> <%= @TYTLE_post %></h3>
 <table border=1>
 <% @images.each_slice( @slice){|images| %>
-  <tr><% images.each{|graph_type,image| -%>
-      <td><%= graph_type -%> <br>
-          <%= link_to(action: :data_graph_table,id: @model.id) do
+  <tr><% images.each{|graph_define_name,date,image| -%>
+      <td><%= graph_define_name -%> <br>
+          <%= link_to(action: :day_graph,date: date,
+                      id: @model.id,graph_define_name: graph_define_name) do
                     image_tag( (image.blank? ? nil : "/show_graph/show_img?graph_path=#{image}"),
                     width: @width, height:  @height)  
                     end

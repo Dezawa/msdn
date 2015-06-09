@@ -18,9 +18,9 @@ class Shimada::GraphDefineTest < ActiveSupport::TestCase
   end
 
   must "serial に String でいれると serializeされて入る" do
-      graphdefine = GraphDefine.find_by(factory_id: 1,name: "全電力・気温")
-      graphdefine.serials = "52BC036F 52BC036E"
-      graphdefine.save
+    graphdefine = GraphDefine.find_by(factory_id: 1,name: "全電力・気温")
+    graphdefine.serials = "52BC036F 52BC036E"
+    graphdefine.save
     assert_equal %w(52BC036F 52BC036E), GraphDefine.find_by(factory_id: 1,name: "全電力・気温").serials
   end
 

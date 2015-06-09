@@ -13,11 +13,12 @@ class Shimada::Factory < ActiveRecord::Base
   extend CsvIo
   has_many :shimada_powers ,:class_name =>  "Shimada::Power"
   has_many :shimada_instruments,:class_name =>  "Shimada::Instrument"
-
+  has_many :graph_define ,:class_name =>  "Shimada::GraphDefine"
+  
   def today_graph(graph_type,option = Gnuplot::OptionST.new)
     today = Time.now.to_date
     today = Date.new(2015,4,23)
-    day_graph_new(today,Shimada::GraphDefines[id][graph_type],option)
+    day_graph_new(today,Shimada::GraphDefine.find_by(factory_id: id,name: graph_type),option)
   end
 
   def day_graph_new(day_range,graph_define,option = Gnuplot::OptionST.new)
@@ -57,14 +58,15 @@ class Shimada::Factory < ActiveRecord::Base
   end
 
   def day_graphs(date,option = Gnuplot::OptionST.new)#all_graphs    }
-    Shimada::GraphDefines[id].keys.map{|graph_define_name|
-      [graph_define_name,graph(graph_define_name,(date..date),option)]
+    Shimada::GraphDefine.where(factory_id: id).map{|graph_define| 
+      [graph_define.name,date,graph(graph_define,(date..date),option)]
     }
     
   end
-Shimada::GraphDefine
-  def graph(graph_define_name,day_range,option = Gnuplot::OptionST.new)
-    graph_define = Shimada::GraphDefines[id][graph_define_name]
+
+  def graph(graph_define,day_range,option = Gnuplot::OptionST.new)
+    graph_define =
+      Shimada::GraphDefine.find_by(factory_id: id,name: graph_define) if graph_define.class == String
     option = option.dup.merge( {title: graph_define.title},[:body,:common] )
     day_graph_new(day_range,graph_define,option)
   end
