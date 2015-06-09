@@ -1,0 +1,26 @@
+obj1:
+    id: 1
+    factory_id: 1
+    name: "岐阜気象庁"
+    title: "天気予報・実績(岐阜気象庁)"
+    graph_type: weather
+obj2:
+    id: 2
+    factory_id: 1
+    name: "全電力・気温"
+    title: "全電力と温度・蒸気圧"
+    graph_type: temp_vaper_power
+    serials: |
+      ---
+      - 52BC036F
+      - 52BC036E
+obj3:
+    id: 3
+    factory_id: 1
+    name: "フリーザーA"
+    title: "フリーザーA"
+    graph_type: temp_vaper_power
+    serials: |
+      ---
+      - 52C204E9
+      - 52BC036E
