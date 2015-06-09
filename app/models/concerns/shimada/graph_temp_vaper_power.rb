@@ -81,8 +81,10 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
         option[option[:multi_order].first][:title]=  title
         option
       when Gnuplot::OptionST
-        title_post = opt[:body][:common][:title_post] 
-        DefaultOptST.merge(opt).merge({title_post: title_post},[:body,"power"])
+        title_post = opt[:body][:common][:title_post]
+        title       = opt[:body][:common][:title]
+        opt = DefaultOptST.merge(opt).merge({title_post: title_post},[:body,"power"])
+        opt = opt.merge({title: title},[:body,"power"]) if title
       end
     @arry_of_data_objects = 
       combination(daylies).
