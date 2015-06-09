@@ -19,7 +19,6 @@ class Shimada::Dayly < ActiveRecord::Base
   
   delegate :logger, :to=>"ActiveRecord::Base"
   include Tand
-  extend Tand::ClassMethod
   
   serialize :measurement_value
   serialize :converted_value
