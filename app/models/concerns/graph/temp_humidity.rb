@@ -44,7 +44,12 @@ module Graph
                     }.merge(time_range)
            ).merge(option)
       #pp option
-      data_list =  array_of_models.map.with_index{|models,idx|
+      data_list =  array_of_models_to_data_list( array_of_models )
+      self.new( data_list,option )
+    end
+
+    def self.array_of_models_to_data_list( array_of_models )
+      array_of_models.map.with_index{|models,idx|
         [%w(予報 実測)[idx],
          models.map{|model|
            model.times.map{|t| t.str("%Y-%m-%d %H:%M")}.
@@ -52,7 +57,6 @@ module Graph
          }.flatten(1).sort_by{|d| d[0]}
         ]
       }
-      self.new( data_list,option )
     end
 
     def self.title_post_time_range(models,option)
