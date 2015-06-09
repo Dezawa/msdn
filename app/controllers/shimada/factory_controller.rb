@@ -55,11 +55,21 @@ class Shimada::FactoryController <  Shimada::Controller
   
   def data_graph_table
     @model = @Model.find(factory_id = params[:id])
-    date = Time.now
-    date = Date.new(2015,4,23)
+    date = params[:date] || Time.now
+    date = params[:date] || Date.new(2015,4,23)
     @images = @model.day_graphs(date)
     @slice,@width,@height= 2,900/2,400/2
     @TYTLE = @model.name
+  end
+    
+  def day_graph
+    @model = @Model.find(factory_id = params[:id])
+    graph_define_name = params[:graph_define_name]
+    date = params[:date]
+    #pp [params[:id],Shimada::GraphDefines[ params[ :id ]]]
+    @graph_path = @model.graph(graph_define_name,date)
+    @TYTLE = @model.name
+    render   :file => 'application/graph', :layout => "simple"
   end
   
   def index

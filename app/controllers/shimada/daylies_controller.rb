@@ -14,7 +14,8 @@ class Shimada::DayliesController <  Shimada::Controller
     ]
   LabelsIndexMonth=
     [ HtmlLink.new(:date,"月日",ro: true,tform: "%m/%d",
-                  link: {url: '/shimada/daylies/graph_temp_hyum_vaper',key: :date,key_val: :date}) ,
+                   link: {url: '/shimada/factory/data_graph_table',
+                          key: :id,key_val: :factory_id,params: [:date]}) ,
      HtmlText.new(:item_labels,"",ro: true)
     ] +
     (0..23).map{|hr| HtmlNum.new(("hour_html%02d"%hr).to_sym,"%d:00～"%hr,ro: true)}
