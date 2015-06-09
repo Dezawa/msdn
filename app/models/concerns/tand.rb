@@ -73,15 +73,15 @@ module Tand
       dayly.ch_name_type = channel.name_type
       dayly.instrument =
         dayly.class.instrument.find_by(serial: channel.serial,
-                                    measurement_type: channel.type
-                                    )
+                                      measurement_type: channel.type
+                                     )
       dayly.save
       dayly
     end
-
-  end
+  end # of ClassModule
   
   def self.included(base)
     base.extend(ClassMethod)
   end
+
 end
