@@ -84,7 +84,7 @@ class Shimada::GraphTempVaperPower    < Graph::Ondotori::Base #TempHumidity
         title_post = opt[:body][:common][:title_post]
         title       = opt[:body][:common][:title]
         opt = DefaultOptST.merge(opt).merge({title_post: title_post},[:body,"power"])
-        opt = opt.merge({title: title},[:body,"power"]) if title
+        title ? opt.merge({title: title},[:body,"power"]) : opt
       end
     @arry_of_data_objects = 
       combination(daylies).
