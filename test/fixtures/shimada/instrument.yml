@@ -3,7 +3,7 @@
 no1:
   id: '1'
   factory_id: '1'
-  serial: 52BC036F
+  serial: 52BC0823
   base_name: "中部"
   ch_name: "フリーザーA"
   measurement_type: '13'
@@ -16,10 +16,10 @@ no1:
 two:
   id: '2'
   factory_id: '1'
-  serial: 52BC036F
+  serial: 52BC0823
   base_name: "中部"
   ch_name: "フリーザーA"
-  measurement_type: '13'
+  measurement_type: '208'
   measurement: "湿度"
   unit: "%Rh"
   comment: "中部フリーザーA湿度"
