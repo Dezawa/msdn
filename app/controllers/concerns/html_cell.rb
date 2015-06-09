@@ -155,39 +155,33 @@ class HtmlLink   < HtmlCell
   def edit(domain,object,controller,opt) 
     text_field(domain,symbol,opt)
   end
-  def ddedit_text(domain,object,htmlopt="")
-    disp(object,htmlopt="")
-  end
   def disp(object,htmlopt="")
     links = link.dup
+    lbl = linklabel(object,links)
     url = links.delete(:url)
     if /%s/ =~ url
       url = url % object.prefix
     end
+    
     key = links.delete(:key)
     key_val = links.delete(:key_val)
+    params  = links.delete(:params)
     htmloption = links.delete(:htmloption)
-    params = links.size == 0 ? "" : links.map{ |k,v| "#{k}=#{v}"}.join("&")
-    lbl = linklabel(object,links)
-    #logger.debug("HtmlLink: #{object.send(symbol)},#{url},#{key}, #{key_val}")
-    if key
-      "<a href='#{url}?#{key}=#{object.send(key_val)}&#{params}' #{htmloption}>#{lbl}</a>".html_safe
-    else
-      "<a href='#{url}/#{object.id}?#{params}' #{htmloption}>#{lbl}</a>".html_safe
-    end
-#>>>>>>> HospitalPower:lib/html_cell.rb
+
+    key_param = [(key and key_val) ?  "#{key}=#{object.send(key_val)}" : nil ]
+    param = links.map{ |k,v| "#{k}=#{v}"}
+    params = (params||[]).map{|arg| "#{arg}=#{object.send(arg)}"}
+    params = (key_param+param+params).compact
+    params = params.size>0 ? "?"+params.join("&") : ""
+    
+    id_or_key =  (key and key_val) ?  "" : "/#{object.id}"
+    
+    "<a href='#{url}#{id_or_key}#{params}' #{htmloption}>#{lbl}</a>".html_safe
   end
 
   def linklabel(object,links)
     links.delete(:link_label) || 
       if val = object.send(symbol) 
-        # if tform
-        #   case val
-        #   when Time,Date,DateTime ; val.strftime(tform)
-        #   else ;         tform%val
-        #   end
-        # else  val
-        # end
         tform ? val.str(tform) : val
       else
         ""
