@@ -44,7 +44,8 @@ class ForecastTest < ActiveSupport::TestCase
     weather = Weather.where( location: @location, date: @date)
     data_list =
       Graph::TempHumidity.array_of_models_to_data_list([forecast,weather])
-    assert_equal [], data_list[0]
+    assert_equal ["予報",
+                  [["2015-04-23 03:00", 13.3, 96.0, 14.6755], ["2015-04-23 06:00", 13.1, 96.0, 14.485], ["2015-04-23 09:00", 18.6, 69.0, 14.8019], ["2015-04-23 12:00", 23.5, 36.0, 10.4355], ["2015-04-23 15:00", 24.3, 29.0, 8.8204], ["2015-04-23 18:00", 22.3, 46.0, 12.3995], ["2015-04-23 21:00", 16.4, 87.0, 16.2424], ["2015-04-24 00:00", 14.3, 88.0, 14.3562]]], data_list[0]
 
   end
 end
