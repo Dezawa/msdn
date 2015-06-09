@@ -76,13 +76,13 @@ class GnuplotTest < ActiveSupport::TestCase
    #     gp.datafiles
    # end
      
-   must "CaseArryArry" do
-     gp = Graph::Base.new(CaseArryArry)
-     path = Rails.root+"tmp"+"gnuplot"+"data"+"data000.data"
-     assert_equal [path.to_s],
-       gp.datafiles(gp.arry_of_data_objects,
-                    gp.options.merge(column_format: ["%s ", "%d ","%d "]))
-     assert_equal "abc 10 20 \ndef 11 21 \n\n", path.read
+  #############################################
+  # data_list が空のときの振る舞い
+  #############################################
+
+   must "data_list が nil のときも pathは帰る" do
+     gp = Graph::Base.new(nil)
+     assert_equal [(RailsData+"data000.data").to_s], gp.datafiles
    end
       
    must "CaseArryObject " do

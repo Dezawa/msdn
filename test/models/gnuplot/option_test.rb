@@ -88,7 +88,7 @@ class Gnuplot::OptionTest < ActiveSupport::TestCase
    must "set_timerange すると common にxdata_timeが追加 " do
      opt = Gnuplot::DefaultOptionST.dup
      opt.set_timerange
-     assert_equal [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%H:%M'"   ],
+     assert_equal [ 'timefmt "%Y-%m-%d %H:%M"',"format x '%Y/%m/%d'"   ],
        opt[:body][:common][:xdata_time]
    end
 

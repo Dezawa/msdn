@@ -41,7 +41,7 @@ class GraphOndotoriTempHumidityTest < ActiveSupport::TestCase
     gt = Graph::Ondotori::TempHumidity.new(@dayly)
     datafile_pathes = gt.datafiles
     def_file = gt.gnuplot_define(datafile_pathes,gt.options)
-    puts def_file
+    #puts def_file
   end
 
   must "image file" do

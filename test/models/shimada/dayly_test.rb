@@ -8,8 +8,46 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
     Shimada::Dayly.delete_all
   end
 
+   must "DezawaPw[0]をとりこむと2recode増える" do
+     assert_difference 'Shimada::Dayly.count',2 do
+       Shimada::Dayly.load_trz(DezawaPw[0])
+     end
+   end
+   must "DezawaPw[0]をOndotori::Recodeするとbasenameがとれる" do
+     pp DezawaPw[0]
+     ondotori = Ondotori::Recode.new(DezawaPw[0])
+     assert_equal "dezawa", ondotori.base_name
+   end
+end
+__END__
+
+   must "Hyum823" do
+     assert_difference 'Shimada::Dayly.count',16 do
+       Shimada::Dayly.load_trz(Hyum823)
+     end
+   end
+
+   must "Hyum823をOndotori::Recodeするとbasenameがとれる" do
+     ondotori = Ondotori::Recode.new(Hyum823)
+     assert_equal "ティアンドデイ農園(太陽光運用)", ondotori.base_name
+   end
+   must "Hyum823をOndotori::Recodeするとvalid_trzは" do
+     ondotori = Ondotori::Recode.new(Hyum823)
+     assert Shimada::Dayly.valid_trz(ondotori)
+   end
+   must "Hyum823をOndotori::Recodeするとtypeは" do
+     ondotori = Ondotori::Recode.new(Hyum823)
+     assert_equal ["13", "208"], ondotori.channels.map{|channel_name,channel| channel.type}
+   end
+   must "serial 52BC0823な装置のmeasurement_typeは" do
+     instrument =  Shimada::Instrument.
+       where(serial: "52BC0823", measurement_type: ["13", "208"])
+     assert_equal ["13", "208"], instrument.map(&:measurement_type)
+
+   end
+
   must "serialの一覧" do
-    assert_equal ["52BC036F", "52BC036F", "52C204E9", "52BC036E", "52BC036E", "52C215FA"],
+    assert_equal ["52BC0823", "52BC0823", "52C204E9", "52BC036E", "52BC036E", "52C215FA"],
       Shimada::Dayly.serials
   end
 
@@ -262,4 +300,5 @@ class Shimada::DaylyTest < ActiveSupport::TestCase
       converted_value_hourly[7,3].map{|v| v.round(6)}
   end
 
+       
 end

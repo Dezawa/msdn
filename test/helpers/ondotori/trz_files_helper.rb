@@ -2,6 +2,7 @@
 Testdata="./test/testdata/shimada/"
 
 Dezawa01 = Testdata+"dezawa_power01_20150401-191041.trz"
+DezawaPw = Dir.glob(Testdata+"dezawa_power01_2015052?.trz").sort
 Hyums   = Dir.glob("/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_2015040*trz")
 Hyum1223 = Testdata+"temp-hyumidity-20141223-060422.trz"
 Hyum0405 ="/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_1F休憩所_20150405-060815.trz"
@@ -20,3 +21,5 @@ TD0424svr= "/home/dezawa/MSDN/おんどとり/data/ティアンドデイ社屋_�
   CaseString = Power01
   CaseArryString = [Power01,Hyum]
   CaseArryArry   = [["abc",10,20],["def",11,21]]
+
+  Hyum823 = Testdata+"ティアンドデイ農園太陽光運用_ボックス_20150525.trz"
