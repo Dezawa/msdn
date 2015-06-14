@@ -30,18 +30,20 @@ class Shimada::FactoryController <  Shimada::Controller
     zip(%w(閾値 低域傾斜 高域傾斜 切片 ゼロライン 閾値 低域傾斜 高域傾斜 切片 ゼロライン)).
     map{ |param,lbl|  HtmlNum.new(param,lbl,size: 3) }
 
+  def the_day
+    #(params[:date]) || Time.now.to_date
+    (params[:date]) || Date.new(2015,4,23)
+  end
+  
   def set_instanse_variable
     super
     @factory_id = params[:factory_id] if  params[:factory_id]
-    #@Model= Shimada::Factory
     model  Shimada::Factory
     @MonthModel = Shimada::MonthModels[@factory.power_model_id]
     @PowerModel = Shimada::PowerModels[@factory.power_model_id]
-    #@Domain= @Model.name.underscore
     @TYTLE = "シマダヤ工場電力管理"
     @labels=Labels
-    @TableEdit  = 
-    @TableEdit  = [:add_edit_buttoms,:csv_out, :csv_up_buttom]
+    #@TableEdit  = [:add_edit_buttoms,:csv_out, :csv_up_buttom]
     #@TableHeaderDouble = [1,[2,"気象データ"],1,[5,"温度補正パラメータ"],[5,"蒸気圧補正パラメータ"]]
     @TableHeaderDouble = [1,[2,"気象データ地域"]]
     @Show = @Delete = @Edir = true
@@ -49,19 +51,74 @@ class Shimada::FactoryController <  Shimada::Controller
 
   def img_table
     find_and
+    @TYTLE = "シマダヤ各工場電力状況"
     @slice,@width,@height= 2,900/2,400/2
     @images = @models.zip(@models.map{|model| model.today_graph("全電力・気温") })
   end
   
   def data_graph_table
-    @model = @Model.find(factory_id = params[:id])
-    date = params[:date] || Time.now
-    date = params[:date] || Date.new(2015,4,23)
-    @images = @model.day_graphs(date)
-    @slice,@width,@height= 2,900/2,400/2
-    @TYTLE = @model.name
+    @date = (params[:date]) || the_day
+    go_date
   end
+
+  def go_date
+    @TableEdit  = [[:form,:this_month,"今月",method: :get,hidden:{date: @date,id: @factory_id }],
+                   [:form,:prev_day,"前日≪",method: :get,hidden:{date: @date,id: @factory_id }],
+                   [:form,"next_day","≫翌日",method: :get,hidden:{date: @date,id: @factory_id }]]
     
+    data_graphs
+  end
+  def data_graphs
+    @factory_id = params[:id] ||= params[@Domain][:id]
+    @model = @Model.find(@factory_id = params[:id])
+    @images = @model.day_graphs(@date)
+    @slice,@width,@height= 2,900/2,400/2
+    @TYTLE = @model.name + "：データ一覧"
+    @TYTLE_post = case @date
+                  when Date,Time ;"(#{@date.str('%Y/%m/%d')})"
+                  when Range     ;"(#{@date.first.str('%Y/%m/%d')}-#{@date.last.str('%Y/%m/%d')})"
+                  end
+    render action: :data_graph_table
+  end
+
+  def this_day
+    @date = the_day #Time.parse(params[@Domain][:date]).to_date
+    go_date #data_graphs
+  end
+  
+  def next_day
+    @date = Time.parse(params[@Domain][:date]).to_date + 1.day
+    go_date #data_graphs
+  end
+
+  def prev_day
+    @date = Time.parse(params[@Domain][:date]).to_date - 1.day
+    go_date #data_graphs
+  end
+  
+  def this_month
+    go_month(Time.parse(params[@Domain][:date]).beginning_of_month.to_date)
+  end
+
+  def next_month
+    go_month  Time.parse(params[@Domain][:date]).to_date + 1.month
+  end
+  
+  def prev_month
+    go_month  Time.parse(params[@Domain][:date]).to_date - 1.month
+  end
+  
+  def go_month(first)   
+    last  = first.end_of_month
+    @date = params[:date] = first .. last
+    @TableEdit  = [#[:form,:this_day,"本日",method: :get,hidden:{date: Time.now.to_date,id: @factory_id }],
+                   [:form,:this_day,"本日",method: :get,hidden:{date: the_day,id: @factory_id }],
+                   [:form,:prev_month,"前月≪",method: :get,hidden:{date: @date.first,id: @factory_id }],
+                   [:form,"next_month","≫翌月",method: :get,hidden:{date: @date.first,id: @factory_id }]]
+    data_graphs
+#    render action: :data_graph_table
+  end
+  
   def day_graph
     @model = @Model.find(factory_id = params[:id])
     graph_define_name = params[:graph_define_name]
@@ -69,7 +126,7 @@ class Shimada::FactoryController <  Shimada::Controller
     #pp [params[:id],Shimada::GraphDefines[ params[ :id ]]]
     @graph_path = @model.graph(graph_define_name,date)
     @TYTLE = @model.name
-    render   :file => 'application/graph', :layout => "simple"
+    render   :file => 'application/graph', :layout => "application"
   end
   
   def index

@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 Rails.application.routes.draw do
 
+  namespace :test_case do
+    resources :test
+  end
+  
   namespace :sola do
     resources :instruments
   end
@@ -189,7 +193,8 @@ Rails.application.routes.draw do
   set_get("shimada/daylies",
           %w(index_month show_img img_table
              graph graph_weather graph_dayly graph_month graph_temp_hyum_vaper))
-  set_get("shimada/factory",%w(img_table data_graph_table day_graph show_img))
+  set_get("shimada/factory",%w(img_table data_graph_table day_graph show_img
+                               this_month prev_day next_day this_day prev_month next_month))
   
   edit_table("shimada/factory","shimada/instrument","shimada/graph_define")
   namespace :shimada do
