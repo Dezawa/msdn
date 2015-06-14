@@ -63,7 +63,7 @@ module Gnuplot::Makedefine
   end
 
   def plot_define(opt)
-    title = opt[:title] ? "set title '#{opt[:title]}#{opt[:title_post]}'" : nil
+    title = opt_title(opt)
       key = opt[:set_key] || "set key outside autotitle columnheader" #: "unset key"
       
       tics  = opt[:tics] ? tics_str(opt) : nil
@@ -125,7 +125,15 @@ module Gnuplot::Makedefine
     str
   end
 
-  def labels(arg_labels)   ; arg_labels ? arg_labels.map{ |l| "set #{l}"}.join("\n") : nil   ;  end
+  def opt_title(opt)
+    case opt[:title]
+    when "" ; "set title ''"
+    else
+      opt[:title].blank? ? nil : "set title '#{opt[:title]}#{opt[:title_post]}'"
+    end
+  end
+
+    def labels(arg_labels)   ; arg_labels ? arg_labels.map{ |l| "set #{l}"}.join("\n") : nil   ;  end
   def index_of_label(label); labels.index(label)                                       ;  end
   def axis_labels(opt)
     opt[:axis_labels].map{ |k,v|
