@@ -34,11 +34,14 @@ class Shimada::Factory < ActiveRecord::Base
       daylies = Shimada::Dayly.by_factory_id_and_instrument_serial(id,graph_define.serials).
         where(date: day_range)
 
-      Shimada::Graph.create( graph_define.graph_type.to_s,daylies,opt).plot
+      Shimada::Graph.
+        create( graph_define.graph_type.to_s,daylies,
+               opt.merge( {title_post: "(#{date_range_disp(day_range)})"},[:body,:common])
+              ).plot
     end
   end
 
-  def day_graph(day,graph_type,option = Gnuplot::OptionST.new)
+  def day_graph_old(day,graph_type,option = Gnuplot::OptionST.new)
     opt = option.dup.merge({time_range:  :dayly,graph_file: "#{graph_type}_#{id}"},[:header])
     day = (day .. day) unless day.class == Range
     daylies =
@@ -53,13 +56,17 @@ class Shimada::Factory < ActiveRecord::Base
      return Forecast.differrence_via_real_graph weather_location,day
     end
     if daylies && daylies.size>0
-      Shimada::Graph.create( graph_type.to_s,daylies,opt).plot
+      Shimada::Graph.
+        create( graph_type.to_s,daylies,
+               opt.merge( {title_post: "(#{date_range_disp(day_range)})"},[:body,:common])
+              ).plot
     end
   end
 
   def day_graphs(date,option = Gnuplot::OptionST.new)#all_graphs    }
     Shimada::GraphDefine.where(factory_id: id).map{|graph_define| 
-      [graph_define.name,date,graph(graph_define,(date..date),option)]
+      #[graph_define.name,date,graph(graph_define,(date..date),option)]
+      [graph_define.name,date,graph(graph_define,date,option)]
     }
     
   end
@@ -69,6 +76,16 @@ class Shimada::Factory < ActiveRecord::Base
       Shimada::GraphDefine.find_by(factory_id: id,name: graph_define) if graph_define.class == String
     option = option.dup.merge( {title: graph_define.title},[:body,:common] )
     day_graph_new(day_range,graph_define,option)
+  end
+
+  def date_range_disp(day_range)
+    case day_range
+    when String    ; day_range 
+    when Date,Time ; day_range.strftime("%Y/%m/%d")
+    when Range     ;
+      day_range.first.strftime("%Y/%m/%d - ") + day_range.last.strftime("%Y/%m/%d")
+      else  ; ""
+    end
   end
 end
 
