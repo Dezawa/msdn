@@ -136,6 +136,7 @@ module Options
           #
           ####### title達 ######
           # title:       , #  グラフのタイトル。図枠の上外側中央に表示される
+          # title_post:  , #  title の後に追加される
           # axis_labels: , #  軸   例  { :xlabel => "日",:ylabel => "推定電力",:y2label => "気温"},
           #
           #
