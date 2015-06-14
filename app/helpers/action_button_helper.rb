@@ -1,9 +1,31 @@
 # -*- coding: utf-8 -*-
 require 'menu'
 
+# 画面でのアクションボタンを作るのに用いられる
+#  使い方
+#    1. action_buttoms @TableEdit
+#    2. action_buttom_table(action_buttoms)
+#  @TableEdit や action_buttoms の定義内容に応じたアクションボタン(群)を作る
 module ActionButtonHelper
   include HtmlSafeTableItems
-  
+
+  # buttoms に定義されたボタン群を一行に並べて表示する
+  def action_buttoms(buttoms)
+    ("<table><tr>"+
+      buttoms.map{|buttom|
+      "<td>"+action_buttom(buttom) + "</td>"
+    }.join("\n") + "</tr></table>").html_safe
+  end
+
+  # 多量のアクションボタンを表示する時に用いる
+  # actionbuttoms の構造
+  # 1.  [ 一行のボタン数 ,[ ボタン定義,ボタン定義,,, ]]
+  # 2.  [ [ 一行のボタン数 ,[ ボタン定義,ボタン定義,,, ]],
+  #       [ 一行のボタン数 ,[ ボタン定義,ボタン定義,,, ]] ]
+  # 形式1の場合、定義されたボタンが複数行に渡って表示される。
+  #        table 内に置くため、幅の異なるボタンがあると空白が大きくなる恐れあり
+  # 形式2の場合、形式1 のボタン群が複数表示される。
+  #        ボタン幅の似たもの同士を束ねるとよい
   def action_buttom_table(actionbuttoms=nil)
     return "" unless action_buttoms = actionbuttoms ||  @action_buttoms
     case action_buttoms.first
@@ -13,6 +35,46 @@ module ActionButtonHelper
     end.html_safe
   end
 
+  
+  #buttom で定義されたaction_buttom を作る
+  # buttom の構造 ［function,action,label] もしくは :symbol 
+  # function で作るボタンの定義の仕方を決める
+  #   :form :: 汎用。
+  #   :popup :: 新しいwindowをpopupして結果をそちらにだす。
+  #   :input_and_action :: 入力用エリアをもつアクションボタン
+  #   :select_and_action :: 選択肢エリアをもつアクションボタン
+  # 以降は特定用途のボタンにカスタマイズされている
+  #   :add_buttom   :: add_on_table を呼び出す
+  #   :edit_bottom  :: edit_on_table を呼び出す
+  #   :add_edit_buttoms :: add_on_table,edit_on_table の両方のボタンを作る
+  #   :upload_buttom    :: ファイルuploadボタン
+  #   :csv_up_buttom    :: csvファイルuploadボタン
+  #   :csv_out          :: csvファイルdownloadボタン
+  #  これらに無い場合、functionを文字列に変換したものを表示する。
+  def action_buttom(buttom)
+#    logger.debug("=======ViewHelper #{self.class}/ #{self.class.name} /#{self.controller}")
+    function,action,label,opt,htmlopt = buttom
+    case function
+    when :form ;form_buttom(action,label,opt,htmlopt)
+    when :popup ;popupform_buttom(action,label,opt,htmlopt)
+    when :add_edit_buttoms ;edit_buttoms(@Domain) 
+    when :add_buttom       ;add_buttom(@Domain)
+    when :edit_bottom       ;edit_bottom(opt||{ })
+    when :upload_buttom     ;upload_buttom(action,label)
+    when :csv_up_buttom     ;csv_up_buttom
+    when :csv_out           ;csv_out_buttom
+    when :input_and_action  ;
+      logger.debug("##### input_and_action #{[action,label,opt,htmlopt]}")
+      input_and_action(action,label,opt,htmlopt||{})
+    when :select_and_action  ;
+      select_and_action(action,label,opt)
+    when nil; ""
+    else function.to_s
+    end.html_safe
+  end
+
+  ######################################
+  
   def action_buttom_table_sub(action_buttoms=nil)
     return "" unless action_buttoms && action_buttoms.size > 0 
     clms_num =  action_buttoms.first
@@ -48,36 +110,42 @@ module ActionButtonHelper
     end
   end
 
-  
-  def action_buttoms(buttoms)
-    ("<table><tr>"+
-      buttoms.map{|buttom|
-      "<td>"+action_buttom(buttom) + "</td>"
-    }.join("\n") + "</tr></table>").html_safe
+  ############### action_buttom から呼ばれる ボタン作成機能 #####
+  # アクションボタンを作る。page は必ず hidden で渡される
+  # action :: @Domain の action へのlink を作る
+  # opt    :: :hidden.:hidden_value => 渡すべきパラメータがある場合に指定
+  #        :: :form_notclose        => </form> をつけない。値は何でもよい
+  def form_buttom(action,label,opt ={ },htmlopt={ })
+    opt ||={ }
+    opt,additional =
+      case opt
+      when Hash    ; [opt,nil]
+      when Symbol  ; [{ },opt]
+    end
+
+    hidden = opt_hidden(opt)
+    form_close = opt_form_close(opt)
+    
+    case action
+    when Symbol  ; form_tag({ :action => action} ,opt)
+    when String  ; form_tag(action ,opt)
+    end +  hidden +
+      "<input type='hidden' name='page' value='#{@page}'>".html_safe+
+      (additional ?  send(additional) : "") +
+      (submit_tag(label)+form_close).html_safe
   end
 
+  def opt_form_close(opt)
+    form_notclose = opt.delete(:form_notclose)
+    form_notclose ? "" : "</form>".html_safe
+  end
   
-  #action_buttomの列を作る
-  #- ［［function,action,label],,,,]
-  def action_buttom(buttom)
-    function,action,label,opt,htmlopt = buttom
-    case function
-    when :form ;form_buttom(action,label,opt,htmlopt)
-    when :popup ;popupform_buttom(action,label,opt,htmlopt)
-    when :add_edit_buttoms ;edit_buttoms(@Domain) 
-    when :add_buttom       ;add_buttom(@Domain)
-    when :edit_bottom       ;edit_bottom(opt||{ })
-    when :upload_buttom     ;upload_buttom(action,label)
-    when :csv_up_buttom     ;csv_up_buttom
-    when :csv_out           ;csv_out_buttom
-    when :input_and_action  ;
-      logger.debug("##### input_and_action #{[action,label,opt,htmlopt]}")
-      input_and_action(action,label,opt,htmlopt||{})
-    when :select_and_action  ;
-      select_and_action(action,label,opt)
-    when nil; ""
-    else function.to_s
-    end.html_safe
+  def opt_hidden(opt)
+    return "" unless hidden = opt.delete(:hidden)
+    safe_join( hidden.map{|key,value|
+                hidden_field(@Domain,key,:value => value)
+              }
+              )
   end
 
   # 追加、編集ボタンの表示
@@ -143,32 +211,6 @@ module ActionButtonHelper
     end
     opt.each{ |k,v|  html += hidden_field(@Domain,k,:value => v) +"\n"  }
     html + "\n</form>"
-  end
-
-  def form_buttom(action,label,opt ={ },htmlopt={ })
-    opt ||={ }
-    opt,additional =
-      case opt
-      when Hash    ; [opt,nil]
-      when Symbol  ; [{ },opt]
-    end
-
-    hidden = opt.delete(:hidden) if opt.class==Hash
-    hidden_value = opt.delete(:hidden_value) if opt.class==Hash
-
-    form_notclose = opt.delete(:form_notclose) if opt.class==Hash
-    from_notclose = form_notclose ? "" : "</form>".html_safe
-    case action
-    when Symbol  ; form_tag({ :action => action} ,opt)
-    when String  ; form_tag(action ,opt)
-    end + 
-      (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
-       else;"";end
-       )+
-      "<input type='hidden' name='page' value='#{@page}'>".html_safe+
-      (additional ?  send(additional) : "") +
-
-      (submit_tag(label)+from_notclose).html_safe
   end
 
   def and_action(input,action,label,opt={ },htmlopt={ })
