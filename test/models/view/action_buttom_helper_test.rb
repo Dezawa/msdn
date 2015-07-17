@@ -104,6 +104,10 @@ class ApplicationHelperTest < ActionView::TestCase
                   "input type=\"submit\" value=\"CSVダウンロード\" ", "/form"],
       csv_out_buttom( controller: :weather_location).split(/\/?[<>]+/)
   end
+  must "button_tag" do
+    assert_equal "", button_tag("name")
+    end
+
   ########### POP UP #########
   must " popupform_buttom_buttom " do
     @page = 1
