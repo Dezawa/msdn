@@ -15,7 +15,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   LabelsVolt =
     [[ HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:ro => true )] ,
      (1..31).map{ |day| 
-       HtmlLink.new(:volt_peak,day.to_s,:tform => "%6.4f",
+       HtmlLink.new(:volt_peak,day.to_s,:tform => "%5.2f",
                     :link => {  :url => "/sola/dayly/show_volt",:key => :id, :key_val => :id})
      }
     ]
