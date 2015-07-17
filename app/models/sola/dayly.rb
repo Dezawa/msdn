@@ -20,7 +20,22 @@ class Sola::Dayly < ActiveRecord::Base
   serialize :converted_value
   #before_save   :convert
   before_save :set_culc
-
+  
+  def self.find_month_or_create(month)
+    month = Time.parse(month).beginning_of_month.to_date if month.class == String
+    lastday = month.end_of_month.day
+    daylies = self.where(month: month).order(:date)
+    if daylies.size < lastday
+      days = daylies.map(&:date)
+      (month..month.end_of_month).each{|date|
+        unless days.include?(date)
+          daylies << self.create(date: date)
+        end
+      }
+    end
+    daylies.sort_by{|d| d.date }
+  end
+  
   def self.instrument ;  Sola::Instrument ;end
   def self.valid_trz(ondotori)
     ondotori.base_name == "dezawa" && ondotori.channels["power01-電圧"]
