@@ -27,7 +27,7 @@ class WeatherController < CommonController #ApplicationController
                    {:correction => correction ,:selected => @weather_location }],
                   [:input_and_action,"get_data","新規取得 年月(日) 2014-7(-10)",{:size=>8}],
                   [:input_and_action,"plot_year","期間変化グラフ。start end 時刻-時刻",{:size=>24},{method: "get"}],
-                  [:form,:temp_vaper,"温度-水上気圧図"],
+                  [:popup,:temp_vaper,"温度-水上気圧図"],
                   [:form,:weather_location,"気象エリア設定"],
                   [:form,:cband,"C-band"]
                  ]
