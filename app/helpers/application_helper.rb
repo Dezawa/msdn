@@ -211,10 +211,6 @@ module ApplicationHelper
   #:proname      :: 製品名専用   || obj.表示用symbol を表示する || select
   #
 
-  def name(*arg)
-    arg[0]+arg[1..-1].map{|a| "[#{a}]"}.join
-  end
-
   def error_messages(errors)
     return "" if errors.size == 0
     fullmsg="<div  align=left id='errorExplanation'><table>" ; count =0
