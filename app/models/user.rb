@@ -53,6 +53,7 @@ class User < ActiveRecord::Base
   def password_required?
     encrypted_password.blank? || !password.blank?
   end
+  def encrypted_password_changed? ; false ;end
 
   def self.ddauthenticate(login, password)
     return nil if login.blank? || password.blank?
