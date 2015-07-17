@@ -130,7 +130,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   def edit_on_table
     month = params[:month]
     @Labels =[LabelsMonitor[0][0,1], LabelsMonitor[1]]
-    @models = @Model.where(month: month).order(:date).to_a
+    @models = @Model.find_month_or_create(month)
     @TYTLE_post = "モニターデータ 日発電量"
     @TableHeaderDouble = [1,[31,"モニターデータ ：日発電量(kWh)"]]
     @TableEdit = [[:update_bottom]]
@@ -218,6 +218,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   end
 
   def peak_graph
+    @TableEdit = nil
     @graph_file = "sola_peak"
     @graph_file_dir = Rails.root+"tmp" + "img"
     Sola::Dayly.peak_graph(@graph_file,@graph_file_dir)
