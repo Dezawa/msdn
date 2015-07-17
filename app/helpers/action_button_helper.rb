@@ -45,7 +45,7 @@ module ActionButtonHelper
   #   :select_and_action :: 選択肢エリアをもつアクションボタン
   # 以降は特定用途のボタンにカスタマイズされている
   #   :add_buttom   :: add_on_table を呼び出す
-  #   :edit_bottom  :: edit_on_table を呼び出す
+  #   :edit_buttom  :: edit_on_table を呼び出す
   #   :add_edit_buttoms :: add_on_table,edit_on_table の両方のボタンを作る
   #   :upload_buttom    :: ファイルuploadボタン
   #   :csv_up_buttom    :: csvファイルuploadボタン
@@ -54,12 +54,14 @@ module ActionButtonHelper
   def action_buttom(buttom)
 #    logger.debug("=======ViewHelper #{self.class}/ #{self.class.name} /#{self.controller}")
     function,action,label,opt,htmlopt = buttom
+    opt ||= {}
+    htmlopt ||= {}
     case function
     when :form ;form_buttom(action,label,opt,htmlopt)
     when :popup ;popupform_buttom(action,label,opt,htmlopt)
     when :add_edit_buttoms ;edit_buttoms(@Domain) 
     when :add_buttom       ;add_buttom(@Domain)
-    when :edit_bottom       ;edit_bottom(opt||{ })
+    when :edit_buttom       ;edit_buttom(opt||{ })
     when :upload_buttom     ;upload_buttom(action,label)
     when :csv_up_buttom     ;csv_up_buttom
     when :csv_out           ;csv_out_buttom
@@ -156,30 +158,30 @@ module ActionButtonHelper
 
 
   def edit_buttoms(dom,arg={ })
-    add_buttom(dom,arg)+edit_bottom(arg)
+    add_buttom(dom,arg)+edit_buttom(arg)
   end
   def add_buttom(dom,arg={ })
     option = { :action => (arg.delete(:add_action) || :add_on_table)}.merge(arg)
-    (form_tag(option, :method => :get) + #:action => :add_on_table) + 
+    (form_tag(option) + #, :method => :get) + #:action => :add_on_table) + 
       "<input type='hidden' name='page' value='#{@page}'>".html_safe+
       submit_tag("追加")+
       text_field( dom, :add_no,:size=>2, :value => 1 ) +  "</form></td><td>".html_safe
      )
   end
 
-  def edit_bottom(arg={ })
+  def edit_buttom(arg={ })
     action  =  (arg.delete(:edit_action) || :edit_on_table)
     button_to( '編集', { :action => action,:page => @page}.merge(arg),:method => :get )
   end
 
-  def csv_up_buttom
+  def csv_up_buttom(opt={})
     url = "/#{@Domain}/csv_upload"
     form_tag(url,:multipart => true,:method => :post)+
       submit_tag("CSVで登録")+file_field(@Domain, :csvfile)+"</form>".html_safe
   end
 
-  def csv_out_buttom
-    button_to( 'CSVダウンロード', { :action => :csv_out },:method => :get)
+  def csv_out_buttom(opt={})
+    button_to( 'CSVダウンロード', opt.merge({ :action => :csv_out }),:method => :get)
   end
 
   def upload_buttom(action,label)
@@ -201,6 +203,8 @@ module ActionButtonHelper
 
 
   def popupform_buttom(action,label,opt ={ },htmlopt={ })
+    #return form_buttom(action,label,{class: "popupwindow"}.merge(opt),{class: "popupwindow"}.merge(htmlopt))
+    
     win_name = opt.delete(:win_name) || "new_win"
     scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
     html = PopupHead%[@Domain,action,form_authenticity_token,label]
@@ -220,7 +224,7 @@ module ActionButtonHelper
     hidden_value = opt.delete(:hidden_value)
     opt[:hidden] = (hidden ? hidden_field(@Domain,hidden,:value => hidden_value) : "").html_safe
 
-    if win_name = opt.delete(:popup)
+    if opt[:popup] #win_name = opt.delete(:popup)
       if @model ;and_input_with_model(input,action,label,opt)
       else  ; and_input_without_model(input,action,label,opt)
 
@@ -231,7 +235,7 @@ module ActionButtonHelper
   end
 
   def and_input_no_popup(input,action,label,opt,htmlopt={})
-    "<div>".html_safe+form_tag({:action => action},(htmlopt||{})) + 
+    "<div>".html_safe+form_tag(opt.merge({:action => action}),(htmlopt||{})) + 
         "<input type='hidden' name='page' value='#{@page}'>".html_safe+
         opt[:hidden] +
         submit_tag(label)+
@@ -242,9 +246,9 @@ module ActionButtonHelper
        fmt =
  "<div><form action='/%s/%s'>
   <input name='authenticity_token' type='hidden' value='%s' />
-  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400%s'); target='%s'\">
+  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400'); target='%s'\">
 " + input +  "</form></div>"
-      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,scroll,win_name]
+      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,opt[:popup],opt[:popup]]
   end
 
   def and_input_with_model(input,action,label,opt)
