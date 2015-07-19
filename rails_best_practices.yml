@@ -18,7 +18,7 @@ NotRescueExceptionCheck: { }
 NotUseDefaultRouteCheck: { }
 NotUseTimeAgoInWordsCheck: { }
 OveruseRouteCustomizationsCheck: { customize_count: 3 }
-ProtectMassAssignmentCheck: { }
+#ProtectMassAssignmentCheck: { }
 RemoveEmptyHelpersCheck: { }
 #RemoveTabCheck: { }
 #RemoveTrailingWhitespaceCheck: { }
