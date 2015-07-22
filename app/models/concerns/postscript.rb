@@ -337,7 +337,7 @@ def scale_unit(unit,scl=1.0)
   scale pos_unit(unit,scl)
 end
 def unscale_unit(unit,scl=1.0)
-  scale (case unit
+  scale(case unit
 
          when :mm ; Pos.new( scl*Point,scl*Point)# Pos.new(1.0/Inch,1.0/Inch)
          when :m  ; Pos.new( scl*Point/1000,scl*Point/1000)# Pos.new(1.0/Inch,1.0/Inch)
@@ -373,30 +373,25 @@ def rotate(angle)
   self
 end
 
-def comment(com = "")
-  @page << "#" + com + "\n"
-  self
-end
-
 def moveto(x,y=nil)
   case x
   when Hash,Pos
-    @page <<  "%.3f %.3f moveto " % [x[:x],x[:y]]  if x[:x] and x[:y]
+    @page <<  "%.3f %.3f moveto " % [x[:x],x[:y]]  if x[:x] && x[:y]
   when Array
-    @page <<  "%.3f %.3f moveto " % [x[0],x[1]]  if x[0] and x[1]
+    @page <<  "%.3f %.3f moveto " % [x[0],x[1]]  if x[0] && x[1]
   else
-    @page <<  "%.3f %.3f moveto " % [x,y] if x and y
+    @page <<  "%.3f %.3f moveto " % [x,y] if x && y
   end
   self
 end
 def rmoveto(x,y=nil)
   case x
   when Hash,Pos
-    @page <<  "%.3f %.3f rmoveto " % [x[:x],x[:y]]  if x[:x] and x[:y]
+    @page <<  "%.3f %.3f rmoveto " % [x[:x],x[:y]]  if x[:x] && x[:y]
   when Array
-    @page <<  "%.3f %.3f rmoveto " % [x[0],x[1]]  if x[0] and x[1]
+    @page <<  "%.3f %.3f rmoveto " % [x[0],x[1]]  if x[0] && x[1]
   else
-    @page <<  "%.3f %.3f rmoveto " % [x,y] if x and y
+    @page <<  "%.3f %.3f rmoveto " % [x,y] if x && y
   end
   self
 end
@@ -538,17 +533,6 @@ def box_string(str,*xywhs)
   centering(str,:x => x+0.5*w,:y => y+0.1 )
 end
 
-def box_fill(x,y,w,h,rgb=nil)
-  box(x,y,w,h).gsave
-  if rgb
-    gsave.set_color_rgb(rgb) 
-  end
-  fill
-  grestore if rgb
-  grestore.stroke
-  self
-end
-
 def box_fill(*args)
   case args.size
   when 3,5 ; rgb = args.pop
@@ -603,7 +587,7 @@ def centering(str,opt={})
     add(Macros[:centering]) ; @option[:macros]<<:centering
   end
   gsave.set_font(opt)            if opt[:font] || opt[:point]
-  moveto(opt[:x],opt[:y])  if opt[:x] and opt[:y]
+  moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
   #gsave.scale(1,-1) if @y0_is_up
   if opt[:tilt] && opt[:tilt] != 0
     @page << "gsave #{ opt[:tilt]} rotate  (#{euc_str}) centering grestore\n"  
@@ -622,7 +606,7 @@ def right(str,opt={})
     add(Macros[:right]) ; @option[:macros]<<:right
   end
   set_font(opt)            if opt[:font] || opt[:point]
-  moveto(opt[:x],opt[:y])  if opt[:x] and opt[:y]
+  moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
   if opt[:tilt] && opt[:tilt] != 0
     @page << "gsave #{ opt[:tilt]} rotate  (#{euc_str}) centering grestore\n"  
   else
@@ -652,7 +636,7 @@ def string(str,opt={}) #x=nil,y=nil,point=10,font=nil,tilt=nil)
   return unless str
   euc_str = euc(str.to_s)
   set_font(opt) if opt[:font] || opt[:point]
-  moveto(opt[:x],opt[:y])  if opt[:x] and opt[:y]
+  moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
   moveto(opt[:xy]) if opt[:xy]
   if opt[:tilt] && opt[:tilt] != 0
     @page << "gsave #{ opt[:tilt]} rotate (#{euc_str}) left grestore"  
@@ -664,7 +648,7 @@ def string(str,opt={}) #x=nil,y=nil,point=10,font=nil,tilt=nil)
 end
 def show(opt={}) #x=nil,y=nil,point=10,font=nil,tilt=nil)
   set_font(opt) if opt[:font] || opt[:point]
-  moveto(opt[:x],opt[:y])  if opt[:x] and opt[:y]
+  moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
   if opt[:tilt]
     @page << "gsave #{ opt[:tilt]} rotate left grestore"  
   else
@@ -924,9 +908,9 @@ class Graph
                  :clip_earia_of_xaxis,:clip_earia_of_yaxis    # 軸目盛部のclipエリア
                   ]
             
-  attr_accessor *Attr_names 
+  attr_accessor( *Attr_names )
   attr_accessor :scale
-  attr_writer   *Attr_Writers
+  attr_writer(   *Attr_Writers)
   def initialize(args={})
     @option = {
       :label_option =>{:x=>{},:y=>{} },
@@ -1024,18 +1008,6 @@ class Pos < Hash
   end
 
   def +(other)
-#pp self
-#pp other
-    self[:x]=self[0] = self.x + other[0]
-    self[:y]=self[1] = self.y + other[1]
-    self
-  end
-  def +(other)
-#pp self
-#pp other
-    #self[:x]=self[0] = 
-    #self[:y]=self[1] = self.y + other[1]
-    #self
     self.class.new(self.x + other[0],self.y + other[1])
   end
 end

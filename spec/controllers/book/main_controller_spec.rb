@@ -26,7 +26,7 @@ URL_create   = URL_index + "?page=6"
      Users.zip([:success]*2+[:redirect]+[:success]*3+[:redirect]).
        each{|login,result|
        it "User #{login} は" do
-         login_as (login)
+         login_as(login)
          post :edit_on_table #, :book_main => {@model.id.to_i => @model.attributes}
          assert_response result," 可能か results #{result}"
          #expect(flash).to eq([]),"flashは"
@@ -41,7 +41,7 @@ URL_create   = URL_index + "?page=6"
              URL_pagenate%1,URL_pagenate%1, URL_pagenate%1, URL_error]).
     each{|login,result|
     it "User #{login} は Book::Mainのupdate_on_table, 可能か results #{result}" do
-      login_as (login)
+      login_as(login)
       put :update_on_table, "book/main" => {@model.id.to_i => @model.attributes}
         assert_redirected_to result
       end

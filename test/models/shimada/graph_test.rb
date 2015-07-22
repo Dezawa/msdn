@@ -37,7 +37,7 @@ class Shimada::GraphTest < ActiveSupport::TestCase
 
     define = gp.gnuplot_define({"power" =>["datafile_pathes"],
                                 "temp_hyum" =>["datafile_pathes2"]},gp.options)
-    assert /set multiplot layout 2,1/ =~ define,"multiplot二段宣言"
+    assert %r/set multiplot layout 2,1/ =~ define,"multiplot二段宣言"
     assert_equal 3, define.split("plot 'datafile_pathes").size,"multiplot plot コマンド2回"
     assert_equal 2,define.split("set terminal").size,"multiplot plot terminalコマンド1回"
   end

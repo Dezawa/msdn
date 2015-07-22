@@ -2,45 +2,45 @@
 module Sola::Graph
   include Gnuplot
   module ClassMethod
-  include Gnuplot
+    include Gnuplot
 
-  OptionCorrelation =
-     Gnuplot::OptionST.
-     new({:define_file => Rails.root+"tmp/gnuplot/sola_correlation.def",
-          :graph_file_dir => Rails.root+"tmp" + "img",
-          :size => "500,500",        :type => "scatter",
-          :graph_file =>  "sola_correlation" ,
-         },
-         {common: {
-                   :set_key => "unset key" ,
-                   :set  => [ "lmargin 0", "rmargin 0","size 0.8,0.8", "origin 0.15 ,0.1"  ],
-                   :xy => [[[2,1]]],        :point_type => [7,6],
-                   :range => { :y => "[0:35]",:x => "[0:35]"},
-                   :axis_labels   => { :ylabel => "モニター/kWh",
-                                      :xlabel => "おんどとり/kWh"},
-                  }
-         }
-        )
+    OptionCorrelation =
+      Gnuplot::OptionST.
+      new({:define_file => Rails.root+"tmp/gnuplot/sola_correlation.def",
+           :graph_file_dir => Rails.root+"tmp" + "img",
+           :size => "500,500",        :type => "scatter",
+           :graph_file =>  "sola_correlation" ,
+          },
+          {common: {
+                    :set_key => "unset key" ,
+                    :set  => [ "lmargin 0", "rmargin 0","size 0.8,0.8", "origin 0.15 ,0.1"  ],
+                    :xy => [[[2,1]]],        :point_type => [7,6],
+                    :range => { :y => "[0:35]",:x => "[0:35]"},
+                    :axis_labels   => { :ylabel => "モニター/kWh",
+                                       :xlabel => "おんどとり/kWh"},
+                   }
+          }
+         )
 
-   def std_opt_with_peak(xly,graph_file,graph_file_dir=nil)
-     Gnuplot::DefaultOptionST.merge( Gnuplot::OptionST.
-     new(
-      { 
-        :graph_file => graph_file || "sola_#{xly}" ,
-        :define_file => Rails.root+"tmp/gnuplot/sola_#{xly}.def",
-        :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
-        :size => "1000,230",
-      },
-      {common: {
-        :set_key => "set key center horizontal top box autotitle columnheader width -7 samplen 0.0",
-        :type => "scatter",
-        :by_tics => { 1 => "x1y2" }, # 3600*24*
-        :grid    => ["xtics"],
-        :tics =>  { :xtics => "'2011-5-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
-          :ytics => "300,100 nomirror",:y2tics => "0,1"},
-               }        
-      }
-      ))
+    def std_opt_with_peak(xly,graph_file,graph_file_dir=nil)
+      Gnuplot::DefaultOptionST.merge( Gnuplot::OptionST.
+                                     new(
+                                         { 
+                                          :graph_file => graph_file || "sola_#{xly}" ,
+                                          :define_file => Rails.root+"tmp/gnuplot/sola_#{xly}.def",
+                                          :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
+                                          :size => "1000,230",
+                                         },
+                                         {common: {
+                                                   :set_key => "set key center horizontal top box autotitle columnheader width -7 samplen 0.0",
+                                                   :type => "scatter",
+                                                   :by_tics => { 1 => "x1y2" }, # 3600*24*
+                                                   :grid    => ["xtics"],
+                                                   :tics =>  { :xtics => "'2011-5-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
+                                                              :ytics => "300,100 nomirror",:y2tics => "0,1"},
+                                                  }        
+                                         }
+                                        ))
     end
 
     def correlation_graph(graph_file=nil,graph_file_dir=nil)
@@ -55,10 +55,10 @@ module Sola::Graph
         a,resudal = multiple_regression data_list
         #logger.debug("##### Sola_correlation a,resudal = #{a},#{resudal}")
         @options.merge( { :additional_lines => "#{a[0]}+#{a[1]}*x" ,
-                      :labels => ["label 1 'モニタ = %.2f + %2f * おんどとり' at 3,32"%a,
-                                  "label 2 '1-R=%f データ数=%d' at 10,30"%[1.0-resudal,data_list.size]]
-                    },[:body,:common]
-                     )
+                         :labels => ["label 1 'モニタ = %.2f + %2f * おんどとり' at 3,32"%a,
+                                     "label 2 '1-R=%f データ数=%d' at 10,30"%[1.0-resudal,data_list.size]]
+                        },[:body,:common]
+                      )
         logger.debug("##### Sola_correlation @options[:body][:common] = #{@options[:body][:common] }")
       end
       #logger.debug("##### Sola_correlation option[:body].keys=#{opt[:body].keys.join(' ')}")
@@ -73,13 +73,13 @@ module Sola::Graph
     def monthly_graph_with_peak(graph_file=nil,graph_file_dir=nil)
       @options = std_opt_with_peak(:minthly,graph_file,graph_file_dir).
         merge({ 
-                :set  => [ "lmargin 0", "rmargin 0","size 0.8,1.1", "origin 0.09 ,-0.07",
-                           "xdata time", "timefmt '%Y-%m-%d'"      , "format x '%Y-%m'"
-                         ],
-                :xy => [[[1,2],[1,3]]],        :point_type => [7,6],
-                :range => { :y => "[300:780]",:y2 => "[0:6]",
-                  :x => "['2011-5-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
-                :axis_labels   => { :ylabel => "月間発電量/kW時", :y2label => "月間ピーク/kW分"},
+               :set  => [ "lmargin 0", "rmargin 0","size 0.8,1.1", "origin 0.09 ,-0.07",
+                         "xdata time", "timefmt '%Y-%m-%d'"      , "format x '%Y-%m'"
+                        ],
+               :xy => [[[1,2],[1,3]]],        :point_type => [7,6],
+               :range => { :y => "[300:780]",:y2 => "[0:6]",
+                          :x => "['2011-5-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
+               :axis_labels   => { :ylabel => "月間発電量/kW時", :y2label => "月間ピーク/kW分"},
               },[:body,:common])
 
       #return if graph_updated?(@options)
@@ -98,22 +98,22 @@ module Sola::Graph
     def dayly_graph_with_peak(graph_file=nil,graph_file_dir=nil)
       opt = std_opt_with_peak(:dayly,graph_file,graph_file_dir).
         merge({ 
-                :axis_labels   => { :xlabel => "年月日",:ylabel => "日発電量/kW時", :y2label => "ピーク/kW分"},
-                :xy => [[[1,2],[1,3]]],
-                :range => { :y => "[0:39]", :y2 => "[0:6]",
-                  :x => "['2011-5-1-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
+               :axis_labels   => { :xlabel => "年月日",:ylabel => "日発電量/kW時", :y2label => "ピーク/kW分"},
+               :xy => [[[1,2],[1,3]]],
+               :range => { :y => "[0:39]", :y2 => "[0:6]",
+                          :x => "['2011-5-1-1':'#{Time.now.end_of_year.strftime('%Y-%m-%d')}']"},
 
-                :tics =>  { :xtics => "'2011-5-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
-          :ytics => "0 5 nomirror",:y2tics => "0,1"},
-                #:tics =>  {  :xtics => "'2012-12-1' #{3600*24*30}", :ytics => "0,5 nomirror",:y2tics => "0,1"}  ,
-                :point_type => [7,6],:point_size => 0.6 ,
-                :type => "scatter",
-                :set => [ "lmargin 0","rmargin 0","size 0.8,0.9","origin 0.09 ,0.15",
-                          "xdata time",  "timefmt '%Y-%m-%d'",
-                          "format x ''"
-                        ],
+               :tics =>  { :xtics => "'2011-5-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
+                          :ytics => "0 5 nomirror",:y2tics => "0,1"},
+               #:tics =>  {  :xtics => "'2012-12-1' #{3600*24*30}", :ytics => "0,5 nomirror",:y2tics => "0,1"}  ,
+               :point_type => [7,6],:point_size => 0.6 ,
+               :type => "scatter",
+               :set => [ "lmargin 0","rmargin 0","size 0.8,0.9","origin 0.09 ,0.15",
+                        "xdata time",  "timefmt '%Y-%m-%d'",
+                        "format x ''"
+                       ],
               },[:body,:common]
-              )
+             )
 
       #return if graph_updated?(opt)
 
@@ -126,7 +126,7 @@ module Sola::Graph
     def graph_updated?(opt)
       file_path = "#{opt[:graph_file_dir]}/#{opt[:graph_file]}.jpeg"
       return false unless File.exist? file_path
-logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
+      logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
       db_updated = [Sola::Dayly].
         map{|model| model.select("max(updated_at) max_updated_at").first.max_updated_at}.max
       File::Stat.new(file_path).mtime >= db_updated
@@ -155,7 +155,7 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
         Gnuplot::DefaultOptionST.merge(Gnuplot::OptionST.new(header,{:common => common}))
 
       data_list = Sola::Dayly.all.order("date").pluck(:date, :peak_kw, :kwh_day).delete_if{ |a,b,c| !b}
-  
+      
       opt_max_peak!(data_list,@options)
 
       file = Rails.root+"tmp"+"Sola_peak.data"
@@ -181,7 +181,7 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
         f.puts labels
         data_list.each{ |date,pw,spw|
           f.puts "%3d %-10s %-4s %-4s"%
-          [date-start_day,date.day == 1 ? date.strftime("%Y-%m-%d") : '""' ,strfflt(pw),strfflt(spw)]
+            [date-start_day,date.day == 1 ? date.strftime("%Y-%m-%d") : '""' ,strfflt(pw),strfflt(spw)]
         }
       }
     end
@@ -221,7 +221,7 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
           f.puts dayly.map{ |pw| pw ? " %5.2f"%pw : "  --  "  }.join
         }
       }
-   end
+    end
 
   end
   def self.included(base)
@@ -231,27 +231,27 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
 
   def minute_graph(graph_file=nil,graph_file_dir=nil)
     opt = Gnuplot::DefaultOptionST.merge(Gnuplot::OptionST.
-     new({ 
-          :graph_file => graph_file || "minute" ,
-          :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
-          :define_file => Rails.root+"tmp/gnuplot/minute.def",
-         },
-         {common: {
-                   :column_labels => %w(分 ピーク発電量), :column_format => %w(%s %.1f),
-                   :axis_labels   => { :xlabel => "分",
-                                      :ylabel => "発電量/kW",:y2label => "一日発電量"},
-                   :title => "日間発電量推移" , 
-                   :tics =>  { :xtics => "rotate by -90"}, :range =>{ :y => "[0:6]"},
-                   :point_type => [7],:point_size => 0.2,:with => ["with line"],
-                   :set_key => "unset key",
-                   :type => "scatter",
-                   :set => ["xdata time","timefmt '%H:%M'",
-                            #"xrange ['03/21/95':'03/22/95']",
-                            "format x '%H:%M'"],
-                   :xy => [[[1,2]]]
-                  }
-         }
-         ))
+                                         new({ 
+                                              :graph_file => graph_file || "minute" ,
+                                              :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
+                                              :define_file => Rails.root+"tmp/gnuplot/minute.def",
+                                             },
+                                             {common: {
+                                                       :column_labels => %w(分 ピーク発電量), :column_format => %w(%s %.1f),
+                                                       :axis_labels   => { :xlabel => "分",
+                                                                          :ylabel => "発電量/kW",:y2label => "一日発電量"},
+                                                       :title => "日間発電量推移" , 
+                                                       :tics =>  { :xtics => "rotate by -90"}, :range =>{ :y => "[0:6]"},
+                                                       :point_type => [7],:point_size => 0.2,:with => ["with line"],
+                                                       :set_key => "unset key",
+                                                       :type => "scatter",
+                                                       :set => ["xdata time","timefmt '%H:%M'",
+                                                                #"xrange ['03/21/95':'03/22/95']",
+                                                                "format x '%H:%M'"],
+                                                       :xy => [[[1,2]]]
+                                                      }
+                                             }
+                                            ))
     file = Rails.root+"tmp"+"Sola_minute.data"
     data_file_output_minute(file,kws,"時刻 年月日 発電量")
     logger.debug("####### data_file_output_minute(file) = #{file}")
@@ -259,8 +259,8 @@ logger.debug("Sola::Graph::graph_updated file_path=#{file_path} ")
   end
 
   def data_file_output_minute(filename_or_pathname,data_list,labels)
-      open(filename_or_pathname,"w"){ |f|
-        f.puts labels
+    open(filename_or_pathname,"w"){ |f|
+      f.puts labels
       data_list.each_with_index{ |kw,min|
         f.puts "%d:%d %.2f"%[min/60,min%60,kw] if kw && min
       }

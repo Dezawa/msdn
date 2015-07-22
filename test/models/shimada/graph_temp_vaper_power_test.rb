@@ -113,7 +113,7 @@ plot '#{RailsData}/temp_hyum00.data' using 1:3 pt 6 ps 0.2 ,\\
       ["power","temp_hyum"].map{|key| gp.options[:body][key][:base_path]},
       "Shimada::GraphTempVaperPower の データファイルbase_path"
                   
-    assert_equal (Rails.root+"tmp"+"gnuplot"+"graph.def"), gp.options[:header][:define_file],
+    assert_equal Rails.root+"tmp"+"gnuplot"+"graph.def", gp.options[:header][:define_file],
       "Shimada::GraphTempVaperPower の define_file"
   end
 

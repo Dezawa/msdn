@@ -20,7 +20,7 @@ class PowerUbeHospitalMonthTest < ActiveSupport::TestCase
     lines = File.read(CSVFILE).split(/[\r\n]+/)
     Model.search_year_month(lines)
     Model.search_monthdate(lines)
-    assert /00:00～01:00,384,372/ =~ Model.skip_untile_first_data_line(lines)
+    assert %r/00:00～01:00,384,372/ =~ Model.skip_untile_first_data_line(lines)
   end
 
   must "read_month_data" do

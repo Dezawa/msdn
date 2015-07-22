@@ -38,7 +38,8 @@ module Shimada::GraphAllMonth
     [line,shape,if /\d/ =~ line
                   @PowerModel.where( ["line = ? and shape = n? and date < '2014-7-1'",line.to_i,shape]).
                     order( "date")
-                else Shimada::Power::Un_sorted
+                else
+                  Shimada::Power::Un_sorted
                   @PowerModel.order("date").
                     where( ["shape = n?  and date < '2014-7-1'",shape] )
                 end

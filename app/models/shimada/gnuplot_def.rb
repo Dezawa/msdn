@@ -326,14 +326,14 @@ set grid #ytics
 !
     def output_path(method)
       return [@std_data_file] #unless @powers
-      output_plot_data(powers_group_by){ |f,pw| 
-        f.print "時刻 中央 上限 下限\n"
-        (0..23).
-        each{ |h| f.printf( "%d %.3f %.3f %.3f\n",
-                            h+@time_ofset,pw.revise_by_temp[h],pw.powers[h],pw.aves[h]
-                            )
-        }
-      }
+      # output_plot_data(powers_group_by){ |f,pw| 
+      #   f.print "時刻 中央 上限 下限\n"
+      #   (0..23).
+      #   each{ |h| f.printf( "%d %.3f %.3f %.3f\n",
+      #                       h+@time_ofset,pw.revise_by_temp[h],pw.powers[h],pw.aves[h]
+      #                       )
+      #   }
+      # }
     end
     def doutput_def_file(path, group_by,optpath=[])
       preunble = @Def% [ @graph_file , @opt[:title] || "消費電力予想" ,group_by ,@xrange ]
@@ -470,7 +470,7 @@ set x2tics  0,250
           f.puts "set terminal  jpeg  size #{@graph_size} \nset out 'tmp/shimada/jpeg/#{@graph_file}.jpeg'\nreplot\n" 
       }
     end
-end
+  end
 
   class Temp <  Plot
     Def = %Q!set terminal gif enhanced size %s enhanced font "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10"

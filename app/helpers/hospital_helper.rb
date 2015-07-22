@@ -100,20 +100,20 @@ module HospitalHelper
     end
   end
 
-  def hospital_define(show_or_edit)
-    html = hospital_define_table_title
-    body = safe_join(Hospital::Const::ItemsDefine.map{ |item|
-                       sym = item.symbol.to_s
-                       logger.debug "=== #{sym} #{@instances.keys.join(',')}"
-                       model = @instances[item] #.select{ |attri,inst| inst.attri == sym }.first
-                       case show_or_edit 
-                       when :show ;hospital_define_show_line(model)
-                       when :edit ;hospital_define_edit_line(model,item)
-                       end
-                     })
-    "<hr>\n#{@instances.size}<table border=1>\n<tr>".html_safe +
-      html + body + "</table>\n".html_safe
-  end
+  # def hospital_define(show_or_edit)
+  #   html = hospital_define_table_title
+  #   body = safe_join(Hospital::Const::ItemsDefine.map{ |item|
+  #                      sym = item.symbol.to_s
+  #                      logger.debug "=== #{sym} #{@instances.keys.join(',')}"
+  #                      model = @instances[item] #.select{ |attri,inst| inst.attri == sym }.first
+  #                      case show_or_edit 
+  #                      when :show ;hospital_define_show_line(model)
+  #                      when :edit ;hospital_define_edit_line(model,item)
+  #                      end
+  #                    })
+  #   "<hr>\n#{@instances.size}<table border=1>\n<tr>".html_safe +
+  #     html + body + "</table>\n".html_safe
+  # end
 
   def hospital_define(show_or_edit)
     case show_or_edit
@@ -223,8 +223,8 @@ logger.debug("ItemsDefine: idx=#{idx} value = #{obj.value} #{html_cell.edit_fiel
 
   # build_models { daytype => [ shift1,2,3 ] }
   def show_needs(build_models)
-    obj = build_models[2].first
-    ret = @labels[0].td + @labels[0].disp_field( obj)+TDend
+    first_obj = build_models[2].first
+    ret = @labels[0].td + @labels[0].disp_field(first_obj)+TDend
     [2,3].map{ |daytype| build_models[daytype].each{|obj| 
         @minmax_label.map{|html_cell| 
           next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) 
@@ -241,8 +241,8 @@ logger.debug("ItemsDefine: idx=#{idx} value = #{obj.value} #{html_cell.edit_fiel
   end
 
   def edit_needs(build_models)
-    obj = build_models[2][0]
-    ret = @labels[0].td + @labels[0].disp_field( obj)+TDend
+    init_obj = build_models[2][0]
+    ret = @labels[0].td + @labels[0].disp_field( init_obj)+TDend
     [2,3].map{ |daytype| build_models[daytype].each{|obj| 
         @minmax_label.map{|html_cell| 
           next if html_cell.class==HtmlHidden || html_cell.class==HtmlPasswd ||  html_cell.field_disable(controller) 

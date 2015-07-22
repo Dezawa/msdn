@@ -28,18 +28,6 @@ class Pos < Hash
   end
 
   def +(other)
-#pp self
-#pp other
-    self[:x]=self[0] = self.x + other[0]
-    self[:y]=self[1] = self.y + other[1]
-    self
-  end
-  def +(other)
-#pp self
-#pp other
-    #self[:x]=self[0] = 
-    #self[:y]=self[1] = self.y + other[1]
-    #self
     self.class.new(self.x + other[0],self.y + other[1])
   end
 end

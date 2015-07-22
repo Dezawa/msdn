@@ -119,7 +119,7 @@ module IndexTableHelper
 
 
   def add_links_update_delete(obj,maxid)
-    delete = (obj.id and obj.id < maxid) ? 
+    delete = (obj.id && obj.id < maxid) ? 
     link_to( '<nobr>削除</nobr>',obj , :confirm => 'Are you sure?', :method => :delete) : ""
     "<td>#{delete}<td>"
   end

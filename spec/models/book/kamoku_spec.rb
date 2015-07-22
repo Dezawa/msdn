@@ -14,7 +14,7 @@ describe  "課目一覧"  do
   fixtures "book/kamokus"
   it { Book::Kamoku.count.should eq 29 }
 
-  let (:kamokus) {Book::Kamoku.find_with_main("dezawa").
+  let(:kamokus) {Book::Kamoku.find_with_main("dezawa").
     map{|k| [k.id,k.code,k.bunrui,k.kamoku,k.no,k.book_id]}}
   it { expect( kamokus - Kamoku ).to  eq [] }
 end

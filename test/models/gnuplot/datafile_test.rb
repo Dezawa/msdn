@@ -51,14 +51,14 @@ class GnuplotTest < ActiveSupport::TestCase
    
    must "配列でグループ化した配列の配列を渡すと、data00[01,,].data に書き出す(3)" do
      gp = Graph::Base.new([[1,CaseArryArry],[2,CaseArryArry]])
-     assert_equal ("0".."1").map{|i| (RailsData+"data00#{i}.data").to_s },
-       gp.datafiles#(gp.arry_of_data_objects,{})
+     assert_equal( ("0".."1").map{|i| (RailsData+"data00#{i}.data").to_s },
+       gp.datafiles)#(gp.arry_of_data_objects,{})
    end
    
    must "Hashでグループ化した配列の配列を渡すと、data00[01,,].data に書き出す(3)" do
      gp = Graph::Base.new({a: CaseArryArry,b: CaseArryArry })
-     assert_equal ("0".."1").map{|i| (RailsData+"data00#{i}.data").to_s },
-       gp.datafiles#(gp.arry_of_data_objects,{})
+     assert_equal( ("0".."1").map{|i| (RailsData+"data00#{i}.data").to_s },
+       gp.datafiles)#(gp.arry_of_data_objects,{})
    end
    
    

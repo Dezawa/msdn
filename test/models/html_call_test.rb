@@ -8,7 +8,7 @@ class Model
   end
 end
 
-  class HtmlCellTest < ActiveSupport::TestCase
+class HtmlCellTest < ActiveSupport::TestCase
  def setup
    HtmlCell
    @model = Model.new(1,Date.new(2015,5,6),20.3,123)

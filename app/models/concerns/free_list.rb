@@ -91,7 +91,7 @@ class FreeList
     free_size = @freeList.size
     (1..free_size).each{|idx| f_idx = free_size - idx #each_with_index{|fr,f_idx| s,e = fr 
       s,e = fr = @freeList[f_idx]
-      next if (stop <= s or e <= start)  # 完全に外れてる  de,DE
+      next if (stop <= s || e <= start)  # 完全に外れてる  de,DE
       case [start <= s , e <= stop]
       when [true,true]   ; @freeList.delete_at(f_idx)     # ab,AB 完全に範囲に入ってる。削除
       when [true,false]  ; @freeList[f_idx]    = [stop,e] # ab,C  後半だけ残る

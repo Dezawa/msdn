@@ -18,7 +18,7 @@ class Menu < ActionView::Base
   Attr_names = [:disable,:model,:label,:action,
                 :enable_csv_upload,:csv_upload_action,:buttonlabel,
                 :csv_download_url,:comment,:help]
-  attr_accessor *Attr_names
+  attr_accessor( *Attr_names)
   attr_accessor :controller,:option,:html_option
 
 #  def self.hash_initializer(*attr_names)
@@ -43,7 +43,7 @@ class Menu < ActionView::Base
 
   def self.menue_table(view,menus)
     @@controller = view.controller
-    html = "<table border=1 cellspacing=0>".html_safe
+    "<table border=1 cellspacing=0>".html_safe
     menus.inject( "<table border=1 cellspacing=0>".html_safe){|html,menu|
       html + menu.show(view) } +
      "</table>".html_safe
@@ -116,5 +116,5 @@ class MenuCsv < Menu
       @model = arg_model
       @label = arg_label
       #@action= arg_action
-    end
+  end
 end

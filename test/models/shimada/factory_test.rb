@@ -11,12 +11,12 @@ class Shimada::FactoryTest < ActiveSupport::TestCase
   end
 
   must "today_graph の結果のgrah_file_pathは" do
-    assert_equal (Rails.root+"tmp"+"img"+"temp_vaper_power_2_1.jpeg").to_s,
-                  @factory.today_graph( "全電力・気温")
+    assert_equal((Rails.root+"tmp"+"img"+"temp_vaper_power_2_1.jpeg").to_s,
+                  @factory.today_graph( "全電力・気温"))
   end
 
   must "today_graphの define file" do
-    define_file =Rails.root+"tmp"+"gnuplot"+"test2graph.def"
+    define_file = Rails.root+"tmp"+"gnuplot"+"test2graph.def"
     Shimada::Factory.find(1).
       today_graph("全電力・気温")
     assert_equal "set terminal jpeg enhanced size 900,400 enhanced font '/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,10'

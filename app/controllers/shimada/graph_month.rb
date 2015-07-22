@@ -72,7 +72,7 @@ logger.debug("GRAPH_MONTH_SUB: opt = #{opt} params=#{params}")
       #@power = opt[:find] ? send(opt[:find].first,month, opt[:find].last)  : month.powers
       @power = opt[:find] ? select_by_(month.powers,opt[:find])  : month.powers
       @PowerModel.gnuplot(@factory_id,@power,method,opt.merge(:title => @TYTLE))
-   end
+    end
     render :action => :graph,:layout => "hospital_error_disp"
   end
 

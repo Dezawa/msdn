@@ -38,22 +38,22 @@ class Shimada::Controller <  CommonController #ApplicationController
     Shimada::Graph.create(params[:type],@model)
   end
   
-  def graph_weather
-    @model  = case params[:type]
-              when "weather" ;Weather
-              when "forecast" ; Forecast
-             end
-    model = @model.find(params[:id])
-    @graph_path =
-      @model.plot([model],
-                  Gnuplot::OptionST.
-                    new({},
-                        {common: {with: ["lines","lines","lines",nil],
-                                  time_range: params[:time_range]}}
-                       )
-                  )
-    render   :file => 'application/graph', :layout => "simple"
-  end 
+  # def graph_weather
+  #   @model  = case params[:type]
+  #             when "weather" ;Weather
+  #             when "forecast" ; Forecast
+  #            end
+  #   model = @model.find(params[:id])
+  #   @graph_path =
+  #     @model.plot([model],
+  #                 Gnuplot::OptionST.
+  #                   new({},
+  #                       {common: {with: ["lines","lines","lines",nil],
+  #                                 time_range: params[:time_range]}}
+  #                      )
+  #                 )
+  #   render   :file => 'application/graph', :layout => "simple"
+  # end 
   def graph_weather
     @graph_path =
       Forecast.differrence_via_real_graph params[:location],params[:date]..params[:date]

@@ -251,7 +251,7 @@ class Shimada::Power < ActiveRecord::Base
     when /_by_temp/    
       low,high = bugs_fit(by)[:offset0][offset.to_i,2]
       Shimada::Power.where( "hukurosu is not null and date < '2014-7-1'").
-        select{ |pw| pw.offset_of_hukurosu_vs_pw(by) > low and  pw.offset_of_hukurosu_vs_pw(by)<= high}
+        select{ |pw| pw.offset_of_hukurosu_vs_pw(by) > low &&  pw.offset_of_hukurosu_vs_pw(by)<= high}
     when /_by_month/
       Shimada::Power.where( "hukurosu is not null and date < '2014-7-1'").
         select{ |pw| pw.offset_from_hukurosu_vs_pw(by) == offset }
@@ -927,11 +927,11 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
 
   def self.simulate_a_hour(line,hr,temp,vaper,factory_id)
     return ""
-     polyfits = Shimada::Power::PolyFits[ line]
-     [inv_revice(f4(hr,polyfits[:ave]),temp,vaper,factory_id),
-      inv_revice(f4(hr,polyfits[:min]),temp,vaper,factory_id),
-      inv_revice(f4(hr,polyfits[:max]),temp,vaper,factory_id)
-     ]
+     # polyfits = Shimada::Power::PolyFits[ line]
+     # [inv_revice(f4(hr,polyfits[:ave]),temp,vaper,factory_id),
+     #  inv_revice(f4(hr,polyfits[:min]),temp,vaper,factory_id),
+     #  inv_revice(f4(hr,polyfits[:max]),temp,vaper,factory_id)
+     # ]
   end 
 
   def self.inv_revice(pw,temp,vaper,factory_id) 

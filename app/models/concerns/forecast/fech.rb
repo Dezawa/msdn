@@ -86,9 +86,9 @@ plot '%s/tmp/shimada/forecast-real'  using 3:xticlabel(2)  with line lc 1, \
              end
     end
     def find_or_fetch(location,day=nil,announce_day = nil)
-      day = Time.parse(day).to_date if day === String
+      day = Time.parse(day).to_date if day.is_a? String
       day ||= Time.now.to_date
-      announce_day = Time.parse(announce_day).to_date if announce_day === String
+      announce_day = Time.parse(announce_day).to_date if announce_day.is_a? String
       announce ||= day
       day = day.to_date
       announce = Time.now.beginning_of_hour
@@ -110,7 +110,8 @@ plot '%s/tmp/shimada/forecast-real'  using 3:xticlabel(2)  with line lc 1, \
       hour_lines(lines)
       weather = rain_rank(lines)
       temperature = temperaures(lines)
-      while / class="humidity/ =~  (line = lines.shift) ;      end
+      while / class="humidity/ =~  (line = lines.shift) 
+      end
       humidity = humidities(lines) 
 
       [date,today,tomorrow,

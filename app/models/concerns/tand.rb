@@ -9,12 +9,12 @@ module Tand
       ondotori.groups.each{ |name,group|
         group_name = group.name
         logger.debug("###Ondotori::Status load_xml #{ondotori}")
-        group.remotes.each{ |name,remote|
+        group.remotes.each{ |_name,remote|
           group_remote_name = remote.name
           group_remote_rssi = remote.rssi
           group_remote_serial  = remote.serial
 
-            remote.channels.each{ |name,ch|
+            remote.channels.each{ |_name,ch|
             next if ch.record.type == ""
             group_remote_ch_record_type  = ch.record.type
             group_remote_ch_name = ch.name

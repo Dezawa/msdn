@@ -10,17 +10,17 @@ class GnuplotMakedefileTest < ActiveSupport::TestCase
   must "default plot command" do
     gp = Graph::Base.new([])
     define = gp.gnuplot_define(["datafile_pathes"],gp.options)
-    assert /plot 'datafile_pathes' using 1:2/ =~ define,
+    assert %r/plot 'datafile_pathes' using 1:2/ =~ define,
       "plot  command line"
   end
 
   must "default define " do
     gp = Graph::Base.new([])
     define = gp.gnuplot_define(["datafile_pathes"],gp.options)
-    assert  /terminal jpeg/ =~ define, "terminal typoe"
-    assert  /size 600,400/ =~ define , "size"
-    assert  /using 1:2/    =~ define ,"graph type is scatter"
-    assert  /set out '#{Rails.root}\/tmp\/img\/image.jpeg'/ =~ define, " Default output path"
+    assert  %r/terminal jpeg/ =~ define, "terminal typoe"
+    assert  %r/size 600,400/ =~ define , "size"
+    assert  %r/using 1:2/    =~ define ,"graph type is scatter"
+    assert  %r/set out '#{Rails.root}\/tmp\/img\/image.jpeg'/ =~ define, " Default output path"
   end
 
    must "multi plot Shimada::Graph GraphTempVaperPowerのDefaultoptionでのheader define" do

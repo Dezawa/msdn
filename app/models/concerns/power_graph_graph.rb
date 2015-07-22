@@ -80,17 +80,17 @@ logger.debug("DIF_OPTS opt=#{opt}")
         }
       }
       path
-    end
+  end
 
-    def powers_group_by
-      if by_month = @opt[:by_date]
-        @powers.group_by{ |p| p.date.strftime(by_month)}
-      elsif @opt[:by_]
-        pws=@powers.group_by{ |p| p.send(@opt[ :by_ ])}#.sort_by{ |p,v| p}#.reverse
-        pws
-      else
-        @powers.size > 0 ? { @powers.first.date.strftime("%y/%m") => @powers} : {"" =>[]}
-      end
+  def powers_group_by
+    if by_month = @opt[:by_date]
+      @powers.group_by{ |p| p.date.strftime(by_month)}
+    elsif @opt[:by_]
+      pws=@powers.group_by{ |p| p.send(@opt[ :by_ ])}#.sort_by{ |p,v| p}#.reverse
+      pws
+    else
+      @powers.size > 0 ? { @powers.first.date.strftime("%y/%m") => @powers} : {"" =>[]}
+    end
   end
 
   def group_by_(objects,opt)

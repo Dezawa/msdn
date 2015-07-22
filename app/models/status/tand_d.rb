@@ -9,14 +9,14 @@ class Status::TandD < ActiveRecord::Base
 
     base_name = ondotori.base_name
 
-    ondotori.groups.each{ |name,group|
+    ondotori.groups.each{ |_name,group|
       group_name = group.name
 logger.debug("###Ondotori::Status load_xml #{ondotori}")
       group.remotes.each{ |name,remote|
         group_remote_name = remote.name
         group_remote_rssi = remote.rssi
 
-        remote.channels.each{ |name,ch|
+        remote.channels.each{ |_name,ch|
           group_remote_ch_name = ch.name
           group_remote_ch_unix_time = ch.current.unix_time
           group_remote_ch_current_batt = ch.current.batt

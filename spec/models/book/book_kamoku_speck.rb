@@ -7,7 +7,7 @@ require 'pp'
 
 describe Book::Kamoku do
   describe "ユーザー dezawaのselect用一覧" do
-      let (:kamoku) {Book::Kamoku.kamokus("dezawa")}
+      let(:kamoku) {Book::Kamoku.kamokus("dezawa")}
     it{ Book::Kamoku.kamokus("dezawa").should == KamokuChoise }
   end
 

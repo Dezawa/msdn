@@ -135,7 +135,7 @@ module Gnuplot::Datafile
       output_datafile(group_by,opt){ |f,k,objects|
         objects.each{ |object|
           datum = opt[:column_attrs].map{|sym| object.send(sym)}
-          f.puts (opt[:column_format] ?
+          f.puts(opt[:column_format] ?
                   opt[:column_format]%datum : datum.join(" "))
         }
       }
@@ -168,7 +168,7 @@ module Gnuplot::Datafile
       output_datafile(group_by,opt){ |f,k,objects|
         objects.each{ |object|
           datum = opt[:column_attrs].map{|sym| object.send(sym)}
-          f.puts (opt[:column_format] ?
+          f.puts(opt[:column_format] ?
                   opt[:column_format]%datum : datum.join(" "))
         }
       }

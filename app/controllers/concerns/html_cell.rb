@@ -22,7 +22,7 @@ class HtmlCell
                 :tform,:include_blank,:link,:event,:link_label]
   attr_writer :field_disable,:ro
   attr_accessor :symbol,:label
-  attr_accessor *Attr_names
+  attr_accessor( *Attr_names )
   def initialize(sym,lbl=nil,args={})
     @symbol = sym
     @label  = lbl
@@ -168,13 +168,13 @@ class HtmlLink   < HtmlCell
     params  = links.delete(:params)
     htmloption = links.delete(:htmloption)
 
-    key_param = [(key and key_val) ?  "#{key}=#{object.send(key_val)}" : nil ]
+    key_param = [(key && key_val) ?  "#{key}=#{object.send(key_val)}" : nil ]
     param = links.map{ |k,v| "#{k}=#{v}"}
     params = (params||[]).map{|arg| "#{arg}=#{object.send(arg)}"}
     params = (key_param+param+params).compact
     params = params.size>0 ? "?"+params.join("&") : ""
     
-    id_or_key =  (key and key_val) ?  "" : "/#{object.id}"
+    id_or_key =  (key && key_val) ?  "" : "/#{object.id}"
     
     "<a href='#{url}#{id_or_key}#{params}' #{htmloption}>#{lbl}</a>".html_safe
   end
@@ -307,23 +307,23 @@ class HtmlRadio  < HtmlSelect
                    options.merge(checked obj,symbol,choice))+"#{choice[0]}"
     }.join.html_safe
 
-    html_options={}
-    if options[:index]
-      id = options[:index] if options[:index]
-      html_options[:name]="#{domain}[#{id}][#{symbol}]"
-      html_options[:id] = html_options[:name].gsub(/[\[\/]+/,"_").gsub(/\]/,"")
-    end
-    if include = options[:include_blank]
-      html_options[:include_blank]=include
-    end
-    value = options[:value]
-    choice=choices(obj)
-    cc = (choice[0].class == Array) ? choice : (choice.map{|c| [c]} + [[value]]).uniq
-    #choices(obj)
-    #select(domain,symbol,choices(obj), options.merge(:selected=>value),html_options)
-    choices(obj).map{|choice|
-      radio_button(domain,symbol, choice[-1],:checked => obj[symbol] == choice[-1] ? "checked" : nil)+choice[0]
-    }.join("\n")
+    # html_options={}
+    # if options[:index]
+    #   id = options[:index] if options[:index]
+    #   html_options[:name]="#{domain}[#{id}][#{symbol}]"
+    #   html_options[:id] = html_options[:name].gsub(/[\[\/]+/,"_").gsub(/\]/,"")
+    # end
+    # if include = options[:include_blank]
+    #   html_options[:include_blank]=include
+    # end
+    # value = options[:value]
+    # #choice=choices(obj)
+    # #cc = (choice[0].class == Array) ? choice : (choice.map{|c| [c]} + [[value]]).uniq
+    # #choices(obj)
+    # #select(domain,symbol,choices(obj), options.merge(:selected=>value),html_options)
+    # choices(obj).map{|choice|
+    #   radio_button(domain,symbol, choice[-1],:checked => obj[symbol] == choice[-1] ? "checked" : nil)+choice[0]
+    # }.join("\n")
   end
 
   

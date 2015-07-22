@@ -78,7 +78,7 @@ TEST_DATA =
 This_month = Time.now.beginning_of_month.to_date
 Next_month = Time.now.beginning_of_month.next_month.to_date
 
-describe"ID=!,2013/3のデータで" do
+describe "ID=!,2013/3のデータで" do
   before do
     @nurce = Hospital::Nurce.find(1)
     @nurce.monthly(Date.new(2013,3,1))

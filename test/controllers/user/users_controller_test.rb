@@ -66,7 +66,7 @@ class UsersControllerTest < ActionController::TestCase
   
 
     def test_dezawa_index_show
-      login_as ("dezawa")
+      login_as("dezawa")
       get :index 
       assert_tag  :tag => "td"  ,:child => { :tag => "a",:attributes => {:href =>"/users/1"},:child => "表示"}
     end

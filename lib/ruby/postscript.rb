@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'nkf'
 class Postscript
 
@@ -224,22 +225,22 @@ class Postscript
   def moveto(x,y=nil)
     case x
     when Hash,Pos
-      @page <<  "%.1f %.1f moveto " % [x[:x],x[:y]]  if x[:x] and x[:y]
+      @page <<  "%.1f %.1f moveto " % [x[:x],x[:y]]  if x[:x] && x[:y]
     when Array
-      @page <<  "%.1f %.1f moveto " % [x[0],x[1]]  if x[0] and x[1]
+      @page <<  "%.1f %.1f moveto " % [x[0],x[1]]  if x[0] && x[1]
     else
-      @page <<  "%.1f %.1f moveto " % [x,y] if x and y
+      @page <<  "%.1f %.1f moveto " % [x,y] if x && y
     end
     self
   end
     def rmoveto(x,y=nil)
     case x
     when Hash,Pos
-      @page <<  "%.1f %.1f rmoveto " % [x[:x],x[:y]]  if x[:x] and x[:y]
+      @page <<  "%.1f %.1f rmoveto " % [x[:x],x[:y]]  if x[:x] && x[:y]
     when Array
-      @page <<  "%.1f %.1f rmoveto " % [x[0],x[1]]  if x[0] and x[1]
+      @page <<  "%.1f %.1f rmoveto " % [x[0],x[1]]  if x[0] && x[1]
     else
-      @page <<  "%.1f %.1f rmoveto " % [x,y] if x and y
+      @page <<  "%.1f %.1f rmoveto " % [x,y] if x && y
     end
     self
   end
@@ -334,7 +335,7 @@ class Postscript
       add(Macros[:centering]) ; @option[:macros]<<:centering
     end
     set_font(opt)            if opt[:font] || opt[:point]
-    moveto(opt[:x],opt[:y])  if opt[:x] and opt[:y]
+    moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
     if opt[:tilt] && opt[:tilt] != 0
       @page << "gsave #{ opt[:tilt]} rotate  (#{euc_str}) centering grestore\n"  
     else
@@ -347,7 +348,7 @@ class Postscript
     return unless str
     euc_str = euc(str.to_s)
     set_font(opt) if opt[:font] || opt[:point]
-    moveto(opt[:x],opt[:y])  if opt[:x] and opt[:y]
+    moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
     if opt[:tilt] && opt[:tilt] != 0
       @page << "gsave #{ opt[:tilt]} rotate (#{euc_str}) left grestore"  
     else
@@ -358,7 +359,7 @@ class Postscript
   end
   def show(opt={}) #x=nil,y=nil,point=10,font=nil,tilt=nil)
     set_font(opt) if opt[:font] || opt[:point]
-    moveto(opt[:x],opt[:y])  if opt[:x] and opt[:y]
+    moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
     if opt[:tilt]
       @page << "gsave #{ opt[:tilt]} rotate left grestore"  
     else
@@ -571,9 +572,9 @@ class Graph
                  :clip_earia_of_xaxis,:clip_earia_of_yaxis    # 軸目盛部のclipエリア
                   ]
             
-  attr_accessor *Attr_names 
+  attr_accessor( *Attr_names )
   attr_accessor :scale
-  attr_writer   *Attr_Writers
+  attr_writer(   *Attr_Writers)
   def initialize(args={})
     @option = { :label_option =>{:x=>{},:y=>{} }  }.merge(args)
     (Attr_names+Attr_Writers+[:label_pos,:title_pos,:pdf]).

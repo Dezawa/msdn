@@ -66,7 +66,7 @@ module ActionButtonHelper
     when :csv_up_buttom     ;csv_up_buttom
     when :csv_out           ;csv_out_buttom
     when :input_and_action  ;
-      logger.debug("##### input_and_action #{[action,label,opt,htmlopt]}")
+      logger.debug("##### input_and_action #{[action,label,opt,htmlopt].join(',')}")
       input_and_action(action,label,opt,htmlopt||{})
     when :select_and_action  ;
       select_and_action(action,label,opt)

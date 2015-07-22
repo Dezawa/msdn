@@ -184,7 +184,7 @@ set xlabel "気温/℃"
       tmp = []
       humi = []
       vaper= []
-      (1..24).each{ |d|
+      (1..24).each{ |hr|
         #( line = lines.shift) until /<tr class="mtx"/ =~ line
         while  /<td class="data_0_0/ !~ ( line = lines.shift);end
         # puts line

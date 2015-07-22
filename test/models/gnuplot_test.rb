@@ -25,12 +25,12 @@ class GnuplotTest < ActiveSupport::TestCase
   must "define options size" do
     gp = Graph::Base.new([],size: "1000,500")
     define = gp.gnuplot_define(["datafile_pathes"],gp.options)
-    assert  /size 1000,500/ =~ define , "size"
+    assert  %r/size 1000,500/ =~ define , "size"
   end
   must "define options graph_file" do
     gp = Graph::Base.new([],graph_file: "graph_file")
     define = gp.gnuplot_define(["datafile_pathes"],gp.options)
-    assert  /set out '#{Rails.root}\/tmp\/img\/graph_file.jpeg'/ =~ define, "  output path"
+    assert  %r/set out '#{Rails.root}\/tmp\/img\/graph_file.jpeg'/ =~ define, "  output path"
   end
 
    expect_opt =

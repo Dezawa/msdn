@@ -75,9 +75,9 @@ class Forecast < ActiveRecord::Base
     end
 
     def differrence_via_real_graph(location = :maebashi, period = nil, graph_file = "graph")
-     unless period
-                 period = Time.now.to_date
-               end
+      unless period
+        period = Time.now.to_date
+      end
       forecasts = daylies_period(location,period)
       weathers = Weather.where( location: location, date: period)
       option = Gnuplot::OptionST.

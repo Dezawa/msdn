@@ -72,7 +72,7 @@ class Sola::Dayly < ActiveRecord::Base
   def self.csv_row(month,values)
     ret = []
     ret << month.strftime("%Y-%m-%d")
-    values.each{ |month,date,kwh_monitor|  ret[date.day] = kwh_monitor  }
+    values.each{ |_month,date,kwh_monitor|  ret[date.day] = kwh_monitor  }
     ret
   end
 

@@ -59,7 +59,7 @@ class WeatherController < CommonController #ApplicationController
 
   def plot_year
     day_from,day_to,hour_from,hour_to = params[@Domain][:plot_year].split(/\s+|,/)
-    logger.debug("######## plot_year day_from,day_to,hour_from,hour_to = #{[day_from,day_to,hour_from,hour_to] }")
+    logger.debug("######## plot_year day_from,day_to,hour_from,hour_to = #{[day_from,day_to,hour_from,hour_to].join(',') }")
     @graph_path = Weather.plot_year(@weather_location,day_from,day_to,hour_from,hour_to)
     @graph_format = :jpeg
     render  :file => 'application/graph',:layout => 'application'

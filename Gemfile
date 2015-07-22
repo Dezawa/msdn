@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 source 'https://rubygems.org'
 
 
@@ -69,3 +70,4 @@ gem 'twitter-bootstrap-rails', '~> 2.2.8'
 gem 'font-awesome-rails'
 gem 'bootstrap-sass', '2.3.2.0'
 gem 'spreadsheet'
+gem 'rubocop', require: false

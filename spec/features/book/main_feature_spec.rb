@@ -63,7 +63,7 @@ describe "2012年の一覧画面 " ,js: true   do
   end
 
   specify "ページ移動" do
-    visit ("/book/main")
+    visit("/book/main")
     current_path.should eq "/book/main"
     expect(page.body).to have_content("複式簿記：振替伝票 一覧 2012年度")
     # 10ページ
@@ -84,7 +84,7 @@ describe "2012年の一覧画面 " ,js: true   do
   end
 
   specify "から 新伝票" do
-    visit ("/book/main")
+    visit("/book/main")
     current_path.should eq "/book/main"
     expect(page.has_button?("新伝票")).to be_true
     click_button("新伝票")
@@ -93,7 +93,7 @@ describe "2012年の一覧画面 " ,js: true   do
   end
 
   specify "から 整列" do
-    visit ("/book/main")
+    visit("/book/main")
     current_path.should eq "/book/main"
 
     expect(page.body).to have_content("96 96 2012-06-01 11360 接待交際費")
@@ -107,7 +107,7 @@ describe "2012年の一覧画面 " ,js: true   do
   end
 
   specify "から 表編集" do
-    visit ("/book/main")
+    visit("/book/main")
     current_path.should eq "/book/main"
     # 一覧での編集に移動
     expect(page.has_button?("編集")).to be_true
@@ -128,7 +128,7 @@ describe "2012年の一覧画面 " ,js: true   do
 
   specify "から 一件編集" do
     # 一覧で ID=92の Editを押す
-    visit ("/book/main")
+    visit("/book/main")
     current_path.should eq "/book/main"
     find_by_id('92').click_link("Edit")
     

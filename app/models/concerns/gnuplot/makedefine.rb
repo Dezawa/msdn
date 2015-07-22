@@ -57,7 +57,7 @@ module Gnuplot::Makedefine
           if opt[:multi_margin]
             "set lmargin #{opt[:multi_margin][0]}\nset rmargin #{opt[:multi_margin][1]}\n" +
               "unset xlabel\nunset xtics\n"
-          else ; "" end
+          else ; ""; end
       else ; ""
       end
   end
