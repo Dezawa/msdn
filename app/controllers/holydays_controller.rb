@@ -3,7 +3,7 @@ require 'html_cell'
 class HolydaysController < CommonController #ApplicationController
   include Actions
   before_action :authenticate_user! 
-  before_filter :set_instanse_variable
+  before_action :set_instanse_variable
 
   Labels = [ HtmlHidden.new(:year),
              HtmlDate.new(  :day  ,"月日",:tform=> "%m/%d",:size => 5),

@@ -118,13 +118,13 @@ module Gnuplot::Datafile
   end
 
   def null_datalist(opt)
-    opt[:column_labels] ? [opt[:column_labels].map{|c| nil }] : []
+    opt[:column_labels] ? [opt[:column_labels].map{ nil }] : []
   end
   
   def datafiles_case_hash( group_by,opt)
     case  group_by.values.first
     when Array
-      output_datafile(group_by,opt){ |f,k,data|
+      output_datafile(group_by,opt){ |f,_k,data|
         if data.size > 0
           data.each{ |datum|  output_line(f,datum,opt)  }
         else
@@ -132,7 +132,7 @@ module Gnuplot::Datafile
         end
       }
     else
-      output_datafile(group_by,opt){ |f,k,objects|
+      output_datafile(group_by,opt){ |f,_k,objects|
         objects.each{ |object|
           datum = opt[:column_attrs].map{|sym| object.send(sym)}
           f.puts(opt[:column_format] ?
@@ -159,13 +159,13 @@ module Gnuplot::Datafile
         else
           data_list
         end
-      output_datafile(group_by,opt){ |f,k,data|
+      output_datafile(group_by,opt){ |f,_k,data|
         data.each{ |datum|  output_line(f,datum,opt)  }
       }
     else
       group_by = 
         opt[:group_by] ? data_list.group_by{ |d| d.send(opt[:group_by])} : [["",data_list]]
-      output_datafile(group_by,opt){ |f,k,objects|
+      output_datafile(group_by,opt){ |f,_k,objects|
         objects.each{ |object|
           datum = opt[:column_attrs].map{|sym| object.send(sym)}
           f.puts(opt[:column_format] ?

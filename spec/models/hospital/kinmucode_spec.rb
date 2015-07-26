@@ -20,7 +20,7 @@ describe Hospital::Kinmucode do
            1 F F F 4 4 0 1 1 1
            0 0 0 0 0 0 0 0 0 0
          )
-        )
+       )
   describe "shift の正当性" do
     array.each{|kinmucode_id,shift|
       it "kinmucode ID= #{kinmucode_id}のshiftは" do

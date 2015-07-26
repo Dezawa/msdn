@@ -39,7 +39,7 @@ module Shimada::GraphAllMonth
                   @PowerModel.where( ["line = ? and shape = n? and date < '2014-7-1'",line.to_i,shape]).
                     order( "date")
                 else
-                  Shimada::Power::Un_sorted
+                  #Shimada::Power::Un_sorted
                   @PowerModel.order("date").
                     where( ["shape = n?  and date < '2014-7-1'",shape] )
                 end
@@ -278,10 +278,12 @@ logger.debug("##### GRAPH_ALL_MONTH_OFFSET:method=#{method},offset=#{offset},@po
       @power = @PowerModel.where( "hukurosu > 0.0  and date < '2014-7-1'")
       @TYTLE = "袋数-消費電力 オフセット 全月度 "
       
-      @PowerModel.gnuplot_histgram(@factory_id,@power,:offset_of_hukurosu_vs_pw,:title => @TYTLE,
-                                      :graph_file =>  @graph_file,
-                                      :min => -500,:max => -500+250*21,:steps => 21
-                                      )
+      @PowerModel.
+        gnuplot_histgram(@factory_id,@power,:offset_of_hukurosu_vs_pw,
+                         :title => @TYTLE,
+                         :graph_file =>  @graph_file,
+                         :min => -500,:max => -500+250*21,:steps => 21
+                        )
     end
     render :action => :graph,:layout => "hospital_error_disp"
   end

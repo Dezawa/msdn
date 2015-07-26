@@ -6,7 +6,7 @@ module Tand
 
       base_name = ondotori.base_name
 
-      ondotori.groups.each{ |name,group|
+      ondotori.groups.each{ |_name,group|
         group_name = group.name
         logger.debug("###Ondotori::Status load_xml #{ondotori}")
         group.remotes.each{ |_name,remote|
@@ -45,7 +45,7 @@ module Tand
     def load_ondotori(ondotori)
       return  unless valid_trz(ondotori)
       #channel_and_attr.each{|channel_name,attr|
-      ondotori.channels.each{|channel_name,channel|
+      ondotori.channels.each{|_channel_name,channel|
         next unless instrument.all.pluck(:serial).include?(channel.serial)
         times_values = times_values_group_by_day(channel)
         times_values.each{ |day,time_values|
@@ -56,7 +56,7 @@ module Tand
 
     def times_values_group_by_day(channel)
       channel.times.zip(channel.values). #.map{ |v| scale(v)}).
-      group_by{ |time,value| time.to_date }
+      group_by{ |time,_value| time.to_date }
     end
 
     def find_or_create_and_save(day,channel,time_values )
@@ -73,8 +73,8 @@ module Tand
       dayly.ch_name_type = channel.name_type
       dayly.instrument =
         dayly.class.instrument.find_by(serial: channel.serial,
-                                      measurement_type: channel.type
-                                     )
+                                       measurement_type: channel.type
+                                      )
       dayly.save
       dayly
     end

@@ -103,18 +103,18 @@ module IndexTableHelper
 
   def deletable
     (case @Delete
-    when Symbol  ; controller.send(@Delete)
-    else         ; @Delete
-    end
-     ) ? true : nil
+     when Symbol  ; controller.send(@Delete)
+     else         ; @Delete
+     end
+    ) ? true : nil
   end
 
   def connection_deletable
     (case @AssosiationDelete
-    when Symbol  ; controller.send(@AssosiationDelete)
-    else         ; @AssosiationDelete
-    end
-     ) ? true : nil
+     when Symbol  ; controller.send(@AssosiationDelete)
+     else         ; @AssosiationDelete
+     end
+    ) ? true : nil
   end
 
 

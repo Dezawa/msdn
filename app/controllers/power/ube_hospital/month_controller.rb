@@ -2,7 +2,7 @@
 require 'extentions'
 class Power::UbeHospital::MonthController  <   Power::MonthController
   include Power::GraphLinks
-  before_filter :set_instanse_variable
+  before_action :set_instanse_variable
   def set_instanse_variable
     super
     @Model = Power::UbeHospital::Month
@@ -72,9 +72,9 @@ class Power::UbeHospital::MonthController  <   Power::MonthController
           [:popup,:graph_all_month,"24年8月～26年8月補正電力" ,   { :option => "by_days_hour" ,} ],
          ].re_order_by_line(8)
       ]
-    [
-     HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
-    ]
+    # [
+    #  HtmlDate.new(:month,"年月",:align=>:right,:ro=>true,:size =>7,:tform => "%y/%m"),
+    # ]
     super
   end
 

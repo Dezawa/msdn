@@ -17,7 +17,7 @@ module Shimada::GnuplotDef
       :difference_ave => "差分平均",:revise_by_temp => "温度補正電力",:diffdiff => "二階差分"}
 
     def gnuplot(factory_id,powers,method,opt={ })
- logger.debug("GRAPH_BUGS_: :vs_temp #{ opt[:vs_temp]},:vs_bugs #{opt[:vs_bugs]} method #{method} powers.size =#{powers.size}")
+ logger.debug("GRAPH_BUGS_: :vs_temp #{opt[:vs_temp]},:vs_bugs #{opt[:vs_bugs]} method #{method} powers.size =#{powers.size}")
 
       if opt[:vs_temp]
         case method.to_s 
@@ -268,11 +268,11 @@ set grid #ytics
        min = min[l..-1]+min[0 .. l-1]
        max = max[l..-1]+max[0 .. l-1]
      end
-     open(@std_data_file,"w"){ |f|
-    #    f.print "時刻 平均 上限 下限\n"
-    #    (0..21).
-    #   each{ |h| f.printf( "%d %.3f %.3f %.3f\n", @time_ofset+h,ave[h],max[h],min[h]) }
-      }
+    #  open(@std_data_file,"w"){ |f|
+    # #    f.print "時刻 平均 上限 下限\n"
+    # #    (0..21).
+    # #   each{ |h| f.printf( "%d %.3f %.3f %.3f\n", @time_ofset+h,ave[h],max[h],min[h]) }
+    #   }
     end   
    def output_stdfile(line)
       pw = Shimada::Power.average_line(factory_id,line)
@@ -281,7 +281,7 @@ set grid #ytics
         (0..20).
         each{ |h| f.printf( "%d %.3f %.3f %.3f\n",
                             @time_ofset+h,pw.revise_by_temp_3[h],pw.powers_3[h],pw.aves_3[h]
-                            )
+                          )
         }
       }
     end
@@ -451,14 +451,14 @@ set x2tics  0,250
     def output_path(method)
       output_plot_data(powers_group_by){ |f,power| 
         f.printf( "%.1f %.1f\n",power.hukurosu,power.send(method)) if power.hukurosu && power.send(method)
-        f.print "#{ method} #{Shimada::Power::BugsFit[method]}\n"
+        f.print "#{method} #{Shimada::Power::BugsFit[method]}\n"
       }
     end
 
     def output_def_file(path, group_by,optpath=[])
       bugs_fit =  Shimada::Power.bugs_fit(@method)
       open(@def_file,"w"){ |f|
-        f.puts  "# #{ @method} #{Shimada::Power::BugsFit[@method.to_sym]}\n"
+        f.puts  "# #{@method} #{Shimada::Power::BugsFit[@method.to_sym]}\n"
           f.puts @Def%[@size,@graph_file,@opt[:title]||"袋数-消費電力 "]
           f.puts "plot " + path.map{ |p| "'#{p}' using 1:2 "}.join(" , ") +
         [0,1,2].map{ |offset|
@@ -587,7 +587,7 @@ set xtics 1,1
     end
 
     def output_path(method)
-      powers_by_year = @powers.group_by{ |m,p_array| m.year }
+      powers_by_year = @powers.group_by{ |m,_p_array| m.year }
       path = []
       powers_by_year.each{ |year,powers|
         path << Rails.root+"tmp/shimada/data/shimada_power_by_month_#{year}"

@@ -36,7 +36,7 @@ class Shimada::Chubu::Power < Shimada::Power
       month = dailydata_ary_of_hourly.first.first.beginning_of_month.to_date
       power = self.find_or_create_by(date: date,shimada_factory_id:factory.id)
       attrs = { }
-      dailydata_ary_of_hourly.each{ |day,hour,pw| attrs[hour.to_sym] = pw  }
+      dailydata_ary_of_hourly.each{ |_day,hour,pw| attrs[hour.to_sym] = pw  }
       power.update(attrs)
       power
     end

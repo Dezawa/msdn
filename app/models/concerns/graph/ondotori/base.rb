@@ -25,7 +25,7 @@ D [[Dayly,Dayly,,,,],[Dayly,Dayly,,,,],,,,] :: C の期間分のArray
 これらは、次の様に使われる
      一日分のグラフ   ある期間のグラフ
 1-1      A                   B
-1-2      C                   D
+1-2      C                   Dconcerns/monthly_graph.rb:7:
 1-3      C                   D
 BとCの区別は、最初の二つの要素の日付が同じかどうかで分かる）
 
@@ -92,7 +92,7 @@ module Graph::Ondotori
     # case B :: 一つの測定器の Daylyの配列 ｜ DaylyのRelation
     #        :: 要素数が１の時は case A
     def multi_days(daylies)
-      dayly_class = daylies.first.class
+      #dayly_class = daylies.first.class
       daylies.map{|dayly| dayly.time_and_converted_value
       }.flatten(1).sort_by{|arry| arry.first }
     end

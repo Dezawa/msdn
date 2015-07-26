@@ -5,7 +5,7 @@ module BookMainsHelper
       "<td>" + link_to(kamoku.kamoku,
                        :controller=> :book_main,:action => :book_make,
                        :kamoku_id=>kamoku.id,:kamoku => kamoku.kamoku
-                       ) + "</td><td>" +
+                      ) + "</td><td>" +
         ("%7d" % data[0][kamoku.bunrui]) + "</td><td>" + 
         ("%7d" % data[1][kamoku.bunrui]) +"</td>"
     else 
@@ -20,7 +20,7 @@ module BookMainsHelper
       link_to(kamoku,
               :controller=> "book/main",:action => :book_make,
               :kamoku_id=>kamoku_id,:kamoku => kamoku
-              ) 
+             ) 
       else
         kamoku
       end

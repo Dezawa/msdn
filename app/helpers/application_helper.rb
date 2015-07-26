@@ -60,7 +60,7 @@ module ApplicationHelper
     url,name = url_name.split("#")
     ("<a href='/Help/#{url}.html" + (name ? "##{name}" : "") +
       "'><img src='/images/help.png' width=10 height=12 ></a>"
-     ).html_safe
+    ).html_safe
   end
 
   def memu_line
@@ -111,7 +111,7 @@ module ApplicationHelper
       link_to_unless_current(menu.label,
                              { :controller => menu.model, :action => menu.action}.
                              merge( menu.option || {} ),menu.html_option
-                             )
+                            )
     }.compact.join(tdtd).html_safe
     safe_join [TR , td ,table_body,TDend , TRend ] 
   end
@@ -160,7 +160,7 @@ module ApplicationHelper
                        help("Common#perpage"),
                        "</form>".html_safe
                       ]
-                  )
+                 )
       end
     end
   end
@@ -252,10 +252,10 @@ module ApplicationHelper
   def error_messages_for a_r
     return "" unless a_r.errors.any? 
     ( "<ul>"+
-      a_r.errors.full_messages.map do |msg| %>
+      a_r.errors.full_messages.map do |msg| 
       "<li>#{msg}</li>"
       end +"</ul>"
-      ).html_safe
+    ).html_safe
   end
 end
 

@@ -24,7 +24,7 @@ set out '/opt/www/rails41/msdntest1/tmp/img/temp_vaper_power_2_1.jpeg'
 set multiplot layout 2,1\nset lmargin 10\nset rmargin 15
 unset xlabel\nunset xtics\n
 #########
-set title '全電力と温度・蒸気圧'
+set title '全電力と温度・蒸気圧(2015/04/23)'
 set key outside autotitle columnheader
 set xdata time\nset timefmt \"%Y-%m-%d %H:%M\"\nset format x '%H:%M'
 set bmargin 0\nset ylabel '電力'
@@ -64,7 +64,7 @@ unset xlabel
 unset xtics
 
 #########
-set title '全電力と温度・蒸気圧'
+set title '全電力と温度・蒸気圧(2015/04/23)'
 set key outside autotitle columnheader
 set xdata time
 set timefmt \"%Y-%m-%d %H:%M\"

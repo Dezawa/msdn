@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class Ondotori::StatusController < CommonController#ApplicationController
   include Actions
-  before_filter :set_instanse_variable
+  before_action :set_instanse_variable
   Labels =
     [HtmlText.new(:base_name                ,"Base", :ro => true),
        HtmlText.new(:group_name               ,"Group", :ro => true),

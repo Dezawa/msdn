@@ -63,7 +63,7 @@ logger.debug("GRAPH_MONTH_SUB: opt = #{opt} params=#{params}")
     id =  ( params[@Domain] ? params[@Domain][:id] : params[:id] ) || opt.delete(:id)
     month =  @Model.find(id)
     
-    opt.merge!(:graph_file => "month_#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{method}_#{@factory_id}" ,
+    opt.merge!(:graph_file => "month_#{month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{method}_#{@factory_id}" ,
                :by_date => "%d") 
     @graph_file =  opt[:graph_file]
     @TYTLE = title + month.month.strftime("(%Y年%m月)")
@@ -134,14 +134,14 @@ logger.debug("GRAPH_LINE_SHAPE: #{lines}  #{shape.nil?}")
   end
 
   def graph_temp_(month,opt={ })
-    @graph_file =  "month_temp#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{@factory_id}"
+    @graph_file =  "month_temp#{month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{@factory_id}"
     unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
       @power = month.powers
       @TYTLE = "温度-消費電力" + @power.first.date.strftime("(%Y年%m月)")
  
       opt.merge!(:graph_file => @graph_file,
                  :title => @TYTLE,:graph_size => "600,400",:range => (7..19),:vs_temp => true
-                 ) 
+                )
       #@graph_file =  opt[:graph_file]
       @PowerModel.gnuplot(@factory_id,@power,opt.delete(:method)||:powers,opt)
     end
@@ -158,13 +158,13 @@ logger.debug("GRAPH_MONTH_BUGS:method = #{@method}, params=#{params}")
   end
 
   def graph_bugs_(month,opt={ })
-    @graph_file =  "month_bugs#{ month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{@factory_id}"
+    @graph_file =  "month_bugs#{month.month.strftime('%Y%m')}#{opt[:graph_file]}_#{@factory_id}"
     unless File.exist?(Rails.root+"tmp/shimada/giffiles/#{@graph_file}.gif") == true
       @power = month.powers
       @TYTLE = "袋数-消費電力#{@method == :revise_by_temp_sum ? '(補正後)' : ''}" + @power.first.date.strftime("(%Y年%m月)")
       opt.merge!(:graph_file => @graph_file,
                  :title => @TYTLE,:graph_size => "600,400",:vs_bugs => true#,:by_date => "%m/%d"
-                 ) 
+                ) 
       #@graph_file =  opt[:graph_file]
       @PowerModel.gnuplot(@factory_id,@power,@method ||:powers_sum,opt)
     end

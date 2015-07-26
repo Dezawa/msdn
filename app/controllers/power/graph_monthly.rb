@@ -70,7 +70,7 @@ module  Power::GraphMonthly # controller
     para.keys.each{ |k| para[k.to_sym] = para[k] if k.class == String}
 logger.debug("GRAPH_ALL_MONTH: para = #{para.to_a.flatten.join(', ')}")
     opt = GraphOpt[option].merge(AllMonthOpt[option]||{ }).merge(para)
-logger.debug("GRAPH_ALL_MONTH: opt = #{opt.to_a.flatten.join(', ')}:year #{ opt[:year]},year#{opt["year"]}")
+logger.debug("GRAPH_ALL_MONTH: opt = #{opt.to_a.flatten.join(', ')}:year #{opt[:year]},year#{opt["year"]}")
     title(opt)    
     opt[:graph_file] = opt[:title] unless  opt[:graph_file]
     @graph_file = opt[:graph_file] || "graph"

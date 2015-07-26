@@ -20,7 +20,7 @@ module HospitalHelper
     select(@Domain,meeting.day_column,meeting.assign_correction(nurce),
            { :selected => kinmucode_id, :include_blank =>  true },
                        :name => name(@Domain,nurce.id,meeting.id)
-           )
+          )
   end
 
   def kinmucode_selector(domain,day,nurce,monthly)
@@ -28,9 +28,10 @@ module HospitalHelper
     val  = monthly.days[day]
     kinmucode_id  = val ? val % 1000 : nil
     color_code    = val ? val/1000   : nil
-    HtmlSelectWithBlank.new(day.to_sym ,"",
-                   :correction => HospitalMonthlyController::AssignCorrection[kinmukubun_id]
-                   ).
+    HtmlSelectWithBlank.
+      new(day.to_sym ,"",
+          :correction => HospitalMonthlyController::AssignCorrection[kinmukubun_id]
+         ).
       edit_field_with_id(domain,nurce,@controller, :value => kinmucode_id,
                          :name => name(domain,nurce.id,day)) 
   end
@@ -40,9 +41,10 @@ module HospitalHelper
     kinmu  = monthly.days[day]
     kinmucode_id  = kinmu.kinmucode_id
     color_code    = kinmu.want
-    HtmlSelectWithBlank.new(("day%02d"%day).to_sym ,"",
-                   :correction => Hospital::Kinmucode.code_for_hope(kinmukubun_id)
-                   ).
+    HtmlSelectWithBlank.
+      new(("day%02d"%day).to_sym ,"",
+          :correction => Hospital::Kinmucode.code_for_hope(kinmukubun_id)
+         ).
       edit_field_with_id(domain,nurce,@controller, :value => kinmucode_id,
                          :name => name(domain,nurce.id,"day%02d"%day)) 
   end
@@ -206,7 +208,7 @@ logger.debug("ItemsDefine: idx=#{idx} value = #{obj.value} #{html_cell.edit_fiel
                                                        :value => obj.comment,:name => cmnt%obj.id),
                    TDend , TDTD  ,   hospital_define2_edit(idx)
                  ]
-      )+
+               )+
       TRend
     }
     (html + body + TABLEend).html_safe

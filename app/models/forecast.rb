@@ -16,13 +16,13 @@ class Forecast < ActiveRecord::Base
     def daylies_period(location,period)
       where( location: location, date: period).order("date").
       group_by{ |d| d.date }.
-      map{|date,daylies| daylies.sort_by{|d| d.announce}.last}
+      map{|_date,daylies| daylies.sort_by{|d| d.announce}.last}
     end
     
     def daylies_of_month(weather_location,month)
       where(:month  => month,:location =>  weather_location).
       group_by{ |d| d.date }.
-      map{|date,daylies| daylies.sort_by{|d| d.announce}.last}.
+      map{|_date,daylies| daylies.sort_by{|d| d.announce}.last}.
       sort_by{|d| d.date}
     end
     def dayly_of_a_day(weather_location,date)
@@ -113,7 +113,7 @@ class Forecast < ActiveRecord::Base
   def humi_24 ; ([[nil,nil]]*8).zip(humidity).flatten ;end
   def vape_24 ; ([[nil,nil]]*8).zip(vaper).flatten ;end
   def to_s
-    "#{date} #{announce}: temp:#{temperature.join(',')}  Humi:#{humidity.join(',')}  Vaper:#{ vaper.join(',')}"
+    "#{date} #{announce}: temp:#{temperature.join(',')}  Humi:#{humidity.join(',')}  Vaper:#{vaper.join(',')}"
   end
 
   def vaper_presser(temp,humi) ;    saturate_p(temp)*humi*0.01 ;  end

@@ -259,15 +259,15 @@ class Shimada::Power < ActiveRecord::Base
   end
 
   def self.reset_reevice_and_ave(factory)
-    self.all.each{ |power|
-      ( Revs +   Aves + ByVapers).each{ |clm|  power[clm]=nil }
+    self.all.find_each{ |power|
+      ( Revs +   Aves + ByVapers).find_each{ |clm|  power[clm]=nil }
       power.save
     }
     reculc_all(factory)
   end
 
   def self.reculc_all(factory)
-    self.where("shimada_factory_id = #{factory.id}").each{ |pw|
+    self.where("shimada_factory_id = #{factory.id}").find_each{ |pw|
       pw.shape_is =  pw.na = pw.f4_peaks = pw.f3_solve = pw.f2_solve =  pw.differences = nil
       CashColumns.each{ |sym| pw[sym] = nil}
       pw.save
@@ -282,7 +282,7 @@ class Shimada::Power < ActiveRecord::Base
     self.update_all("deform = null")
     @shpe_is = nil
     rm_gif
-    self.where( "date is not null").each{ |pw| pw.lines;pw.shape_is}
+    self.where( "date is not null").find_each{ |pw| pw.lines;pw.shape_is}
   end
 
   def self.rm_gif ;    File.delete(*Dir.glob(Rails.root+"tmp/shimada/giffiles/*.gif")) ;end
@@ -318,9 +318,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     average_line = Shimada::Power.find_or_create_by(date: nil,line: line)
     
     powers = self.by_patern(factory_id,patern).
-      select{ |pw| 
-      #pw.offset_of_hukurosu_vs_pw < 1200 && pw.line > 2 && pw.max_revs >= 605} 
-         #pw.date > Date.new(2013,9)} # )
+      select{ 
       power_all(factory_id,[" and line = ?", line])
     }
     if  powers.size>2
@@ -329,12 +327,13 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
       sdev     = (0..23).map{ |i| powers.map{ |pw| pw.revise_by_month[i]}.compact.standard_devitation}
       high = (0..23).map{ |i| aves[i]+2*sdev[i] }
       lows = (0..23).map{ |i| aves[i]-2*sdev[i] }
-      average_line.update_attributes( Hash[*Revs.zip(aves_rev).flatten].
-                                      merge(Hash[*ByVapers.zip(aves).flatten]).
-                                      merge(Hash[*Differences.zip(sdev).flatten]).
-                                      merge(Hash[*Hours.zip(high).flatten]).
-                                      merge(Hash[*Aves.zip(lows).flatten])
-                                      )
+      average_line.
+        update_attributes( Hash[*Revs.zip(aves_rev).flatten].
+                          merge(Hash[*ByVapers.zip(aves).flatten]).
+                          merge(Hash[*Differences.zip(sdev).flatten]).
+                          merge(Hash[*Hours.zip(high).flatten]).
+                          merge(Hash[*Aves.zip(lows).flatten])
+                         )
     end
     #ave_power.difference
     @@average_line[line] = average_line
@@ -349,9 +348,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     average_line = Shimada::Power.find_or_create_by(date: nil, line: line)
     
     powers = self.by_patern(factory_id,patern).
-      select{ |pw| 
-      #pw.offset_of_hukurosu_vs_pw < 1200 && pw.line > 2 && pw.max_revs >= 605} 
-         #pw.date > Date.new(2013,9)} # )
+      select{
       power_all(factory_id,[" and line = ?", line])
     }
     if  powers.size>2
@@ -361,11 +358,12 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
       lows = (0..23).map{ |i| aves[i]-2*sdev[i] }
       average_line.revise_by_vaper
       average_line.save
-      average_line.update_attributes( Hash[*Revs.zip(aves).flatten].
-                                      merge(Hash[*Differences.zip(sdev).flatten]).
-                                      merge(Hash[*Hours.zip(high).flatten]).
-                                      merge(Hash[*Aves.zip(lows).flatten])
-                                      )
+      average_line.
+        update_attributes( Hash[*Revs.zip(aves).flatten].
+                          merge(Hash[*Differences.zip(sdev).flatten]).
+                          merge(Hash[*Hours.zip(high).flatten]).
+                          merge(Hash[*Aves.zip(lows).flatten])
+                         )
     end
     #ave_power.difference
     @@average_line[line] = average_line
@@ -391,7 +389,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
   Keys = { :revise => Revs,:sdev => Differences,:max => Hours,:min => Aves}
   def copy_and_inv_revise(temperature,method = :revise)
     std = self.class.average_line(self.line)
-    temperature.each_with_index{ |temp,idx|
+    temperature.each_with_index{ |temp,_idx|
       Keys[method].each{ |hour|  
         value  = std[hour]
         self[hour] = temp >  revise_params[:threshold]  ?
@@ -587,16 +585,16 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     if  discriminant && discriminant >= 0
       unless self.f3_x1
         x12 = (x1+x2)*0.5
-        self.f3_x1 = (0..4).inject(x1-(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
+        self.f3_x1 = (0..4).inject(x1-(x2-x1)*0.5){ |x0,_i| x0 - f3(x0)/f2(x0) }
         if y1 * y2 < 0
-          self.f3_x2 = (0..4).inject((x1+x2)*0.5){    |x0,i| x0 - f3(x0)/f2(x0) }
-          self.f3_x3 = (0..4).inject(x2+(x2-x1)*0.5){ |x0,i| x0 - f3(x0)/f2(x0) }
+          self.f3_x2 = (0..4).inject((x1+x2)*0.5){    |x0,_i| x0 - f3(x0)/f2(x0) }
+          self.f3_x3 = (0..4).inject(x2+(x2-x1)*0.5){ |x0,_i| x0 - f3(x0)/f2(x0) }
         end 
         save
       end
       @f3_solve  = [self.f3_x1, self.f3_x2 , self.f3_x3]
     else
-      self.f3_x1 = (0..4).inject(-0.5*a[1]/a[2]){ |x0,i| x0 - f3(x0)/f2(x0) }
+      self.f3_x1 = (0..4).inject(-0.5*a[1]/a[2]){ |x0,_i| x0 - f3(x0)/f2(x0) }
       @f3_solve  =  [self.f3_x1]
     end
   end
@@ -605,10 +603,10 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
     if  ndiscriminant && ndiscriminant >= 0
       unless self.nf3_x1
         nx12 = (nx1+nx2)*0.5
-        self.nf3_x1 = (0..4).inject(nx1-(nx2-nx1)*0.5){ |nx0,i| x0 - nf3(x0)/nf2(x0) }
+        self.nf3_x1 = (0..4).inject(nx1-(nx2-nx1)*0.5){ |nx0,_i| x0 - nf3(x0)/nf2(x0) }
         if ny1 * ny2 < 0
-          self.nf3_x2 = (0..4).inject((nx1+nx2)*0.5){ |x0,i| x0 - nf3(x0)/nf2(x0) }
-          self.nf3_x3 = (0..4).inject(nx2+(nx2-nx1)*0.5){ |x0,i| x0 - nf3(x0)/nf2(x0) }
+          self.nf3_x2 = (0..4).inject((nx1+nx2)*0.5){ |x0,_i| x0 - nf3(x0)/nf2(x0) }
+          self.nf3_x3 = (0..4).inject(nx2+(nx2-nx1)*0.5){ |x0,_i| x0 - nf3(x0)/nf2(x0) }
         end 
         save
       end
@@ -823,7 +821,7 @@ logger.debug("CREATE_AVERAGE_DIFF: date=#{v.date}")
          ary = difference[[0,h-n].max..[h+n,difference.size-1].min]
          ary.inject(0){ |s,e| s+(e||0)}/ary.size
        }
-       )
+      )
   end
 
   def revise_by_temp_ave(num=3)
@@ -1013,7 +1011,7 @@ month_id =  #{ids[14]} and date not in ('2014-03-8','2014-03-18','2014-03-25','2
 month_id =  #{ids[15]} and date not in ('2014-04-1','2014-04-5','2014-04-12','2014-04-14','2014-04-19','2014-04-26') or 
 month_id =  #{ids[16]} and date not in ('2014-05-2','2014-05-7','2014-05-10','2014-05-16','2014-05-19','2014-05-24','2014-05-30') or 
 month_id =  #{ids[17]} and date not in ('2014-06-22','2014-06-25','2014-06-2','2014-06-3','2014-06-4','2014-06-17')"
-)
+                                 )
     logger.info("MAYBE3LINES: powers.size = #{powers.size}")
 powers
   end 

@@ -23,24 +23,26 @@ module Sola::Graph
          )
 
     def std_opt_with_peak(xly,graph_file,graph_file_dir=nil)
-      Gnuplot::DefaultOptionST.merge( Gnuplot::OptionST.
-                                     new(
-                                         { 
-                                          :graph_file => graph_file || "sola_#{xly}" ,
-                                          :define_file => Rails.root+"tmp/gnuplot/sola_#{xly}.def",
-                                          :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
-                                          :size => "1000,230",
-                                         },
-                                         {common: {
-                                                   :set_key => "set key center horizontal top box autotitle columnheader width -7 samplen 0.0",
-                                                   :type => "scatter",
-                                                   :by_tics => { 1 => "x1y2" }, # 3600*24*
-                                                   :grid    => ["xtics"],
-                                                   :tics =>  { :xtics => "'2011-5-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
-                                                              :ytics => "300,100 nomirror",:y2tics => "0,1"},
-                                                  }        
-                                         }
-                                        ))
+      Gnuplot::DefaultOptionST.
+        merge( Gnuplot::OptionST.
+              new(
+                  { 
+                   :graph_file => graph_file || "sola_#{xly}" ,
+                   :define_file => Rails.root+"tmp/gnuplot/sola_#{xly}.def",
+                   :graph_file_dir => graph_file_dir || Rails.root+"tmp" + "img",
+                   :size => "1000,230",
+                  },
+                  {common: {
+                            :set_key => "set key center horizontal top box autotitle columnheader width -7 samplen 0.0",
+                            :type => "scatter",
+                            :by_tics => { 1 => "x1y2" }, # 3600*24*
+                            :grid    => ["xtics"],
+                            :tics =>  { :xtics => "'2011-5-1',#{3600*24*30.5*2},'#{Time.now.end_of_year.strftime('%Y-%m-%d')}' rotate by -90",
+                                       :ytics => "300,100 nomirror",:y2tics => "0,1"},
+                           }        
+                  }
+                 )
+             )
     end
 
     def correlation_graph(graph_file=nil,graph_file_dir=nil)
@@ -59,7 +61,7 @@ module Sola::Graph
                                      "label 2 '1-R=%f データ数=%d' at 10,30"%[1.0-resudal,data_list.size]]
                         },[:body,:common]
                       )
-        logger.debug("##### Sola_correlation @options[:body][:common] = #{@options[:body][:common] }")
+        logger.debug("##### Sola_correlation @options[:body][:common] = #{@options[:body][:common]}")
       end
       #logger.debug("##### Sola_correlation option[:body].keys=#{opt[:body].keys.join(' ')}")
       file = Rails.root+"tmp"+"Sola_correlation.data"
@@ -154,7 +156,7 @@ module Sola::Graph
       @options =
         Gnuplot::DefaultOptionST.merge(Gnuplot::OptionST.new(header,{:common => common}))
 
-      data_list = Sola::Dayly.all.order("date").pluck(:date, :peak_kw, :kwh_day).delete_if{ |a,b,c| !b}
+      data_list = Sola::Dayly.all.order("date").pluck(:date, :peak_kw, :kwh_day).delete_if{ |_a,b,_c| !b}
       
       opt_max_peak!(data_list,@options)
 
@@ -164,9 +166,9 @@ module Sola::Graph
     end
 
     def opt_max_peak!(data_list,opt)
-      max_day,max_peak,_ = data_list.max_by{ |date, peak_kw, kwh_day| peak_kw}
+      max_day,max_peak,_dmy = data_list.max_by{ |_date, peak_kw, _kwh_day| peak_kw}
       return unless max_day && max_peak
-      opt.merge({:labels=> ["label 1 '最高 #{ max_day} #{'%.2f'%max_peak}kW' at '2015-01-10',5.5 left" ,
+      opt.merge({:labels=> ["label 1 '最高 #{max_day} #{'%.2f'%max_peak}kW' at '2015-01-10',5.5 left" ,
                             "arrow 1 as 1 from '2015-05-01',5.3 to '#{max_day}',#{max_peak}"
                            ]},[:body,:common] )
     end

@@ -150,7 +150,7 @@ pp [lbl2idx,indexes,csvrows]
     #arryのデータから、前後の空白を削除する
 logger.debug("##label2idx csvrow=#{csvrow},label=#{label}")
     csv0 = csvrow.map{|c| c.strip if c }
-    labels = label.map{|l| lbl = l.strip if l}
+    labels = label.map{|l|l.strip if l}
     # csvの何列目にあるかを知る
     lbl_idxes = labels.map{|lbl| 
       [lbl,csv0.index(lbl)] if csv0.index(lbl)
@@ -158,7 +158,7 @@ logger.debug("##label2idx csvrow=#{csvrow},label=#{label}")
 #logger.debug("label2idx:lbl_idxes #{lbl_idxes} ")
     # Hashし、Hash と indexのArrayを返す
     lbl2idx = Hash[*lbl_idxes.flatten]
-    idxes   = lbl_idxes.map{|l,i| i}
+    idxes   = lbl_idxes.map{|_l,i| i}
 #logger.debug("idxes #{idxes} ")
     lbl2idx.size ==0 ? nil : [lbl2idx,idxes]
   end

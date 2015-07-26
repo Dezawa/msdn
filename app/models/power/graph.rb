@@ -96,7 +96,7 @@ module  Power::Graph
           elsif opt[:group_by] 
             objects.group_by{ |p| p.send( opt[:group_by])}
           else
-            objects.group_by{ |p| true}
+            objects.group_by{  true}
           end
     pws
   end

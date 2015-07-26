@@ -337,7 +337,7 @@ class Postscript
     set_font(opt)            if opt[:font] || opt[:point]
     moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
     if opt[:tilt] && opt[:tilt] != 0
-      @page << "gsave #{ opt[:tilt]} rotate  (#{euc_str}) centering grestore\n"  
+      @page << "gsave #{opt[:tilt]} rotate  (#{euc_str}) centering grestore\n"  
     else
       @page << "(#{euc_str}) centering"
     end
@@ -350,7 +350,7 @@ class Postscript
     set_font(opt) if opt[:font] || opt[:point]
     moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
     if opt[:tilt] && opt[:tilt] != 0
-      @page << "gsave #{ opt[:tilt]} rotate (#{euc_str}) left grestore"  
+      @page << "gsave #{opt[:tilt]} rotate (#{euc_str}) left grestore"  
     else
 #STDERR.puts  "gsave 1 -1 scale (#{euc_str}) show grestore\n"
       @page <<  "(#{euc_str}) left"
@@ -361,7 +361,7 @@ class Postscript
     set_font(opt) if opt[:font] || opt[:point]
     moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
     if opt[:tilt]
-      @page << "gsave #{ opt[:tilt]} rotate left grestore"  
+      @page << "gsave #{opt[:tilt]} rotate left grestore"  
     else
 #STDERR.puts  "gsave 1 -1 scale (#{euc str}) show grestore\n"
       @page <<  "left"
@@ -527,7 +527,7 @@ class PsGraph < Postscript
       gsave_restore_if(graph.title_point[xy],font_setting(:point=>graph.title_point[xy])){
         centering(graph.title[xy], :tilt => xy == :y ? -90 : 0 ,
                   :y => graph.title_pos[xy].y,:x => graph.title_pos[xy].x
-                  )
+                 )
       }
     }
     self

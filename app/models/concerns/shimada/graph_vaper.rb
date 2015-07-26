@@ -30,7 +30,7 @@ class Shimada::GraphVaper    < Graph::Ondotori::ConvertedValue
   end
   
   def multi_days(daylies)
-    dayly_class = daylies.first.class
+    #dayly_class = daylies.first.class
     @objects =
       daylies.map{|dayly| 
       dayly.time_values("%Y-%m-%d %H:%M").

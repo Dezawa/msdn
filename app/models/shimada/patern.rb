@@ -7,7 +7,8 @@ module Shimada::Patern
     "稼働3一時低下" => %w(3-+H)    ,"稼働4一時低下" => %w(4-+H)    ,
     "稼働3→2" => %w(3-+D 3--D)   ,"稼働4→3" =>  %w(4-+D 4--D)  ,
      "未分類" => nil
-   }
+            }
+  OldPaterns = 
 { "稼働1" => %w(1S),"稼働2" => %w(200 2O 2--F),
     "稼働3" => %w(3-- 3--F 30- 3"稼働2" => %w(200 2O 2--F),F 300 3O),"稼働4" => %w(400 4O 4F 4--F 4+-),
     "稼働3→2" => %w(3--D 3-+ 3-0)   ,"稼働4→3" =>  %w(4--D 4-+ 4-0),
@@ -76,7 +77,7 @@ module Shimada::Patern
       end
       #"--"
     elsif y1     < -Err && y2     >   Err   # -+
-      logger.debug("SHAPE-+: #{ date} #{difference_peaks < 100} && #{difference_peak_vary} > 150")
+      logger.debug("SHAPE-+: #{date} #{difference_peaks < 100} && #{difference_peak_vary} > 150")
       if difference_peaks < 100 && difference_peak_vary > 100
          "-+H" #凹(H)は f3x1,f3x3 におけるf4の差が少なく、f3x2のf4の落ち込みが大
       elsif revise_peaks[0] - revise_peaks[1] > 100  ; "-+D"

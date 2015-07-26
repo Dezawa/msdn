@@ -22,10 +22,10 @@ class Array
 #class Array
   def re_order_by_column(count)
     lines = (size.to_f/count).ceil
-    (0..lines-1).map{ |c| (c..lines*count-1).step(lines).map{ |i| self[i]}}.flatten(1)
+    (0..lines-1).flat_map{ |c| (c..lines*count-1).step(lines).map{ |i| self[i]}}
   end
   def re_order_by_line(count)
     clmns = (size.to_f/count).ceil
-    (0..count-1).map{ |c| (c..clmns*count-1).step(count).map{ |i| self[i]}}.flatten(1)
+    (0..count-1).flat_map{ |c| (c..clmns*count-1).step(count).map{ |i| self[i]}}
   end
 end

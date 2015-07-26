@@ -90,7 +90,7 @@ class FreeList
     #lists.each_with_index{|free,indx|  # @freelist と freeList についてやる
     free_size = @freeList.size
     (1..free_size).each{|idx| f_idx = free_size - idx #each_with_index{|fr,f_idx| s,e = fr 
-      s,e = fr = @freeList[f_idx]
+      s,e = @freeList[f_idx]
       next if (stop <= s || e <= start)  # 完全に外れてる  de,DE
       case [start <= s , e <= stop]
       when [true,true]   ; @freeList.delete_at(f_idx)     # ab,AB 完全に範囲に入ってる。削除
@@ -105,7 +105,7 @@ class FreeList
     self
   end
   def assign_holyday holyday
-    holyday.each{|start,stop,type|  remove_skd_from_freelist(start,stop) }
+    holyday.each{|start,stop,_type|  remove_skd_from_freelist(start,stop) }
   end
 
   def assign_kyuuten( maintains)
@@ -115,7 +115,7 @@ class FreeList
   end
 
   def add_kyuuten( maintains)
-    maintains.each{|plan_start,plan_end,maint|
+    maintains.each{|plan_start,plan_end,_maint|
       @freeList<<[plan_start,plan_end]
     }
     @freeList.sort!{|a,b| a[0]<=>b[0]}

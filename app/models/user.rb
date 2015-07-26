@@ -19,19 +19,18 @@ class User < ActiveRecord::Base
 
   has_and_belongs_to_many :user_options
 
-  validates_presence_of     :username
-  validates_length_of       :username,    :within => 3..40
-  validates_uniqueness_of   :username
-  validates_length_of       :name,     :maximum => 100
-
-  validates_presence_of     :email
+  validates  :username, presence:   true
+  validates  :username, length:    { :within => 3..40}
+  validates  :username, uniqueness: true
+  validates  :name,     length:    { :maximum => 100 }
+  validates  :email   , presence: true     
   #validates_length_of       :email,    :within => 6..100 #r@a.wk
   #validates_uniqueness_of   :email
   #validates_format_of       :email,    :with => Authentication.email_regex, :message => Authentication.bad_email_message
-  validates_presence_of     :password,                   :if => :password_required?
-  validates_presence_of     :password_confirmation,      :if => :password_required?
-  validates_length_of       :password, :within => 7..40, :if => :password_required?
-  validates_confirmation_of :password,                   :if => :password_required?
+  validates :password,             _presence:     {     :if => :password_required?}
+  validates :password_confirmation,_presence:     {     :if => :password_required?}
+  validates :password,             _length:       {:within => 7..40,:if => :password_required?}
+  validates :password,             _confirmation: {     :if => :password_required?}
   
   def self.add_keys_for_parmit 
     [ :email, :name ]
@@ -68,11 +67,11 @@ class User < ActiveRecord::Base
   def encrypted_password=(pass) ;self.crypted_password=pass ;end
 
   def login=(value)
-    write_attribute :username, (value ? value.downcase : nil)
+    self[ :username] = (value ? value.downcase : nil)
   end
 
   def email=(value)
-    write_attribute :email, (value ? value.downcase : nil)
+    self[ :email ] = (value ? value.downcase : nil)
   end
 
   def option?(option_name)

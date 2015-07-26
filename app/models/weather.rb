@@ -184,10 +184,8 @@ set xlabel "気温/℃"
       tmp = []
       humi = []
       vaper= []
-      (1..24).each{ |hr|
-        #( line = lines.shift) until /<tr class="mtx"/ =~ line
+      (1..24).each{
         while  /<td class="data_0_0/ !~ ( line = lines.shift);end
-        # puts line
         clms = line.split(/<\/td><td.*?>/)
         if /47\d{3}/ =~ location.weather_block
           tmp << clms[Temperature0].to_f
@@ -195,7 +193,6 @@ set xlabel "気温/℃"
           vaper << clms[Vaper0].to_f
         else
           tmp << clms[2].to_f
-          
         end
       }
       [tmp,vaper,humi]
@@ -228,7 +225,7 @@ set xlabel "気温/℃"
   end
 
   def self.clm2serial_all
-    self.all.each{|w| w.clm2serial.save }
+    self.all.find_each{|w| w.clm2serial.save }
   end
 
 end

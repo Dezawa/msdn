@@ -14,7 +14,7 @@ module GraphController
         graph_file = params[:graph_file].blank? ? "image" : params[:graph_file]
         graph_file_dir = params[:graph_file_dir].blank? ?
           Rails.root+"tmp/graph/jpeg" : params[:graph_file_dir]
-        "#{graph_file_dir}/#{ graph_file}.#{graph_format}"
+        "#{graph_file_dir}/#{graph_file}.#{graph_format}"
       end
     send_file graph_path, :type => "image/#{graph_format}", :disposition => 'inline'
   end

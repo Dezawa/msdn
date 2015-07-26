@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 class ForecastController < CommonController # ApplicationController
-  before_filter :set_instanse_variable
+  before_action :set_instanse_variable
   Temp     = %w(temp03 temp06 temp09 temp12 temp15 temp18 temp21 temp24) 
   Weather  = %w(weather03 weather06 weather09 weather12 weather15 weather18 weather21 weather24)
   Humi     = %w(humi03 humi06 humi09 humi12 humi15 humi18 humi21 humi24)

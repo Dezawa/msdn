@@ -163,7 +163,7 @@ plot '%s/tmp/shimada/forecast-real'  using 3:xticlabel(2)  with line lc 1, \
 
     def rain_rank(lines)
       while /雨のランクは5段階で表示されます/ !~ (line = lines.shift) ;      end
-      (0..15).map{ |i|
+      (0..15).map{
         while /^img/ !~ (line = lines.shift) ;      end
         lines.shift.sub(/^.*>/,"")
       }
@@ -171,7 +171,7 @@ plot '%s/tmp/shimada/forecast-real'  using 3:xticlabel(2)  with line lc 1, \
 
     def temperaures(lines)
       while /class="temperature"/ =~  (line = lines.shift) ;      end
-      temperature = (0..15).map{ |k|
+      temperature = (0..15).map{ 
         while /^td>/ !~ (line = lines.shift) ;      end
         lines.shift.sub(/^.*>/,"").to_f
       }

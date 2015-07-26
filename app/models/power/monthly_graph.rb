@@ -39,7 +39,7 @@ module  Power::MonthlyGraph
         values = obj.send(opt["method"])
         xvalue = obj.date.day == 1 ? obj.date.strftime("%m/%d") : "."
          f.printf "%s %.3f\n",xvalue,values[0] 
-        ("02".."24").each_with_index{ |hr,idx| f.printf "'' %.3f\n",values[idx+1] }
+        ("02".."24").each_with_index{ |_hr,idx| f.printf "'' %.3f\n",values[idx+1] }
       }
       def_file = def_file_by_days_hour(path,opt)
       `(cd #{Rails.root};/usr/local/bin/gnuplot #{def_file})`

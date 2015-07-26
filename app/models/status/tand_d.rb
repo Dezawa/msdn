@@ -12,7 +12,7 @@ class Status::TandD < ActiveRecord::Base
     ondotori.groups.each{ |_name,group|
       group_name = group.name
 logger.debug("###Ondotori::Status load_xml #{ondotori}")
-      group.remotes.each{ |name,remote|
+      group.remotes.each{ |_name,remote|
         group_remote_name = remote.name
         group_remote_rssi = remote.rssi
 
@@ -21,12 +21,13 @@ logger.debug("###Ondotori::Status load_xml #{ondotori}")
           group_remote_ch_unix_time = ch.current.unix_time
           group_remote_ch_current_batt = ch.current.batt
           group_remote_ch_record_type  = ch.record.type
-          status = self.find_or_create_by(:base_name  => base_name  ,
-                                          :group_name => group_name ,
-                                          :group_remote_name => group_remote_name,
-                                          :group_remote_ch_name => group_remote_ch_name,
-                                          :group_remote_ch_unix_time =>group_remote_ch_unix_time
-                                          )
+          status = self.
+            find_or_create_by(:base_name  => base_name  ,
+                              :group_name => group_name ,
+                              :group_remote_name => group_remote_name,
+                              :group_remote_ch_name => group_remote_ch_name,
+                              :group_remote_ch_unix_time =>group_remote_ch_unix_time
+                             )
           status.group_remote_rssi = group_remote_rssi
           status.group_remote_ch_current_batt = group_remote_ch_current_batt
           status.group_remote_ch_record_type  = group_remote_ch_record_type
@@ -41,7 +42,7 @@ logger.debug("###Ondotori::Status load_xml #{ondotori}")
   def self.select_each_one_from_every_group_by(columns,order,opt={ })
     self.all.order(order).
       group_by{|instans| columns.map{ |sym| instans[sym]}}.
-      map{ |key,instanses| instanses.first }
+      map{ |_key,instanses| instanses.first }
   end
 
 end

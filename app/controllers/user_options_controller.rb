@@ -2,8 +2,8 @@
 class UserOptionsController < CommonController
  # before_filter :authenticate_user! 
   before_action :authenticate_user! 
-  before_filter {|ctrl| ctrl.require_permit_label "ユーザメンテ"}
-  before_filter :set_instanse_variable
+  before_action {|ctrl| ctrl.require_permit_label "ユーザメンテ"}
+  before_action :set_instanse_variable
   #View 表示すべき項目の定義
   # 第4フィールド type については、 ApplicationHelper#edit_field 参照
   # 基本はLiPS会員汎用のみ。それ以外のユーザ毎のoption機能の登録

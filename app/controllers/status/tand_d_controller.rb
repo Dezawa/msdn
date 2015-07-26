@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class Status::TandDController < CommonController#ApplicationController
   include Actions
-  before_filter :set_instanse_variable
+  before_action :set_instanse_variable
   Labels =
     [HtmlText.new(:serial                ,"serial", :ro => true),
      HtmlText.new(:base_name                ,"Base", :ro => true),
@@ -19,11 +19,6 @@ class Status::TandDController < CommonController#ApplicationController
     super
     @Model= Status::TandD
     @Links = Shimada::Controller::Links
-    [
-     Menu.new(   "工場一覧"  ,"shimada/factory"    , :action => :index ) ,
-     Menu.new(   "測定器一覧","shimada/instrument" , :action => :index) ,
-     Menu.new("電池残量" ,"status/tand_d" ,
-              { :action => :list,:controller => "status/tand_d"})] 
     @Domain= @Model.name.underscore
     @TYTLE = "おんどとり Currentデータ"
     @Delete=true

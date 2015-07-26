@@ -343,7 +343,7 @@ def unscale_unit(unit,scl=1.0)
          when :m  ; Pos.new( scl*Point/1000,scl*Point/1000)# Pos.new(1.0/Inch,1.0/Inch)
          else     ; Pos.new(1.0,1.0)
          end
-         )
+       )
 end
 
 def scale(*sxy)
@@ -520,10 +520,10 @@ def box_string(str,*xywhs)
   box_stroke(*xywhs)
 
   case xywhs.size
-  when 4,5 ; x,y,w,h,size = xywhs
+  when 4,5 ; x,y,w,_h,_size = xywhs
   when 2,3 ; 
     if xywhs[0].class == Array &&  xywhs[1].class == Array 
-      x,y = xywhs[0]; w,h = xywhs[1];size=xywhs[3]
+      x,y = xywhs[0]; w,_h = xywhs[1];_size=xywhs[3]
     else
       raise
     end
@@ -590,7 +590,7 @@ def centering(str,opt={})
   moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
   #gsave.scale(1,-1) if @y0_is_up
   if opt[:tilt] && opt[:tilt] != 0
-    @page << "gsave #{ opt[:tilt]} rotate  (#{euc_str}) centering grestore\n"  
+    @page << "gsave #{opt[:tilt]} rotate  (#{euc_str}) centering grestore\n"  
   else
     @page << "(#{euc_str}) centering"
   end
@@ -608,7 +608,7 @@ def right(str,opt={})
   set_font(opt)            if opt[:font] || opt[:point]
   moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
   if opt[:tilt] && opt[:tilt] != 0
-    @page << "gsave #{ opt[:tilt]} rotate  (#{euc_str}) centering grestore\n"  
+    @page << "gsave #{opt[:tilt]} rotate  (#{euc_str}) centering grestore\n"  
   else
     @page << "(#{euc_str}) right"
   end
@@ -624,7 +624,7 @@ def multiline_string(strs,opt={}) #x=nil,y=nil,point=10,font=nil,tilt=nil)
   strs.each_line{ |str|
     moveto(x,y);y -= @point
     if opt[:tilt] && opt[:tilt] != 0
-      @page << "gsave #{ opt[:tilt]}[:tilt]} rotate (#{str}) left grestore"  
+      @page << "gsave #{opt[:tilt]}[:tilt]} rotate (#{str}) left grestore"  
     else
       #STDERR.puts  "gsave 1 -1 scale (#{str}) show grestore\n"
       @page <<  "(#{str}) left"
@@ -639,7 +639,7 @@ def string(str,opt={}) #x=nil,y=nil,point=10,font=nil,tilt=nil)
   moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
   moveto(opt[:xy]) if opt[:xy]
   if opt[:tilt] && opt[:tilt] != 0
-    @page << "gsave #{ opt[:tilt]} rotate (#{euc_str}) left grestore"  
+    @page << "gsave #{opt[:tilt]} rotate (#{euc_str}) left grestore"  
   else
     #STDERR.puts  "gsave 1 -1 scale (#{euc_str}) show grestore\n"
     @page <<  "(#{euc_str}) left"
@@ -650,7 +650,7 @@ def show(opt={}) #x=nil,y=nil,point=10,font=nil,tilt=nil)
   set_font(opt) if opt[:font] || opt[:point]
   moveto(opt[:x],opt[:y])  if opt[:x] && opt[:y]
   if opt[:tilt]
-    @page << "gsave #{ opt[:tilt]} rotate left grestore"  
+    @page << "gsave #{opt[:tilt]} rotate left grestore"  
   else
     #STDERR.puts  "gsave 1 -1 scale (#{euc str}) show grestore\n"
     @page <<  "left"
@@ -744,12 +744,12 @@ def init_page
                 @paper,@paperWidth , @paperHight,
                 macros
                ] 
-   ) :
+  ) :
     (PsHeader % [Orientation[@orientation],@paperWidth , @paperHight,
                  @paper,@paperWidth , @paperHight,
                  macros
                 ]
-     )
+    )
   @pageHight,@pageWidth = @orientation == "l" ? [@paperWidth , @paperHight] : [ @paperHight,@paperWidth]
 end
 
@@ -850,7 +850,7 @@ class PsGraph < Postscript
                        font_setting(:point=>graph.title_point[xy])){
         centering(graph.title[xy], :tilt => xy == :y ? 90 : 0 ,
                   :y => graph.title_pos[xy].y,:x => graph.title_pos[xy].x
-                  )
+                 )
       }
     }
     self

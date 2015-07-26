@@ -99,7 +99,7 @@ logger.debug("DIF_OPTS opt=#{opt}")
           elsif opt[:group_by] 
             objects.group_by{ |p| p.send( opt[:group_by])}
           else
-            objects.group_by{ |p| true}
+            {true => objects } #.group_by{ |p| true}
           end
     pws
   end

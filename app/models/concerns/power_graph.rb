@@ -73,7 +73,7 @@ module  PowerGraph
                  next unless range.include?(day.day)
                   ( day - opt[:min] )+opt[:min].yday
                }.compact.join(" , ") + ")"
-                )
+              )
         [:xlabel,:ylabel,:x2label,:y2label].each{ |sym|
           f.puts "set "+opt[sym] if opt[sym]
         }
@@ -81,7 +81,7 @@ module  PowerGraph
         f.puts( " ,\\\n '#{path[-2]}' using 1:2 with lines axis x2y2 ,\\\n" 
                 #" '' using 1:3 with lines axis x2y2 lc rgb 'red'  title '最高温度', \\\n" +
                # " '' using 1:4 with lines axis x2y2 title '最低温度', \\\n" 
-                )
+              )
         f.puts " '#{path.last}' using 2:xtic(1) notitle "
       }
       deffile

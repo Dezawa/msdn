@@ -3,7 +3,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
   include Actions
   include GraphController
   before_action :authenticate_user!, :only => [:load,:edit_on_table, :update_on_table ]#:except => :load_local_file,
-  before_filter :set_instanse_variable
+  before_action :set_instanse_variable
   
   LabelsPeaks =
     [[ HtmlDate.new(:month,"年月",:tform =>"%Y-%m",:ro => true )] ,
@@ -86,7 +86,7 @@ class Sola::DaylyController < Sola::Controller #ApplicationController
      @Labels =LabelsMonitor # LabelsMonthesIndex
     @TYTLE_post = "モニターデータ 日発電量"
     @TableHeaderDouble = [3,[31,"モニターデータ ：日発電量(kWh)"]]
-    @TableEdit = [[:edit_bottom],[:csv_up_buttom,"モニターデータ取り込み"],  [:csv_out,      "CSVダウンロード"],
+    @TableEdit = [[:edit_buttom],[:csv_up_buttom,"モニターデータ取り込み"],  [:csv_out,      "CSVダウンロード"],
                  ]
     @method = :kwh_monitor
     render  :action => :index

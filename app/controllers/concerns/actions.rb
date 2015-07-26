@@ -200,7 +200,7 @@ module Actions
   def cell_edit
     @model =  @Model.find(params[:id])
     @html_cell = @labels[params[:column].to_i]
-logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row] }:#{params[:column]}")
+logger.debug("cell_edit:@html_cell=#{@html_cell.symbol} #{params[:row]}:#{params[:column]}")
     render  :file => 'application/cell_edit'
   end
 

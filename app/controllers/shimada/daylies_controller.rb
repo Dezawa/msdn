@@ -34,7 +34,7 @@ class Shimada::DayliesController <  Shimada::Controller
     @TYTLE_post = "(#{@factory.name}工場)"
     @models = @Model.by_factory_id(@factory_id).order( "month desc" ).
       group(:month)
-    logger.debug("##### Shimada::DayliesController @models.size=#{ @models.size }")
+    logger.debug("##### Shimada::DayliesController @models.size=#{@models.size}")
     render  :file => 'application/index',:layout => 'application'
   end
 

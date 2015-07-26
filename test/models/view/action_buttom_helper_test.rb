@@ -4,14 +4,20 @@ require 'test_helper'
 ResultWhenNoOption =
   ["","form action=\"temperatuer\" accept-charset=\"UTF-8\" method=\"post\"",
    "input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" ",
-   "input type='hidden' name='page' value=''",
+   "input type=\"hidden\" name=\"page\" id=\"page\" value=\"1\" ",
    "input type=\"submit\" name=\"commit\" value=\"label\" ",
    "/form"]
    
 ResultEdit =
   ["",'form class="button_to" method="get" action="/weather_location/edit_on_table?page=1"',
    'input type="submit" value="編集" ','/form']
-ResultAddOn =["", "form action=\"/weather_location/add_on_table\" accept-charset=\"UTF-8\" method=\"post\"", "input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" ", "input type='hidden' name='page' value='1'", "input type=\"submit\" name=\"commit\" value=\"追加\" ", "input size=\"2\" value=\"1\" type=\"text\" name=\"weather_location[add_no]\" id=\"weather_location_add_no\" ", "/form", "/td", "td"]
+ResultAddOn =["",
+              "form action=\"/weather_location/add_on_table\" accept-charset=\"UTF-8\" method=\"post\"",
+              "input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" ",
+              "input type=\"hidden\" name=\"page\" id=\"page\" value=\"1\" ", 
+              "input type=\"submit\" name=\"commit\" value=\"追加\" ",
+              "input size=\"2\" value=\"1\" type=\"text\" name=\"weather_location[add_no]\" id=\"weather_location_add_no\" ",
+              "/form"]
 ResultAddOnTable =
   ["","form action=\"weather_location\" accept-charset=\"UTF-8\" method=\"post\"",
    "input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" ",
@@ -25,6 +31,10 @@ class ApplicationHelperTest < ActionView::TestCase
     "form_authenticity_token"
   end
 
+  def setup
+    @page = 1
+    @Domain = "weather_location"
+  end
   must "creating a link weather " do
     assert_dom_equal '<a href="/weather">show</a>',
       link_to("show",controller: :weather)
@@ -49,7 +59,7 @@ class ApplicationHelperTest < ActionView::TestCase
   must "form_buttom page=3" do
     @page=3
     expects = ResultWhenNoOption.dup
-    expects[3]=expects[3].sub(/''/,"'3'")
+    expects[3]=expects[3].sub(/"1/,'"3')
     assert_equal expects,
       form_buttom(  'temperatuer',"label",action: "temperatuer").split(/\/?[<>]+/)
     #assert_equal ResultWhenNoOption, form_buttom( :show,"label")
@@ -67,11 +77,22 @@ class ApplicationHelperTest < ActionView::TestCase
   must "edit on table " do
     @page = 1
     assert_equal ResultEdit, edit_buttom( controller: :weather_location).split(/\/?[<>]+/)
- end
+  end
+    
   must "edit on tables " do
     @page = 1
-    assert_equal ResultAddOn+ResultEdit[1..-1], edit_buttoms( :weather_location,controller: :weather_location).split(/\/?[<>]+/)
- end
+    assert_equal ResultAddOn+["/td","td"] + ResultEdit[1..-1],
+      edit_buttoms( :weather_location,controller: :weather_location).split(/\/?[<>]+/)
+  end
+  must "add_edit_buttoms" do
+    expect =  ["","table", "tr", "td"] +
+      ResultAddOn[1..-1] + [ "/td","td"] + ResultEdit[1..-1] +
+      [ "/td", "/tr", "/table"]
+    assert_equal  expect,
+      add_edit_buttoms( :weather_location,controller: :weather_location).
+      split(/\/?[<>]+/)
+  end
+  
   ########## CSV ############
   must "upload_buttom " do
     @page = 1
@@ -105,37 +126,38 @@ class ApplicationHelperTest < ActionView::TestCase
       csv_out_buttom( controller: :weather_location).split(/\/?[<>]+/)
   end
   must "button_tag" do
-    assert_equal "", button_tag("name")
+    assert_equal "<button name=\"button\" type=\"submit\">name</button>", button_tag("name")
     end
 
   ########### POP UP #########
   must " popupform_buttom_buttom " do
     @page = 1
     @Domain = "weather_location"
-    
-    assert_equal ["<form action=\"/weather_location/temperatuer\">",
-                  "  <input name=\"authenticity_token\" type=\"hidden\" value=\"form_authenticity_token\" />",
-                  "  <input name=\"commit\" type=\"submit\"  value=\"temperatuer\"" +
-                    " style='margin-top: -12px; left;' ",
-                  " onclick=\"window.open('/weather_location/temperatuer', 'new_win'" +
-                    ", 'width=500,height=400 '); target='new_win'\">",
-                  "<input value=\"weather_location\" type=\"hidden\"" +
-                    " name=\"weather_location[controller]\" id=\"weather_location_controller\" />",
-                  "</form>"],
-      popupform_buttom( :temperatuer,"temperatuer",controller: :weather_location).split(/[\r\n]+/)
+    expect =
+      ["","form action=\"/weather_location/csv_upload\" accept-charset=\"UTF-8\" method=\"post\"",
+       "input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" ",
+       "input type=\"submit\" name=\"commit\" value=\"temperatuer\"" +
+         " onclick=\"window.open(&#39;/weather_location/csv_upload&#39;,"+
+         " &#39;new_win&#39;, &#39;width=500,height=400 &#39;); target=&#39;new_win&#39;\" ",
+       "/form"]
+    assert_equal expect,
+      popupform_buttom( :csv_upload,"temperatuer",controller: :weather_location).split(/\/?[<>]+/)
   end
   ############# AND ACTION ##########
   must " and_action NoPopUp" do
     @Domain = "weather_location"
-    assert_equal "<div><form action=\"/weather/temperatuer?hidden=\" accept-charset=\"UTF-8\" method=\"post\"><input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" /><input type='hidden' name='page' value=''><input type=\"submit\" name=\"commit\" value=\"temperatuer\" /><INPUT HTML TAG></form></div>",
+    assert_equal "<div><form action=\"/weather/temperatuer?hidden=\" accept-charset=\"UTF-8\" method=\"post\"><input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" /><input type=\"hidden\" name=\"page\" id=\"page\" value=\"1\" /><input type=\"submit\" name=\"commit\" value=\"temperatuer\" /><INPUT HTML TAG></form></div>",
       and_action("<INPUT HTML TAG>".html_safe,:temperatuer,"temperatuer",controller: :weather)
   end
   must " and_action With PopUp" do
     @Domain = "weather_location"
-    assert_equal "<div><form action=\"/weather/temperatuer?hidden=\" accept-charset=\"UTF-8\" method=\"post\"><input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" /><input type='hidden' name='page' value=''><input type=\"submit\" name=\"commit\" value=\"temperatuer\" /><INPUT HTML TAG></form></div>",
-      and_action("<INPUT HTML TAG>".html_safe,:temperatuer,"temperatuer",popup: "WIN_NAME",controller: :weather)
+    assert_equal "<div><form action=\"/weather/temperatuer?hidden=\" accept-charset=\"UTF-8\" method=\"post\">"+
+      "<input name=\"utf8\" type=\"hidden\" value=\"&#x2713;\" />"+
+      "<input type=\"submit\" name=\"commit\" value=\"temperatuer\" onclick=\"window.open(&#39;/weather_location/temperatuer&#39;, &#39;WIN_NAME&#39;, &#39;width=500,height=400 &#39;); target=&#39;WIN_NAME&#39;\" />"+
+      "**INPUT HTML TAG**</form></div>",
+      and_action("**INPUT HTML TAG**".html_safe,:temperatuer,"temperatuer",popup: "WIN_NAME",controller: :weather)
   end
-
+  
 end
 __END__
   
@@ -173,5 +195,6 @@ __END__
     expect.delete_at(-1)
     assert_equal expect,
       form_buttom( 'index',"label",form_notclose: true).split(/\/?[<>]+/)
-  end
+      end
+      
 end

@@ -3,16 +3,12 @@ module Shimada::GMC
 end
 
 module Shimada::Chubu
-puts "Shimada::Chubu"
+#puts "Shimada::Chubu"
     def csv_upload(file)
-      CSV.open(file,"rb:shift_jis:utf-8",:headers => true){ |csv|
-
-      }
     end
 
-
     def  create_one_month_by(lines)
-      :first_row
+      #:first_row
       year = search_year(lines)
       return nil unless year
 

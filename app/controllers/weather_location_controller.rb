@@ -2,7 +2,7 @@
 require 'nkf'
 require 'csv'
 class WeatherLocationController < CommonController #ApplicationController
-  before_filter :set_instanse_variable
+  before_action :set_instanse_variable
   def set_instanse_variable
     super
     @Model= WeatherLocation

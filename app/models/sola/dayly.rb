@@ -61,7 +61,7 @@ class Sola::Dayly < ActiveRecord::Base
 
   def self.csv_out_monitor(filename, csv_labels,csv_atrs)
     daylies = self.all.order(:date).pluck(:month,:date,:kwh_monitor).
-      group_by{ |month,date,kwh_monitor| month}
+      group_by{ |month,_date,_kwh_monitor| month}
     CSV.open(filename, "wb") do |csv|
       csv << csv_labels
       daylies.each{ |month,values| csv << csv_row(month,values) }
