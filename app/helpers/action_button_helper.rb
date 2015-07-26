@@ -11,10 +11,11 @@ module ActionButtonHelper
 
   # buttoms に定義されたボタン群を一行に並べて表示する
   def action_buttoms(buttoms)
-    ("<table><tr>"+
-      buttoms.map{|buttom|
-      "<td>"+action_buttom(buttom) + "</td>"
-    }.join("\n") + "</tr></table>").html_safe
+    content_tag(:table){ content_tag(:tr){
+        safe_join( buttoms.map{|buttom| content_tag(:td,action_buttom(buttom)) },
+                  "\n")
+      }
+    }
   end
 
   # 多量のアクションボタンを表示する時に用いる
@@ -30,7 +31,7 @@ module ActionButtonHelper
     return "" unless action_buttoms = actionbuttoms ||  @action_buttoms
     case action_buttoms.first
     when Integer ; action_buttom_table_sub(action_buttoms)
-    when Array   ; action_buttoms.map{ |ab| action_buttom_table_sub(ab) }.join
+    when Array   ; safe_join(action_buttoms.map{ |ab| action_buttom_table_sub(ab)})
     else         ; ""
     end.html_safe
   end
@@ -59,6 +60,7 @@ module ActionButtonHelper
     case function
     when :form ;form_buttom(action,label,opt,htmlopt)
     when :popup ;popupform_buttom(action,label,opt,htmlopt)
+    when :popup2 ;popupform_buttom(action,label,opt,htmlopt)
     when :add_edit_buttoms ;edit_buttoms(@Domain) 
     when :add_buttom       ;add_buttom(@Domain)
     when :edit_buttom       ;edit_buttom(opt||{ })
@@ -71,8 +73,8 @@ module ActionButtonHelper
     when :select_and_action  ;
       select_and_action(action,label,opt)
     when nil; ""
-    else function.to_s
-    end.html_safe
+    else function.to_s.html_safe
+    end#.html_safe
   end
 
   ######################################
@@ -131,53 +133,56 @@ module ActionButtonHelper
     case action
     when Symbol  ; form_tag({ :action => action} ,opt)
     when String  ; form_tag(action ,opt)
-    end +  hidden +
-      "<input type='hidden' name='page' value='#{@page}'>".html_safe+
+    end +  hidden + hidden_field_tag('page' ,@page ) +
       (additional ?  send(additional) : "") +
-      (submit_tag(label)+form_close).html_safe
+      (submit_tag(label)+form_close)#.html_safe
   end
 
   def opt_form_close(opt)
-    form_notclose = opt.delete(:form_notclose)
-    form_notclose ? "" : "</form>".html_safe
+    opt.delete(:form_notclose) ? "" : tag("/form", nil, true)
   end
   
   def opt_hidden(opt)
     return "" unless hidden = opt.delete(:hidden)
-    safe_join( hidden.map{|key,value|
-                hidden_field(@Domain,key,:value => value)
-              }
-              )
+    safe_join( hidden.map{|key,value| hidden_field(@Domain,key,:value => value) }
+             )
   end
 
   # 追加、編集ボタンの表示
   def add_edit_buttoms(dom,arg={ })
-    buttoms =  edit_buttoms(dom,arg)
-    ("<table><tr><td>"+ buttoms + "</td></tr></table>").html_safe
+    #buttoms =  edit_buttoms(dom,arg)
+    content_tag(:table){ content_tag(:tr){
+        content_tag(:td){add_buttom(dom,arg)} +  content_tag(:td){edit_buttom(arg)}
+      }
+    }
   end
 
 
   def edit_buttoms(dom,arg={ })
-    add_buttom(dom,arg)+edit_buttom(arg)
+    add_buttom(dom,arg)+tag("/td", nil, true) +
+      tag("td", nil, true) +edit_buttom(arg)
   end
   def add_buttom(dom,arg={ })
     option = { :action => (arg.delete(:add_action) || :add_on_table)}.merge(arg)
-    (form_tag(option) + #, :method => :get) + #:action => :add_on_table) + 
-      "<input type='hidden' name='page' value='#{@page}'>".html_safe+
-      submit_tag("追加")+
-      text_field( dom, :add_no,:size=>2, :value => 1 ) +  "</form></td><td>".html_safe
-     )
+    form_tag(option){  
+      hidden_field_tag('page' ,@page ) +  submit_tag("追加")+
+        text_field( dom, :add_no,:size=>2, :value => 1 )
+    } 
+    
   end
 
   def edit_buttom(arg={ })
     action  =  (arg.delete(:edit_action) || :edit_on_table)
-    button_to( '編集', { :action => action,:page => @page}.merge(arg),:method => :get )
+    button_to( '編集', { :action => action,:page => @page}.merge(arg),
+              :method => :get )
   end
 
   def csv_up_buttom(opt={})
     url = "/#{@Domain}/csv_upload"
-    form_tag(url,:multipart => true,:method => :post)+
-      submit_tag("CSVで登録")+file_field(@Domain, :csvfile)+"</form>".html_safe
+    form_tag(url,:multipart => true,:method => :post){ #+
+      submit_tag("CSVで登録")+
+        file_field(@Domain, :csvfile)
+    }
   end
 
   def csv_out_buttom(opt={})
@@ -186,35 +191,29 @@ module ActionButtonHelper
 
   def upload_buttom(action,label)
     url = "/#{@Domain}/#{action}"
-    form_tag(url,:multipart => true,:method => :post)+
-      submit_tag(label)+file_field(@Domain, :uploadfile)+"</form>".html_safe
+    form_tag(url,:multipart => true,:method => :post){
+      submit_tag(label)+file_field(@Domain, :uploadfile)}
   end
 
-#  <input name="commit" type="submit"  value="%s" style="margin-top: -12px; left;"
-  PopupHead =  %Q!<form action="/%s/%s">
-  <input name="authenticity_token" type="hidden" value="%s" />
-  <input name="commit" type="submit"  value="%s" style='margin-top: -12px; left;' 
-!
-  PopupWithOUTModel = %Q! onclick="window.open('/%s/%s', '%s', 'width=500,height=400 %s'); target='%s'">
-!
-  PopupWithModel = %Q!  onclick="window.open('/%s/%s?id=%d', '%s', 'width=500,height=400 %s'); target='%s'">
-  <input id="%s_id" name="%s[id]" type="hidden" value="%d" />
-!
+  PopupWithOUTModel = %Q!window.open('/%s/%s', '%s', 'width=500,height=400 %s'); target='%s'!
+  PopupWithModel = %Q!window.open('/%s/%s?id=%d', '%s', 'width=500,height=400 %s'); target='%s'
+  <input id="%s_id" name="%s[id]" type="hidden" value="%d" />!
 
 
   def popupform_buttom(action,label,opt ={ },htmlopt={ })
-    #return form_buttom(action,label,{class: "popupwindow"}.merge(opt),{class: "popupwindow"}.merge(htmlopt))
-    
     win_name = opt.delete(:win_name) || "new_win"
+    domain = opt.delete(:controller)
+    url_option = {domain: @Domain, action: action}
+    url_option.merge!( {controller: domain} ) if domain
     scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
-    html = PopupHead%[@Domain,action,form_authenticity_token,label]
+    option =
     if @model
-      html += PopupWithModel%[@Domain,action,@model.id,win_name,scroll,win_name,@Domain,@Domain,@model.id] 
+      PopupWithModel%[@Domain,action,@model.id,win_name,scroll,win_name,@Domain,@Domain,@model.id]
     else
-      html += PopupWithOUTModel%[@Domain,action,win_name,scroll,win_name]
+      PopupWithOUTModel%[@Domain,action,win_name,scroll,win_name]
     end
-    opt.each{ |k,v|  html += hidden_field(@Domain,k,:value => v) +"\n"  }
-    html + "\n</form>"
+    option += safe_join(opt.map{ |k,v| hidden_field(@Domain,k,:value => v) },"\n" )
+    form_tag(url_option){ submit_tag(label,onclick: option)}
   end
 
   def and_action(input,action,label,opt={ },htmlopt={ })
@@ -227,7 +226,6 @@ module ActionButtonHelper
     if opt[:popup] #win_name = opt.delete(:popup)
       if @model ;and_input_with_model(input,action,label,opt)
       else  ; and_input_without_model(input,action,label,opt)
-
       end
     else
       and_input_no_popup(input,action,label,opt,htmlopt)
@@ -235,20 +233,29 @@ module ActionButtonHelper
   end
 
   def and_input_no_popup(input,action,label,opt,htmlopt={})
-    "<div>".html_safe+form_tag(opt.merge({:action => action}),(htmlopt||{})) + 
-        "<input type='hidden' name='page' value='#{@page}'>".html_safe+
-        opt[:hidden] +
-        submit_tag(label)+
-        input +  "</form></div>".html_safe
+    content_tag(:div){
+      form_tag(opt.merge({:action => action}),(htmlopt||{})){
+        hidden_field_tag('page',@page) +
+        opt[:hidden] + submit_tag(label)+  input
+      }
+    }
   end
 
   def and_input_without_model(input,action,label,opt)
-       fmt =
- "<div><form action='/%s/%s'>
-  <input name='authenticity_token' type='hidden' value='%s' />
-  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400'); target='%s'\">
-" + input +  "</form></div>"
-      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,opt[:popup],opt[:popup]]
+    win_name = opt.delete(:popup)
+    scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
+    option =  PopupWithOUTModel%[@Domain,action,win_name,scroll,win_name]
+  #   fmt =
+  #     "<div><form action='/%s/%s'>
+  # <input name='authenticity_token' type='hidden' value='%s' />
+  # <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400'); target='%s'\">
+  #   " + input +  "</form></div>"
+  #   fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,opt[:popup],opt[:popup]]
+    content_tag(:div){
+      form_tag(opt.merge({:action => action})){
+        opt[:hidden] + submit_tag(label,onclick: option)+  input      
+      }
+    }
   end
 
   def and_input_with_model(input,action,label,opt)
@@ -271,40 +278,6 @@ module ActionButtonHelper
     opt ||= { }
     correction = opt.delete(:correction)
     input =   select(@Domain,action, correction, opt)
-    #input =   select(action, correction, opt)
     and_action(input,action,label,opt)
   end
-
-  def input_and_action_old(action,label,opt={ })
-    scroll = opt.delete(:scroll) ? ", scrollbars=yes" : ""
-    hidden = opt.delete(:hidden)
-    hidden_value = opt.delete(:hidden_value)
-    if win_name = opt[:popup]
-      if @model
-      fmt =
- "<div><form action='/%s/%s'>
-  <input name='authenticity_token' type='hidden' value='%s' />
-  <input id='%s_id' name='%s[id]' type='hidden' value='%d' />
-  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' 'width=500,height=400%s'); target='%s'\">
-" + text_field( @Domain,action,opt ) +  "</form></div>"
-      fmt%[@Domain,action,form_authenticity_token,@Domain,@Domain,@model.id,label,@Domain,action,win_name,scroll,win_name]
-      else
-      fmt =
- "<div><form action='/%s/%s'>
-  <input name='authenticity_token' type='hidden' value='%s' />
-  <input name='commit' type='submit'  value='%s' style='margin-top: -12px; left;' onclick=\"newwindow=window.open('/%s/%s', '%s' , 'width=500,height=400%s'); target='%s'\">
-" + text_field( @Domain,action,opt ) +  "</form></div>"
-      fmt%[@Domain,action,form_authenticity_token,label,@Domain,action,win_name,scroll,win_name]
-      end
-    else
-      "<div>"+form_tag(:action => action) + 
-        "<input type='hidden' name='page' value='#{@page}'>"+
-        (if hidden; hidden_field(@Domain,hidden,:value => hidden_value)
-         else;"";end
-         )+
-        submit_tag(label)+
-        text_field( @Domain,action,opt) +  "</form></div>"
-    end
-  end
-
 end
